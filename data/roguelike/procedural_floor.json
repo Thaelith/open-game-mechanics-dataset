@@ -1,0 +1,111 @@
+{
+  "id": "roguelike.procedural_floor",
+  "name": "Procedural Floor",
+  "aliases": [
+    "procedural floor mechanic",
+    "procedural floor system",
+    "procedural floor"
+  ],
+  "category": "roguelike",
+  "subcategory": "roguelike",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "hard",
+    "implementation": "medium",
+    "tuning": "expert"
+  },
+  "genres": [
+    "roguelike",
+    "deckbuilder",
+    "action"
+  ],
+  "description": "Procedural Floor is a run-structure mechanic that supports replayability through randomness, reset, risk, or synergy.",
+  "design_notes": "Procedural Floor should be designed around a clear player promise, a readable trigger, and a predictable result. For roguelike mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use procedural floor as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect procedural floor to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels each run is a fresh risk with potential for unexpected synergy.",
+  "required_systems": [
+    "run_state",
+    "random_number_generator",
+    "reward_rules",
+    "save_or_meta_state"
+  ],
+  "parameters": [
+    {
+      "name": "run_length_target",
+      "type": "float",
+      "typical_range": "5-90 minutes",
+      "description": "Expected duration of one run segment using the mechanic."
+    },
+    {
+      "name": "randomness_weight",
+      "type": "float",
+      "typical_range": "0-1",
+      "description": "How strongly random selection affects outcomes."
+    },
+    {
+      "name": "carryover_amount",
+      "type": "float",
+      "typical_range": "0-100%",
+      "description": "How much state persists between runs."
+    }
+  ],
+  "common_variants": [
+    "procedural_floor_hard_reset",
+    "procedural_floor_partial_carryover",
+    "daily_seeded",
+    "challenge_modifier"
+  ],
+  "edge_cases": [
+    "Procedural Floor is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Procedural Floor overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Procedural Floor runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Procedural Floor state does not reset correctly after interruption or reload.",
+    "Feedback for Procedural Floor plays even when the mechanic fails or is rejected.",
+    "Procedural Floor produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Procedural Floor strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Procedural Floor becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Procedural Floor with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Procedural Floor as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Procedural Floor with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Procedural Floor as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "economy.shop",
+    "procedural_generation.seeded_generation",
+    "roguelike.permadeath",
+    "roguelike.run_based_progression"
+  ],
+  "combines_well_with": [
+    "economy.shop",
+    "procedural_generation.seeded_generation",
+    "roguelike.random_powerups",
+    "roguelike.relic_synergy"
+  ],
+  "example_games": [],
+  "tags": [
+    "procedural",
+    "roguelike",
+    "runs"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

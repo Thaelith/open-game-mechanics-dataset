@@ -1,0 +1,112 @@
+{
+  "id": "physics.destructible_environment",
+  "name": "Destructible Environment",
+  "aliases": [
+    "destructible environment mechanic",
+    "destructible environment system",
+    "destructible environment"
+  ],
+  "category": "physics",
+  "subcategory": "simulation_force",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "medium",
+    "implementation": "hard",
+    "tuning": "hard"
+  },
+  "genres": [
+    "puzzle",
+    "sandbox",
+    "simulation"
+  ],
+  "description": "Destructible Environment is a world-system mechanic driven by forces, constraints, collision response, or simulated motion.",
+  "design_notes": "Destructible Environment should be designed around a clear player promise, a readable trigger, and a predictable result. For physics mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use destructible environment as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect destructible environment to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels the world has weight, motion, and consequences.",
+  "required_systems": [
+    "physics_world",
+    "collision_detection",
+    "rigidbody_or_constraint_system",
+    "event_dispatch"
+  ],
+  "parameters": [
+    {
+      "name": "force_strength",
+      "type": "float",
+      "typical_range": "0.1-1000 units",
+      "description": "Magnitude of the force, impulse, or constraint effect."
+    },
+    {
+      "name": "mass_or_weight",
+      "type": "float",
+      "typical_range": "0.1-500 units",
+      "description": "Mass scale used by collision and force calculations."
+    },
+    {
+      "name": "damping",
+      "type": "float",
+      "typical_range": "0-1",
+      "description": "How quickly motion loses energy over time."
+    }
+  ],
+  "common_variants": [
+    "destructible_environment_scripted_version",
+    "destructible_environment_fully_simulated_version",
+    "network_synced_version",
+    "puzzle_variant"
+  ],
+  "edge_cases": [
+    "Destructible Environment is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Destructible Environment overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Destructible Environment runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Destructible Environment state does not reset correctly after interruption or reload.",
+    "Feedback for Destructible Environment plays even when the mechanic fails or is rejected.",
+    "Destructible Environment produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Destructible Environment strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Destructible Environment becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Destructible Environment with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Destructible Environment as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Destructible Environment with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Destructible Environment as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "physics.gravity",
+    "physics.low_gravity_zone",
+    "puzzle.physics_weight_puzzle",
+    "simulation.systemic_weather"
+  ],
+  "combines_well_with": [
+    "physics.buoyancy",
+    "physics.wind_force",
+    "puzzle.physics_weight_puzzle",
+    "simulation.systemic_weather"
+  ],
+  "example_games": [],
+  "tags": [
+    "destructible",
+    "physics",
+    "simulation",
+    "simulation_force"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

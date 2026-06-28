@@ -1,0 +1,352 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://open-game-mechanics-dataset.org/schema/mechanic.schema.json",
+  "title": "Open Game Mechanics Dataset Mechanic",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "aliases",
+    "category",
+    "subcategory",
+    "status",
+    "dimensions",
+    "difficulty",
+    "genres",
+    "description",
+    "design_notes",
+    "design_purpose",
+    "player_fantasy",
+    "required_systems",
+    "parameters",
+    "common_variants",
+    "edge_cases",
+    "common_bugs",
+    "balancing_notes",
+    "accessibility_notes",
+    "implementation_notes",
+    "related_mechanics",
+    "combines_well_with",
+    "example_games",
+    "tags",
+    "source_confidence",
+    "last_updated"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*\\.[a-z0-9_]+(\\.[a-z0-9_]+)*$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 2
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "movement",
+        "combat",
+        "camera",
+        "physics",
+        "platforming",
+        "traversal",
+        "puzzle",
+        "stealth",
+        "survival",
+        "crafting",
+        "economy",
+        "progression",
+        "ai",
+        "multiplayer",
+        "narrative",
+        "ui_ux",
+        "accessibility",
+        "meta",
+        "procedural_generation",
+        "vehicles",
+        "rhythm",
+        "time",
+        "horror",
+        "roguelike",
+        "strategy",
+        "simulation"
+      ]
+    },
+    "subcategory": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "reviewed",
+        "needs_examples",
+        "deprecated"
+      ]
+    },
+    "dimensions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "2D",
+          "2.5D",
+          "3D"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "difficulty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "design",
+        "implementation",
+        "tuning"
+      ],
+      "properties": {
+        "design": {
+          "type": "string",
+          "enum": [
+            "easy",
+            "medium",
+            "hard",
+            "expert"
+          ]
+        },
+        "implementation": {
+          "type": "string",
+          "enum": [
+            "easy",
+            "medium",
+            "hard",
+            "expert"
+          ]
+        },
+        "tuning": {
+          "type": "string",
+          "enum": [
+            "easy",
+            "medium",
+            "hard",
+            "expert"
+          ]
+        }
+      }
+    },
+    "genres": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9_]+$"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "description": {
+      "type": "string",
+      "minLength": 20
+    },
+    "design_notes": {
+      "type": "string",
+      "minLength": 80
+    },
+    "design_purpose": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 10
+      },
+      "minItems": 2
+    },
+    "player_fantasy": {
+      "type": "string",
+      "minLength": 20
+    },
+    "required_systems": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9_]+$"
+      },
+      "minItems": 2,
+      "uniqueItems": true
+    },
+    "parameters": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "type",
+          "typical_range",
+          "description"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          },
+          "type": {
+            "type": "string",
+            "minLength": 3
+          },
+          "typical_range": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "minLength": 10
+          }
+        }
+      }
+    },
+    "common_variants": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 3
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "edge_cases": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 10
+      },
+      "minItems": 3,
+      "uniqueItems": true
+    },
+    "common_bugs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 10
+      },
+      "minItems": 3,
+      "uniqueItems": true
+    },
+    "balancing_notes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 10
+      },
+      "minItems": 2
+    },
+    "accessibility_notes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 10
+      },
+      "minItems": 1
+    },
+    "implementation_notes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 20
+      },
+      "required": [
+        "unity",
+        "godot",
+        "unreal",
+        "web"
+      ],
+      "properties": {
+        "unity": {
+          "type": "string",
+          "minLength": 20
+        },
+        "godot": {
+          "type": "string",
+          "minLength": 20
+        },
+        "unreal": {
+          "type": "string",
+          "minLength": 20
+        },
+        "web": {
+          "type": "string",
+          "minLength": 20
+        }
+      },
+      "minProperties": 2
+    },
+    "related_mechanics": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(external|future)\\.[a-z0-9_]+(\\.[a-z0-9_]+)*|[a-z][a-z0-9_]*\\.[a-z0-9_]+(\\.[a-z0-9_]+)*$"
+      },
+      "uniqueItems": true
+    },
+    "combines_well_with": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(external|future)\\.[a-z0-9_]+(\\.[a-z0-9_]+)*|[a-z][a-z0-9_]*\\.[a-z0-9_]+(\\.[a-z0-9_]+)*$"
+      },
+      "uniqueItems": true
+    },
+    "example_games": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "note"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 2
+          },
+          "note": {
+            "type": "string",
+            "minLength": 10
+          }
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9_]+$"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "source_confidence": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date"
+    }
+  }
+}

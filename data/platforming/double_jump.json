@@ -1,0 +1,121 @@
+{
+  "id": "platforming.double_jump",
+  "name": "Double Jump",
+  "aliases": [
+    "air jump",
+    "second jump",
+    "midair jump"
+  ],
+  "category": "platforming",
+  "subcategory": "vertical_mobility",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "medium",
+    "implementation": "medium",
+    "tuning": "hard"
+  },
+  "genres": [
+    "platformer",
+    "metroidvania",
+    "precision_platformer"
+  ],
+  "description": "A second jump performed while airborne to extend control and reachable space.",
+  "design_notes": "Double Jump should be designed around a clear player promise, a readable trigger, and a predictable result. For platforming mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use double jump as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect double jump to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels precise, agile, and responsible for overcoming spatial challenges.",
+  "required_systems": [
+    "character_controller",
+    "jump_state",
+    "collision_detection",
+    "coyote_time_or_buffering"
+  ],
+  "parameters": [
+    {
+      "name": "activation_window",
+      "type": "float",
+      "typical_range": "0.05-0.25 seconds",
+      "description": "Timing window in which the platforming action can start."
+    },
+    {
+      "name": "vertical_velocity",
+      "type": "float",
+      "typical_range": "4-20 world units/second",
+      "description": "Initial or sustained vertical movement contribution."
+    },
+    {
+      "name": "control_lockout",
+      "type": "float",
+      "typical_range": "0-0.25 seconds",
+      "description": "Short period where player input is limited to preserve readability."
+    }
+  ],
+  "common_variants": [
+    "double_jump_assisted_version",
+    "double_jump_precision_version",
+    "upgrade_unlocked_version",
+    "hazard_sensitive_version"
+  ],
+  "edge_cases": [
+    "Double Jump is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Double Jump overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Double Jump runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Double Jump state does not reset correctly after interruption or reload.",
+    "Feedback for Double Jump plays even when the mechanic fails or is rejected.",
+    "Double Jump produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Double Jump strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Double Jump becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Double Jump with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Double Jump as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Double Jump with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Double Jump as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "camera.smooth_follow_camera",
+    "movement.dash",
+    "platforming.variable_jump_height",
+    "platforming.wall_jump"
+  ],
+  "combines_well_with": [
+    "camera.smooth_follow_camera",
+    "movement.dash",
+    "platforming.ledge_grab",
+    "platforming.wall_slide"
+  ],
+  "example_games": [
+    {
+      "title": "Super Metroid",
+      "note": "Uses new movement abilities to expand reachable spaces."
+    },
+    {
+      "title": "Hollow Knight",
+      "note": "Uses air mobility as a traversal upgrade."
+    }
+  ],
+  "tags": [
+    "double",
+    "mobility",
+    "precision",
+    "vertical_mobility"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

@@ -1,0 +1,111 @@
+{
+  "id": "procedural_generation.procedural_level_rooms",
+  "name": "Procedural Level Rooms",
+  "aliases": [
+    "procedural level rooms mechanic",
+    "procedural level rooms system",
+    "procedural level rooms"
+  ],
+  "category": "procedural_generation",
+  "subcategory": "content_generation",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "hard",
+    "implementation": "hard",
+    "tuning": "expert"
+  },
+  "genres": [
+    "roguelike",
+    "sandbox",
+    "survival"
+  ],
+  "description": "Procedural Level Rooms is a content-generation mechanic that creates spaces, events, rewards, or structures from rules and seeds.",
+  "design_notes": "Procedural Level Rooms should be designed around a clear player promise, a readable trigger, and a predictable result. For procedural generation mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use procedural level rooms as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect procedural level rooms to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels each run or world can surprise them while still following understandable rules.",
+  "required_systems": [
+    "random_number_generator",
+    "content_rules",
+    "validation_pass",
+    "seed_storage"
+  ],
+  "parameters": [
+    {
+      "name": "seed_value",
+      "type": "integer",
+      "typical_range": "0-2^32",
+      "description": "Seed used to make generation reproducible."
+    },
+    {
+      "name": "generation_depth",
+      "type": "integer",
+      "typical_range": "1-20 passes",
+      "description": "Number of passes used to construct and validate output."
+    },
+    {
+      "name": "content_budget",
+      "type": "integer",
+      "typical_range": "1-10000 items",
+      "description": "Maximum number of pieces, rooms, encounters, or rewards generated."
+    }
+  ],
+  "common_variants": [
+    "procedural_level_rooms_fully_random",
+    "procedural_level_rooms_seeded_random",
+    "grammar_based",
+    "hand_authored_chunks"
+  ],
+  "edge_cases": [
+    "Procedural Level Rooms is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Procedural Level Rooms overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Procedural Level Rooms runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Procedural Level Rooms state does not reset correctly after interruption or reload.",
+    "Feedback for Procedural Level Rooms plays even when the mechanic fails or is rejected.",
+    "Procedural Level Rooms produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Procedural Level Rooms strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Procedural Level Rooms becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Procedural Level Rooms with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Procedural Level Rooms as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Procedural Level Rooms with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Procedural Level Rooms as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "economy.loot_table",
+    "procedural_generation.procedural_terrain",
+    "procedural_generation.random_encounters",
+    "roguelike.procedural_floor"
+  ],
+  "combines_well_with": [
+    "economy.loot_table",
+    "procedural_generation.biome_generation",
+    "procedural_generation.seeded_generation",
+    "roguelike.procedural_floor"
+  ],
+  "example_games": [],
+  "tags": [
+    "content_generation",
+    "procedural",
+    "replayability"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

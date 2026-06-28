@@ -1,0 +1,111 @@
+{
+  "id": "survival.oxygen",
+  "name": "Oxygen",
+  "aliases": [
+    "oxygen mechanic",
+    "oxygen system",
+    "oxygen"
+  ],
+  "category": "survival",
+  "subcategory": "survival",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "medium",
+    "implementation": "medium",
+    "tuning": "hard"
+  },
+  "genres": [
+    "survival",
+    "sandbox",
+    "horror"
+  ],
+  "description": "Oxygen is a pressure mechanic that asks the player to manage bodily, environmental, or resource constraints over time.",
+  "design_notes": "Oxygen should be designed around a clear player promise, a readable trigger, and a predictable result. For survival mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use oxygen as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect oxygen to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels vulnerable but resourceful under ongoing pressure.",
+  "required_systems": [
+    "resource_system",
+    "status_effects",
+    "ui_feedback",
+    "save_state"
+  ],
+  "parameters": [
+    {
+      "name": "max_value",
+      "type": "float",
+      "typical_range": "10-1000 units",
+      "description": "Maximum capacity of the survival resource."
+    },
+    {
+      "name": "decay_rate",
+      "type": "float",
+      "typical_range": "0-10 units/minute",
+      "description": "How quickly the resource changes without player action."
+    },
+    {
+      "name": "critical_threshold",
+      "type": "float",
+      "typical_range": "5-30% of max",
+      "description": "Point at which warnings or penalties begin."
+    }
+  ],
+  "common_variants": [
+    "oxygen_soft_pressure",
+    "oxygen_hard_failure",
+    "difficulty_scaled",
+    "environment_driven"
+  ],
+  "edge_cases": [
+    "Oxygen is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Oxygen overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Oxygen runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Oxygen state does not reset correctly after interruption or reload.",
+    "Feedback for Oxygen plays even when the mechanic fails or is rejected.",
+    "Oxygen produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Oxygen strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Oxygen becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Oxygen with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Oxygen as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Oxygen with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Oxygen as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "crafting.recipe_crafting",
+    "survival.health",
+    "survival.stamina",
+    "ui_ux.cooldown_indicator"
+  ],
+  "combines_well_with": [
+    "crafting.recipe_crafting",
+    "survival.hunger",
+    "survival.thirst",
+    "ui_ux.cooldown_indicator"
+  ],
+  "example_games": [],
+  "tags": [
+    "oxygen",
+    "resource_management",
+    "survival"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

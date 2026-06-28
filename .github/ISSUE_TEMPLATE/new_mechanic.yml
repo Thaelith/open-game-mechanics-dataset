@@ -1,0 +1,52 @@
+name: New mechanic
+description: Propose a new mechanic for the dataset.
+title: "Add mechanic: "
+labels: ["mechanic", "proposal"]
+body:
+  - type: input
+    id: mechanic_id
+    attributes:
+      label: Proposed mechanic ID
+      description: Use dot-separated lowercase, for example movement.dash.
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - movement
+        - platforming
+        - traversal
+        - combat
+        - camera
+        - physics
+        - puzzle
+        - stealth
+        - survival
+        - crafting
+        - economy
+        - progression
+        - ai
+        - multiplayer
+        - narrative
+        - ui_ux
+        - accessibility
+        - meta
+        - procedural_generation
+        - vehicles
+        - rhythm
+        - time
+        - horror
+        - roguelike
+        - strategy
+        - simulation
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Short description
+      description: Explain the mechanic in original wording.
+    validations:
+      required: true

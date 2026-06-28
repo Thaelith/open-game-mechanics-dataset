@@ -1,0 +1,111 @@
+{
+  "id": "economy.gacha_pull",
+  "name": "Gacha Pull",
+  "aliases": [
+    "gacha pull mechanic",
+    "gacha pull system",
+    "gacha pull"
+  ],
+  "category": "economy",
+  "subcategory": "economy",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "hard",
+    "implementation": "medium",
+    "tuning": "expert"
+  },
+  "genres": [
+    "rpg",
+    "simulation",
+    "strategy"
+  ],
+  "description": "Gacha Pull is a value-exchange mechanic that governs currency, prices, scarcity, rewards, and transactions.",
+  "design_notes": "Gacha Pull should be designed around a clear player promise, a readable trigger, and a predictable result. For economy mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use gacha pull as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect gacha pull to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels they are making meaningful tradeoffs with scarce value.",
+  "required_systems": [
+    "inventory_system",
+    "currency_wallet",
+    "transaction_rules",
+    "reward_tables"
+  ],
+  "parameters": [
+    {
+      "name": "base_value",
+      "type": "integer",
+      "typical_range": "1-100000",
+      "description": "Default value before modifiers."
+    },
+    {
+      "name": "scarcity_modifier",
+      "type": "float",
+      "typical_range": "0.1-10",
+      "description": "Multiplier that reflects rarity, supply, or demand."
+    },
+    {
+      "name": "transaction_limit",
+      "type": "integer",
+      "typical_range": "1-999",
+      "description": "Maximum units exchanged in one operation or period."
+    }
+  ],
+  "common_variants": [
+    "gacha_pull_fixed_value",
+    "gacha_pull_dynamic_value",
+    "player_traded",
+    "scarcity_based"
+  ],
+  "edge_cases": [
+    "Gacha Pull is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Gacha Pull overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Gacha Pull runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Gacha Pull state does not reset correctly after interruption or reload.",
+    "Feedback for Gacha Pull plays even when the mechanic fails or is rejected.",
+    "Gacha Pull produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Gacha Pull strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Gacha Pull becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Gacha Pull with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Gacha Pull as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Gacha Pull with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Gacha Pull as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "economy.coins",
+    "economy.shop",
+    "progression.upgrade_shop",
+    "ui_ux.inventory_grid"
+  ],
+  "combines_well_with": [
+    "economy.dynamic_pricing",
+    "economy.resource_conversion",
+    "progression.upgrade_shop",
+    "ui_ux.inventory_grid"
+  ],
+  "example_games": [],
+  "tags": [
+    "economy",
+    "gacha",
+    "rewards"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

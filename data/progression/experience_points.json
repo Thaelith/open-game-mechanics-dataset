@@ -1,0 +1,111 @@
+{
+  "id": "progression.experience_points",
+  "name": "Experience Points",
+  "aliases": [
+    "experience points mechanic",
+    "experience points system",
+    "experience points"
+  ],
+  "category": "progression",
+  "subcategory": "progression",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "hard",
+    "implementation": "medium",
+    "tuning": "expert"
+  },
+  "genres": [
+    "rpg",
+    "action",
+    "roguelike"
+  ],
+  "description": "Experience Points is a long-term growth mechanic that changes player capability, goals, or account state.",
+  "design_notes": "Experience Points should be designed around a clear player promise, a readable trigger, and a predictable result. For progression mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use experience points as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect experience points to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels their effort is accumulating into lasting power or options.",
+  "required_systems": [
+    "player_profile",
+    "reward_rules",
+    "unlock_system",
+    "save_state"
+  ],
+  "parameters": [
+    {
+      "name": "reward_amount",
+      "type": "integer",
+      "typical_range": "1-10000",
+      "description": "Progress awarded when the player completes the triggering action."
+    },
+    {
+      "name": "unlock_threshold",
+      "type": "integer",
+      "typical_range": "1-100",
+      "description": "Amount of progress required before the next reward unlocks."
+    },
+    {
+      "name": "scaling_curve",
+      "type": "string",
+      "typical_range": "linear, exponential, tiered",
+      "description": "Curve used to increase cost, reward, or requirement."
+    }
+  ],
+  "common_variants": [
+    "experience_points_linear_track",
+    "experience_points_branching_track",
+    "class_restricted",
+    "respec_enabled"
+  ],
+  "edge_cases": [
+    "Experience Points is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Experience Points overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Experience Points runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Experience Points state does not reset correctly after interruption or reload.",
+    "Feedback for Experience Points plays even when the mechanic fails or is rejected.",
+    "Experience Points produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Experience Points strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Experience Points becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Experience Points with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Experience Points as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Experience Points with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Experience Points as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "economy.shop",
+    "progression.level_up",
+    "progression.skill_tree",
+    "ui_ux.quest_marker"
+  ],
+  "combines_well_with": [
+    "economy.shop",
+    "progression.unlockable_abilities",
+    "progression.upgrade_shop",
+    "ui_ux.quest_marker"
+  ],
+  "example_games": [],
+  "tags": [
+    "experience",
+    "progression",
+    "rewards"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

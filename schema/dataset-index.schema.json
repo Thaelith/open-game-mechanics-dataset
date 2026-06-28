@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://open-game-mechanics-dataset.org/schema/dataset-index.schema.json",
+  "title": "Open Game Mechanics Dataset Index",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "schema_version",
+    "license",
+    "tool_license",
+    "total_mechanics",
+    "last_generated",
+    "mechanics",
+    "groups"
+  ],
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "license": {
+      "type": "string"
+    },
+    "tool_license": {
+      "type": "string"
+    },
+    "total_mechanics": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "last_generated": {
+      "type": "string"
+    },
+    "mechanics": {
+      "type": "array"
+    },
+    "groups": {
+      "type": "object"
+    }
+  }
+}

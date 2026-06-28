@@ -1,0 +1,111 @@
+{
+  "id": "progression.crafting_unlocks",
+  "name": "Crafting Unlocks",
+  "aliases": [
+    "crafting unlocks mechanic",
+    "crafting unlocks system",
+    "crafting unlocks"
+  ],
+  "category": "progression",
+  "subcategory": "progression",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "hard",
+    "implementation": "medium",
+    "tuning": "expert"
+  },
+  "genres": [
+    "rpg",
+    "action",
+    "roguelike"
+  ],
+  "description": "Crafting Unlocks is a long-term growth mechanic that changes player capability, goals, or account state.",
+  "design_notes": "Crafting Unlocks should be designed around a clear player promise, a readable trigger, and a predictable result. For progression mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use crafting unlocks as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect crafting unlocks to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels their effort is accumulating into lasting power or options.",
+  "required_systems": [
+    "player_profile",
+    "reward_rules",
+    "unlock_system",
+    "save_state"
+  ],
+  "parameters": [
+    {
+      "name": "reward_amount",
+      "type": "integer",
+      "typical_range": "1-10000",
+      "description": "Progress awarded when the player completes the triggering action."
+    },
+    {
+      "name": "unlock_threshold",
+      "type": "integer",
+      "typical_range": "1-100",
+      "description": "Amount of progress required before the next reward unlocks."
+    },
+    {
+      "name": "scaling_curve",
+      "type": "string",
+      "typical_range": "linear, exponential, tiered",
+      "description": "Curve used to increase cost, reward, or requirement."
+    }
+  ],
+  "common_variants": [
+    "crafting_unlocks_linear_track",
+    "crafting_unlocks_branching_track",
+    "class_restricted",
+    "respec_enabled"
+  ],
+  "edge_cases": [
+    "Crafting Unlocks is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Crafting Unlocks overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Crafting Unlocks runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Crafting Unlocks state does not reset correctly after interruption or reload.",
+    "Feedback for Crafting Unlocks plays even when the mechanic fails or is rejected.",
+    "Crafting Unlocks produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Crafting Unlocks strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Crafting Unlocks becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Crafting Unlocks with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Crafting Unlocks as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Crafting Unlocks with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Crafting Unlocks as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "economy.shop",
+    "progression.experience_points",
+    "progression.level_up",
+    "ui_ux.quest_marker"
+  ],
+  "combines_well_with": [
+    "economy.shop",
+    "progression.skill_tree",
+    "progression.upgrade_shop",
+    "ui_ux.quest_marker"
+  ],
+  "example_games": [],
+  "tags": [
+    "crafting",
+    "progression",
+    "rewards"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

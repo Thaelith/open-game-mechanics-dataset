@@ -1,0 +1,112 @@
+{
+  "id": "traversal.mantling",
+  "name": "Mantling",
+  "aliases": [
+    "mantling mechanic",
+    "mantling system",
+    "mantling"
+  ],
+  "category": "traversal",
+  "subcategory": "vertical_mobility",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "medium",
+    "implementation": "hard",
+    "tuning": "hard"
+  },
+  "genres": [
+    "adventure",
+    "platformer",
+    "open_world"
+  ],
+  "description": "Mantling is a locomotion tool that helps the player cross space, reach anchors, or move through level structures.",
+  "design_notes": "Mantling should be designed around a clear player promise, a readable trigger, and a predictable result. For traversal mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use mantling as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect mantling to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels capable of crossing spaces that first appeared unreachable.",
+  "required_systems": [
+    "character_controller",
+    "targeting_or_anchor_system",
+    "collision_detection",
+    "state_machine"
+  ],
+  "parameters": [
+    {
+      "name": "travel_speed",
+      "type": "float",
+      "typical_range": "6-30 world units/second",
+      "description": "Movement speed while using the traversal mechanic."
+    },
+    {
+      "name": "activation_range",
+      "type": "float",
+      "typical_range": "3-50 world units",
+      "description": "Maximum distance to a valid anchor, target, or route."
+    },
+    {
+      "name": "cancel_window",
+      "type": "float",
+      "typical_range": "0-1.0 seconds",
+      "description": "Time during which the player can safely cancel or redirect the action."
+    }
+  ],
+  "common_variants": [
+    "mantling_manual_targeting",
+    "mantling_auto_targeting",
+    "limited_use",
+    "upgrade_extended"
+  ],
+  "edge_cases": [
+    "Mantling is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Mantling overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Mantling runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Mantling state does not reset correctly after interruption or reload.",
+    "Feedback for Mantling plays even when the mechanic fails or is rejected.",
+    "Mantling produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Mantling strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Mantling becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Mantling with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Mantling as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Mantling with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Mantling as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "camera.dynamic_fov",
+    "platforming.ledge_grab",
+    "traversal.grappling_hook",
+    "traversal.rope_swing"
+  ],
+  "combines_well_with": [
+    "camera.dynamic_fov",
+    "platforming.ledge_grab",
+    "traversal.teleport_blink",
+    "traversal.zipline"
+  ],
+  "example_games": [],
+  "tags": [
+    "mantling",
+    "mobility",
+    "navigation",
+    "vertical_mobility"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

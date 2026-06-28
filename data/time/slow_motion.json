@@ -1,0 +1,111 @@
+{
+  "id": "time.slow_motion",
+  "name": "Slow Motion",
+  "aliases": [
+    "slow motion mechanic",
+    "slow motion system",
+    "slow motion"
+  ],
+  "category": "time",
+  "subcategory": "time",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "hard",
+    "implementation": "hard",
+    "tuning": "expert"
+  },
+  "genres": [
+    "puzzle",
+    "action",
+    "racing"
+  ],
+  "description": "Slow Motion is a temporal mechanic that changes speed, ordering, deadlines, cooldowns, or history.",
+  "design_notes": "Slow Motion should be designed around a clear player promise, a readable trigger, and a predictable result. For time mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use slow motion as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect slow motion to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels they can manipulate urgency, sequence, or consequence.",
+  "required_systems": [
+    "time_controller",
+    "state_history_or_clock",
+    "effect_system",
+    "feedback_system"
+  ],
+  "parameters": [
+    {
+      "name": "time_scale",
+      "type": "float",
+      "typical_range": "0-2",
+      "description": "Multiplier applied to game time or affected systems."
+    },
+    {
+      "name": "duration",
+      "type": "float",
+      "typical_range": "0.1-30 seconds",
+      "description": "How long the temporal effect remains active."
+    },
+    {
+      "name": "recovery_or_cooldown",
+      "type": "float",
+      "typical_range": "0-120 seconds",
+      "description": "Delay before the mechanic can be used again."
+    }
+  ],
+  "common_variants": [
+    "slow_motion_player_triggered",
+    "slow_motion_zone_based",
+    "resource_limited",
+    "scripted_sequence"
+  ],
+  "edge_cases": [
+    "Slow Motion is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Slow Motion overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Slow Motion runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Slow Motion state does not reset correctly after interruption or reload.",
+    "Feedback for Slow Motion plays even when the mechanic fails or is rejected.",
+    "Slow Motion produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Slow Motion strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Slow Motion becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Slow Motion with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Slow Motion as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Slow Motion with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Slow Motion as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "combat.invincibility_frames",
+    "time.time_freeze",
+    "time.time_rewind",
+    "ui_ux.cooldown_indicator"
+  ],
+  "combines_well_with": [
+    "combat.invincibility_frames",
+    "time.day_night_schedule",
+    "time.timed_challenge",
+    "ui_ux.cooldown_indicator"
+  ],
+  "example_games": [],
+  "tags": [
+    "slow",
+    "time",
+    "timing"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

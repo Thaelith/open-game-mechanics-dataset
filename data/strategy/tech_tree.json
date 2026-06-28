@@ -1,0 +1,110 @@
+{
+  "id": "strategy.tech_tree",
+  "name": "Tech Tree",
+  "aliases": [
+    "tech tree mechanic",
+    "tech tree system",
+    "tech tree"
+  ],
+  "category": "strategy",
+  "subcategory": "strategy",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "hard",
+    "implementation": "hard",
+    "tuning": "expert"
+  },
+  "genres": [
+    "strategy",
+    "4x",
+    "real_time_strategy"
+  ],
+  "description": "Tech Tree is a planning mechanic that governs territory, information, unit roles, resources, or long-horizon decisions.",
+  "design_notes": "Tech Tree should be designed around a clear player promise, a readable trigger, and a predictable result. For strategy mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use tech tree as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect tech tree to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels they are winning through planning, information, and tradeoffs.",
+  "required_systems": [
+    "map_state",
+    "unit_system",
+    "visibility_rules",
+    "ai_or_rules_engine"
+  ],
+  "parameters": [
+    {
+      "name": "decision_horizon",
+      "type": "integer",
+      "typical_range": "1-100 turns",
+      "description": "Number of future steps the mechanic asks players to plan around."
+    },
+    {
+      "name": "information_radius",
+      "type": "float",
+      "typical_range": "1-200 tiles or units",
+      "description": "Area of map or state affected by information rules."
+    },
+    {
+      "name": "resource_pressure",
+      "type": "float",
+      "typical_range": "0-10",
+      "description": "How strongly the mechanic pushes opportunity cost."
+    }
+  ],
+  "common_variants": [
+    "tech_tree_turn_based_variant",
+    "tech_tree_real_time_variant",
+    "hidden_information_variant",
+    "asymmetric_variant"
+  ],
+  "edge_cases": [
+    "Tech Tree is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Tech Tree overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Tech Tree runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Tech Tree state does not reset correctly after interruption or reload.",
+    "Feedback for Tech Tree plays even when the mechanic fails or is rejected.",
+    "Tech Tree produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Tech Tree strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Tech Tree becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Tech Tree with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Tech Tree as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Tech Tree with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Tech Tree as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "ai.patrol",
+    "strategy.fog_of_war",
+    "strategy.unit_counter_system",
+    "ui_ux.minimap"
+  ],
+  "combines_well_with": [
+    "ai.patrol",
+    "strategy.territory_control",
+    "ui_ux.minimap"
+  ],
+  "example_games": [],
+  "tags": [
+    "planning",
+    "strategy",
+    "tech"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

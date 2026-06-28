@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://open-game-mechanics-dataset.org/schema/category.schema.json",
+  "title": "Open Game Mechanics Dataset Category",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "description",
+    "parent",
+    "tags"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "enum": [
+        "movement",
+        "combat",
+        "camera",
+        "physics",
+        "platforming",
+        "traversal",
+        "puzzle",
+        "stealth",
+        "survival",
+        "crafting",
+        "economy",
+        "progression",
+        "ai",
+        "multiplayer",
+        "narrative",
+        "ui_ux",
+        "accessibility",
+        "meta",
+        "procedural_generation",
+        "vehicles",
+        "rhythm",
+        "time",
+        "horror",
+        "roguelike",
+        "strategy",
+        "simulation"
+      ]
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 20
+    },
+    "parent": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

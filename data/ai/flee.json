@@ -1,0 +1,112 @@
+{
+  "id": "ai.flee",
+  "name": "Flee",
+  "aliases": [
+    "flee mechanic",
+    "flee system",
+    "flee"
+  ],
+  "category": "ai",
+  "subcategory": "agent_behavior",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "hard",
+    "implementation": "hard",
+    "tuning": "hard"
+  },
+  "genres": [
+    "action",
+    "strategy",
+    "simulation"
+  ],
+  "description": "Flee is a non-player behavior mechanic that controls sensing, intention, movement, and response.",
+  "design_notes": "Flee should be designed around a clear player promise, a readable trigger, and a predictable result. For ai mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use flee as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect flee to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels the world responds with believable intent instead of static scripting.",
+  "required_systems": [
+    "ai_state_machine",
+    "navigation",
+    "sensing",
+    "decision_rules"
+  ],
+  "parameters": [
+    {
+      "name": "sense_radius",
+      "type": "float",
+      "typical_range": "1-100 world units",
+      "description": "Area within which the AI can consider stimuli."
+    },
+    {
+      "name": "decision_interval",
+      "type": "float",
+      "typical_range": "0.05-2 seconds",
+      "description": "How often the AI re-evaluates the behavior."
+    },
+    {
+      "name": "priority_weight",
+      "type": "float",
+      "typical_range": "0-10",
+      "description": "Relative importance compared with competing AI goals."
+    }
+  ],
+  "common_variants": [
+    "flee_scripted_behavior",
+    "flee_utility_behavior",
+    "behavior_tree_variant",
+    "director_controlled"
+  ],
+  "edge_cases": [
+    "Flee is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Flee overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Flee runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Flee state does not reset correctly after interruption or reload.",
+    "Feedback for Flee plays even when the mechanic fails or is rejected.",
+    "Flee produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Flee strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Flee becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Flee with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Flee as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Flee with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Flee as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "ai.chase",
+    "ai.patrol",
+    "combat.hit_stun",
+    "stealth.alert_state"
+  ],
+  "combines_well_with": [
+    "ai.investigate_noise",
+    "ai.line_of_sight_detection",
+    "combat.hit_stun",
+    "stealth.alert_state"
+  ],
+  "example_games": [],
+  "tags": [
+    "agent_behavior",
+    "ai",
+    "behavior",
+    "flee"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

@@ -1,0 +1,111 @@
+{
+  "id": "horror.safe_room",
+  "name": "Safe Room",
+  "aliases": [
+    "safe room mechanic",
+    "safe room system",
+    "safe room"
+  ],
+  "category": "horror",
+  "subcategory": "horror",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "hard",
+    "implementation": "medium",
+    "tuning": "hard"
+  },
+  "genres": [
+    "horror",
+    "survival",
+    "adventure"
+  ],
+  "description": "Safe Room is a fear-building mechanic that shapes vulnerability, uncertainty, attention, and tension.",
+  "design_notes": "Safe Room should be designed around a clear player promise, a readable trigger, and a predictable result. For horror mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use safe room as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect safe room to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels vulnerable, alert, and uncertain about what happens next.",
+  "required_systems": [
+    "atmosphere_controller",
+    "ai_state_machine",
+    "resource_system",
+    "audio_visual_feedback"
+  ],
+  "parameters": [
+    {
+      "name": "tension_level",
+      "type": "float",
+      "typical_range": "0-1",
+      "description": "Current pressure or fear intensity used to drive the mechanic."
+    },
+    {
+      "name": "resource_drain",
+      "type": "float",
+      "typical_range": "0-10 units/minute",
+      "description": "Rate at which a safety or visibility resource is consumed."
+    },
+    {
+      "name": "reveal_distance",
+      "type": "float",
+      "typical_range": "1-30 world units",
+      "description": "Distance at which a threat or cue becomes clear."
+    }
+  ],
+  "common_variants": [
+    "safe_room_subtle_variant",
+    "safe_room_high_intensity_variant",
+    "resource_limited",
+    "ai_driven"
+  ],
+  "edge_cases": [
+    "Safe Room is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Safe Room overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Safe Room runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Safe Room state does not reset correctly after interruption or reload.",
+    "Feedback for Safe Room plays even when the mechanic fails or is rejected.",
+    "Safe Room produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Safe Room strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Safe Room becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Safe Room with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Safe Room as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Safe Room with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Safe Room as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "horror.light_resource",
+    "horror.limited_visibility",
+    "horror.sanity_meter",
+    "stealth.shadow_cover"
+  ],
+  "combines_well_with": [
+    "horror.hiding",
+    "horror.light_resource",
+    "horror.sound_lure",
+    "stealth.shadow_cover"
+  ],
+  "example_games": [],
+  "tags": [
+    "horror",
+    "safe",
+    "tension"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

@@ -1,0 +1,112 @@
+{
+  "id": "puzzle.timed_door",
+  "name": "Timed Door",
+  "aliases": [
+    "timed door mechanic",
+    "timed door system",
+    "timed door"
+  ],
+  "category": "puzzle",
+  "subcategory": "state_puzzle",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "hard",
+    "implementation": "medium",
+    "tuning": "hard"
+  },
+  "genres": [
+    "puzzle",
+    "adventure",
+    "escape_room"
+  ],
+  "description": "Timed Door is a rule-based challenge that asks the player to observe, reason, manipulate state, or sequence actions.",
+  "design_notes": "Timed Door should be designed around a clear player promise, a readable trigger, and a predictable result. For puzzle mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use timed door as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect timed door to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels clever when they infer the rule and manipulate the system correctly.",
+  "required_systems": [
+    "interaction_system",
+    "state_tracking",
+    "feedback_system",
+    "save_state"
+  ],
+  "parameters": [
+    {
+      "name": "activation_condition",
+      "type": "string",
+      "typical_range": "single, all, ordered, timed",
+      "description": "Rule that determines when the puzzle element changes state."
+    },
+    {
+      "name": "reset_time",
+      "type": "float",
+      "typical_range": "0-30 seconds",
+      "description": "Delay before the puzzle returns to its default state."
+    },
+    {
+      "name": "feedback_intensity",
+      "type": "integer",
+      "typical_range": "1-5",
+      "description": "How strongly the game communicates success, failure, or partial progress."
+    }
+  ],
+  "common_variants": [
+    "timed_door_single_step",
+    "timed_door_multi_step",
+    "timed_variant",
+    "resetting_variant"
+  ],
+  "edge_cases": [
+    "Timed Door is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Timed Door overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Timed Door runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Timed Door state does not reset correctly after interruption or reload.",
+    "Feedback for Timed Door plays even when the mechanic fails or is rejected.",
+    "Timed Door produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Timed Door strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Timed Door becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Timed Door with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Timed Door as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Timed Door with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Timed Door as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "puzzle.key_and_lock",
+    "puzzle.pressure_plate",
+    "time.timed_challenge",
+    "ui_ux.quest_marker"
+  ],
+  "combines_well_with": [
+    "puzzle.lever_switch",
+    "puzzle.mirror_light_reflection",
+    "time.timed_challenge",
+    "ui_ux.quest_marker"
+  ],
+  "example_games": [],
+  "tags": [
+    "puzzle",
+    "state",
+    "state_puzzle",
+    "timed"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

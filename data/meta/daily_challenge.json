@@ -1,0 +1,110 @@
+{
+  "id": "meta.daily_challenge",
+  "name": "Daily Challenge",
+  "aliases": [
+    "daily challenge mechanic",
+    "daily challenge system",
+    "daily challenge"
+  ],
+  "category": "meta",
+  "subcategory": "meta",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "medium",
+    "implementation": "medium",
+    "tuning": "hard"
+  },
+  "genres": [
+    "roguelike",
+    "live_service",
+    "arcade"
+  ],
+  "description": "Daily Challenge is a profile-level mechanic that operates across sessions, runs, or modes rather than only inside one encounter.",
+  "design_notes": "Daily Challenge should be designed around a clear player promise, a readable trigger, and a predictable result. For meta mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use daily challenge as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect daily challenge to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels their history across sessions has visible meaning.",
+  "required_systems": [
+    "player_profile",
+    "analytics_or_stats",
+    "reward_rules",
+    "save_state"
+  ],
+  "parameters": [
+    {
+      "name": "reset_period",
+      "type": "string",
+      "typical_range": "run, daily, weekly, season, permanent",
+      "description": "When the mechanic refreshes or resets."
+    },
+    {
+      "name": "reward_tier_count",
+      "type": "integer",
+      "typical_range": "1-100",
+      "description": "Number of visible reward or stat tiers."
+    },
+    {
+      "name": "visibility_rule",
+      "type": "string",
+      "typical_range": "always, unlocked, discovered, hidden",
+      "description": "When the player can see the meta information."
+    }
+  ],
+  "common_variants": [
+    "daily_challenge_daily_variant",
+    "daily_challenge_seasonal_variant",
+    "account_wide",
+    "save_slot_specific"
+  ],
+  "edge_cases": [
+    "Daily Challenge is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Daily Challenge overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Daily Challenge runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Daily Challenge state does not reset correctly after interruption or reload.",
+    "Feedback for Daily Challenge plays even when the mechanic fails or is rejected.",
+    "Daily Challenge produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Daily Challenge strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Daily Challenge becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Daily Challenge with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Daily Challenge as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Daily Challenge with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Daily Challenge as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "meta.collection_log",
+    "meta.player_profile_stats",
+    "progression.meta_progression",
+    "roguelike.run_based_progression"
+  ],
+  "combines_well_with": [
+    "meta.new_game_plus",
+    "progression.meta_progression",
+    "roguelike.run_based_progression"
+  ],
+  "example_games": [],
+  "tags": [
+    "daily",
+    "meta",
+    "retention"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

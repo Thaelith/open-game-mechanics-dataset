@@ -1,0 +1,18 @@
+name: Category request
+description: Suggest a taxonomy category or category clarification.
+title: "Category request: "
+labels: ["taxonomy"]
+body:
+  - type: input
+    id: category
+    attributes:
+      label: Category name
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Rationale
+      description: Explain what mechanics this category would contain and why existing categories are not enough.
+    validations:
+      required: true

@@ -1,0 +1,110 @@
+{
+  "id": "simulation.traffic_flow",
+  "name": "Traffic Flow",
+  "aliases": [
+    "traffic flow mechanic",
+    "traffic flow system",
+    "traffic flow"
+  ],
+  "category": "simulation",
+  "subcategory": "simulation",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "hard",
+    "implementation": "hard",
+    "tuning": "expert"
+  },
+  "genres": [
+    "simulation",
+    "management",
+    "sandbox"
+  ],
+  "description": "Traffic Flow is a systemic mechanic where entities update according to rules and create emergent state over time.",
+  "design_notes": "Traffic Flow should be designed around a clear player promise, a readable trigger, and a predictable result. For simulation mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use traffic flow as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect traffic flow to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels the world continues to operate through understandable systems.",
+  "required_systems": [
+    "simulation_tick",
+    "entity_state",
+    "rule_system",
+    "persistence"
+  ],
+  "parameters": [
+    {
+      "name": "tick_rate",
+      "type": "float",
+      "typical_range": "1-120 updates/second",
+      "description": "Frequency at which the simulation updates."
+    },
+    {
+      "name": "entity_count",
+      "type": "integer",
+      "typical_range": "1-100000",
+      "description": "Number of entities the mechanic is expected to support."
+    },
+    {
+      "name": "rule_weight",
+      "type": "float",
+      "typical_range": "0-1",
+      "description": "Strength of one rule compared with other simulation rules."
+    }
+  ],
+  "common_variants": [
+    "traffic_flow_deterministic_variant",
+    "traffic_flow_probabilistic_variant",
+    "agent_based",
+    "aggregate_model"
+  ],
+  "edge_cases": [
+    "Traffic Flow is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Traffic Flow overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Traffic Flow runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Traffic Flow state does not reset correctly after interruption or reload.",
+    "Feedback for Traffic Flow plays even when the mechanic fails or is rejected.",
+    "Traffic Flow produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Traffic Flow strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Traffic Flow becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Traffic Flow with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Traffic Flow as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Traffic Flow with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Traffic Flow as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "physics.wind_force",
+    "simulation.needs_simulation",
+    "simulation.systemic_weather",
+    "strategy.fog_of_war"
+  ],
+  "combines_well_with": [
+    "physics.wind_force",
+    "simulation.population_model",
+    "strategy.fog_of_war"
+  ],
+  "example_games": [],
+  "tags": [
+    "simulation",
+    "systems",
+    "traffic"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

@@ -1,0 +1,120 @@
+{
+  "id": "vehicles.drifting",
+  "name": "Drifting",
+  "aliases": [
+    "drifting mechanic",
+    "drifting system",
+    "drifting"
+  ],
+  "category": "vehicles",
+  "subcategory": "vehicles",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "medium",
+    "implementation": "hard",
+    "tuning": "hard"
+  },
+  "genres": [
+    "racing",
+    "simulation",
+    "open_world"
+  ],
+  "description": "Drifting is a controllable transport mechanic with dedicated movement, physics, resources, or damage behavior.",
+  "design_notes": "Drifting should be designed around a clear player promise, a readable trigger, and a predictable result. For vehicles mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use drifting as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect drifting to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels mastery over a machine with distinct weight, speed, and handling.",
+  "required_systems": [
+    "vehicle_controller",
+    "physics_world",
+    "input_handling",
+    "camera_controller"
+  ],
+  "parameters": [
+    {
+      "name": "max_speed",
+      "type": "float",
+      "typical_range": "5-300 world units/second",
+      "description": "Maximum velocity the vehicle can reach."
+    },
+    {
+      "name": "handling_response",
+      "type": "float",
+      "typical_range": "0.1-5",
+      "description": "How sharply steering or control input affects the vehicle."
+    },
+    {
+      "name": "traction",
+      "type": "float",
+      "typical_range": "0-1",
+      "description": "Grip coefficient used for braking, turning, or drifting."
+    }
+  ],
+  "common_variants": [
+    "drifting_arcade_handling",
+    "drifting_simulation_handling",
+    "damage_enabled",
+    "upgrade_enabled"
+  ],
+  "edge_cases": [
+    "Drifting is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Drifting overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Drifting runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Drifting state does not reset correctly after interruption or reload.",
+    "Feedback for Drifting plays even when the mechanic fails or is rejected.",
+    "Drifting produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Drifting strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Drifting becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Drifting with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Drifting as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Drifting with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Drifting as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "camera.dynamic_fov",
+    "physics.gravity",
+    "vehicles.vehicle_acceleration",
+    "vehicles.vehicle_braking"
+  ],
+  "combines_well_with": [
+    "camera.dynamic_fov",
+    "physics.gravity",
+    "vehicles.fuel",
+    "vehicles.vehicle_damage"
+  ],
+  "example_games": [
+    {
+      "title": "Mario Kart",
+      "note": "Uses drifting as a cornering and boost skill."
+    },
+    {
+      "title": "Need for Speed",
+      "note": "Uses drift control as racing expression."
+    }
+  ],
+  "tags": [
+    "control",
+    "drifting",
+    "vehicles"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

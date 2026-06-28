@@ -1,0 +1,120 @@
+{
+  "id": "progression.skill_tree",
+  "name": "Skill Tree",
+  "aliases": [
+    "ability tree",
+    "talent tree",
+    "upgrade tree"
+  ],
+  "category": "progression",
+  "subcategory": "progression",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "hard",
+    "implementation": "medium",
+    "tuning": "expert"
+  },
+  "genres": [
+    "rpg",
+    "action",
+    "roguelike"
+  ],
+  "description": "A branching upgrade structure that lets players plan long-term ability growth.",
+  "design_notes": "Skill Tree should be designed around a clear player promise, a readable trigger, and a predictable result. For progression mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use skill tree as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect skill tree to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels their effort is accumulating into lasting power or options.",
+  "required_systems": [
+    "player_profile",
+    "reward_rules",
+    "unlock_system",
+    "save_state"
+  ],
+  "parameters": [
+    {
+      "name": "reward_amount",
+      "type": "integer",
+      "typical_range": "1-10000",
+      "description": "Progress awarded when the player completes the triggering action."
+    },
+    {
+      "name": "unlock_threshold",
+      "type": "integer",
+      "typical_range": "1-100",
+      "description": "Amount of progress required before the next reward unlocks."
+    },
+    {
+      "name": "scaling_curve",
+      "type": "string",
+      "typical_range": "linear, exponential, tiered",
+      "description": "Curve used to increase cost, reward, or requirement."
+    }
+  ],
+  "common_variants": [
+    "skill_tree_linear_track",
+    "skill_tree_branching_track",
+    "class_restricted",
+    "respec_enabled"
+  ],
+  "edge_cases": [
+    "Skill Tree is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Skill Tree overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Skill Tree runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Skill Tree state does not reset correctly after interruption or reload.",
+    "Feedback for Skill Tree plays even when the mechanic fails or is rejected.",
+    "Skill Tree produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Skill Tree strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Skill Tree becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Skill Tree with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Skill Tree as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Skill Tree with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Skill Tree as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "economy.shop",
+    "progression.experience_points",
+    "progression.level_up",
+    "ui_ux.quest_marker"
+  ],
+  "combines_well_with": [
+    "economy.shop",
+    "progression.unlockable_abilities",
+    "progression.upgrade_shop",
+    "ui_ux.quest_marker"
+  ],
+  "example_games": [
+    {
+      "title": "Path of Exile",
+      "note": "Uses a large passive skill tree for build planning."
+    },
+    {
+      "title": "Diablo II",
+      "note": "Uses class skill investment to define play style."
+    }
+  ],
+  "tags": [
+    "progression",
+    "rewards",
+    "skill"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

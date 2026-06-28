@@ -1,0 +1,112 @@
+{
+  "id": "ui_ux.cooldown_indicator",
+  "name": "Cooldown Indicator",
+  "aliases": [
+    "cooldown indicator mechanic",
+    "cooldown indicator system",
+    "cooldown indicator"
+  ],
+  "category": "ui_ux",
+  "subcategory": "ui_ux",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "medium",
+    "implementation": "medium",
+    "tuning": "medium"
+  },
+  "genres": [
+    "rpg",
+    "strategy",
+    "action"
+  ],
+  "description": "Cooldown Indicator is an interface mechanic that presents game state, accepts decisions, or reduces player friction.",
+  "design_notes": "Cooldown Indicator should be designed around a clear player promise, a readable trigger, and a predictable result. For ui ux mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use cooldown indicator as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect cooldown indicator to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels informed without fighting the interface.",
+  "required_systems": [
+    "ui_framework",
+    "game_state_binding",
+    "input_navigation",
+    "localization_support"
+  ],
+  "parameters": [
+    {
+      "name": "display_duration",
+      "type": "float",
+      "typical_range": "0.2-15 seconds",
+      "description": "How long the interface element remains visible after triggering."
+    },
+    {
+      "name": "priority_level",
+      "type": "integer",
+      "typical_range": "1-5",
+      "description": "Layering or importance compared with other UI messages."
+    },
+    {
+      "name": "input_focus_mode",
+      "type": "string",
+      "typical_range": "mouse, keyboard, gamepad, touch, mixed",
+      "description": "Control mode the UI must support cleanly."
+    }
+  ],
+  "common_variants": [
+    "cooldown_indicator_minimal_variant",
+    "cooldown_indicator_diegetic_variant",
+    "persistent_variant",
+    "contextual_variant"
+  ],
+  "edge_cases": [
+    "Cooldown Indicator is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Cooldown Indicator overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Cooldown Indicator runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Cooldown Indicator state does not reset correctly after interruption or reload.",
+    "Feedback for Cooldown Indicator plays even when the mechanic fails or is rejected.",
+    "Cooldown Indicator produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Cooldown Indicator strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Cooldown Indicator becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Cooldown Indicator with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Cooldown Indicator as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Cooldown Indicator with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Cooldown Indicator as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "accessibility.text_scaling",
+    "camera.camera_zoom",
+    "ui_ux.minimap",
+    "ui_ux.quest_marker"
+  ],
+  "combines_well_with": [
+    "accessibility.text_scaling",
+    "camera.camera_zoom",
+    "ui_ux.damage_numbers",
+    "ui_ux.inventory_grid"
+  ],
+  "example_games": [],
+  "tags": [
+    "cooldown",
+    "feedback",
+    "interface",
+    "ui_ux"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

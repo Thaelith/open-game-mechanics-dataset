@@ -1,0 +1,117 @@
+{
+  "id": "multiplayer.ping_system",
+  "name": "Ping System",
+  "aliases": [
+    "ping system mechanic",
+    "ping system system",
+    "ping system"
+  ],
+  "category": "multiplayer",
+  "subcategory": "player_coordination",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "hard",
+    "implementation": "expert",
+    "tuning": "hard"
+  },
+  "genres": [
+    "party",
+    "shooter",
+    "cooperative"
+  ],
+  "description": "Ping System is a social or networked mechanic that coordinates multiple players within shared rules.",
+  "design_notes": "Ping System should be designed around a clear player promise, a readable trigger, and a predictable result. For multiplayer mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use ping system as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect ping system to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "Players feel coordinated, competitive, or socially expressive within shared rules.",
+  "required_systems": [
+    "session_management",
+    "replication_or_sync",
+    "player_state",
+    "network_safe_events"
+  ],
+  "parameters": [
+    {
+      "name": "player_count",
+      "type": "integer",
+      "typical_range": "2-128",
+      "description": "Number of players supported by the mechanic."
+    },
+    {
+      "name": "sync_rate",
+      "type": "integer",
+      "typical_range": "10-120 Hz",
+      "description": "Frequency at which state updates are exchanged or resolved."
+    },
+    {
+      "name": "failure_timeout",
+      "type": "float",
+      "typical_range": "1-60 seconds",
+      "description": "Time before the mechanic handles disconnects or missing responses."
+    }
+  ],
+  "common_variants": [
+    "ping_system_local_variant",
+    "ping_system_online_variant",
+    "competitive_variant",
+    "cooperative_variant"
+  ],
+  "edge_cases": [
+    "Ping System is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Ping System overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Ping System runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Ping System state does not reset correctly after interruption or reload.",
+    "Feedback for Ping System plays even when the mechanic fails or is rejected.",
+    "Ping System produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Ping System strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Ping System becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Ping System with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Ping System as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Ping System with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Ping System as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "multiplayer.local_coop",
+    "multiplayer.online_coop",
+    "progression.achievement_system",
+    "ui_ux.cooldown_indicator"
+  ],
+  "combines_well_with": [
+    "multiplayer.revive_teammate",
+    "multiplayer.role_swap",
+    "progression.achievement_system",
+    "ui_ux.cooldown_indicator"
+  ],
+  "example_games": [
+    {
+      "title": "Apex Legends",
+      "note": "Uses contextual pings for non-verbal team communication."
+    }
+  ],
+  "tags": [
+    "coordination",
+    "multiplayer",
+    "ping",
+    "player_coordination"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

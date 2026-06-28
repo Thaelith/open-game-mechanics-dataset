@@ -1,0 +1,24 @@
+name: Mechanic correction
+description: Report an issue in an existing mechanic entry.
+title: "Correct mechanic: "
+labels: ["correction"]
+body:
+  - type: input
+    id: mechanic_id
+    attributes:
+      label: Mechanic ID
+      placeholder: movement.dash
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What should change?
+      description: Describe the incorrect, unclear, duplicate, or missing information.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed_fix
+    attributes:
+      label: Proposed fix
+      description: Optional original wording or schema change.

@@ -1,0 +1,117 @@
+{
+  "id": "puzzle.portal_pair",
+  "name": "Portal Pair",
+  "aliases": [
+    "portal pair mechanic",
+    "portal pair system",
+    "portal pair"
+  ],
+  "category": "puzzle",
+  "subcategory": "state_puzzle",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "hard",
+    "implementation": "medium",
+    "tuning": "hard"
+  },
+  "genres": [
+    "puzzle",
+    "adventure",
+    "escape_room"
+  ],
+  "description": "Portal Pair is a rule-based challenge that asks the player to observe, reason, manipulate state, or sequence actions.",
+  "design_notes": "Portal Pair should be designed around a clear player promise, a readable trigger, and a predictable result. For puzzle mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use portal pair as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect portal pair to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels clever when they infer the rule and manipulate the system correctly.",
+  "required_systems": [
+    "interaction_system",
+    "state_tracking",
+    "feedback_system",
+    "save_state"
+  ],
+  "parameters": [
+    {
+      "name": "activation_condition",
+      "type": "string",
+      "typical_range": "single, all, ordered, timed",
+      "description": "Rule that determines when the puzzle element changes state."
+    },
+    {
+      "name": "reset_time",
+      "type": "float",
+      "typical_range": "0-30 seconds",
+      "description": "Delay before the puzzle returns to its default state."
+    },
+    {
+      "name": "feedback_intensity",
+      "type": "integer",
+      "typical_range": "1-5",
+      "description": "How strongly the game communicates success, failure, or partial progress."
+    }
+  ],
+  "common_variants": [
+    "portal_pair_single_step",
+    "portal_pair_multi_step",
+    "timed_variant",
+    "resetting_variant"
+  ],
+  "edge_cases": [
+    "Portal Pair is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Portal Pair overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Portal Pair runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Portal Pair state does not reset correctly after interruption or reload.",
+    "Feedback for Portal Pair plays even when the mechanic fails or is rejected.",
+    "Portal Pair produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Portal Pair strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Portal Pair becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Portal Pair with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Portal Pair as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Portal Pair with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Portal Pair as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "puzzle.key_and_lock",
+    "puzzle.pressure_plate",
+    "time.timed_challenge",
+    "ui_ux.quest_marker"
+  ],
+  "combines_well_with": [
+    "puzzle.lever_switch",
+    "puzzle.mirror_light_reflection",
+    "time.timed_challenge",
+    "ui_ux.quest_marker"
+  ],
+  "example_games": [
+    {
+      "title": "Portal",
+      "note": "Uses paired portals as the central spatial puzzle tool."
+    }
+  ],
+  "tags": [
+    "portal",
+    "puzzle",
+    "state",
+    "state_puzzle"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

@@ -1,0 +1,121 @@
+{
+  "id": "combat.combo_chain",
+  "name": "Combo Chain",
+  "aliases": [
+    "combo chain mechanic",
+    "combo chain system",
+    "combo chain"
+  ],
+  "category": "combat",
+  "subcategory": "offense",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "medium",
+    "implementation": "medium",
+    "tuning": "hard"
+  },
+  "genres": [
+    "action",
+    "rpg",
+    "fighting"
+  ],
+  "description": "Combo Chain is an interaction that creates threat, defense, damage, timing, or tactical pressure during conflict.",
+  "design_notes": "Combo Chain should be designed around a clear player promise, a readable trigger, and a predictable result. For combat mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "design_purpose": [
+    "Give the player a readable way to use combo chain as part of the core loop.",
+    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
+    "Connect combo chain to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+  ],
+  "player_fantasy": "The player feels powerful, skillful, and able to read danger under pressure.",
+  "required_systems": [
+    "combat_state_machine",
+    "hit_detection",
+    "damage_model",
+    "animation_events"
+  ],
+  "parameters": [
+    {
+      "name": "damage_value",
+      "type": "integer",
+      "typical_range": "1-250",
+      "description": "Base amount of damage or threat applied by the mechanic."
+    },
+    {
+      "name": "startup_time",
+      "type": "float",
+      "typical_range": "0.05-1.2 seconds",
+      "description": "Delay before the active effect begins."
+    },
+    {
+      "name": "recovery_time",
+      "type": "float",
+      "typical_range": "0.05-1.5 seconds",
+      "description": "Delay after use before the actor can fully act again."
+    }
+  ],
+  "common_variants": [
+    "combo_chain_light_version",
+    "combo_chain_heavy_version",
+    "timed_version",
+    "resource_limited_version"
+  ],
+  "edge_cases": [
+    "Combo Chain is triggered during a scene transition, pause, respawn, or save/load boundary.",
+    "Combo Chain overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
+    "Combo Chain runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+  ],
+  "common_bugs": [
+    "Combo Chain state does not reset correctly after interruption or reload.",
+    "Feedback for Combo Chain plays even when the mechanic fails or is rejected.",
+    "Combo Chain produces different results between frame rates, platforms, or network clients."
+  ],
+  "balancing_notes": [
+    "Make Combo Chain strong enough to justify attention but limited enough that other mechanics keep their purpose.",
+    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+  ],
+  "accessibility_notes": [
+    "Provide clear visual, audio, or haptic feedback when Combo Chain becomes available, succeeds, or fails.",
+    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+  ],
+  "implementation_notes": {
+    "unity": "Implement Combo Chain with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
+    "godot": "Model Combo Chain as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
+    "unreal": "Implement Combo Chain with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
+    "web": "Implement Combo Chain as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+  },
+  "related_mechanics": [
+    "camera.screen_shake",
+    "combat.melee_attack",
+    "combat.ranged_attack",
+    "ui_ux.damage_numbers"
+  ],
+  "combines_well_with": [
+    "camera.screen_shake",
+    "combat.charged_attack",
+    "combat.parry",
+    "ui_ux.damage_numbers"
+  ],
+  "example_games": [
+    {
+      "title": "Devil May Cry",
+      "note": "Rewards varied attack sequences."
+    },
+    {
+      "title": "Bayonetta",
+      "note": "Uses combo strings as combat expression."
+    }
+  ],
+  "tags": [
+    "combat",
+    "combo",
+    "offense",
+    "timing"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}
