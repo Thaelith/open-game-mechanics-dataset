@@ -62,6 +62,8 @@ The canonical schema is `schema/mechanic.schema.json`. The generated search inde
 
 A dependency-free static browser is available at [site/index.html](site/index.html). It loads `dataset.json`, searches and filters mechanics, and fetches individual mechanic JSON files for expanded details.
 
+The browser also includes a client-side [Mechanic Mixer](docs/mechanic-mixer.md) for deterministic concept planning from selected mechanics, typed relationships, required systems, and scope metadata.
+
 To test locally, serve the repository root over HTTP:
 
 ```bash

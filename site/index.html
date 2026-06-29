@@ -78,12 +78,43 @@
           <p>Choose a result to inspect difficulty, related mechanics, combinations, and the source JSON path.</p>
         </aside>
       </div>
+
+      <section id="mixerPanel" class="mixer-panel" aria-labelledby="mixerTitle">
+        <div class="mixer-heading">
+          <div>
+            <p class="eyebrow">Planning tool</p>
+            <h2 id="mixerTitle">Mechanic Mixer</h2>
+            <p class="intro">Build a deterministic concept analysis from selected mechanics, typed relationships, and scope metadata.</p>
+          </div>
+          <div class="mixer-toolbar" aria-label="Mixer actions">
+            <button id="copyConceptJson" type="button">Copy Concept JSON</button>
+            <button id="clearMixer" type="button">Clear Selection</button>
+          </div>
+        </div>
+
+        <p id="mixerStatus" class="copy-feedback" aria-live="polite"></p>
+        <textarea id="mixerExportOutput" class="mixer-export-output" rows="8" readonly hidden aria-label="Exported concept JSON"></textarea>
+
+        <div id="mixerSelected" class="mixer-selected" aria-label="Selected mechanics"></div>
+
+        <details class="mixer-import">
+          <summary>Import concept JSON</summary>
+          <label for="mixerImportInput">Paste exported concept JSON</label>
+          <textarea id="mixerImportInput" rows="5" spellcheck="false"></textarea>
+          <div class="mixer-toolbar">
+            <button id="importConceptJson" type="button">Import Selection</button>
+          </div>
+          <p id="mixerImportStatus" class="copy-feedback" aria-live="polite"></p>
+        </details>
+
+        <div id="mixerAnalysis" class="mixer-analysis"></div>
+      </section>
     </main>
 
     <footer>
       <p>Static browser. No analytics, no external assets, no build step.</p>
     </footer>
 
-    <script src="app.js" defer></script>
+    <script src="app.js?v=mixer-mvp-0.2" defer></script>
   </body>
 </html>

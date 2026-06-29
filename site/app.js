@@ -3,7 +3,10 @@ const state = {
   mechanics: [],
   filtered: [],
   selectedId: null,
-  hydrationDone: false
+  hydrationDone: false,
+  mixer: {
+    selectedIds: []
+  }
 };
 
 const elements = {
@@ -16,11 +19,34 @@ const elements = {
   resetFilters: document.querySelector("#resetFilters"),
   statusText: document.querySelector("#statusText"),
   results: document.querySelector("#results"),
-  detailPanel: document.querySelector("#detailPanel")
+  detailPanel: document.querySelector("#detailPanel"),
+  mixerPanel: document.querySelector("#mixerPanel"),
+  mixerSelected: document.querySelector("#mixerSelected"),
+  mixerAnalysis: document.querySelector("#mixerAnalysis"),
+  mixerStatus: document.querySelector("#mixerStatus"),
+  mixerExportOutput: document.querySelector("#mixerExportOutput"),
+  copyConceptJson: document.querySelector("#copyConceptJson"),
+  clearMixer: document.querySelector("#clearMixer"),
+  mixerImportInput: document.querySelector("#mixerImportInput"),
+  importConceptJson: document.querySelector("#importConceptJson"),
+  mixerImportStatus: document.querySelector("#mixerImportStatus")
 };
 
 const DATASET_URL = new URL("../dataset.json", window.location.href);
 const CONCURRENT_DETAIL_REQUESTS = 16;
+const MIXER_STORAGE_KEY = "ogmd.mechanicMixer.selectedIds";
+const RELATIONSHIP_SUGGESTION_TYPES = new Set([
+  "requires",
+  "supports",
+  "enhances",
+  "balances",
+  "feeds",
+  "consumes",
+  "unlocks",
+  "extends",
+  "is_variant_of"
+]);
+const CONFLICT_TYPES = new Set(["conflicts_with", "soft_conflicts_with"]);
 
 async function fetchJson(url) {
   const response = await fetch(url);
@@ -42,6 +68,14 @@ function requestedMechanicId() {
   return new URL(window.location.href).searchParams.get("id")?.trim() || "";
 }
 
+function requestedMixerIds() {
+  const value = new URL(window.location.href).searchParams.get("mix") || "";
+  return value
+    .split(",")
+    .map((id) => id.trim())
+    .filter(Boolean);
+}
+
 function updateSelectedUrl(id) {
   const url = new URL(window.location.href);
   if (id) {
@@ -50,6 +84,23 @@ function updateSelectedUrl(id) {
     url.searchParams.delete("id");
   }
   window.history.replaceState({ selectedId: id || null }, "", url);
+}
+
+function updateMixerUrl() {
+  const url = new URL(window.location.href);
+  if (state.mixer.selectedIds.length) {
+    url.searchParams.set("mix", state.mixer.selectedIds.join(","));
+  } else {
+    url.searchParams.delete("mix");
+  }
+  window.history.replaceState(
+    {
+      selectedId: state.selectedId || null,
+      mixerIds: [...state.mixer.selectedIds]
+    },
+    "",
+    url
+  );
 }
 
 function escapeHtml(value) {
@@ -83,6 +134,58 @@ function mechanicExists(id) {
   return Boolean(mechanicById(id));
 }
 
+function isExternalReference(id) {
+  return String(id).startsWith("external.") || String(id).startsWith("future.");
+}
+
+function isInMixer(id) {
+  return state.mixer.selectedIds.includes(id);
+}
+
+function selectedMechanics() {
+  return state.mixer.selectedIds.map((id) => mechanicById(id)).filter(Boolean);
+}
+
+function uniqueIds(values) {
+  const ids = [];
+  for (const value of values) {
+    if (value && !ids.includes(value)) {
+      ids.push(value);
+    }
+  }
+  return ids;
+}
+
+function mechanicLabel(id) {
+  const mechanic = mechanicById(id);
+  return mechanic ? `${mechanic.name} (${mechanic.id})` : id;
+}
+
+function roleLabel(role) {
+  return role ? titleCase(role) : "No scope";
+}
+
+function strongestLabel(strength) {
+  return strength === "strong" ? "Strong" : strength === "medium" ? "Medium" : "Weak";
+}
+
+function pressureLabel(value) {
+  if (value < 2) {
+    return "Low";
+  }
+  if (value <= 3.2) {
+    return "Medium";
+  }
+  if (value <= 4.1) {
+    return "High";
+  }
+  return "Very High";
+}
+
+function formatScore(value) {
+  return Number.isFinite(value) ? value.toFixed(1) : "n/a";
+}
+
 function getDifficultyValues() {
   const fromMechanics = state.mechanics.flatMap((mechanic) => Object.values(mechanic.difficulty || {}));
   const fromGroups = Object.values(state.index?.groups?.difficulty || {}).flatMap((group) => Object.keys(group));
@@ -101,6 +204,87 @@ function fillSelect(select, values, emptyLabel) {
   if (values.includes(current)) {
     select.value = current;
   }
+}
+
+function saveMixerSelection() {
+  try {
+    localStorage.setItem(MIXER_STORAGE_KEY, JSON.stringify(state.mixer.selectedIds));
+  } catch (error) {
+    // Local persistence is optional; analysis should still work if storage is blocked.
+  }
+}
+
+function storedMixerSelection() {
+  try {
+    const value = localStorage.getItem(MIXER_STORAGE_KEY);
+    const parsed = JSON.parse(value || "[]");
+    return Array.isArray(parsed) ? parsed.filter((id) => typeof id === "string") : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function restoreMixerSelection(ids, options = {}) {
+  const validIds = uniqueIds(ids).filter((id) => mechanicExists(id));
+  state.mixer.selectedIds = validIds;
+  saveMixerSelection();
+  if (options.updateUrl) {
+    updateMixerUrl();
+  }
+  renderResults();
+  if (state.selectedId) {
+    renderDetail(mechanicById(state.selectedId));
+  }
+  renderMixer();
+}
+
+function addToMixer(id, options = {}) {
+  if (!mechanicExists(id) || isInMixer(id)) {
+    return;
+  }
+  state.mixer.selectedIds = [...state.mixer.selectedIds, id].sort((a, b) => a.localeCompare(b));
+  saveMixerSelection();
+  if (options.updateUrl !== false) {
+    updateMixerUrl();
+  }
+  renderResults();
+  if (state.selectedId) {
+    renderDetail(mechanicById(state.selectedId));
+  }
+  renderMixer();
+}
+
+function removeFromMixer(id, options = {}) {
+  state.mixer.selectedIds = state.mixer.selectedIds.filter((selectedId) => selectedId !== id);
+  saveMixerSelection();
+  if (options.updateUrl !== false) {
+    updateMixerUrl();
+  }
+  renderResults();
+  if (state.selectedId) {
+    renderDetail(mechanicById(state.selectedId));
+  }
+  renderMixer();
+}
+
+function toggleMixerMechanic(id) {
+  if (isInMixer(id)) {
+    removeFromMixer(id);
+  } else {
+    addToMixer(id);
+  }
+}
+
+function clearMixerSelection() {
+  state.mixer.selectedIds = [];
+  saveMixerSelection();
+  updateMixerUrl();
+  renderResults();
+  if (state.selectedId) {
+    renderDetail(mechanicById(state.selectedId));
+  }
+  renderMixer();
+  elements.mixerStatus.textContent = "Mixer selection cleared.";
 }
 
 function populateFilters() {
@@ -182,6 +366,439 @@ function updateStatus(prefix = "") {
   const shown = state.filtered.length;
   const loading = state.hydrationDone ? "" : " Loading descriptions and detail fields...";
   elements.statusText.textContent = `${prefix}${shown} of ${total} mechanics shown.${loading}`;
+}
+
+function relationshipStrengthScore(strength) {
+  if (strength === "strong") {
+    return 3;
+  }
+  if (strength === "medium") {
+    return 2;
+  }
+  return 1;
+}
+
+function relationshipPriority(relationship) {
+  const strength = relationshipStrengthScore(relationship.strength);
+  if (relationship.type === "requires") {
+    return relationship.strength === "strong" ? 100 : 82 + strength;
+  }
+  if ((relationship.type === "supports" || relationship.type === "balances") && relationship.strength === "strong") {
+    return 76;
+  }
+  if (relationship.type === "supports" || relationship.type === "balances") {
+    return 60 + strength;
+  }
+  if (relationship.type === "extends" || relationship.type === "is_variant_of") {
+    return 58 + strength;
+  }
+  if (relationship.type === "feeds" || relationship.type === "consumes" || relationship.type === "unlocks") {
+    return 52 + strength;
+  }
+  if (relationship.type === "enhances") {
+    return 42 + strength;
+  }
+  return strength;
+}
+
+function relationshipPriorityLabel(relationship) {
+  if (relationship.type === "requires" && relationship.strength === "strong") {
+    return "Critical dependency";
+  }
+  if (relationship.type === "requires") {
+    return "Important dependency";
+  }
+  if ((relationship.type === "supports" || relationship.type === "balances") && relationship.strength === "strong") {
+    return "Useful support";
+  }
+  if (relationship.type === "supports" || relationship.type === "balances") {
+    return "Support option";
+  }
+  return "Contextual link";
+}
+
+function collectRequiredSystems(records) {
+  const systems = new Map();
+  for (const mechanic of records) {
+    for (const system of asArray(mechanic.required_systems)) {
+      if (!systems.has(system)) {
+        systems.set(system, new Set());
+      }
+      systems.get(system).add(mechanic.id);
+    }
+  }
+  return [...systems.entries()]
+    .map(([system, mechanicIds]) => ({
+      system,
+      count: mechanicIds.size,
+      mechanicIds: [...mechanicIds].sort((a, b) => a.localeCompare(b))
+    }))
+    .sort((a, b) => b.count - a.count || a.system.localeCompare(b.system));
+}
+
+function collectMissingRelationshipTargets(records) {
+  const selectedIds = new Set(records.map((mechanic) => mechanic.id));
+  const missing = [];
+  const external = [];
+
+  for (const mechanic of records) {
+    for (const relationship of asArray(mechanic.relationships)) {
+      if (!RELATIONSHIP_SUGGESTION_TYPES.has(relationship.type) || selectedIds.has(relationship.target)) {
+        continue;
+      }
+
+      const target = mechanicById(relationship.target);
+      const item = {
+        targetId: relationship.target,
+        targetName: target?.name || relationship.target,
+        targetCategory: target?.category || "",
+        sourceId: mechanic.id,
+        sourceName: mechanic.name,
+        type: relationship.type,
+        strength: relationship.strength,
+        reason: relationship.reason,
+        priority: relationshipPriority(relationship),
+        priorityLabel: relationshipPriorityLabel(relationship)
+      };
+
+      if (isExternalReference(relationship.target) || !target) {
+        external.push(item);
+      } else {
+        missing.push(item);
+      }
+    }
+  }
+
+  const sortItems = (a, b) =>
+    b.priority - a.priority ||
+    a.targetId.localeCompare(b.targetId) ||
+    a.sourceId.localeCompare(b.sourceId) ||
+    a.type.localeCompare(b.type);
+
+  return {
+    missing: missing.sort(sortItems),
+    external: external.sort(sortItems)
+  };
+}
+
+function collectConflictWarnings(records) {
+  const selectedIds = new Set(records.map((mechanic) => mechanic.id));
+  const warnings = [];
+  const seen = new Set();
+
+  for (const mechanic of records) {
+    for (const relationship of asArray(mechanic.relationships)) {
+      if (!CONFLICT_TYPES.has(relationship.type) || !selectedIds.has(relationship.target)) {
+        continue;
+      }
+      const key = `${mechanic.id}|${relationship.type}|${relationship.target}`;
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      const target = mechanicById(relationship.target);
+      warnings.push({
+        sourceId: mechanic.id,
+        sourceName: mechanic.name,
+        targetId: relationship.target,
+        targetName: target?.name || relationship.target,
+        type: relationship.type,
+        strength: relationship.strength,
+        reason: relationship.reason,
+        severity: relationship.type === "conflicts_with" ? "Hard conflict" : "Soft conflict"
+      });
+    }
+  }
+
+  return warnings.sort(
+    (a, b) =>
+      Number(b.type === "conflicts_with") - Number(a.type === "conflicts_with") ||
+      relationshipStrengthScore(b.strength) - relationshipStrengthScore(a.strength) ||
+      a.sourceId.localeCompare(b.sourceId) ||
+      a.targetId.localeCompare(b.targetId)
+  );
+}
+
+function average(records, field) {
+  if (!records.length) {
+    return 0;
+  }
+  return records.reduce((sum, record) => sum + record.scope_profile[field], 0) / records.length;
+}
+
+function maxRisk(records, field) {
+  return records.reduce((max, record) => Math.max(max, record.scope_profile[field]), 0);
+}
+
+function calculateScopePressure(records) {
+  const scoped = records.filter((mechanic) => mechanic.scope_profile);
+  const missingCount = records.length - scoped.length;
+
+  if (!scoped.length) {
+    return {
+      hasScope: false,
+      missingCount
+    };
+  }
+
+  const implementation = average(scoped, "implementation_cost");
+  const design = average(scoped, "design_cost");
+  const tuning = average(scoped, "tuning_cost");
+  const content = average(scoped, "content_cost");
+  const networking = maxRisk(scoped, "networking_risk");
+  const saveLoad = maxRisk(scoped, "save_load_risk");
+  const ui = maxRisk(scoped, "ui_risk");
+  const riskAverage = (networking + saveLoad + ui) / 3;
+  const overall = implementation * 0.25 + design * 0.2 + tuning * 0.25 + content * 0.15 + riskAverage * 0.15;
+
+  return {
+    hasScope: true,
+    scopedCount: scoped.length,
+    missingCount,
+    implementation,
+    design,
+    tuning,
+    content,
+    networking,
+    saveLoad,
+    ui,
+    overall,
+    label: pressureLabel(overall)
+  };
+}
+
+function generateTrimSuggestions(records, missingRelationshipTargets, conflictWarnings) {
+  const hardConflictIds = new Set(
+    conflictWarnings
+      .filter((warning) => warning.type === "conflicts_with")
+      .flatMap((warning) => [warning.sourceId, warning.targetId])
+  );
+  const missingRequiresBySource = new Map();
+
+  for (const suggestion of missingRelationshipTargets.missing) {
+    if (suggestion.type === "requires") {
+      missingRequiresBySource.set(suggestion.sourceId, (missingRequiresBySource.get(suggestion.sourceId) || 0) + 1);
+    }
+  }
+
+  return records
+    .map((mechanic) => {
+      const scope = mechanic.scope_profile;
+      const role = scope?.mvp_role || "unknown";
+      const reasons = [];
+      let score = 0;
+
+      if (hardConflictIds.has(mechanic.id)) {
+        reasons.push("selected hard conflict");
+        score += 100;
+      }
+
+      if (role === "polish") {
+        reasons.push("polish role");
+        score += 70;
+      } else if (role === "optional") {
+        reasons.push("optional role");
+        score += 55;
+      }
+
+      if (missingRequiresBySource.has(mechanic.id)) {
+        reasons.push(`${missingRequiresBySource.get(mechanic.id)} missing required relationship(s)`);
+        score += 25;
+      }
+
+      if (scope) {
+        if (scope.tuning_cost >= 5) {
+          reasons.push("very high tuning cost");
+          score += 16;
+        }
+        if (scope.implementation_cost >= 5) {
+          reasons.push("very high implementation cost");
+          score += 16;
+        }
+        if (Math.max(scope.networking_risk, scope.save_load_risk, scope.ui_risk) >= 5) {
+          reasons.push("very high implementation risk");
+          score += 16;
+        }
+      }
+
+      if (role === "core" && !hardConflictIds.has(mechanic.id)) {
+        return null;
+      }
+      if (!reasons.length) {
+        return null;
+      }
+
+      return {
+        id: mechanic.id,
+        name: mechanic.name,
+        role,
+        reasons,
+        score
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.score - a.score || a.id.localeCompare(b.id))
+    .slice(0, 8);
+}
+
+function addCandidate(candidates, id, score, reason) {
+  if (!mechanicExists(id) || isInMixer(id)) {
+    return;
+  }
+  const mechanic = mechanicById(id);
+  const candidate = candidates.get(id) || {
+    id,
+    name: mechanic.name,
+    category: mechanic.category,
+    score: 0,
+    reasons: []
+  };
+  candidate.score += score + (mechanic.scope_profile ? 5 : 0);
+  if (reason && !candidate.reasons.includes(reason)) {
+    candidate.reasons.push(reason);
+  }
+  candidates.set(id, candidate);
+}
+
+function generateRelatedAdditions(records, missingRelationshipTargets) {
+  const selectedIds = new Set(records.map((mechanic) => mechanic.id));
+  const candidates = new Map();
+
+  for (const suggestion of missingRelationshipTargets.missing) {
+    addCandidate(
+      candidates,
+      suggestion.targetId,
+      suggestion.priority,
+      `${suggestion.priorityLabel}: ${suggestion.sourceId} ${suggestion.type} ${suggestion.targetId}.`
+    );
+  }
+
+  for (const mechanic of state.mechanics) {
+    if (selectedIds.has(mechanic.id)) {
+      continue;
+    }
+    for (const relationship of asArray(mechanic.relationships)) {
+      if (selectedIds.has(relationship.target) && !CONFLICT_TYPES.has(relationship.type)) {
+        addCandidate(
+          candidates,
+          mechanic.id,
+          24 + relationshipStrengthScore(relationship.strength) * 4,
+          `${mechanic.id} ${relationship.type} selected ${relationship.target}.`
+        );
+      }
+    }
+  }
+
+  for (const mechanic of records) {
+    for (const id of asArray(mechanic.combines_well_with)) {
+      addCandidate(candidates, id, 16, `${mechanic.id} lists it in combines_well_with.`);
+    }
+    for (const id of asArray(mechanic.related_mechanics)) {
+      addCandidate(candidates, id, 8, `${mechanic.id} lists it in related_mechanics.`);
+    }
+  }
+
+  return [...candidates.values()]
+    .sort((a, b) => b.score - a.score || a.id.localeCompare(b.id))
+    .slice(0, 8);
+}
+
+function generateAiPlanningPrompt(records, analysis) {
+  const requiredSystems = analysis.requiredSystems
+    .slice(0, 12)
+    .map((item) => `- ${item.system}: ${item.mechanicIds.join(", ")}`)
+    .join("\n");
+  const conflicts = analysis.conflictWarnings.length
+    ? analysis.conflictWarnings
+        .slice(0, 6)
+        .map((warning) => `- ${warning.severity}: ${warning.sourceId} -> ${warning.targetId} (${warning.reason})`)
+        .join("\n")
+    : "- None from typed relationships in the selected set.";
+  const missing = analysis.missingRelationshipTargets.missing.length
+    ? analysis.missingRelationshipTargets.missing
+        .slice(0, 8)
+        .map((suggestion) => `- ${suggestion.priorityLabel}: add or account for ${suggestion.targetId}; ${suggestion.sourceId} ${suggestion.type} it because ${suggestion.reason}`)
+        .join("\n")
+    : "- None from outgoing typed relationships.";
+  const scope = analysis.scopePressure.hasScope
+    ? `Overall ${analysis.scopePressure.label} (${formatScore(analysis.scopePressure.overall)}). Implementation ${formatScore(analysis.scopePressure.implementation)}, design ${formatScore(analysis.scopePressure.design)}, tuning ${formatScore(analysis.scopePressure.tuning)}, content ${formatScore(analysis.scopePressure.content)}, max networking/save/UI risk ${analysis.scopePressure.networking}/${analysis.scopePressure.saveLoad}/${analysis.scopePressure.ui}.`
+    : "No scope_profile data is available for the selected mechanics.";
+
+  return [
+    "You are helping plan a small game prototype. Use the Open Game Mechanics Dataset records below for implementation planning, not final code.",
+    "",
+    "Selected mechanics:",
+    ...records.map((mechanic) => `- ${mechanic.id}: ${mechanic.name} (${mechanic.category})`),
+    "",
+    "Required systems to account for:",
+    requiredSystems || "- None listed.",
+    "",
+    "Typed relationship dependency/support suggestions:",
+    missing,
+    "",
+    "Typed conflict warnings:",
+    conflicts,
+    "",
+    "Scope pressure:",
+    scope,
+    "",
+    "Instructions:",
+    "- Inspect the relevant mechanic JSON files before coding.",
+    "- Build a small prototype/MVP first.",
+    "- Keep selected core mechanics unless a hard conflict requires a redesign.",
+    "- Avoid adding unrelated mechanics or unsupported claims.",
+    "- Treat scope scores as relative planning signals, not production estimates."
+  ].join("\n");
+}
+
+function analyzeMixerSelection(records) {
+  const categories = uniqueSorted(records.map((mechanic) => mechanic.category));
+  const roleCounts = {
+    core: 0,
+    support: 0,
+    optional: 0,
+    polish: 0,
+    unknown: 0
+  };
+  let missingScopeCount = 0;
+  let graphCount = 0;
+
+  for (const mechanic of records) {
+    if (asArray(mechanic.relationships).length) {
+      graphCount += 1;
+    }
+    if (!mechanic.scope_profile) {
+      missingScopeCount += 1;
+      continue;
+    }
+    const role = mechanic.scope_profile.mvp_role || "unknown";
+    roleCounts[role] = (roleCounts[role] || 0) + 1;
+  }
+
+  const requiredSystems = collectRequiredSystems(records);
+  const missingRelationshipTargets = collectMissingRelationshipTargets(records);
+  const conflictWarnings = collectConflictWarnings(records);
+  const scopePressure = calculateScopePressure(records);
+  const trimSuggestions = generateTrimSuggestions(records, missingRelationshipTargets, conflictWarnings);
+  const relatedAdditions = generateRelatedAdditions(records, missingRelationshipTargets);
+  const analysis = {
+    summary: {
+      selectedCount: records.length,
+      categories,
+      roleCounts,
+      missingScopeCount,
+      graphCount,
+      noGraphIds: records.filter((mechanic) => !asArray(mechanic.relationships).length).map((mechanic) => mechanic.id)
+    },
+    requiredSystems,
+    missingRelationshipTargets,
+    conflictWarnings,
+    scopePressure,
+    trimSuggestions,
+    relatedAdditions
+  };
+  analysis.aiPlanningPrompt = generateAiPlanningPrompt(records, analysis);
+  return analysis;
 }
 
 function renderPills(values, className = "") {
@@ -287,6 +904,9 @@ function renderResults() {
           <p class="description">${escapeHtml(description)}</p>
           <div class="pill-list" aria-label="Genres">${renderPills(mechanic.genres)}</div>
           <div class="pill-list" aria-label="Tags">${renderPills(mechanic.tags)}</div>
+          <div class="result-actions">
+            ${mixerToggleButton(mechanic.id)}
+          </div>
         </article>
       `;
     })
@@ -325,6 +945,361 @@ function relatedMarkup(values) {
   `;
 }
 
+function mixerToggleButton(id, className = "") {
+  const added = isInMixer(id);
+  return `
+    <button
+      class="mixer-toggle ${added ? "is-added" : ""} ${className}"
+      type="button"
+      data-mixer-toggle="${escapeHtml(id)}"
+      aria-pressed="${String(added)}"
+    >${added ? "Added" : "Add to Mixer"}</button>
+  `;
+}
+
+function renderSelectedMixerCards(records) {
+  if (!records.length) {
+    return `
+      <div class="mixer-empty">
+        <h3>Start with 3-6 mechanics</h3>
+        <p>Select mechanics from the browser to analyze systems, typed relationship gaps, conflicts, scope pressure, and an AI planning prompt. The Mixer is deterministic and based on dataset fields; it does not generate a full game automatically.</p>
+      </div>
+    `;
+  }
+
+  return records
+    .map((mechanic) => {
+      const scope = mechanic.scope_profile;
+      const maxRisk = scope ? Math.max(scope.networking_risk, scope.save_load_risk, scope.ui_risk) : null;
+      const scopeText = scope
+        ? `Role ${roleLabel(scope.mvp_role)} · Impl ${scope.implementation_cost} · Tune ${scope.tuning_cost} · Risk ${maxRisk}`
+        : "No scope_profile yet";
+      return `
+        <article class="mixer-chip">
+          <div>
+            <h3>${escapeHtml(mechanic.name)}</h3>
+            <code>${escapeHtml(mechanic.id)}</code>
+            <p>${escapeHtml(mechanic.category)} · ${escapeHtml(scopeText)}</p>
+          </div>
+          <button type="button" data-mixer-remove="${escapeHtml(mechanic.id)}">Remove</button>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+function renderConceptSummary(records, analysis) {
+  const roles = analysis.summary.roleCounts;
+  return `
+    <div class="mixer-summary-grid">
+      <div class="detail-metric"><span>Selected</span><strong>${analysis.summary.selectedCount}</strong></div>
+      <div class="detail-metric"><span>Categories</span><strong>${escapeHtml(analysis.summary.categories.join(", ") || "none")}</strong></div>
+      <div class="detail-metric"><span>Roles</span><strong>core ${roles.core}, support ${roles.support}, optional ${roles.optional}, polish ${roles.polish}</strong></div>
+      <div class="detail-metric"><span>Graph Coverage</span><strong>${analysis.summary.graphCount}/${records.length}</strong></div>
+    </div>
+    ${
+      analysis.summary.missingScopeCount
+        ? `<p class="muted-text">Mechanics without scope_profile: ${analysis.summary.missingScopeCount}</p>`
+        : ""
+    }
+    ${
+      analysis.summary.noGraphIds.length
+        ? `<p class="muted-text">Mechanics without typed relationships: ${escapeHtml(analysis.summary.noGraphIds.join(", "))}</p>`
+        : ""
+    }
+  `;
+}
+
+function renderRequiredSystems(systems) {
+  if (!systems.length) {
+    return '<p class="muted-text">No required systems listed for the selected mechanics.</p>';
+  }
+  return `
+    <div class="mixer-table">
+      ${systems
+        .map((item) => `
+          <div class="mixer-row">
+            <strong>${escapeHtml(item.system)}</strong>
+            <span>${item.count}</span>
+            <p>${escapeHtml(item.mechanicIds.join(", "))}</p>
+          </div>
+        `)
+        .join("")}
+    </div>
+  `;
+}
+
+function renderRelationshipSuggestions(suggestions, externalSuggestions) {
+  const suggestionMarkup = suggestions.length
+    ? suggestions
+        .map((suggestion) => `
+          <article class="analysis-card ${suggestion.priorityLabel === "Critical dependency" ? "is-critical" : ""}">
+            <div class="analysis-card-heading">
+              <strong>${escapeHtml(suggestion.priorityLabel)}</strong>
+              <span>${escapeHtml(suggestion.type)} · ${escapeHtml(strongestLabel(suggestion.strength))}</span>
+            </div>
+            <h4>${escapeHtml(suggestion.targetName)}</h4>
+            <code>${escapeHtml(suggestion.targetId)}</code>
+            <p>From <button type="button" class="inline-link" data-mixer-focus-id="${escapeHtml(suggestion.sourceId)}">${escapeHtml(suggestion.sourceId)}</button>: ${escapeHtml(suggestion.reason)}</p>
+            <button type="button" data-mixer-add-id="${escapeHtml(suggestion.targetId)}">Add to Mixer</button>
+          </article>
+        `)
+        .join("")
+    : '<p class="muted-text">No missing typed relationship targets from the current selection.</p>';
+
+  const externalMarkup = externalSuggestions.length
+    ? sectionMarkup(
+        "External/Future Suggestions",
+        `<div class="analysis-list">${externalSuggestions
+          .map((suggestion) => `
+            <article class="analysis-card">
+              <strong>${escapeHtml(suggestion.targetId)}</strong>
+              <p>${escapeHtml(suggestion.sourceId)} ${escapeHtml(suggestion.type)} this target: ${escapeHtml(suggestion.reason)}</p>
+            </article>
+          `)
+          .join("")}</div>`,
+        "mixer-subsection"
+      )
+    : "";
+
+  return `<div class="analysis-list">${suggestionMarkup}</div>${externalMarkup}`;
+}
+
+function renderConflictWarnings(warnings) {
+  if (!warnings.length) {
+    return '<p class="muted-text">No hard or soft conflicts are present among the selected mechanics.</p>';
+  }
+  return `
+    <div class="analysis-list">
+      ${warnings
+        .map((warning) => `
+          <article class="analysis-card ${warning.type === "conflicts_with" ? "is-hard-conflict" : "is-soft-conflict"}">
+            <div class="analysis-card-heading">
+              <strong>${escapeHtml(warning.severity)}</strong>
+              <span>${escapeHtml(strongestLabel(warning.strength))}</span>
+            </div>
+            <p><code>${escapeHtml(warning.sourceId)}</code> -> <code>${escapeHtml(warning.targetId)}</code></p>
+            <p>${escapeHtml(warning.reason)}</p>
+          </article>
+        `)
+        .join("")}
+    </div>
+  `;
+}
+
+function renderScopePressure(scope) {
+  if (!scope.hasScope) {
+    return '<p class="muted-text">No selected mechanics currently include scope_profile data.</p>';
+  }
+  const metrics = [
+    ["Implementation", scope.implementation],
+    ["Design", scope.design],
+    ["Tuning", scope.tuning],
+    ["Content", scope.content],
+    ["Networking", scope.networking],
+    ["Save/Load", scope.saveLoad],
+    ["UI", scope.ui],
+    ["Overall", scope.overall]
+  ];
+  return `
+    <div class="detail-grid">
+      ${metrics
+        .map(([label, value]) => `
+          <div class="detail-metric">
+            <span>${escapeHtml(label)}</span>
+            <strong>${formatScore(value)} · ${escapeHtml(pressureLabel(value))}</strong>
+          </div>
+        `)
+        .join("")}
+    </div>
+    <p class="muted-text">Missing scope data: ${scope.missingCount} selected mechanic(s). Scores are rough relative planning signals, not production estimates.</p>
+  `;
+}
+
+function renderTrimSuggestions(suggestions) {
+  if (!suggestions.length) {
+    return '<p class="muted-text">No obvious trim candidates from scope_profile and typed conflicts. Keep validating the selected concept with a small prototype.</p>';
+  }
+  return `
+    <div class="analysis-list">
+      ${suggestions
+        .map((suggestion) => `
+          <article class="analysis-card">
+            <h4>${escapeHtml(suggestion.name)}</h4>
+            <code>${escapeHtml(suggestion.id)}</code>
+            <p>Consider trimming or deferring because: ${escapeHtml(suggestion.reasons.join(", "))}.</p>
+          </article>
+        `)
+        .join("")}
+    </div>
+  `;
+}
+
+function renderRelatedAdditions(additions) {
+  if (!additions.length) {
+    return '<p class="muted-text">No related additions to suggest from current relationship data.</p>';
+  }
+  return `
+    <div class="analysis-list">
+      ${additions
+        .map((addition) => `
+          <article class="analysis-card">
+            <h4>${escapeHtml(addition.name)}</h4>
+            <code>${escapeHtml(addition.id)}</code>
+            <p>${escapeHtml(addition.reasons.slice(0, 2).join(" "))}</p>
+            <button type="button" data-mixer-add-id="${escapeHtml(addition.id)}">Add to Mixer</button>
+          </article>
+        `)
+        .join("")}
+    </div>
+  `;
+}
+
+function renderAiPrompt(prompt) {
+  return `
+    <div class="prompt-box">
+      <textarea readonly rows="12">${escapeHtml(prompt)}</textarea>
+      <button type="button" data-mixer-copy-prompt>Copy AI Planning Prompt</button>
+    </div>
+  `;
+}
+
+function renderMixer() {
+  const records = selectedMechanics();
+  elements.mixerSelected.innerHTML = renderSelectedMixerCards(records);
+  elements.copyConceptJson.disabled = !records.length || !state.hydrationDone;
+  elements.clearMixer.disabled = !records.length;
+
+  if (!records.length) {
+    elements.mixerAnalysis.innerHTML = "";
+    return;
+  }
+
+  if (!state.hydrationDone) {
+    elements.mixerAnalysis.innerHTML = `
+      <section class="analysis-section">
+        <h3>Loading analysis</h3>
+        <p class="muted-text">Source mechanic JSON files are still loading. Analysis will update automatically.</p>
+      </section>
+    `;
+    return;
+  }
+
+  const analysis = analyzeMixerSelection(records);
+  elements.mixerAnalysis.innerHTML = `
+    ${sectionMarkup("Concept Summary", renderConceptSummary(records, analysis), "analysis-section")}
+    ${sectionMarkup("Required Systems", renderRequiredSystems(analysis.requiredSystems), "analysis-section")}
+    ${sectionMarkup(
+      "Missing Dependencies / Suggested Support Mechanics",
+      renderRelationshipSuggestions(analysis.missingRelationshipTargets.missing, analysis.missingRelationshipTargets.external),
+      "analysis-section"
+    )}
+    ${sectionMarkup("Conflict / Risk Warnings", renderConflictWarnings(analysis.conflictWarnings), "analysis-section")}
+    ${sectionMarkup("Scope Pressure", renderScopePressure(analysis.scopePressure), "analysis-section")}
+    ${sectionMarkup("MVP Trim Suggestions", renderTrimSuggestions(analysis.trimSuggestions), "analysis-section")}
+    ${sectionMarkup("Related Additions", renderRelatedAdditions(analysis.relatedAdditions), "analysis-section")}
+    ${sectionMarkup("AI Planning Prompt", renderAiPrompt(analysis.aiPlanningPrompt), "analysis-section")}
+  `;
+}
+
+function buildMixerExport() {
+  const records = selectedMechanics();
+  const analysis = analyzeMixerSelection(records);
+  return {
+    version: "ogmd-mechanic-mixer-mvp-0.1",
+    selected_mechanic_ids: records.map((mechanic) => mechanic.id),
+    selected_mechanics: records.map((mechanic) => ({
+      id: mechanic.id,
+      name: mechanic.name,
+      category: mechanic.category,
+      mvp_role: mechanic.scope_profile?.mvp_role || null
+    })),
+    categories: analysis.summary.categories,
+    required_systems: analysis.requiredSystems,
+    missing_dependency_support_suggestions: analysis.missingRelationshipTargets.missing,
+    external_future_suggestions: analysis.missingRelationshipTargets.external,
+    conflict_warnings: analysis.conflictWarnings,
+    scope_summary: analysis.scopePressure,
+    mvp_trim_suggestions: analysis.trimSuggestions,
+    related_additions: analysis.relatedAdditions,
+    ai_planning_prompt: analysis.aiPlanningPrompt
+  };
+}
+
+async function copyMixerConceptJson() {
+  const records = selectedMechanics();
+  if (!records.length) {
+    return;
+  }
+  const exportJson = JSON.stringify(buildMixerExport(), null, 2);
+  elements.mixerExportOutput.hidden = false;
+  elements.mixerExportOutput.value = exportJson;
+  try {
+    await copyText(exportJson);
+    elements.mixerStatus.textContent = "Copied concept JSON. The export is also shown below.";
+  } catch (error) {
+    elements.mixerStatus.textContent = "Export JSON generated below. Clipboard copy was unavailable.";
+    elements.mixerExportOutput.focus();
+    elements.mixerExportOutput.select();
+  }
+}
+
+async function copyMixerPrompt() {
+  const records = selectedMechanics();
+  if (!records.length) {
+    return;
+  }
+  try {
+    await copyText(analyzeMixerSelection(records).aiPlanningPrompt);
+    elements.mixerStatus.textContent = "Copied AI planning prompt.";
+  } catch (error) {
+    elements.mixerStatus.textContent = "Could not copy AI planning prompt.";
+  }
+}
+
+function mechanicIdsFromImport(value) {
+  const parsed = JSON.parse(value);
+  if (Array.isArray(parsed)) {
+    return parsed.map((item) => (typeof item === "string" ? item : item?.id)).filter(Boolean);
+  }
+  if (Array.isArray(parsed.selected_mechanic_ids)) {
+    return parsed.selected_mechanic_ids;
+  }
+  if (Array.isArray(parsed.selectedMechanicIds)) {
+    return parsed.selectedMechanicIds;
+  }
+  if (Array.isArray(parsed.selected_mechanics)) {
+    return parsed.selected_mechanics.map((item) => item?.id).filter(Boolean);
+  }
+  if (Array.isArray(parsed.selectedMechanics)) {
+    return parsed.selectedMechanics.map((item) => (typeof item === "string" ? item : item?.id)).filter(Boolean);
+  }
+  return [];
+}
+
+function importMixerConcept() {
+  const value = elements.mixerImportInput.value.trim();
+  if (!value) {
+    elements.mixerImportStatus.textContent = "Paste exported concept JSON first.";
+    return;
+  }
+
+  try {
+    const ids = mechanicIdsFromImport(value);
+    const uniqueImportedIds = uniqueIds(ids);
+    const validIds = uniqueImportedIds.filter((id) => mechanicExists(id));
+    const invalidCount = uniqueImportedIds.length - validIds.length;
+    if (!validIds.length) {
+      elements.mixerImportStatus.textContent = "No valid mechanic IDs were found in that JSON.";
+      return;
+    }
+    restoreMixerSelection(validIds, { updateUrl: true });
+    elements.mixerImportStatus.textContent = `Imported ${validIds.length} mechanic(s). ${invalidCount ? `${invalidCount} unknown ID(s) ignored.` : ""}`;
+  } catch (error) {
+    elements.mixerImportStatus.textContent = "Import failed: JSON could not be parsed.";
+  }
+}
+
 function renderDetail(mechanic) {
   if (!mechanic) {
     elements.detailPanel.innerHTML = `
@@ -344,6 +1319,7 @@ function renderDetail(mechanic) {
       <div class="detail-actions" aria-label="Mechanic actions">
         <button type="button" data-copy-kind="id" data-copy-value="${escapeHtml(mechanic.id)}">Copy ID</button>
         <button type="button" data-copy-kind="JSON path" data-copy-value="${escapeHtml(mechanic.path)}">Copy JSON path</button>
+        ${mixerToggleButton(mechanic.id, "detail-action")}
         <a class="detail-action" href="${escapeHtml(pathHref)}" target="_blank" rel="noopener">Open JSON</a>
       </div>
     </div>
@@ -503,6 +1479,14 @@ function attachEvents() {
   });
 
   elements.results.addEventListener("click", (event) => {
+    const mixerButton = event.target.closest("[data-mixer-toggle]");
+    if (mixerButton) {
+      event.preventDefault();
+      event.stopPropagation();
+      toggleMixerMechanic(mixerButton.dataset.mixerToggle);
+      return;
+    }
+
     const card = event.target.closest("[data-id]");
     if (card) {
       selectMechanic(card.dataset.id);
@@ -527,6 +1511,12 @@ function attachEvents() {
       return;
     }
 
+    const mixerButton = event.target.closest("[data-mixer-toggle]");
+    if (mixerButton) {
+      toggleMixerMechanic(mixerButton.dataset.mixerToggle);
+      return;
+    }
+
     const button = event.target.closest("[data-related-id]");
     if (!button) {
       return;
@@ -534,6 +1524,34 @@ function attachEvents() {
     const relatedId = button.dataset.relatedId;
     selectMechanic(relatedId, { focusDetail: true, scrollDetail: true });
   });
+
+  elements.mixerPanel.addEventListener("click", async (event) => {
+    const removeButton = event.target.closest("[data-mixer-remove]");
+    if (removeButton) {
+      removeFromMixer(removeButton.dataset.mixerRemove);
+      return;
+    }
+
+    const addButton = event.target.closest("[data-mixer-add-id]");
+    if (addButton) {
+      addToMixer(addButton.dataset.mixerAddId);
+      return;
+    }
+
+    const focusButton = event.target.closest("[data-mixer-focus-id]");
+    if (focusButton) {
+      selectMechanic(focusButton.dataset.mixerFocusId, { focusDetail: true, scrollDetail: true });
+      return;
+    }
+
+    if (event.target.closest("[data-mixer-copy-prompt]")) {
+      await copyMixerPrompt();
+    }
+  });
+
+  elements.copyConceptJson.addEventListener("click", copyMixerConceptJson);
+  elements.clearMixer.addEventListener("click", clearMixerSelection);
+  elements.importConceptJson.addEventListener("click", importMixerConcept);
 }
 
 async function init() {
@@ -541,11 +1559,15 @@ async function init() {
 
   try {
     const initialId = requestedMechanicId();
+    const initialMixIds = requestedMixerIds();
     state.index = await fetchJson(DATASET_URL);
     state.mechanics = state.index.mechanics.map((mechanic) => ({ ...mechanic }));
     state.filtered = [...state.mechanics];
     populateFilters();
     applyFilters();
+    restoreMixerSelection(initialMixIds.length ? initialMixIds : storedMixerSelection(), {
+      updateUrl: Boolean(initialMixIds.length)
+    });
     if (initialId && mechanicExists(initialId)) {
       selectMechanic(initialId, { updateUrl: false });
     }
@@ -558,6 +1580,7 @@ async function init() {
     if (state.selectedId) {
       selectMechanic(state.selectedId, { updateUrl: false });
     }
+    renderMixer();
   } catch (error) {
     elements.statusText.textContent = "Dataset failed to load.";
     elements.results.innerHTML = `
