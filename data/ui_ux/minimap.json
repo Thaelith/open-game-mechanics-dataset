@@ -2,12 +2,12 @@
   "id": "ui_ux.minimap",
   "name": "Minimap",
   "aliases": [
-    "minimap mechanic",
-    "minimap system",
-    "minimap"
+    "radar map",
+    "corner map",
+    "mini map"
   ],
   "category": "ui_ux",
-  "subcategory": "ui_ux",
+  "subcategory": "navigation_interface",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,97 +24,113 @@
     "strategy",
     "action"
   ],
-  "description": "Minimap is an interface mechanic that presents game state, accepts decisions, or reduces player friction.",
-  "design_notes": "Minimap should be designed around a clear player promise, a readable trigger, and a predictable result. For ui ux mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A small persistent map view that summarizes nearby terrain, objectives, entities, or navigation context.",
+  "design_notes": "Minimaps are high-value but high-risk UI: they can support navigation or pull attention away from the world. Decide what appears, how far it reveals, whether it rotates, and how it supports players who cannot rely on memory or environmental landmarks.",
   "design_purpose": [
-    "Give the player a readable way to use minimap as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect minimap to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Help players maintain local orientation and route awareness.",
+    "Show nearby objectives, hazards, allies, or points of interest at a reduced scale.",
+    "Support navigation in dense, procedural, or visually complex spaces."
   ],
-  "player_fantasy": "The player feels informed without fighting the interface.",
+  "player_fantasy": "The player feels spatially oriented and able to plan routes without opening a full map.",
   "required_systems": [
+    "map_data",
     "ui_framework",
-    "game_state_binding",
-    "input_navigation",
-    "localization_support"
+    "icon_filtering",
+    "fog_of_war_or_reveal_state",
+    "accessibility_settings"
   ],
   "parameters": [
     {
-      "name": "display_duration",
+      "name": "minimap_radius_world_units",
       "type": "float",
-      "typical_range": "0.2-15 seconds",
-      "description": "How long the interface element remains visible after triggering."
+      "typical_range": "20-500 world units",
+      "description": "World radius represented by the minimap."
     },
     {
-      "name": "priority_level",
-      "type": "integer",
-      "typical_range": "1-5",
-      "description": "Layering or importance compared with other UI messages."
-    },
-    {
-      "name": "input_focus_mode",
+      "name": "minimap_rotation_mode",
       "type": "string",
-      "typical_range": "mouse, keyboard, gamepad, touch, mixed",
-      "description": "Control mode the UI must support cleanly."
+      "typical_range": "north_up, player_up, hybrid",
+      "description": "Whether the map rotates with player orientation."
+    },
+    {
+      "name": "icon_cull_priority",
+      "type": "integer",
+      "typical_range": "1-10",
+      "description": "Priority threshold for hiding low-value icons under clutter."
+    },
+    {
+      "name": "fog_reveal_padding",
+      "type": "float",
+      "typical_range": "0-50 world units",
+      "description": "Extra reveal distance around explored areas."
+    },
+    {
+      "name": "minimap_pixel_size",
+      "type": "integer",
+      "typical_range": "96-360 pixels",
+      "description": "Screen size of the minimap panel."
     }
   ],
   "common_variants": [
-    "minimap_minimal_variant",
-    "minimap_diegetic_variant",
-    "persistent_variant",
-    "contextual_variant"
+    "north_up_minimap",
+    "rotating_minimap",
+    "radar_minimap",
+    "fog_of_war_minimap",
+    "diegetic_minimap"
   ],
   "edge_cases": [
-    "Minimap is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Minimap overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Minimap runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Multi-floor spaces need above/below or floor selection cues.",
+    "Procedural maps need stable icon and reveal behavior across seed regeneration.",
+    "Too many icons can hide the player arrow or objective marker.",
+    "Split-screen and ultrawide layouts need separate safe-area placement."
   ],
   "common_bugs": [
-    "Minimap state does not reset correctly after interruption or reload.",
-    "Feedback for Minimap plays even when the mechanic fails or is rejected.",
-    "Minimap produces different results between frame rates, platforms, or network clients."
+    "Rotating minimap text and icons become unreadable because they rotate with terrain.",
+    "Fog reveal state updates visually but not in saved map data.",
+    "Entity icons continue showing after despawn or stealth state changes.",
+    "Map scale differs from waypoint distance labels and confuses navigation."
   ],
   "balancing_notes": [
-    "Make Minimap strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Showing enemies and loot increases efficiency but can reduce exploration and surprise.",
+    "North-up maps support geographic learning; rotating maps support immediate turn-by-turn navigation."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Minimap becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide size, opacity, icon filtering, and colorblind-safe icon shapes.",
+    "Avoid making minimap reading mandatory when landmarks, compass cues, or objective text could also guide players."
   ],
   "implementation_notes": {
-    "unity": "Implement Minimap with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Minimap as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Minimap with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Minimap as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Bind the UI to gameplay state through events or observable view models, not direct polling from presentation widgets; support UI Toolkit, uGUI, and input glyph updates from the active Input System scheme.",
+    "godot": "Drive Control nodes from a small view-model dictionary or signal payload, and keep input focus, localization, and scaling separate from gameplay state.",
+    "unreal": "Use UMG or CommonUI widgets fed by gameplay events, with focus navigation, platform glyphs, and replicated-state boundaries handled outside widget animation code.",
+    "web": "Render the UI from normalized game state, keep input mapping and localization data outside component logic, and avoid making animation completion the source of truth."
   },
   "related_mechanics": [
-    "accessibility.text_scaling",
-    "camera.camera_zoom",
-    "ui_ux.cooldown_indicator",
-    "ui_ux.quest_marker"
+    "ui_ux.quest_marker",
+    "strategy.fog_of_war",
+    "procedural_generation.seeded_generation",
+    "multiplayer.ping_system"
   ],
   "combines_well_with": [
+    "narrative.codex_journal",
     "accessibility.text_scaling",
-    "camera.camera_zoom",
-    "ui_ux.damage_numbers",
-    "ui_ux.inventory_grid"
+    "ai.patrol"
   ],
   "example_games": [
     {
       "title": "Grand Theft Auto V",
-      "note": "Uses minimap information for navigation."
+      "note": "Uses a minimap for nearby streets, routes, and activity markers."
     },
     {
       "title": "Diablo III",
-      "note": "Uses map overlays to support dungeon navigation."
+      "note": "Uses map overlays and minimap information for dungeon navigation."
     }
   ],
   "tags": [
-    "feedback",
-    "interface",
-    "minimap",
-    "ui_ux"
+    "ui",
+    "map",
+    "navigation",
+    "icons",
+    "accessibility"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

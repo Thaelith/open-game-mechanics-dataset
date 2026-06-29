@@ -2,12 +2,12 @@
   "id": "ui_ux.tutorial_prompt",
   "name": "Tutorial Prompt",
   "aliases": [
-    "tutorial prompt mechanic",
-    "tutorial prompt system",
-    "tutorial prompt"
+    "tutorial hint",
+    "teaching prompt",
+    "control hint"
   ],
   "category": "ui_ux",
-  "subcategory": "ui_ux",
+  "subcategory": "onboarding_interface",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,113 @@
     "strategy",
     "action"
   ],
-  "description": "Tutorial Prompt is an interface mechanic that presents game state, accepts decisions, or reduces player friction.",
-  "design_notes": "Tutorial Prompt should be designed around a clear player promise, a readable trigger, and a predictable result. For ui ux mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A contextual UI hint that teaches controls, rules, or next steps when the player is likely to need them.",
+  "design_notes": "Tutorial prompts should be timely, dismissible, and tied to demonstrated player need. Repeating the same hint too often creates noise; hiding it forever after one dismissal can abandon players who need a reminder later.",
   "design_purpose": [
-    "Give the player a readable way to use tutorial prompt as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect tutorial prompt to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Teach controls and mechanics at the moment they become relevant.",
+    "Reduce early confusion without stopping play unnecessarily.",
+    "Support reminders when players return after a break or miss a lesson."
   ],
-  "player_fantasy": "The player feels informed without fighting the interface.",
+  "player_fantasy": "The player feels guided without being treated as if they have lost control.",
   "required_systems": [
+    "tutorial_state",
     "ui_framework",
-    "game_state_binding",
-    "input_navigation",
-    "localization_support"
+    "input_glyphs",
+    "analytics_or_progress_flags",
+    "accessibility_settings"
   ],
   "parameters": [
     {
-      "name": "display_duration",
-      "type": "float",
-      "typical_range": "0.2-15 seconds",
-      "description": "How long the interface element remains visible after triggering."
-    },
-    {
-      "name": "priority_level",
-      "type": "integer",
-      "typical_range": "1-5",
-      "description": "Layering or importance compared with other UI messages."
-    },
-    {
-      "name": "input_focus_mode",
+      "name": "prompt_trigger_condition_id",
       "type": "string",
-      "typical_range": "mouse, keyboard, gamepad, touch, mixed",
-      "description": "Control mode the UI must support cleanly."
+      "typical_range": "tutorial condition id",
+      "description": "Condition that causes the prompt to appear."
+    },
+    {
+      "name": "repeat_after_failures",
+      "type": "integer",
+      "typical_range": "0-10 failures",
+      "description": "Number of failed attempts before showing the prompt again."
+    },
+    {
+      "name": "minimum_visible_ms",
+      "type": "integer",
+      "typical_range": "500-5000 ms",
+      "description": "Minimum time the prompt remains visible once shown."
+    },
+    {
+      "name": "dismissal_persistence_scope",
+      "type": "string",
+      "typical_range": "session, save_file, profile",
+      "description": "Where dismissal state is stored."
+    },
+    {
+      "name": "input_glyph_update_mode",
+      "type": "string",
+      "typical_range": "live, on_open, manual",
+      "description": "When the prompt updates displayed bindings."
     }
   ],
   "common_variants": [
-    "tutorial_prompt_minimal_variant",
-    "tutorial_prompt_diegetic_variant",
-    "persistent_variant",
-    "contextual_variant"
+    "control_prompt",
+    "mechanic_hint",
+    "failure_hint",
+    "returning_player_reminder",
+    "diegetic_tutorial_prompt"
   ],
   "edge_cases": [
-    "Tutorial Prompt is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Tutorial Prompt overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Tutorial Prompt runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Prompts should update immediately when input device or bindings change.",
+    "A prompt during combat, dialogue, or cutscene can obscure urgent information.",
+    "Dismissed prompts may need to return after long absence, repeated failure, or changed control scheme.",
+    "Localization can turn a short hint into multi-line text that overlaps HUD elements."
   ],
   "common_bugs": [
-    "Tutorial Prompt state does not reset correctly after interruption or reload.",
-    "Feedback for Tutorial Prompt plays even when the mechanic fails or is rejected.",
-    "Tutorial Prompt produces different results between frame rates, platforms, or network clients."
+    "Prompt appears after the player has already completed the taught action.",
+    "Dismissal state is saved globally and hides the prompt for new save files.",
+    "Input glyphs show default bindings instead of remapped controls.",
+    "Repeated trigger conditions flicker the prompt every frame."
   ],
   "balancing_notes": [
-    "Make Tutorial Prompt strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Hints should reduce confusion, not solve puzzles or remove discovery unless the game opts into guided play.",
+    "Failure-based prompts are often less intrusive than showing every instruction preemptively."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Tutorial Prompt becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Allow prompt duration, size, and repeat behavior to be adjusted.",
+    "Use text plus icons, and ensure prompts are compatible with screen reader or narration systems where supported."
   ],
   "implementation_notes": {
-    "unity": "Implement Tutorial Prompt with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Tutorial Prompt as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Tutorial Prompt with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Tutorial Prompt as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Bind the UI to gameplay state through events or observable view models, not direct polling from presentation widgets; support UI Toolkit, uGUI, and input glyph updates from the active Input System scheme.",
+    "godot": "Drive Control nodes from a small view-model dictionary or signal payload, and keep input focus, localization, and scaling separate from gameplay state.",
+    "unreal": "Use UMG or CommonUI widgets fed by gameplay events, with focus navigation, platform glyphs, and replicated-state boundaries handled outside widget animation code.",
+    "web": "Render the UI from normalized game state, keep input mapping and localization data outside component logic, and avoid making animation completion the source of truth."
   },
   "related_mechanics": [
-    "accessibility.text_scaling",
-    "camera.camera_zoom",
-    "ui_ux.minimap",
-    "ui_ux.quest_marker"
+    "ui_ux.interaction_prompt",
+    "accessibility.toggle_hold_option",
+    "ui_ux.accessibility_remap_controls",
+    "progression.achievement_system"
   ],
   "combines_well_with": [
-    "accessibility.text_scaling",
-    "camera.camera_zoom",
-    "ui_ux.cooldown_indicator",
-    "ui_ux.damage_numbers"
+    "platforming.coyote_time",
+    "combat.block",
+    "crafting.recipe_crafting"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Portal",
+      "note": "Uses contextual teaching and signage to introduce mechanics."
+    },
+    {
+      "title": "Celeste",
+      "note": "Uses concise prompts to introduce movement abilities."
+    }
+  ],
   "tags": [
-    "feedback",
-    "interface",
+    "ui",
     "tutorial",
-    "ui_ux"
+    "onboarding",
+    "input_glyphs",
+    "accessibility"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

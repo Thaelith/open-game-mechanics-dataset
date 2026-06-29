@@ -25,12 +25,12 @@
     "rpg",
     "platformer"
   ],
-  "description": "An attack that applies damage or effects from a distance through projectiles, traces, or targeting rules.",
-  "design_notes": "Ranged attacks need rules for aiming, ammunition, projectile behavior, line of sight, hit confirmation, and cover. Decide whether the attack is hitscan, simulated projectile, lock-on, arced, or area-targeted; each choice changes readability and balance.",
+  "description": "An attack that applies damage or effects from a distance through projectiles, traces, beams, or targeting rules.",
+  "design_notes": "Ranged attacks need rules for aiming, ammunition, projectile behavior, line of sight, cover, falloff, and hit confirmation. Decide whether the attack is hitscan, simulated projectile, lock-on, arced, or area-targeted; each choice changes readability and counterplay.",
   "design_purpose": [
     "Let players project threat beyond melee reach and interact with distant targets.",
     "Create spatial decisions around cover, reloads, aim commitment, and projectile travel.",
-    "Support different weapon identities through spread, recoil, charge, ammo, and impact effects."
+    "Support weapon identity through spread, recoil, charge, ammo, and impact effects."
   ],
   "player_fantasy": "The player feels capable of controlling space and landing precise attacks at range.",
   "required_systems": [
@@ -51,7 +51,7 @@
       "name": "projectile_travel_units_per_second",
       "type": "float",
       "typical_range": "5-200 world units/second",
-      "description": "Travel pace for simulated projectiles."
+      "description": "Travel rate for simulated projectiles."
     },
     {
       "name": "aim_spread_degrees",
@@ -70,6 +70,12 @@
       "type": "float",
       "typical_range": "0-100 world units",
       "description": "Distance where damage reduction begins if falloff is used."
+    },
+    {
+      "name": "cover_trace_radius",
+      "type": "float",
+      "typical_range": "0-0.5 world units",
+      "description": "Collision radius used by projectile or hitscan cover checks."
     }
   ],
   "common_variants": [
@@ -81,10 +87,10 @@
     "homing_projectile"
   ],
   "edge_cases": [
-    "Firing from inside walls or near cover should not spawn projectiles behind collision.",
-    "Very fast projectiles need continuous collision or ray steps to avoid tunneling.",
+    "Firing near cover should not spawn projectiles behind walls or inside the shooter's collision.",
+    "Very fast projectiles need continuous collision or sub-stepping to avoid tunneling.",
     "Projectile ownership must handle reflection, friendly fire, despawn, and save/load boundaries.",
-    "Aim assist, lock-on, and manual aim should not fight over target selection."
+    "Aim assist, lock-on, recoil, and manual aim should not fight over the final shot direction."
   ],
   "common_bugs": [
     "Projectile visuals and damage traces use different origins, causing visible misses to hit.",
@@ -93,18 +99,18 @@
     "Projectiles continue after scene unload because lifetime cleanup is tied to renderer visibility."
   ],
   "balancing_notes": [
-    "Long reach needs counter-pressure such as reload, ammo, spread, travel, cover, or enemy mobility.",
+    "Long reach needs counter-pressure such as reload, ammo, spread, travel, cover, recoil, or enemy mobility.",
     "Projectile travel gives defenders readable counterplay; hitscan needs stronger aim or exposure constraints."
   ],
   "accessibility_notes": [
-    "Offer reticle scaling, color options, and aim assist settings where precision aiming is central.",
-    "Use hit markers or impact effects so players can distinguish misses, armor hits, and blocked shots."
+    "Offer reticle scaling, color options, aim assist settings, and clear impact feedback where precision aiming is central.",
+    "Use hit markers or impact effects so players can distinguish misses, armor hits, blocked shots, and immune targets."
   ],
   "implementation_notes": {
-    "unity": "Model startup, active, recovery, and cancel windows as data, then drive hitboxes, animation events, and damage application from one combat state source. For Ranged Attack, validate this path with parameters such as projectile_spawn_offset and projectile_travel_units_per_second.",
-    "godot": "Use Area2D or Area3D hit volumes with frame-window state on the actor; avoid placing damage authority inside animation-only callbacks. For Ranged Attack, validate this path with parameters such as projectile_spawn_offset and projectile_travel_units_per_second.",
-    "unreal": "Implement the action as a Gameplay Ability or Actor Component with montage notifies for windows and authoritative damage on the server when networked. For Ranged Attack, validate this path with parameters such as projectile_spawn_offset and projectile_travel_units_per_second.",
-    "web": "Update combat windows in the fixed simulation step, evaluate hurtbox overlap from cached transforms, and emit presentation events separately from damage state. For Ranged Attack, validate this path with parameters such as projectile_spawn_offset and projectile_travel_units_per_second."
+    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
+    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
+    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
+    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
   },
   "related_mechanics": [
     "combat.reload",
@@ -116,9 +122,18 @@
     "camera.camera_zoom",
     "camera.screen_shake",
     "combat.damage_over_time",
-    "economy.loot_table"
+    "combat.critical_hit"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Doom",
+      "note": "Uses varied ranged weapons with distinct projectile and hitscan behavior."
+    },
+    {
+      "title": "Overwatch",
+      "note": "Uses many ranged attack models including projectiles, beams, and scoped shots."
+    }
+  ],
   "tags": [
     "combat",
     "projectile",

@@ -24,19 +24,20 @@
     "action",
     "rpg"
   ],
-  "description": "A visual or audio confirmation that an attack connected with a valid target.",
-  "design_notes": "Hit markers tell players whether an attack connected, but they can also reveal hidden information. Decide whether markers differ for armor, critical hits, shields, weak points, or kills.",
+  "description": "A short visual or audio confirmation that an attack connected with a valid target and produced a combat result.",
+  "design_notes": "Hit markers should be driven by confirmed damage outcomes, not raw collision. They can communicate armor, shield, critical, weak point, kill, or immunity, but too many categories can become noisy. Multiplayer games must distinguish predicted feedback from server-confirmed results.",
   "design_purpose": [
-    "Confirm successful hits quickly.",
-    "Differentiate hit types without requiring the player to inspect tiny effects.",
-    "Support ranged combat readability at distance."
+    "Confirm successful hits quickly, especially at range or through effects.",
+    "Differentiate blocked, armored, critical, weak-point, or kill results.",
+    "Support player aim correction without requiring large floating numbers."
   ],
-  "player_fantasy": "The player feels confident that their attack landed and understands its rough quality.",
+  "player_fantasy": "The player feels confident that an attack landed and understands the rough quality of the result.",
   "required_systems": [
     "damage_events",
     "ui_framework",
     "audio_feedback",
-    "combat_metadata"
+    "combat_metadata",
+    "network_prediction"
   ],
   "parameters": [
     {
@@ -58,45 +59,56 @@
       "description": "Number of sounds used for different hit categories."
     },
     {
-      "name": "screen_center_offset_pixels",
-      "type": "vector",
-      "typical_range": "0-120 pixels",
-      "description": "Offset from reticle or target position."
+      "name": "multi_hit_merge_window_ms",
+      "type": "integer",
+      "typical_range": "0-250 ms",
+      "description": "Window for combining many rapid hits into one feedback event."
+    },
+    {
+      "name": "predicted_hit_opacity",
+      "type": "float",
+      "typical_range": "0-1",
+      "description": "Opacity for locally predicted markers before confirmation."
     }
   ],
   "common_variants": [
     "reticle_hit_marker",
     "world_space_hit_marker",
     "critical_hit_marker",
-    "armor_hit_marker"
+    "armor_hit_marker",
+    "kill_confirm_marker"
   ],
   "edge_cases": [
-    "Damage over time should not spam markers every tick unless desired.",
-    "Invisible or hidden enemies may need suppressed hit markers.",
-    "Networked hits should distinguish predicted and confirmed events."
+    "Damage over time should not spam hit markers every tick unless the design intentionally wants that feedback.",
+    "Stealth, smoke, darkness, or hidden targets may need suppressed markers to avoid revealing information.",
+    "Shotguns and area effects need merge rules so audio and markers do not stack excessively.",
+    "Network prediction should correct false positives without producing distracting marker pops."
   ],
   "common_bugs": [
-    "Marker plays on blocked or immune hits because any collision counts.",
-    "Critical marker appears for overkill damage instead of weak-point metadata.",
-    "Audio marker stacks loudly during shotgun or AoE hits."
+    "Marker plays on blocked, immune, or friendly hits because any overlap counts.",
+    "Critical marker appears for overkill damage rather than weak-point metadata.",
+    "Marker sound is mixed too loudly when many pellets hit at once.",
+    "Predicted marker remains after the server rejects the hit."
   ],
   "balancing_notes": [
-    "Strong hit markers improve readability but can reveal targets through smoke or darkness.",
-    "Different marker types should communicate important combat state, not cosmetic noise."
+    "Strong hit markers improve readability but can reveal targets through smoke, darkness, or cover.",
+    "Different marker types should communicate important combat state, not cosmetic complexity."
   ],
   "accessibility_notes": [
-    "Provide visual and audio confirmation options independently, with color-safe marker variants."
+    "Provide visual and audio confirmation options independently, with color-safe marker shapes.",
+    "Allow hit marker size, opacity, and sound volume to be adjusted separately from damage numbers."
   ],
   "implementation_notes": {
-    "unity": "Subscribe to confirmed damage-result events and map hit category metadata to reticle marker, sound, and optional world-space feedback instead of listening to raw projectile collisions.",
-    "godot": "Emit hit-confirm signals from the damage resolver with target category and critical metadata, then render short-lived Control nodes or world-space markers.",
-    "unreal": "Route confirmed damage through Gameplay Cues or UI events, distinguishing armor, critical, kill, and predicted hits when network latency is involved.",
-    "web": "Queue hit marker events from the simulation damage result, coalesce rapid multi-hit events, and render UI or world-space markers with marker_linger_ms lifetimes."
+    "unity": "Bind the UI to gameplay state through events or observable view models, not direct polling from presentation widgets; support UI Toolkit, uGUI, and input glyph updates from the active Input System scheme.",
+    "godot": "Drive Control nodes from a small view-model dictionary or signal payload, and keep input focus, localization, and scaling separate from gameplay state.",
+    "unreal": "Use UMG or CommonUI widgets fed by gameplay events, with focus navigation, platform glyphs, and replicated-state boundaries handled outside widget animation code.",
+    "web": "Render the UI from normalized game state, keep input mapping and localization data outside component logic, and avoid making animation completion the source of truth."
   },
   "related_mechanics": [
     "combat.ranged_attack",
     "ui_ux.damage_numbers",
-    "combat.critical_hit"
+    "combat.critical_hit",
+    "combat.block"
   ],
   "combines_well_with": [
     "camera.screen_shake",
@@ -107,13 +119,18 @@
     {
       "title": "Call of Duty 4: Modern Warfare",
       "note": "Uses hit markers to confirm successful shots."
+    },
+    {
+      "title": "Apex Legends",
+      "note": "Uses hit feedback to distinguish shields, flesh damage, and knocks."
     }
   ],
   "tags": [
     "ui",
     "combat_feedback",
     "hit_confirm",
-    "accessibility"
+    "accessibility",
+    "network_prediction"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

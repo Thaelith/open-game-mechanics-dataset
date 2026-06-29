@@ -2,12 +2,12 @@
   "id": "combat.hit_stun",
   "name": "Hit Stun",
   "aliases": [
-    "hit stun mechanic",
-    "hit stun system",
-    "hit stun"
+    "hitstop stun",
+    "stagger",
+    "hit reaction lock"
   ],
   "category": "combat",
-  "subcategory": "combat_control",
+  "subcategory": "hit_reaction",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,114 @@
     "rpg",
     "fighting"
   ],
-  "description": "Hit Stun is an interaction that creates threat, defense, damage, timing, or tactical pressure during conflict.",
-  "design_notes": "Hit Stun should be designed around a clear player promise, a readable trigger, and a predictable result. For combat mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A temporary state after being hit where an actor loses or limits control before recovering.",
+  "design_notes": "Hit stun defines whether attacks feel impactful and whether combos are possible. It must be balanced with recovery, invulnerability, knockback, armor, cancel rules, and network prediction. Too little hit stun makes hits feel fake; too much removes agency.",
   "design_purpose": [
-    "Give the player a readable way to use hit stun as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect hit stun to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Make successful hits visibly and mechanically meaningful.",
+    "Create windows for combos, interrupts, or defensive recovery.",
+    "Communicate damage and impact without relying only on health loss."
   ],
-  "player_fantasy": "The player feels powerful, skillful, and able to read danger under pressure.",
+  "player_fantasy": "The player sees attacks interrupt enemies and understands when they are vulnerable after being hit.",
   "required_systems": [
+    "hit_reaction",
     "combat_state_machine",
-    "hit_detection",
-    "damage_model",
-    "animation_events"
+    "animation_state_machine",
+    "input_lockout",
+    "damage_metadata"
   ],
   "parameters": [
     {
-      "name": "damage_value",
+      "name": "hit_stun_frames",
       "type": "integer",
-      "typical_range": "1-250",
-      "description": "Base amount of damage or threat applied by the mechanic."
+      "typical_range": "2-90 frames",
+      "description": "Frames of limited control after a hit."
     },
     {
-      "name": "startup_time",
-      "type": "float",
-      "typical_range": "0.05-1.2 seconds",
-      "description": "Delay before the active effect begins."
+      "name": "hit_stop_frames",
+      "type": "integer",
+      "typical_range": "0-15 frames",
+      "description": "Shared or local freeze frames used at impact moment."
     },
     {
-      "name": "recovery_time",
+      "name": "stun_decay_per_repeat",
       "type": "float",
-      "typical_range": "0.05-1.5 seconds",
-      "description": "Delay after use before the actor can fully act again."
+      "typical_range": "0-1",
+      "description": "Reduction applied to repeated stun in a combo."
+    },
+    {
+      "name": "armor_stun_reduction_ratio",
+      "type": "float",
+      "typical_range": "0-1",
+      "description": "How much armor or poise reduces stun duration."
+    },
+    {
+      "name": "recovery_cancel_frame",
+      "type": "integer",
+      "typical_range": "0-120 frames",
+      "description": "Earliest frame where dodge, block, or tech can cancel recovery."
     }
   ],
   "common_variants": [
-    "hit_stun_light_version",
-    "hit_stun_heavy_version",
-    "timed_version",
-    "resource_limited_version"
+    "light_hit_stun",
+    "heavy_stagger",
+    "air_hit_stun",
+    "guard_stun",
+    "boss_micro_stun"
   ],
   "edge_cases": [
-    "Hit Stun is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Hit Stun overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Hit Stun runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Hit stun during jumps, ladders, grapples, cutscenes, or dialogue needs priority and recovery rules.",
+    "Multiple rapid hits should stack, refresh, or decay rather than locking actors forever.",
+    "Hit stop and hit stun should use separate clocks so visual freeze does not extend gameplay stun unexpectedly.",
+    "Bosses may need partial stun, armor thresholds, or interrupt windows instead of full lockout."
   ],
   "common_bugs": [
-    "Hit Stun state does not reset correctly after interruption or reload.",
-    "Feedback for Hit Stun plays even when the mechanic fails or is rejected.",
-    "Hit Stun produces different results between frame rates, platforms, or network clients."
+    "Input lockout remains after stun animation is interrupted.",
+    "Hit stop pauses projectiles but not timers, causing mismatched follow-up windows.",
+    "Stun applies twice because damage event and animation event both trigger reaction.",
+    "Network clients show stagger while server already allowed recovery."
   ],
   "balancing_notes": [
-    "Make Hit Stun strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Long hit stun enables combos but can remove agency or create infinite loops without decay.",
+    "Short hit stun preserves control but may make attacks feel weightless unless paired with hit stop or animation reaction."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Hit Stun becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use clear recovery cues so players know when control returns.",
+    "Avoid rapid repeated stun flashes that obscure hazards or cause visual discomfort."
   ],
   "implementation_notes": {
-    "unity": "Implement Hit Stun with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Hit Stun as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Hit Stun with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Hit Stun as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
+    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
+    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
+    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
   },
   "related_mechanics": [
-    "camera.screen_shake",
-    "combat.melee_attack",
-    "combat.ranged_attack",
-    "ui_ux.damage_numbers"
+    "combat.knockback",
+    "combat.combo_chain",
+    "combat.guard_break",
+    "combat.invincibility_frames"
   ],
   "combines_well_with": [
-    "camera.screen_shake",
-    "combat.charged_attack",
-    "combat.combo_chain",
-    "ui_ux.damage_numbers"
+    "combat.melee_attack",
+    "combat.parry",
+    "ui_ux.hit_marker",
+    "camera.screen_shake"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Street Fighter II",
+      "note": "Uses hit stun and block stun to define attack advantage and combos."
+    },
+    {
+      "title": "Devil May Cry 5",
+      "note": "Uses hit reactions to support juggling and combo flow."
+    }
+  ],
   "tags": [
     "combat",
-    "combat_control",
-    "hit",
-    "timing"
+    "hit_stun",
+    "stagger",
+    "combo",
+    "hit_reaction"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

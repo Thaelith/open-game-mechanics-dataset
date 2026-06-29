@@ -2,12 +2,12 @@
   "id": "combat.critical_hit",
   "name": "Critical Hit",
   "aliases": [
-    "critical hit mechanic",
-    "critical hit system",
-    "critical hit"
+    "crit",
+    "critical strike",
+    "weak-point hit"
   ],
   "category": "combat",
-  "subcategory": "offense",
+  "subcategory": "damage_modifier",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,113 @@
     "rpg",
     "fighting"
   ],
-  "description": "Critical Hit is an interaction that creates threat, defense, damage, timing, or tactical pressure during conflict.",
-  "design_notes": "Critical Hit should be designed around a clear player promise, a readable trigger, and a predictable result. For combat mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A high-impact hit result caused by chance, precision, vulnerability, or build rules.",
+  "design_notes": "Critical hits can reward precision, build investment, or opportunistic timing. The design should separate random critical chance from deterministic weak-point or backstab rules, because each creates different player expectations and balance pressures.",
   "design_purpose": [
-    "Give the player a readable way to use critical hit as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect critical hit to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create moments of heightened payoff from precision, build investment, or vulnerability.",
+    "Differentiate weapons, stats, enemy weak points, and combat styles.",
+    "Reward players for aiming, timing, positioning, or stacking relevant modifiers."
   ],
-  "player_fantasy": "The player feels powerful, skillful, and able to read danger under pressure.",
+  "player_fantasy": "The player feels they found the perfect opening or built toward explosive damage.",
   "required_systems": [
-    "combat_state_machine",
-    "hit_detection",
     "damage_model",
-    "animation_events"
+    "hit_metadata",
+    "random_number_generator",
+    "ui_feedback",
+    "stat_system"
   ],
   "parameters": [
     {
-      "name": "damage_value",
+      "name": "critical_chance_percent",
+      "type": "float",
+      "typical_range": "0-100%",
+      "description": "Probability that an eligible hit becomes critical."
+    },
+    {
+      "name": "critical_damage_multiplier",
+      "type": "float",
+      "typical_range": "1.25-5.0",
+      "description": "Damage multiplier applied to critical hits."
+    },
+    {
+      "name": "weak_point_bonus_multiplier",
+      "type": "float",
+      "typical_range": "1.1-10.0",
+      "description": "Multiplier for deterministic weak-point hits."
+    },
+    {
+      "name": "critical_immunity_tag_ids",
+      "type": "array",
+      "typical_range": "0-20 tags",
+      "description": "Tags that prevent critical hits on certain targets."
+    },
+    {
+      "name": "critical_feedback_priority",
       "type": "integer",
-      "typical_range": "1-250",
-      "description": "Base amount of damage or threat applied by the mechanic."
-    },
-    {
-      "name": "startup_time",
-      "type": "float",
-      "typical_range": "0.05-1.2 seconds",
-      "description": "Delay before the active effect begins."
-    },
-    {
-      "name": "recovery_time",
-      "type": "float",
-      "typical_range": "0.05-1.5 seconds",
-      "description": "Delay after use before the actor can fully act again."
+      "typical_range": "1-10",
+      "description": "Priority used for hit markers, numbers, audio, and camera response."
     }
   ],
   "common_variants": [
-    "critical_hit_light_version",
-    "critical_hit_heavy_version",
-    "timed_version",
-    "resource_limited_version"
+    "random_critical_hit",
+    "weak_point_critical",
+    "backstab_critical",
+    "status_guaranteed_critical",
+    "combo_finisher_critical"
   ],
   "edge_cases": [
-    "Critical Hit is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Critical Hit overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Critical Hit runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Damage over time, area attacks, summons, and reflected projectiles need eligibility rules.",
+    "Critical chance above 100% can convert to extra damage, multi-crit tiers, or be clamped.",
+    "Guaranteed crit buffs must define whether they are consumed on blocked, immune, or missed attacks.",
+    "Networked random crits need deterministic server authority and client feedback correction."
   ],
   "common_bugs": [
-    "Critical Hit state does not reset correctly after interruption or reload.",
-    "Feedback for Critical Hit plays even when the mechanic fails or is rejected.",
-    "Critical Hit produces different results between frame rates, platforms, or network clients."
+    "Critical multiplier applies before and after armor reduction unintentionally.",
+    "Weak-point hits also roll random critical and double dip without design approval.",
+    "UI shows critical feedback for zero-damage immune hits.",
+    "Client predicts critical hits with a different random seed than the server."
   ],
   "balancing_notes": [
-    "Make Critical Hit strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Random crits add excitement but can undermine fairness in competitive or precision-heavy games.",
+    "Deterministic weak-point crits reward mastery and can be balanced through aiming difficulty and exposure windows."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Critical Hit becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use shape, text, sound, or hit-marker variation in addition to color for critical feedback.",
+    "Avoid making tiny weak points mandatory without aim assists, alternate strategies, or readable target presentation."
   ],
   "implementation_notes": {
-    "unity": "Implement Critical Hit with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Critical Hit as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Critical Hit with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Critical Hit as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
+    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
+    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
+    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
   },
   "related_mechanics": [
-    "camera.screen_shake",
-    "combat.melee_attack",
+    "ui_ux.hit_marker",
+    "ui_ux.damage_numbers",
     "combat.ranged_attack",
-    "ui_ux.damage_numbers"
+    "combat.melee_attack"
   ],
   "combines_well_with": [
-    "camera.screen_shake",
-    "combat.charged_attack",
-    "combat.combo_chain",
-    "ui_ux.damage_numbers"
+    "progression.skill_tree",
+    "economy.loot_table",
+    "combat.combo_chain"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Team Fortress 2",
+      "note": "Uses critical hit feedback as a distinct combat result."
+    },
+    {
+      "title": "Monster Hunter: World",
+      "note": "Rewards attacking weak zones with stronger damage outcomes."
+    }
+  ],
   "tags": [
     "combat",
     "critical",
-    "offense",
-    "timing"
+    "damage_modifier",
+    "feedback",
+    "randomness"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

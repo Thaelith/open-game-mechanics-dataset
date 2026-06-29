@@ -2,12 +2,12 @@
   "id": "ui_ux.cooldown_indicator",
   "name": "Cooldown Indicator",
   "aliases": [
-    "cooldown indicator mechanic",
-    "cooldown indicator system",
-    "cooldown indicator"
+    "ability cooldown",
+    "recharge indicator",
+    "cooldown UI"
   ],
   "category": "ui_ux",
-  "subcategory": "ui_ux",
+  "subcategory": "combat_feedback",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,114 @@
     "strategy",
     "action"
   ],
-  "description": "Cooldown Indicator is an interface mechanic that presents game state, accepts decisions, or reduces player friction.",
-  "design_notes": "Cooldown Indicator should be designed around a clear player promise, a readable trigger, and a predictable result. For ui ux mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A UI element that shows when an ability, item, weapon, or action is unavailable and when it becomes ready again.",
+  "design_notes": "Cooldown indicators need to answer two questions quickly: can I use this now, and when will it be ready? The design should work at a glance during stress, support multiple input devices, and avoid relying only on tiny radial fills or color changes.",
   "design_purpose": [
-    "Give the player a readable way to use cooldown indicator as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect cooldown indicator to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Communicate temporary unavailability without forcing players to memorize timers.",
+    "Help players plan ability rotations, defensive options, and resource timing.",
+    "Make failed inputs understandable when an action is still recharging."
   ],
-  "player_fantasy": "The player feels informed without fighting the interface.",
+  "player_fantasy": "The player feels in control of timing because recovery state is visible and trustworthy.",
   "required_systems": [
+    "cooldown_system",
     "ui_framework",
     "game_state_binding",
-    "input_navigation",
-    "localization_support"
+    "input_glyphs",
+    "accessibility_settings"
   ],
   "parameters": [
     {
-      "name": "display_duration",
+      "name": "remaining_cooldown_seconds",
       "type": "float",
-      "typical_range": "0.2-15 seconds",
-      "description": "How long the interface element remains visible after triggering."
+      "typical_range": "0-300 seconds",
+      "description": "Time left before the action becomes available."
     },
     {
-      "name": "priority_level",
-      "type": "integer",
-      "typical_range": "1-5",
-      "description": "Layering or importance compared with other UI messages."
-    },
-    {
-      "name": "input_focus_mode",
+      "name": "cooldown_fill_mode",
       "type": "string",
-      "typical_range": "mouse, keyboard, gamepad, touch, mixed",
-      "description": "Control mode the UI must support cleanly."
+      "typical_range": "radial, bar, numeric, icon_desaturate",
+      "description": "Visual mode used to show recharge progress."
+    },
+    {
+      "name": "ready_flash_ms",
+      "type": "integer",
+      "typical_range": "0-800 ms",
+      "description": "Short highlight used when the action becomes ready."
+    },
+    {
+      "name": "numeric_countdown_threshold",
+      "type": "float",
+      "typical_range": "0-10 seconds",
+      "description": "Point at which exact seconds should appear."
+    },
+    {
+      "name": "unavailable_input_pulse_ms",
+      "type": "integer",
+      "typical_range": "0-500 ms",
+      "description": "Feedback duration after the player tries to use an unavailable action."
     }
   ],
   "common_variants": [
-    "cooldown_indicator_minimal_variant",
-    "cooldown_indicator_diegetic_variant",
-    "persistent_variant",
-    "contextual_variant"
+    "radial_cooldown",
+    "numeric_timer",
+    "charge_pip_cooldown",
+    "desaturated_icon",
+    "diegetic_recharge_meter"
   ],
   "edge_cases": [
-    "Cooldown Indicator is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Cooldown Indicator overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Cooldown Indicator runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Cooldown resets, haste effects, pause, slow motion, and server correction can change the remaining time mid-animation.",
+    "Shared cooldown groups need one visible source of truth across multiple abilities.",
+    "Charge-based abilities should show partial readiness without implying all charges are restored.",
+    "Controller, keyboard, touch, and remapped inputs need glyphs that update while cooldown is visible."
   ],
   "common_bugs": [
-    "Cooldown Indicator state does not reset correctly after interruption or reload.",
-    "Feedback for Cooldown Indicator plays even when the mechanic fails or is rejected.",
-    "Cooldown Indicator produces different results between frame rates, platforms, or network clients."
+    "UI countdown uses local time while gameplay cooldown uses simulation time and drifts during pause.",
+    "Cooldown fill reaches zero visually before the server accepts the action.",
+    "Ready flash plays after the ability was removed, swapped, or disabled by silence.",
+    "Color-only ready/unready states are unreadable for some players."
   ],
   "balancing_notes": [
-    "Make Cooldown Indicator strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Exact timers make optimization easier; vague fills preserve uncertainty and reduce UI pressure.",
+    "High-stakes defensive cooldowns need stronger feedback than low-impact convenience actions."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Cooldown Indicator becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use shape, icon state, numeric text, and optional audio rather than color alone.",
+    "Allow scaling or simplified cooldown displays when many abilities are visible at once."
   ],
   "implementation_notes": {
-    "unity": "Implement Cooldown Indicator with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Cooldown Indicator as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Cooldown Indicator with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Cooldown Indicator as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Bind the UI to gameplay state through events or observable view models, not direct polling from presentation widgets; support UI Toolkit, uGUI, and input glyph updates from the active Input System scheme.",
+    "godot": "Drive Control nodes from a small view-model dictionary or signal payload, and keep input focus, localization, and scaling separate from gameplay state.",
+    "unreal": "Use UMG or CommonUI widgets fed by gameplay events, with focus navigation, platform glyphs, and replicated-state boundaries handled outside widget animation code.",
+    "web": "Render the UI from normalized game state, keep input mapping and localization data outside component logic, and avoid making animation completion the source of truth."
   },
   "related_mechanics": [
-    "accessibility.text_scaling",
-    "camera.camera_zoom",
-    "ui_ux.minimap",
-    "ui_ux.quest_marker"
+    "ui_ux.hit_marker",
+    "ui_ux.damage_numbers",
+    "movement.dash",
+    "combat.reload"
   ],
   "combines_well_with": [
-    "accessibility.text_scaling",
-    "camera.camera_zoom",
-    "ui_ux.damage_numbers",
-    "ui_ux.inventory_grid"
+    "combat.parry",
+    "combat.damage_over_time",
+    "progression.skill_tree",
+    "accessibility.text_scaling"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "World of Warcraft",
+      "note": "Uses cooldown indicators across action bar abilities."
+    },
+    {
+      "title": "Hades",
+      "note": "Shows ability readiness for combat actions."
+    }
+  ],
   "tags": [
     "cooldown",
+    "ui",
     "feedback",
-    "interface",
-    "ui_ux"
+    "readability",
+    "accessibility"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

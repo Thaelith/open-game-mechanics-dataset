@@ -2,12 +2,12 @@
   "id": "combat.area_of_effect_attack",
   "name": "Area-of-Effect Attack",
   "aliases": [
-    "area of effect attack mechanic",
-    "area of effect attack system",
-    "area-of-effect attack"
+    "AoE attack",
+    "splash damage",
+    "area attack"
   ],
   "category": "combat",
-  "subcategory": "offense",
+  "subcategory": "area_offense",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,113 @@
     "rpg",
     "fighting"
   ],
-  "description": "Area-of-Effect Attack is an interaction that creates threat, defense, damage, timing, or tactical pressure during conflict.",
-  "design_notes": "Area-of-Effect Attack should be designed around a clear player promise, a readable trigger, and a predictable result. For combat mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "An attack that affects multiple targets or positions inside a defined radius, shape, cone, line, or zone.",
+  "design_notes": "Area attacks create spatial pressure. They need clear telegraphs, target filters, falloff rules, friendly-fire rules, and performance-safe hit queries. The most important design question is whether the area is a warning, a denial zone, a burst payoff, or sustained hazard.",
   "design_purpose": [
-    "Give the player a readable way to use area-of-effect attack as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect area-of-effect attack to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Threaten groups, control space, or punish clustered targets.",
+    "Create movement decisions around telegraphs, safe zones, and timing.",
+    "Support weapons, spells, hazards, and boss attacks that act on space rather than one target."
   ],
-  "player_fantasy": "The player feels powerful, skillful, and able to read danger under pressure.",
+  "player_fantasy": "The player feels able to shape the battlefield by affecting a whole area at once.",
   "required_systems": [
-    "combat_state_machine",
-    "hit_detection",
+    "area_query",
     "damage_model",
-    "animation_events"
+    "telegraph_system",
+    "target_filtering",
+    "performance_budget"
   ],
   "parameters": [
     {
-      "name": "damage_value",
+      "name": "aoe_shape",
+      "type": "string",
+      "typical_range": "circle, sphere, cone, box, line",
+      "description": "Geometric shape used for the area query."
+    },
+    {
+      "name": "aoe_radius",
+      "type": "float",
+      "typical_range": "0.5-30 world units",
+      "description": "Primary radius or half-width of the area."
+    },
+    {
+      "name": "telegraph_duration_ms",
       "type": "integer",
-      "typical_range": "1-250",
-      "description": "Base amount of damage or threat applied by the mechanic."
+      "typical_range": "0-3000 ms",
+      "description": "Warning window before the area becomes active."
     },
     {
-      "name": "startup_time",
-      "type": "float",
-      "typical_range": "0.05-1.2 seconds",
-      "description": "Delay before the active effect begins."
+      "name": "damage_falloff_curve",
+      "type": "string",
+      "typical_range": "none, linear, inverse, custom",
+      "description": "How damage changes from center to edge."
     },
     {
-      "name": "recovery_time",
-      "type": "float",
-      "typical_range": "0.05-1.5 seconds",
-      "description": "Delay after use before the actor can fully act again."
+      "name": "max_targets_hit",
+      "type": "integer",
+      "typical_range": "1-200 targets",
+      "description": "Optional cap on affected targets."
     }
   ],
   "common_variants": [
-    "area_of_effect_attack_light_version",
-    "area_of_effect_attack_heavy_version",
-    "timed_version",
-    "resource_limited_version"
+    "explosion",
+    "cone_attack",
+    "ground_marker_spell",
+    "persistent_hazard_zone",
+    "chain_area_attack"
   ],
   "edge_cases": [
-    "Area-of-Effect Attack is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Area-of-Effect Attack overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Area-of-Effect Attack runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Targets partly inside the area need center-point, collider-overlap, or coverage rules.",
+    "Line of sight and cover should decide whether walls block the effect.",
+    "Multiple overlapping areas can stack, refresh, or choose the strongest effect.",
+    "Friendly fire, neutral actors, destructibles, and summons need target filters."
   ],
   "common_bugs": [
-    "Area-of-Effect Attack state does not reset correctly after interruption or reload.",
-    "Feedback for Area-of-Effect Attack plays even when the mechanic fails or is rejected.",
-    "Area-of-Effect Attack produces different results between frame rates, platforms, or network clients."
+    "Visual radius and damage radius use different scale values.",
+    "The area hits targets every frame instead of once per attack instance.",
+    "Falloff applies twice because both attack and damage systems reduce the value.",
+    "Large AoE queries allocate memory or stall the frame during busy encounters."
   ],
   "balancing_notes": [
-    "Make Area-of-Effect Attack strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Large radius, short telegraph, and high damage together leave little counterplay.",
+    "Persistent zones should be balanced through duration, visibility, stacking, and escape options."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Area-of-Effect Attack becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use clear telegraph shapes, high-contrast edges, and non-color cues before damage occurs.",
+    "Avoid effects that hide their own safe zones with particles or screen shake."
   ],
   "implementation_notes": {
-    "unity": "Implement Area-of-Effect Attack with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Area-of-Effect Attack as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Area-of-Effect Attack with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Area-of-Effect Attack as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
+    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
+    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
+    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
   },
   "related_mechanics": [
-    "camera.screen_shake",
-    "combat.melee_attack",
-    "combat.ranged_attack",
-    "ui_ux.damage_numbers"
+    "combat.damage_over_time",
+    "combat.knockback",
+    "ui_ux.damage_numbers",
+    "camera.screen_shake"
   ],
   "combines_well_with": [
-    "camera.screen_shake",
-    "combat.charged_attack",
-    "combat.combo_chain",
-    "ui_ux.damage_numbers"
+    "ai.enemy_spawn_director",
+    "puzzle.pressure_plate",
+    "combat.ranged_attack"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "World of Warcraft",
+      "note": "Uses ground telegraphs and area attacks in encounters."
+    },
+    {
+      "title": "Hades",
+      "note": "Uses area attacks for weapons, boons, and enemy pressure."
+    }
+  ],
   "tags": [
-    "area",
     "combat",
-    "offense",
-    "timing"
+    "aoe",
+    "telegraph",
+    "space_control",
+    "accessibility"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

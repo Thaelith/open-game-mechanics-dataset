@@ -2,12 +2,12 @@
   "id": "ui_ux.damage_numbers",
   "name": "Damage Numbers",
   "aliases": [
-    "damage numbers mechanic",
-    "damage numbers system",
-    "damage numbers"
+    "floating damage text",
+    "combat numbers",
+    "damage popups"
   ],
   "category": "ui_ux",
-  "subcategory": "ui_ux",
+  "subcategory": "combat_feedback",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,113 @@
     "strategy",
     "action"
   ],
-  "description": "Damage Numbers is an interface mechanic that presents game state, accepts decisions, or reduces player friction.",
-  "design_notes": "Damage Numbers should be designed around a clear player promise, a readable trigger, and a predictable result. For ui ux mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Floating or anchored numbers that communicate damage, healing, shields, critical hits, or resisted effects.",
+  "design_notes": "Damage numbers can teach combat math, sell impact, and reward optimization, but they can also clutter the screen. Decide which combat results deserve numbers, how long they stay visible, and whether players can reduce or disable them.",
   "design_purpose": [
-    "Give the player a readable way to use damage numbers as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect damage numbers to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Confirm combat results and relative attack strength.",
+    "Differentiate damage types, healing, shields, critical hits, and resisted values.",
+    "Support build tuning and player learning without requiring logs."
   ],
-  "player_fantasy": "The player feels informed without fighting the interface.",
+  "player_fantasy": "The player feels their attacks have measurable impact and can read combat outcomes quickly.",
   "required_systems": [
+    "damage_events",
     "ui_framework",
-    "game_state_binding",
-    "input_navigation",
+    "combat_metadata",
+    "accessibility_settings",
     "localization_support"
   ],
   "parameters": [
     {
-      "name": "display_duration",
-      "type": "float",
-      "typical_range": "0.2-15 seconds",
-      "description": "How long the interface element remains visible after triggering."
-    },
-    {
-      "name": "priority_level",
+      "name": "number_lifetime_ms",
       "type": "integer",
-      "typical_range": "1-5",
-      "description": "Layering or importance compared with other UI messages."
+      "typical_range": "300-1800 ms",
+      "description": "How long a number remains visible before fading."
     },
     {
-      "name": "input_focus_mode",
-      "type": "string",
-      "typical_range": "mouse, keyboard, gamepad, touch, mixed",
-      "description": "Control mode the UI must support cleanly."
+      "name": "stack_merge_window_ms",
+      "type": "integer",
+      "typical_range": "0-500 ms",
+      "description": "Window for combining rapid repeated damage into one number."
+    },
+    {
+      "name": "critical_scale_multiplier",
+      "type": "float",
+      "typical_range": "1.0-2.5",
+      "description": "Size multiplier for critical or weak-point values."
+    },
+    {
+      "name": "max_simultaneous_numbers",
+      "type": "integer",
+      "typical_range": "5-200",
+      "description": "Upper bound before values are merged, culled, or summarized."
+    },
+    {
+      "name": "world_space_drift_pixels",
+      "type": "vector",
+      "typical_range": "0-120 pixels",
+      "description": "Screen drift applied over the number lifetime."
     }
   ],
   "common_variants": [
-    "damage_numbers_minimal_variant",
-    "damage_numbers_diegetic_variant",
-    "persistent_variant",
-    "contextual_variant"
+    "world_space_numbers",
+    "screen_space_numbers",
+    "combat_log_numbers",
+    "critical_popups",
+    "merged_tick_numbers"
   ],
   "edge_cases": [
-    "Damage Numbers is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Damage Numbers overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Damage Numbers runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Damage over time and area attacks can create dozens of numbers per second unless merged or rate-limited.",
+    "Large enemies need anchor points so numbers do not appear inside geometry or offscreen.",
+    "Negative, immune, absorbed, overheal, and blocked results need different display rules.",
+    "Localization and font choices must handle separators, abbreviations, and right-to-left text where supported."
   ],
   "common_bugs": [
-    "Damage Numbers state does not reset correctly after interruption or reload.",
-    "Feedback for Damage Numbers plays even when the mechanic fails or is rejected.",
-    "Damage Numbers produces different results between frame rates, platforms, or network clients."
+    "Numbers spawn from raw collision events and appear even when damage was blocked.",
+    "World-space labels sort behind walls or enemy meshes.",
+    "Stacked values merge across different targets because the grouping key is incomplete.",
+    "Critical number animation hides the exact value before the player can read it."
   ],
   "balancing_notes": [
-    "Make Damage Numbers strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Verbose numbers encourage optimization and build comparison; minimal numbers preserve immersion and reduce clutter.",
+    "Showing resisted or absorbed values helps players understand enemy defenses without external spreadsheets."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Damage Numbers becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide size, opacity, motion, and disable options for floating numbers.",
+    "Use text labels or icons for damage categories instead of color alone."
   ],
   "implementation_notes": {
-    "unity": "Implement Damage Numbers with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Damage Numbers as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Damage Numbers with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Damage Numbers as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Bind the UI to gameplay state through events or observable view models, not direct polling from presentation widgets; support UI Toolkit, uGUI, and input glyph updates from the active Input System scheme.",
+    "godot": "Drive Control nodes from a small view-model dictionary or signal payload, and keep input focus, localization, and scaling separate from gameplay state.",
+    "unreal": "Use UMG or CommonUI widgets fed by gameplay events, with focus navigation, platform glyphs, and replicated-state boundaries handled outside widget animation code.",
+    "web": "Render the UI from normalized game state, keep input mapping and localization data outside component logic, and avoid making animation completion the source of truth."
   },
   "related_mechanics": [
-    "accessibility.text_scaling",
-    "camera.camera_zoom",
-    "ui_ux.minimap",
-    "ui_ux.quest_marker"
+    "ui_ux.hit_marker",
+    "combat.critical_hit",
+    "combat.damage_over_time",
+    "combat.area_of_effect_attack"
   ],
   "combines_well_with": [
-    "accessibility.text_scaling",
-    "camera.camera_zoom",
-    "ui_ux.cooldown_indicator",
-    "ui_ux.inventory_grid"
+    "economy.loot_table",
+    "progression.skill_tree",
+    "camera.screen_shake"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Diablo III",
+      "note": "Uses floating damage numbers to show combat output and critical hits."
+    },
+    {
+      "title": "Borderlands 2",
+      "note": "Uses damage numbers to communicate weapon and elemental effects."
+    }
+  ],
   "tags": [
+    "ui",
+    "combat_feedback",
     "damage",
-    "feedback",
-    "interface",
-    "ui_ux"
+    "numbers",
+    "accessibility"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

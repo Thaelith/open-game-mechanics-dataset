@@ -2,12 +2,12 @@
   "id": "combat.shield",
   "name": "Shield",
   "aliases": [
-    "shield mechanic",
-    "shield system",
-    "shield"
+    "shield guard",
+    "energy shield",
+    "defensive shield"
   ],
   "category": "combat",
-  "subcategory": "defense",
+  "subcategory": "defensive_resource",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,113 @@
     "rpg",
     "fighting"
   ],
-  "description": "Shield is an interaction that creates threat, defense, damage, timing, or tactical pressure during conflict.",
-  "design_notes": "Shield should be designed around a clear player promise, a readable trigger, and a predictable result. For combat mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A defensive layer or equipment mechanic that absorbs, blocks, regenerates, or redirects incoming damage.",
+  "design_notes": "Shield can be an item, regenerating health layer, directional guard, or temporary barrier. It should define coverage, durability, recharge, damage types, shield-break behavior, and how it differs from ordinary block or armor.",
   "design_purpose": [
-    "Give the player a readable way to use shield as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect shield to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Provide a defensive layer that changes how players absorb or avoid damage.",
+    "Create tactical decisions around raising, conserving, breaking, or regenerating protection.",
+    "Support enemy and weapon identities through shield counters and damage types."
   ],
-  "player_fantasy": "The player feels powerful, skillful, and able to read danger under pressure.",
+  "player_fantasy": "The player feels protected by a visible defensive layer that can hold under pressure until it breaks.",
   "required_systems": [
-    "combat_state_machine",
-    "hit_detection",
+    "shield_state",
     "damage_model",
-    "animation_events"
+    "recharge_rules",
+    "hit_reaction",
+    "ui_feedback"
   ],
   "parameters": [
     {
-      "name": "damage_value",
+      "name": "shield_capacity_points",
+      "type": "float",
+      "typical_range": "10-1000 points",
+      "description": "Damage capacity before shield breaks or depletes."
+    },
+    {
+      "name": "shield_recharge_delay_ms",
       "type": "integer",
-      "typical_range": "1-250",
-      "description": "Base amount of damage or threat applied by the mechanic."
+      "typical_range": "500-8000 ms",
+      "description": "Delay after taking damage before recharge begins."
     },
     {
-      "name": "startup_time",
+      "name": "shield_recharge_points_per_second",
       "type": "float",
-      "typical_range": "0.05-1.2 seconds",
-      "description": "Delay before the active effect begins."
+      "typical_range": "0-200 points/second",
+      "description": "Recovery rate while recharge is active."
     },
     {
-      "name": "recovery_time",
+      "name": "shield_coverage_arc_degrees",
       "type": "float",
-      "typical_range": "0.05-1.5 seconds",
-      "description": "Delay after use before the actor can fully act again."
+      "typical_range": "0-360 degrees",
+      "description": "Directional coverage if the shield is not omnidirectional."
+    },
+    {
+      "name": "shield_break_stun_frames",
+      "type": "integer",
+      "typical_range": "0-120 frames",
+      "description": "Vulnerability applied when shield capacity reaches zero."
     }
   ],
   "common_variants": [
-    "shield_light_version",
-    "shield_heavy_version",
-    "timed_version",
-    "resource_limited_version"
+    "handheld_shield",
+    "regenerating_energy_shield",
+    "bubble_shield",
+    "directional_shield",
+    "temporary_barrier"
   ],
   "edge_cases": [
-    "Shield is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Shield overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Shield runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Damage overflow after shield break must decide whether excess damage carries to health.",
+    "Damage over time, poison, environmental hazards, and falls need explicit shield interaction.",
+    "Shield recharge should pause, reset, or continue during cutscenes, menus, and respawn according to design.",
+    "Friendly fire and team shields need ownership and collision filtering rules."
   ],
   "common_bugs": [
-    "Shield state does not reset correctly after interruption or reload.",
-    "Feedback for Shield plays even when the mechanic fails or is rejected.",
-    "Shield produces different results between frame rates, platforms, or network clients."
+    "Shield absorbs unblockable or environmental damage because damage type filters are ignored.",
+    "Recharge starts every frame after a hit and never respects the delay.",
+    "Overflow damage is applied twice when shield breaks.",
+    "Shield visuals remain active after capacity reaches zero."
   ],
   "balancing_notes": [
-    "Make Shield strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Regenerating shields encourage cover and disengagement; finite shields encourage resource conservation.",
+    "Shield counters should be readable enough that players understand why protection failed."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Shield becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use clear shield capacity and break feedback through sound, UI, and visual state, not only subtle shader changes.",
+    "Avoid high-frequency shield flicker effects without intensity controls."
   ],
   "implementation_notes": {
-    "unity": "Implement Shield with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Shield as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Shield with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Shield as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
+    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
+    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
+    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
   },
   "related_mechanics": [
-    "camera.screen_shake",
-    "combat.melee_attack",
-    "combat.ranged_attack",
-    "ui_ux.damage_numbers"
+    "combat.block",
+    "combat.guard_break",
+    "survival.health",
+    "ui_ux.cooldown_indicator"
   ],
   "combines_well_with": [
-    "camera.screen_shake",
-    "combat.charged_attack",
-    "combat.combo_chain",
+    "combat.ranged_attack",
+    "combat.projectile_reflection",
     "ui_ux.damage_numbers"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Halo: Combat Evolved",
+      "note": "Uses regenerating shields as a major combat pacing layer."
+    },
+    {
+      "title": "The Legend of Zelda: Breath of the Wild",
+      "note": "Uses handheld shields for blocking, durability, and parry interactions."
+    }
+  ],
   "tags": [
     "combat",
-    "defense",
     "shield",
-    "timing"
+    "defense",
+    "resource",
+    "feedback"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

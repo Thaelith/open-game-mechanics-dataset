@@ -25,7 +25,7 @@
     "beat_em_up",
     "rpg"
   ],
-  "description": "A sequence system where attacks can link into later actions through timing, hit state, or input rules.",
+  "description": "A sequence system where attacks can link into later actions through timing, hit state, input windows, or cancel rules.",
   "design_notes": "Combo chains define combat rhythm and skill ceiling. A chain should specify when the next input is accepted, whether links require hit confirmation, which actions cancel recovery, and how repeated attacks avoid becoming an infinite loop. The strongest combo systems expose rules that players can feel without reading data tables.",
   "design_purpose": [
     "Let players express mastery through planned attack sequences.",
@@ -66,6 +66,12 @@
       "description": "Whether the next step requires the current attack to connect."
     },
     {
+      "name": "branch_rule_id",
+      "type": "string",
+      "typical_range": "combo rule id",
+      "description": "Rule table entry used to select the next action branch."
+    },
+    {
       "name": "repeat_scaling_ratio",
       "type": "float",
       "typical_range": "0.1-1.0",
@@ -101,10 +107,10 @@
     "Use training or tutorial prompts to expose combo routes without relying on hidden notation."
   ],
   "implementation_notes": {
-    "unity": "Model startup, active, recovery, and cancel windows as data, then drive hitboxes, animation events, and damage application from one combat state source. For Combo Chain, validate this path with parameters such as combo_input_buffer_frames and link_open_frame.",
-    "godot": "Use Area2D or Area3D hit volumes with frame-window state on the actor; avoid placing damage authority inside animation-only callbacks. For Combo Chain, validate this path with parameters such as combo_input_buffer_frames and link_open_frame.",
-    "unreal": "Implement the action as a Gameplay Ability or Actor Component with montage notifies for windows and authoritative damage on the server when networked. For Combo Chain, validate this path with parameters such as combo_input_buffer_frames and link_open_frame.",
-    "web": "Update combat windows in the fixed simulation step, evaluate hurtbox overlap from cached transforms, and emit presentation events separately from damage state. For Combo Chain, validate this path with parameters such as combo_input_buffer_frames and link_open_frame."
+    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
+    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
+    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
+    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
   },
   "related_mechanics": [
     "combat.melee_attack",

@@ -4,7 +4,7 @@
   "license": "CC0-1.0",
   "tool_license": "MIT",
   "total_mechanics": 223,
-  "last_generated": "2026-06-29T00:23:56+00:00",
+  "last_generated": "2026-06-29T00:58:08+00:00",
   "mechanics": [
     {
       "id": "accessibility.adjustable_difficulty",
@@ -659,7 +659,7 @@
       "id": "combat.area_of_effect_attack",
       "name": "Area-of-Effect Attack",
       "category": "combat",
-      "subcategory": "offense",
+      "subcategory": "area_offense",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -672,10 +672,11 @@
         "fighting"
       ],
       "tags": [
-        "area",
         "combat",
-        "offense",
-        "timing"
+        "aoe",
+        "telegraph",
+        "space_control",
+        "accessibility"
       ],
       "path": "data/combat/area_of_effect_attack.json"
     },
@@ -709,7 +710,7 @@
       "id": "combat.charged_attack",
       "name": "Charged Attack",
       "category": "combat",
-      "subcategory": "offense",
+      "subcategory": "commitment_offense",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -722,10 +723,11 @@
         "fighting"
       ],
       "tags": [
-        "charged",
         "combat",
-        "offense",
-        "timing"
+        "charge",
+        "commitment",
+        "timing",
+        "accessibility"
       ],
       "path": "data/combat/charged_attack.json"
     },
@@ -759,7 +761,7 @@
       "id": "combat.critical_hit",
       "name": "Critical Hit",
       "category": "combat",
-      "subcategory": "offense",
+      "subcategory": "damage_modifier",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -774,8 +776,9 @@
       "tags": [
         "combat",
         "critical",
-        "offense",
-        "timing"
+        "damage_modifier",
+        "feedback",
+        "randomness"
       ],
       "path": "data/combat/critical_hit.json"
     },
@@ -832,7 +835,7 @@
       "id": "combat.hit_stun",
       "name": "Hit Stun",
       "category": "combat",
-      "subcategory": "combat_control",
+      "subcategory": "hit_reaction",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -846,9 +849,10 @@
       ],
       "tags": [
         "combat",
-        "combat_control",
-        "hit",
-        "timing"
+        "hit_stun",
+        "stagger",
+        "combo",
+        "hit_reaction"
       ],
       "path": "data/combat/hit_stun.json"
     },
@@ -880,7 +884,7 @@
       "id": "combat.knockback",
       "name": "Knockback",
       "category": "combat",
-      "subcategory": "combat_control",
+      "subcategory": "hit_reaction",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -894,9 +898,10 @@
       ],
       "tags": [
         "combat",
-        "combat_control",
         "knockback",
-        "timing"
+        "hit_reaction",
+        "collision",
+        "spacing"
       ],
       "path": "data/combat/knockback.json"
     },
@@ -981,7 +986,7 @@
       "id": "combat.projectile_reflection",
       "name": "Projectile Reflection",
       "category": "combat",
-      "subcategory": "defense",
+      "subcategory": "projectile_defense",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -995,9 +1000,10 @@
       ],
       "tags": [
         "combat",
-        "defense",
         "projectile",
-        "timing"
+        "reflection",
+        "timing",
+        "defense"
       ],
       "path": "data/combat/projectile_reflection.json"
     },
@@ -1056,7 +1062,7 @@
       "id": "combat.shield",
       "name": "Shield",
       "category": "combat",
-      "subcategory": "defense",
+      "subcategory": "defensive_resource",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1070,9 +1076,10 @@
       ],
       "tags": [
         "combat",
-        "defense",
         "shield",
-        "timing"
+        "defense",
+        "resource",
+        "feedback"
       ],
       "path": "data/combat/shield.json"
     },
@@ -4882,7 +4889,7 @@
       "id": "ui_ux.cooldown_indicator",
       "name": "Cooldown Indicator",
       "category": "ui_ux",
-      "subcategory": "ui_ux",
+      "subcategory": "combat_feedback",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4896,9 +4903,10 @@
       ],
       "tags": [
         "cooldown",
+        "ui",
         "feedback",
-        "interface",
-        "ui_ux"
+        "readability",
+        "accessibility"
       ],
       "path": "data/ui_ux/cooldown_indicator.json"
     },
@@ -4906,7 +4914,7 @@
       "id": "ui_ux.damage_numbers",
       "name": "Damage Numbers",
       "category": "ui_ux",
-      "subcategory": "ui_ux",
+      "subcategory": "combat_feedback",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4919,10 +4927,11 @@
         "action"
       ],
       "tags": [
+        "ui",
+        "combat_feedback",
         "damage",
-        "feedback",
-        "interface",
-        "ui_ux"
+        "numbers",
+        "accessibility"
       ],
       "path": "data/ui_ux/damage_numbers.json"
     },
@@ -4930,7 +4939,7 @@
       "id": "ui_ux.dialogue_choice",
       "name": "Dialogue Choice",
       "category": "ui_ux",
-      "subcategory": "ui_ux",
+      "subcategory": "narrative_interface",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4943,10 +4952,11 @@
         "action"
       ],
       "tags": [
+        "ui",
         "dialogue",
-        "feedback",
-        "interface",
-        "ui_ux"
+        "narrative",
+        "choice",
+        "localization"
       ],
       "path": "data/ui_ux/dialogue_choice.json"
     },
@@ -4970,7 +4980,8 @@
         "ui",
         "combat_feedback",
         "hit_confirm",
-        "accessibility"
+        "accessibility",
+        "network_prediction"
       ],
       "path": "data/ui_ux/hit_marker.json"
     },
@@ -5004,7 +5015,7 @@
       "id": "ui_ux.inventory_grid",
       "name": "Inventory Grid",
       "category": "ui_ux",
-      "subcategory": "ui_ux",
+      "subcategory": "inventory_interface",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -5017,10 +5028,11 @@
         "action"
       ],
       "tags": [
-        "feedback",
-        "interface",
+        "ui",
         "inventory",
-        "ui_ux"
+        "items",
+        "input_navigation",
+        "accessibility"
       ],
       "path": "data/ui_ux/inventory_grid.json"
     },
@@ -5028,7 +5040,7 @@
       "id": "ui_ux.minimap",
       "name": "Minimap",
       "category": "ui_ux",
-      "subcategory": "ui_ux",
+      "subcategory": "navigation_interface",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -5041,10 +5053,11 @@
         "action"
       ],
       "tags": [
-        "feedback",
-        "interface",
-        "minimap",
-        "ui_ux"
+        "ui",
+        "map",
+        "navigation",
+        "icons",
+        "accessibility"
       ],
       "path": "data/ui_ux/minimap.json"
     },
@@ -5052,7 +5065,7 @@
       "id": "ui_ux.quest_marker",
       "name": "Quest Marker",
       "category": "ui_ux",
-      "subcategory": "ui_ux",
+      "subcategory": "navigation_interface",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -5065,10 +5078,11 @@
         "action"
       ],
       "tags": [
-        "feedback",
-        "interface",
+        "ui",
+        "navigation",
         "quest",
-        "ui_ux"
+        "marker",
+        "accessibility"
       ],
       "path": "data/ui_ux/quest_marker.json"
     },
@@ -5076,7 +5090,7 @@
       "id": "ui_ux.radial_menu",
       "name": "Radial Menu",
       "category": "ui_ux",
-      "subcategory": "ui_ux",
+      "subcategory": "selection_interface",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -5089,10 +5103,11 @@
         "action"
       ],
       "tags": [
-        "feedback",
-        "interface",
-        "radial",
-        "ui_ux"
+        "ui",
+        "radial_menu",
+        "selection",
+        "gamepad",
+        "accessibility"
       ],
       "path": "data/ui_ux/radial_menu.json"
     },
@@ -5100,7 +5115,7 @@
       "id": "ui_ux.tutorial_prompt",
       "name": "Tutorial Prompt",
       "category": "ui_ux",
-      "subcategory": "ui_ux",
+      "subcategory": "onboarding_interface",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -5113,10 +5128,11 @@
         "action"
       ],
       "tags": [
-        "feedback",
-        "interface",
+        "ui",
         "tutorial",
-        "ui_ux"
+        "onboarding",
+        "input_glyphs",
+        "accessibility"
       ],
       "path": "data/ui_ux/tutorial_prompt.json"
     },
@@ -7964,14 +7980,23 @@
         "accessibility.toggle_hold_option",
         "camera.screen_shake",
         "combat.aim_down_sights",
+        "combat.area_of_effect_attack",
+        "combat.charged_attack",
         "combat.lock_on_targeting",
         "movement.crouch",
         "movement.sprint",
         "platforming.jump_buffering",
         "stealth.visibility_meter",
         "ui_ux.accessibility_remap_controls",
+        "ui_ux.cooldown_indicator",
+        "ui_ux.damage_numbers",
         "ui_ux.hit_marker",
-        "ui_ux.interaction_prompt"
+        "ui_ux.interaction_prompt",
+        "ui_ux.inventory_grid",
+        "ui_ux.minimap",
+        "ui_ux.quest_marker",
+        "ui_ux.radial_menu",
+        "ui_ux.tutorial_prompt"
       ],
       "achievement": [
         "progression.achievement_system"
@@ -8023,7 +8048,7 @@
         "combat.ranged_attack",
         "combat.reload"
       ],
-      "area": [
+      "aoe": [
         "combat.area_of_effect_attack"
       ],
       "assist": [
@@ -8091,7 +8116,7 @@
       "cancel": [
         "combat.combo_chain"
       ],
-      "charged": [
+      "charge": [
         "combat.charged_attack"
       ],
       "chase": [
@@ -8105,7 +8130,8 @@
         "narrative.codex_journal",
         "narrative.environmental_storytelling",
         "narrative.reputation_choice",
-        "roguelike.pick_one_upgrade_choice"
+        "roguelike.pick_one_upgrade_choice",
+        "ui_ux.dialogue_choice"
       ],
       "choices": [
         "narrative.reputation_gating"
@@ -8129,6 +8155,7 @@
         "meta.collection_log"
       ],
       "collision": [
+        "combat.knockback",
         "movement.crouch",
         "physics.one_way_platform",
         "platforming.drop_through_platform"
@@ -8160,16 +8187,17 @@
         "combat.shield",
         "combat.stealth_kill"
       ],
-      "combat_control": [
-        "combat.hit_stun",
-        "combat.knockback"
-      ],
       "combat_feedback": [
+        "ui_ux.damage_numbers",
         "ui_ux.hit_marker"
       ],
       "combo": [
         "combat.combo_chain",
+        "combat.hit_stun",
         "rhythm.combo_multiplier"
+      ],
+      "commitment": [
+        "combat.charged_attack"
       ],
       "companion": [
         "ai.companion_follow"
@@ -8245,6 +8273,9 @@
       "damage": [
         "combat.damage_over_time",
         "ui_ux.damage_numbers"
+      ],
+      "damage_modifier": [
+        "combat.critical_hit"
       ],
       "damage_reduction": [
         "combat.block"
@@ -8332,16 +8363,11 @@
       ],
       "feedback": [
         "camera.screen_shake",
+        "combat.critical_hit",
+        "combat.shield",
         "ui_ux.accessibility_remap_controls",
         "ui_ux.checkpoint_notification",
-        "ui_ux.cooldown_indicator",
-        "ui_ux.damage_numbers",
-        "ui_ux.dialogue_choice",
-        "ui_ux.inventory_grid",
-        "ui_ux.minimap",
-        "ui_ux.quest_marker",
-        "ui_ux.radial_menu",
-        "ui_ux.tutorial_prompt"
+        "ui_ux.cooldown_indicator"
       ],
       "first": [
         "camera.first_person_camera"
@@ -8367,6 +8393,9 @@
       ],
       "gacha": [
         "economy.gacha_pull"
+      ],
+      "gamepad": [
+        "ui_ux.radial_menu"
       ],
       "gating": [
         "narrative.reputation_gating"
@@ -8394,11 +8423,15 @@
       "hiding": [
         "horror.hiding"
       ],
-      "hit": [
-        "combat.hit_stun"
-      ],
       "hit_confirm": [
         "ui_ux.hit_marker"
+      ],
+      "hit_reaction": [
+        "combat.hit_stun",
+        "combat.knockback"
+      ],
+      "hit_stun": [
+        "combat.hit_stun"
       ],
       "hitbox": [
         "combat.melee_attack"
@@ -8419,6 +8452,9 @@
       "i_frames": [
         "movement.dash"
       ],
+      "icons": [
+        "ui_ux.minimap"
+      ],
       "idle": [
         "economy.idle_income"
       ],
@@ -8437,6 +8473,12 @@
         "combat.combo_chain",
         "platforming.jump_buffering"
       ],
+      "input_glyphs": [
+        "ui_ux.tutorial_prompt"
+      ],
+      "input_navigation": [
+        "ui_ux.inventory_grid"
+      ],
       "input_timing": [
         "platforming.coyote_time"
       ],
@@ -8445,15 +8487,7 @@
       ],
       "interface": [
         "ui_ux.accessibility_remap_controls",
-        "ui_ux.checkpoint_notification",
-        "ui_ux.cooldown_indicator",
-        "ui_ux.damage_numbers",
-        "ui_ux.dialogue_choice",
-        "ui_ux.inventory_grid",
-        "ui_ux.minimap",
-        "ui_ux.quest_marker",
-        "ui_ux.radial_menu",
-        "ui_ux.tutorial_prompt"
+        "ui_ux.checkpoint_notification"
       ],
       "inventory": [
         "crafting.crafting_queue",
@@ -8468,6 +8502,9 @@
       ],
       "invincibility": [
         "combat.invincibility_frames"
+      ],
+      "items": [
+        "ui_ux.inventory_grid"
       ],
       "jetpack": [
         "traversal.jetpack"
@@ -8513,6 +8550,9 @@
       "local": [
         "multiplayer.local_coop"
       ],
+      "localization": [
+        "ui_ux.dialogue_choice"
+      ],
       "locomotion": [
         "movement.prone",
         "movement.run",
@@ -8538,6 +8578,12 @@
       "mantling": [
         "traversal.mantling"
       ],
+      "map": [
+        "ui_ux.minimap"
+      ],
+      "marker": [
+        "ui_ux.quest_marker"
+      ],
       "matchmaking": [
         "multiplayer.matchmaking_lobby"
       ],
@@ -8553,9 +8599,6 @@
         "meta.new_game_plus",
         "meta.player_profile_stats",
         "progression.meta_progression"
-      ],
-      "minimap": [
-        "ui_ux.minimap"
       ],
       "mirror": [
         "puzzle.mirror_light_reflection"
@@ -8615,7 +8658,8 @@
         "narrative.codex_journal",
         "narrative.environmental_storytelling",
         "narrative.reputation_choice",
-        "narrative.reputation_gating"
+        "narrative.reputation_gating",
+        "ui_ux.dialogue_choice"
       ],
       "navigation": [
         "ai.patrol",
@@ -8628,10 +8672,15 @@
         "traversal.rope_swing",
         "traversal.teleport_blink",
         "traversal.vehicle_mount",
-        "traversal.zipline"
+        "traversal.zipline",
+        "ui_ux.minimap",
+        "ui_ux.quest_marker"
       ],
       "needs": [
         "simulation.needs_simulation"
+      ],
+      "network_prediction": [
+        "ui_ux.hit_marker"
       ],
       "new": [
         "meta.new_game_plus"
@@ -8643,10 +8692,11 @@
       "note": [
         "rhythm.note_lane"
       ],
-      "offense": [
-        "combat.area_of_effect_attack",
-        "combat.charged_attack",
-        "combat.critical_hit"
+      "numbers": [
+        "ui_ux.damage_numbers"
+      ],
+      "onboarding": [
+        "ui_ux.tutorial_prompt"
       ],
       "online": [
         "multiplayer.online_coop"
@@ -8797,7 +8847,7 @@
       "quest": [
         "ui_ux.quest_marker"
       ],
-      "radial": [
+      "radial_menu": [
         "ui_ux.radial_menu"
       ],
       "ragdoll": [
@@ -8808,6 +8858,7 @@
         "roguelike.random_powerups"
       ],
       "randomness": [
+        "combat.critical_hit",
         "economy.loot_table",
         "roguelike.pick_one_upgrade_choice"
       ],
@@ -8828,10 +8879,14 @@
         "camera.smooth_follow_camera",
         "camera.split_screen",
         "camera.third_person_camera",
-        "camera.top_down_camera"
+        "camera.top_down_camera",
+        "ui_ux.cooldown_indicator"
       ],
       "recipe": [
         "crafting.recipe_crafting"
+      ],
+      "reflection": [
+        "combat.projectile_reflection"
       ],
       "refund": [
         "progression.respec"
@@ -8860,6 +8915,7 @@
       ],
       "resource": [
         "combat.reload",
+        "combat.shield",
         "economy.resource_conversion"
       ],
       "resource_management": [
@@ -8968,6 +9024,9 @@
         "procedural_generation.procedural_terrain",
         "procedural_generation.seeded_generation"
       ],
+      "selection": [
+        "ui_ux.radial_menu"
+      ],
       "semisolid": [
         "physics.one_way_platform"
       ],
@@ -9042,7 +9101,11 @@
       "sound": [
         "horror.sound_lure"
       ],
+      "space_control": [
+        "combat.area_of_effect_attack"
+      ],
       "spacing": [
+        "combat.knockback",
         "combat.melee_attack"
       ],
       "split": [
@@ -9050,6 +9113,7 @@
       ],
       "stagger": [
         "combat.guard_break",
+        "combat.hit_stun",
         "combat.parry"
       ],
       "stamina": [
@@ -9144,6 +9208,9 @@
       "tech": [
         "strategy.tech_tree"
       ],
+      "telegraph": [
+        "combat.area_of_effect_attack"
+      ],
       "teleport": [
         "traversal.teleport_blink"
       ],
@@ -9192,16 +9259,11 @@
         "combat.damage_over_time"
       ],
       "timing": [
-        "combat.area_of_effect_attack",
         "combat.charged_attack",
-        "combat.critical_hit",
-        "combat.hit_stun",
         "combat.invincibility_frames",
-        "combat.knockback",
         "combat.melee_attack",
         "combat.parry",
         "combat.projectile_reflection",
-        "combat.shield",
         "rhythm.beat_matching",
         "rhythm.combo_multiplier",
         "rhythm.note_lane",
@@ -9237,20 +9299,20 @@
       ],
       "ui": [
         "stealth.visibility_meter",
-        "ui_ux.hit_marker",
-        "ui_ux.interaction_prompt"
-      ],
-      "ui_ux": [
-        "ui_ux.accessibility_remap_controls",
-        "ui_ux.checkpoint_notification",
         "ui_ux.cooldown_indicator",
         "ui_ux.damage_numbers",
         "ui_ux.dialogue_choice",
+        "ui_ux.hit_marker",
+        "ui_ux.interaction_prompt",
         "ui_ux.inventory_grid",
         "ui_ux.minimap",
         "ui_ux.quest_marker",
         "ui_ux.radial_menu",
         "ui_ux.tutorial_prompt"
+      ],
+      "ui_ux": [
+        "ui_ux.accessibility_remap_controls",
+        "ui_ux.checkpoint_notification"
       ],
       "unit": [
         "strategy.unit_counter_system"

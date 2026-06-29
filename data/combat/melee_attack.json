@@ -25,8 +25,8 @@
     "fighting",
     "beat_em_up"
   ],
-  "description": "A close-range attack that uses a hitbox, weapon arc, or contact trace near the attacker.",
-  "design_notes": "Melee attacks are built from timing, reach, facing, collision, recovery, and hit reaction. A useful melee entry should define startup, active frames, cancel rules, target filtering, and how the game communicates range. Weapon feel often comes from hit stop, sound, camera response, and enemy reaction as much as damage numbers.",
+  "description": "A close-range attack that uses a hitbox, weapon arc, overlap volume, or trace near the attacker.",
+  "design_notes": "Melee attacks are built from timing, reach, facing, collision, recovery, and hit reaction. A useful melee design defines startup, active frames, cancel rules, target filtering, and how the game communicates range. Weapon feel comes from hit stop, sound, camera response, and enemy reaction as much as damage values.",
   "design_purpose": [
     "Give the player a direct close-range way to apply pressure or defeat enemies.",
     "Create spacing decisions through reach, startup, recovery, and hit stun.",
@@ -66,6 +66,12 @@
       "description": "Reach of the attack in front of the actor."
     },
     {
+      "name": "hitbox_arc_degrees",
+      "type": "float",
+      "typical_range": "10-180 degrees",
+      "description": "Horizontal or vertical arc covered by the attack."
+    },
+    {
       "name": "hit_stop_frames_on_connect",
       "type": "integer",
       "typical_range": "0-12 frames",
@@ -82,7 +88,7 @@
   ],
   "edge_cases": [
     "Fast movement during active frames should not let the hitbox skip through small targets.",
-    "The same swing must define whether it can hit one target once, many targets once, or the same target repeatedly.",
+    "One swing must define whether it can hit one target once, many targets once, or the same target repeatedly.",
     "Attacking near walls should handle weapon clipping and blocked arcs consistently.",
     "Animation cancel, parry, dodge, and hit stun must agree on when the attack is interruptible."
   ],
@@ -101,10 +107,10 @@
     "Avoid requiring hidden animation-frame knowledge for basic attacks; reserve tight cancels for advanced mastery."
   ],
   "implementation_notes": {
-    "unity": "Model startup, active, recovery, and cancel windows as data, then drive hitboxes, animation events, and damage application from one combat state source. For Melee Attack, validate this path with parameters such as melee_startup_frames and melee_active_frames.",
-    "godot": "Use Area2D or Area3D hit volumes with frame-window state on the actor; avoid placing damage authority inside animation-only callbacks. For Melee Attack, validate this path with parameters such as melee_startup_frames and melee_active_frames.",
-    "unreal": "Implement the action as a Gameplay Ability or Actor Component with montage notifies for windows and authoritative damage on the server when networked. For Melee Attack, validate this path with parameters such as melee_startup_frames and melee_active_frames.",
-    "web": "Update combat windows in the fixed simulation step, evaluate hurtbox overlap from cached transforms, and emit presentation events separately from damage state. For Melee Attack, validate this path with parameters such as melee_startup_frames and melee_active_frames."
+    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
+    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
+    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
+    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
   },
   "related_mechanics": [
     "combat.combo_chain",
@@ -118,7 +124,16 @@
     "combat.parry",
     "ui_ux.hit_marker"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Devil May Cry 5",
+      "note": "Uses melee attacks with varied timing, arcs, and cancel routes."
+    },
+    {
+      "title": "Hades",
+      "note": "Uses close-range attacks with strong hit feedback and enemy reactions."
+    }
+  ],
   "tags": [
     "combat",
     "hitbox",

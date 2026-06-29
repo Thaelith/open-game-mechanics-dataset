@@ -2,12 +2,12 @@
   "id": "combat.projectile_reflection",
   "name": "Projectile Reflection",
   "aliases": [
-    "projectile reflection mechanic",
-    "projectile reflection system",
-    "projectile reflection"
+    "reflect projectile",
+    "deflect projectile",
+    "return shot"
   ],
   "category": "combat",
-  "subcategory": "defense",
+  "subcategory": "projectile_defense",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,113 @@
     "rpg",
     "fighting"
   ],
-  "description": "Projectile Reflection is an interaction that creates threat, defense, damage, timing, or tactical pressure during conflict.",
-  "design_notes": "Projectile Reflection should be designed around a clear player promise, a readable trigger, and a predictable result. For combat mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A defensive or reactive action that redirects an incoming projectile back, away, or toward a new target.",
+  "design_notes": "Projectile reflection is satisfying when eligibility, timing, and new ownership are clear. It should define reflectable projectile types, timing windows, new direction, damage ownership, and whether reflected shots can be reflected again.",
   "design_purpose": [
-    "Give the player a readable way to use projectile reflection as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect projectile reflection to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Turn ranged pressure into a timing or positioning opportunity.",
+    "Reward players for reading projectile speed and attack direction.",
+    "Create counterplay against enemies or players who rely on ranged attacks."
   ],
-  "player_fantasy": "The player feels powerful, skillful, and able to read danger under pressure.",
+  "player_fantasy": "The player feels skillful and untouchable when enemy fire becomes their weapon.",
   "required_systems": [
-    "combat_state_machine",
+    "projectile_system",
+    "reflection_window",
+    "ownership_rules",
     "hit_detection",
-    "damage_model",
-    "animation_events"
+    "feedback_system"
   ],
   "parameters": [
     {
-      "name": "damage_value",
+      "name": "reflection_active_window_ms",
       "type": "integer",
-      "typical_range": "1-250",
-      "description": "Base amount of damage or threat applied by the mechanic."
+      "typical_range": "60-400 ms",
+      "description": "Window in which incoming projectiles can be reflected."
     },
     {
-      "name": "startup_time",
-      "type": "float",
-      "typical_range": "0.05-1.2 seconds",
-      "description": "Delay before the active effect begins."
+      "name": "reflectable_projectile_tag_ids",
+      "type": "array",
+      "typical_range": "1-50 tags",
+      "description": "Projectile tags eligible for reflection."
     },
     {
-      "name": "recovery_time",
+      "name": "reflected_speed_multiplier",
       "type": "float",
-      "typical_range": "0.05-1.5 seconds",
-      "description": "Delay after use before the actor can fully act again."
+      "typical_range": "0.5-3.0",
+      "description": "Velocity multiplier applied after reflection."
+    },
+    {
+      "name": "reflected_damage_multiplier",
+      "type": "float",
+      "typical_range": "0-3.0",
+      "description": "Damage multiplier applied to reflected projectiles."
+    },
+    {
+      "name": "reflection_angle_tolerance_degrees",
+      "type": "float",
+      "typical_range": "0-180 degrees",
+      "description": "Allowed incoming angle relative to defender facing."
     }
   ],
   "common_variants": [
-    "projectile_reflection_light_version",
-    "projectile_reflection_heavy_version",
-    "timed_version",
-    "resource_limited_version"
+    "timed_reflect",
+    "shield_reflect",
+    "melee_deflect",
+    "auto_reflect_barrier",
+    "perfect_reflect"
   ],
   "edge_cases": [
-    "Projectile Reflection is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Projectile Reflection overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Projectile Reflection runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Explosive, homing, beam, hitscan, and area projectiles need explicit reflect eligibility.",
+    "Ownership transfer must prevent reflected shots from damaging the reflector's allies unless intended.",
+    "Reflecting a projectile on the same frame it expires or hits another target needs ordering rules.",
+    "Infinite reflection loops need bounce limits or state changes."
   ],
   "common_bugs": [
-    "Projectile Reflection state does not reset correctly after interruption or reload.",
-    "Feedback for Projectile Reflection plays even when the mechanic fails or is rejected.",
-    "Projectile Reflection produces different results between frame rates, platforms, or network clients."
+    "Projectile changes direction visually but damage owner remains the original attacker.",
+    "Reflected projectile immediately collides with the reflector because it spawns inside their collider.",
+    "Homing projectiles keep tracking the player after reflection.",
+    "Reflection uses client timing and fails under latency even when feedback shows success."
   ],
   "balancing_notes": [
-    "Make Projectile Reflection strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Wide reflection windows can invalidate ranged enemies unless limited by stamina, cooldown, angle, or projectile tags.",
+    "Reflect damage multipliers should be tuned against enemy health and projectile frequency."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Projectile Reflection becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use readable projectile silhouettes and reflect cues when timing is required.",
+    "Offer alternate defenses if reflection is mandatory and depends on very narrow timing."
   ],
   "implementation_notes": {
-    "unity": "Implement Projectile Reflection with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Projectile Reflection as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Projectile Reflection with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Projectile Reflection as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
+    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
+    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
+    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
   },
   "related_mechanics": [
-    "camera.screen_shake",
-    "combat.melee_attack",
+    "combat.parry",
+    "combat.block",
     "combat.ranged_attack",
-    "ui_ux.damage_numbers"
+    "combat.shield"
   ],
   "combines_well_with": [
+    "ui_ux.hit_marker",
     "camera.screen_shake",
-    "combat.charged_attack",
-    "combat.combo_chain",
-    "ui_ux.damage_numbers"
+    "combat.guard_break"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Legend of Zelda: Ocarina of Time",
+      "note": "Uses projectile reflection in boss and enemy encounters."
+    },
+    {
+      "title": "Overwatch",
+      "note": "Uses Genji's Deflect to redirect incoming projectiles."
+    }
+  ],
   "tags": [
     "combat",
-    "defense",
     "projectile",
-    "timing"
+    "reflection",
+    "timing",
+    "defense"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

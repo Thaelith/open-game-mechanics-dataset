@@ -25,19 +25,20 @@
     "action",
     "simulation"
   ],
-  "description": "A contextual UI cue that tells the player an object, character, or action can be used.",
-  "design_notes": "Interaction prompts connect world affordances to input. They should prioritize nearby candidates, show the correct binding, and avoid flickering when multiple objects overlap.",
+  "description": "A contextual UI cue that identifies the current interactable object and the input needed to use it.",
+  "design_notes": "Interaction prompts sit between world affordances and input. They should be stable, localized, remap-aware, and honest about what will happen when the player presses the button. Candidate selection is often the hard part, especially in dense scenes.",
   "design_purpose": [
-    "Reveal available interactions at the right moment.",
-    "Reduce confusion around interactable objects.",
-    "Support keyboard, gamepad, touch, and remapped controls."
+    "Reveal available interactions at the moment they are reachable.",
+    "Disambiguate which nearby object will respond to the input.",
+    "Communicate hold, tap, disabled, risky, or contextual action requirements."
   ],
-  "player_fantasy": "The player feels the world is readable and responsive to their intent.",
+  "player_fantasy": "The player feels the world is readable and responds to intentional interaction.",
   "required_systems": [
     "interaction_query",
     "input_glyphs",
     "ui_framework",
-    "localization_support"
+    "localization_support",
+    "candidate_priority"
   ],
   "parameters": [
     {
@@ -47,10 +48,10 @@
       "description": "Distance where a candidate can show a prompt."
     },
     {
-      "name": "candidate_priority_rule",
-      "type": "string",
-      "typical_range": "distance, facing, quest, recency",
-      "description": "Rule used to choose among overlapping interactions."
+      "name": "candidate_stability_ms",
+      "type": "integer",
+      "typical_range": "100-600 ms",
+      "description": "Minimum time before switching to a newly preferred candidate."
     },
     {
       "name": "prompt_fade_ms",
@@ -63,46 +64,57 @@
       "type": "integer",
       "typical_range": "0-1500 ms",
       "description": "Optional hold requirement for risky interactions."
+    },
+    {
+      "name": "facing_priority_weight",
+      "type": "float",
+      "typical_range": "0-1",
+      "description": "Weight given to camera or character facing when selecting a candidate."
     }
   ],
   "common_variants": [
     "button_prompt",
     "hold_prompt",
-    "radial_interaction_prompt",
-    "diegetic_prompt"
+    "disabled_prompt",
+    "diegetic_prompt",
+    "multi_action_prompt"
   ],
   "edge_cases": [
-    "Multiple interactables in one area need stable selection and cycling.",
-    "Prompts must update after control remapping or device change.",
-    "Dangerous interactions may need confirmation while normal pickups do not."
+    "Overlapping interactables need stable candidate selection and optional cycling.",
+    "A target can become invalid after button press but before hold completion.",
+    "Prompts must update when controls are remapped or input devices change.",
+    "Prompt placement should avoid hiding subtitles, crosshairs, or loot labels."
   ],
   "common_bugs": [
-    "Prompt displays one binding while input system expects another.",
-    "Prompt flickers at distance boundary without hysteresis.",
-    "Interact target changes after button press but before action resolves."
+    "Prompt displays one binding while the input system expects another.",
+    "Focus flickers between objects at the edge of activation distance.",
+    "The prompt says open but the interaction performs pick up because candidate data is stale.",
+    "Hold progress keeps filling after the target leaves range."
   ],
   "balancing_notes": [
-    "Too many prompts create UI noise; too few make affordances invisible.",
-    "Hold prompts should be reserved for actions that need confirmation."
+    "More prompts improve readability but can make the world feel like a checklist.",
+    "Hold prompts should be reserved for destructive, costly, or long-duration interactions."
   ],
   "accessibility_notes": [
-    "Support text scaling, input glyph alternatives, and optional hold-to-toggle behavior for long interactions."
+    "Support text scaling, remapped glyphs, hold/toggle alternatives, and high-contrast prompt backgrounds.",
+    "Do not rely only on proximity; combine world highlight, text, and prompt positioning where possible."
   ],
   "implementation_notes": {
-    "unity": "Collect nearby IInteractable components through trigger volumes or camera rays, rank them by facing and distance, and display the active Input System binding for the chosen action.",
-    "godot": "Use Area2D/Area3D or raycasts to maintain candidate interactables, select one stable focus target, and update a Control node with localized action text.",
-    "unreal": "Expose interactables through interfaces or Gameplay Tags, select focus from trace and overlap data, then render platform glyphs through CommonUI or UMG.",
-    "web": "Keep interactable candidates and current input mapping in game state, choose a stable focus target, and render prompts from the same action IDs consumed by input."
+    "unity": "Bind the UI to gameplay state through events or observable view models, not direct polling from presentation widgets; support UI Toolkit, uGUI, and input glyph updates from the active Input System scheme.",
+    "godot": "Drive Control nodes from a small view-model dictionary or signal payload, and keep input focus, localization, and scaling separate from gameplay state.",
+    "unreal": "Use UMG or CommonUI widgets fed by gameplay events, with focus navigation, platform glyphs, and replicated-state boundaries handled outside widget animation code.",
+    "web": "Render the UI from normalized game state, keep input mapping and localization data outside component logic, and avoid making animation completion the source of truth."
   },
   "related_mechanics": [
     "accessibility.toggle_hold_option",
     "ui_ux.tutorial_prompt",
-    "combat.stealth_kill"
+    "combat.stealth_kill",
+    "puzzle.lever_switch"
   ],
   "combines_well_with": [
-    "puzzle.lever_switch",
     "narrative.branching_dialogue",
-    "survival.base_building"
+    "survival.base_building",
+    "crafting.workbench"
   ],
   "example_games": [
     {

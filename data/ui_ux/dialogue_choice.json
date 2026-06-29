@@ -2,12 +2,12 @@
   "id": "ui_ux.dialogue_choice",
   "name": "Dialogue Choice",
   "aliases": [
-    "dialogue choice mechanic",
-    "dialogue choice system",
-    "dialogue choice"
+    "conversation choice",
+    "dialogue option",
+    "branching choice"
   ],
   "category": "ui_ux",
-  "subcategory": "ui_ux",
+  "subcategory": "narrative_interface",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,113 @@
     "strategy",
     "action"
   ],
-  "description": "Dialogue Choice is an interface mechanic that presents game state, accepts decisions, or reduces player friction.",
-  "design_notes": "Dialogue Choice should be designed around a clear player promise, a readable trigger, and a predictable result. For ui ux mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A UI interaction where the player selects a response or decision during dialogue.",
+  "design_notes": "Dialogue choices should communicate tone, consequence, and availability without overloading the player. The UI must handle locked choices, timed responses, history, controller focus, localization, and consequences that may appear later.",
   "design_purpose": [
-    "Give the player a readable way to use dialogue choice as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect dialogue choice to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players express intent or role-play through conversation.",
+    "Expose narrative branches, skill checks, costs, or reputation gates.",
+    "Make dialogue state readable while preserving story pacing."
   ],
-  "player_fantasy": "The player feels informed without fighting the interface.",
+  "player_fantasy": "The player feels their words and social choices can shape the scene.",
   "required_systems": [
+    "dialogue_system",
+    "choice_state",
     "ui_framework",
-    "game_state_binding",
-    "input_navigation",
-    "localization_support"
+    "localization_support",
+    "input_navigation"
   ],
   "parameters": [
     {
-      "name": "display_duration",
-      "type": "float",
-      "typical_range": "0.2-15 seconds",
-      "description": "How long the interface element remains visible after triggering."
-    },
-    {
-      "name": "priority_level",
+      "name": "choice_count",
       "type": "integer",
-      "typical_range": "1-5",
-      "description": "Layering or importance compared with other UI messages."
+      "typical_range": "1-8 choices",
+      "description": "Number of visible dialogue options."
     },
     {
-      "name": "input_focus_mode",
+      "name": "timed_choice_seconds",
+      "type": "float",
+      "typical_range": "0-30 seconds",
+      "description": "Optional deadline before a default or silence choice is selected."
+    },
+    {
+      "name": "locked_choice_visibility",
       "type": "string",
-      "typical_range": "mouse, keyboard, gamepad, touch, mixed",
-      "description": "Control mode the UI must support cleanly."
+      "typical_range": "hidden, disabled, shown_with_requirement",
+      "description": "How unavailable choices are displayed."
+    },
+    {
+      "name": "choice_preview_detail",
+      "type": "string",
+      "typical_range": "tone, exact_text, consequence_hint",
+      "description": "How much meaning the UI reveals before selection."
+    },
+    {
+      "name": "dialogue_history_lines",
+      "type": "integer",
+      "typical_range": "0-50 lines",
+      "description": "Conversation history retained for review."
     }
   ],
   "common_variants": [
-    "dialogue_choice_minimal_variant",
-    "dialogue_choice_diegetic_variant",
-    "persistent_variant",
-    "contextual_variant"
+    "branching_choice",
+    "timed_dialogue_choice",
+    "skill_check_choice",
+    "reputation_locked_choice",
+    "tone_wheel"
   ],
   "edge_cases": [
-    "Dialogue Choice is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Dialogue Choice overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Dialogue Choice runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Timed choices during pause, subtitle review, or accessibility menus need fair timer behavior.",
+    "Locked choices should not leak spoilers unless the design intentionally shows requirements.",
+    "Voiceover, subtitle text, and abbreviated choice labels can imply different meanings if not reviewed together.",
+    "Networked or co-op dialogue needs rules for who chooses and whether others can vote."
   ],
   "common_bugs": [
-    "Dialogue Choice state does not reset correctly after interruption or reload.",
-    "Feedback for Dialogue Choice plays even when the mechanic fails or is rejected.",
-    "Dialogue Choice produces different results between frame rates, platforms, or network clients."
+    "Controller focus defaults to a destructive or costly choice.",
+    "Choice requirements are checked for display but not again when selected.",
+    "Localized text overflows and hides cost or reputation requirements.",
+    "Dialogue state advances before save data records the selected branch."
   ],
   "balancing_notes": [
-    "Make Dialogue Choice strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Showing exact consequences supports planning; hiding them supports role-play and uncertainty.",
+    "Skill or reputation choices should feel like payoff for prior investment, not mandatory optimal routes."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Dialogue Choice becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Support subtitle sizing, dialogue history, timer disable options, and clear focus indicators.",
+    "Avoid presenting tone icons without text labels for players who cannot infer icon meaning."
   ],
   "implementation_notes": {
-    "unity": "Implement Dialogue Choice with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Dialogue Choice as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Dialogue Choice with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Dialogue Choice as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Bind the UI to gameplay state through events or observable view models, not direct polling from presentation widgets; support UI Toolkit, uGUI, and input glyph updates from the active Input System scheme.",
+    "godot": "Drive Control nodes from a small view-model dictionary or signal payload, and keep input focus, localization, and scaling separate from gameplay state.",
+    "unreal": "Use UMG or CommonUI widgets fed by gameplay events, with focus navigation, platform glyphs, and replicated-state boundaries handled outside widget animation code.",
+    "web": "Render the UI from normalized game state, keep input mapping and localization data outside component logic, and avoid making animation completion the source of truth."
   },
   "related_mechanics": [
-    "accessibility.text_scaling",
-    "camera.camera_zoom",
-    "ui_ux.minimap",
-    "ui_ux.quest_marker"
+    "narrative.branching_dialogue",
+    "narrative.reputation_gating",
+    "narrative.reputation_choice",
+    "ui_ux.tutorial_prompt"
   ],
   "combines_well_with": [
-    "accessibility.text_scaling",
-    "camera.camera_zoom",
-    "ui_ux.cooldown_indicator",
-    "ui_ux.damage_numbers"
+    "progression.skill_tree",
+    "economy.shop",
+    "accessibility.text_scaling"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Mass Effect",
+      "note": "Uses dialogue choices to steer tone and narrative outcomes."
+    },
+    {
+      "title": "Disco Elysium",
+      "note": "Uses dialogue choices with skill and character-state checks."
+    }
+  ],
   "tags": [
+    "ui",
     "dialogue",
-    "feedback",
-    "interface",
-    "ui_ux"
+    "narrative",
+    "choice",
+    "localization"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

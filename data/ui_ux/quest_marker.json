@@ -2,12 +2,12 @@
   "id": "ui_ux.quest_marker",
   "name": "Quest Marker",
   "aliases": [
-    "quest marker mechanic",
-    "quest marker system",
-    "quest marker"
+    "objective marker",
+    "quest waypoint",
+    "mission marker"
   ],
   "category": "ui_ux",
-  "subcategory": "ui_ux",
+  "subcategory": "navigation_interface",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,113 @@
     "strategy",
     "action"
   ],
-  "description": "Quest Marker is an interface mechanic that presents game state, accepts decisions, or reduces player friction.",
-  "design_notes": "Quest Marker should be designed around a clear player promise, a readable trigger, and a predictable result. For ui ux mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A UI marker that points players toward an objective, point of interest, or quest-relevant target.",
+  "design_notes": "Quest markers guide attention, but they can also flatten exploration. The design should decide whether markers show exact positions, approximate areas, distance, verticality, objective state, and whether players can disable or filter them.",
   "design_purpose": [
-    "Give the player a readable way to use quest marker as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect quest marker to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Help players locate active objectives without searching menus repeatedly.",
+    "Communicate objective distance, direction, and completion state.",
+    "Reduce navigation friction while preserving discovery where desired."
   ],
-  "player_fantasy": "The player feels informed without fighting the interface.",
+  "player_fantasy": "The player feels oriented toward their chosen goal without losing track of the world.",
   "required_systems": [
+    "quest_state",
+    "world_marker_system",
     "ui_framework",
-    "game_state_binding",
-    "input_navigation",
-    "localization_support"
+    "map_system",
+    "accessibility_settings"
   ],
   "parameters": [
     {
-      "name": "display_duration",
-      "type": "float",
-      "typical_range": "0.2-15 seconds",
-      "description": "How long the interface element remains visible after triggering."
-    },
-    {
-      "name": "priority_level",
+      "name": "marker_screen_edge_padding",
       "type": "integer",
-      "typical_range": "1-5",
-      "description": "Layering or importance compared with other UI messages."
+      "typical_range": "8-96 pixels",
+      "description": "Padding used when clamping offscreen markers to screen edges."
     },
     {
-      "name": "input_focus_mode",
-      "type": "string",
-      "typical_range": "mouse, keyboard, gamepad, touch, mixed",
-      "description": "Control mode the UI must support cleanly."
+      "name": "objective_area_radius",
+      "type": "float",
+      "typical_range": "0-200 world units",
+      "description": "Approximate search area shown instead of exact point."
+    },
+    {
+      "name": "distance_label_threshold",
+      "type": "float",
+      "typical_range": "5-5000 world units",
+      "description": "Distance range where numeric labels should be shown."
+    },
+    {
+      "name": "vertical_offset_indicator",
+      "type": "boolean",
+      "typical_range": "true or false",
+      "description": "Whether markers indicate above/below relationship."
+    },
+    {
+      "name": "marker_priority_weight",
+      "type": "integer",
+      "typical_range": "1-100",
+      "description": "Ordering weight when multiple quest markers compete for attention."
     }
   ],
   "common_variants": [
-    "quest_marker_minimal_variant",
-    "quest_marker_diegetic_variant",
-    "persistent_variant",
-    "contextual_variant"
+    "world_space_marker",
+    "compass_marker",
+    "map_marker",
+    "area_objective_marker",
+    "diegetic_marker"
   ],
   "edge_cases": [
-    "Quest Marker is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Quest Marker overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Quest Marker runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Objectives inside caves, buildings, or stacked floors need vertical and pathing cues, not only straight-line direction.",
+    "Multiple active quests can flood the HUD unless filtered or prioritized.",
+    "Moving objectives and NPCs need marker smoothing without lying about position.",
+    "Markers should handle hidden, failed, completed, and optional objectives distinctly."
   ],
   "common_bugs": [
-    "Quest Marker state does not reset correctly after interruption or reload.",
-    "Feedback for Quest Marker plays even when the mechanic fails or is rejected.",
-    "Quest Marker produces different results between frame rates, platforms, or network clients."
+    "Marker points to world origin after the quest target despawns.",
+    "Straight-line distance sends players toward cliffs or locked doors without context.",
+    "Completed markers remain on compass because quest state and marker state update in different systems.",
+    "Offscreen clamping overlaps subtitles or critical combat UI."
   ],
   "balancing_notes": [
-    "Make Quest Marker strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Exact markers reduce friction but can remove exploration and environmental reading.",
+    "Area markers preserve mystery while still giving players enough direction to proceed."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Quest Marker becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use shape, text, and distance labels in addition to color, and provide marker size/opacity settings.",
+    "Allow players to reduce marker clutter or pin only one objective at a time."
   ],
   "implementation_notes": {
-    "unity": "Implement Quest Marker with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Quest Marker as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Quest Marker with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Quest Marker as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Bind the UI to gameplay state through events or observable view models, not direct polling from presentation widgets; support UI Toolkit, uGUI, and input glyph updates from the active Input System scheme.",
+    "godot": "Drive Control nodes from a small view-model dictionary or signal payload, and keep input focus, localization, and scaling separate from gameplay state.",
+    "unreal": "Use UMG or CommonUI widgets fed by gameplay events, with focus navigation, platform glyphs, and replicated-state boundaries handled outside widget animation code.",
+    "web": "Render the UI from normalized game state, keep input mapping and localization data outside component logic, and avoid making animation completion the source of truth."
   },
   "related_mechanics": [
-    "accessibility.text_scaling",
-    "camera.camera_zoom",
-    "ui_ux.cooldown_indicator",
-    "ui_ux.minimap"
+    "ui_ux.minimap",
+    "narrative.codex_journal",
+    "narrative.branching_dialogue",
+    "ui_ux.checkpoint_notification"
   ],
   "combines_well_with": [
-    "accessibility.text_scaling",
-    "camera.camera_zoom",
-    "ui_ux.damage_numbers",
-    "ui_ux.inventory_grid"
+    "progression.achievement_system",
+    "procedural_generation.procedural_quests",
+    "accessibility.text_scaling"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Elder Scrolls V: Skyrim",
+      "note": "Uses compass and map quest markers to guide objectives."
+    },
+    {
+      "title": "The Witcher 3: Wild Hunt",
+      "note": "Uses tracked quest markers and minimap routing for objectives."
+    }
+  ],
   "tags": [
-    "feedback",
-    "interface",
+    "ui",
+    "navigation",
     "quest",
-    "ui_ux"
+    "marker",
+    "accessibility"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

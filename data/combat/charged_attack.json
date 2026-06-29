@@ -2,12 +2,12 @@
   "id": "combat.charged_attack",
   "name": "Charged Attack",
   "aliases": [
-    "charged attack mechanic",
-    "charged attack system",
-    "charged attack"
+    "held attack",
+    "charge strike",
+    "power attack"
   ],
   "category": "combat",
-  "subcategory": "offense",
+  "subcategory": "commitment_offense",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,114 @@
     "rpg",
     "fighting"
   ],
-  "description": "Charged Attack is an interaction that creates threat, defense, damage, timing, or tactical pressure during conflict.",
-  "design_notes": "Charged Attack should be designed around a clear player promise, a readable trigger, and a predictable result. For combat mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "An attack that grows, changes, or unlocks after the player holds input for a defined charge window.",
+  "design_notes": "Charged attacks trade time and vulnerability for stronger payoff. The mechanic needs clear charge levels, release rules, interruption behavior, and feedback for undercharged, fully charged, and overcharged states.",
   "design_purpose": [
-    "Give the player a readable way to use charged attack as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect charged attack to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create a deliberate offensive option that rewards timing and commitment.",
+    "Let players convert a safe opening into higher damage, range, stagger, or utility.",
+    "Add tension around whether to release early, hold longer, or cancel defensively."
   ],
-  "player_fantasy": "The player feels powerful, skillful, and able to read danger under pressure.",
+  "player_fantasy": "The player feels power building in their hands before releasing a decisive strike.",
   "required_systems": [
     "combat_state_machine",
-    "hit_detection",
+    "input_hold_tracking",
+    "charge_feedback",
     "damage_model",
-    "animation_events"
+    "interruption_rules"
   ],
   "parameters": [
     {
-      "name": "damage_value",
+      "name": "min_charge_ms",
       "type": "integer",
-      "typical_range": "1-250",
-      "description": "Base amount of damage or threat applied by the mechanic."
+      "typical_range": "150-700 ms",
+      "description": "Hold duration required before the attack gains a charged effect."
     },
     {
-      "name": "startup_time",
-      "type": "float",
-      "typical_range": "0.05-1.2 seconds",
-      "description": "Delay before the active effect begins."
+      "name": "full_charge_ms",
+      "type": "integer",
+      "typical_range": "500-2500 ms",
+      "description": "Hold duration required for full charge payoff."
     },
     {
-      "name": "recovery_time",
+      "name": "overcharge_window_ms",
+      "type": "integer",
+      "typical_range": "0-1500 ms",
+      "description": "Optional window before charge decays, fires, or penalizes the player."
+    },
+    {
+      "name": "charge_damage_multiplier",
       "type": "float",
-      "typical_range": "0.05-1.5 seconds",
-      "description": "Delay after use before the actor can fully act again."
+      "typical_range": "1.1-5.0",
+      "description": "Damage multiplier at full charge."
+    },
+    {
+      "name": "movement_multiplier_while_charging",
+      "type": "float",
+      "typical_range": "0-1",
+      "description": "Movement speed multiplier while holding the charge."
     }
   ],
   "common_variants": [
-    "charged_attack_light_version",
-    "charged_attack_heavy_version",
-    "timed_version",
-    "resource_limited_version"
+    "single_level_charge",
+    "multi_level_charge",
+    "release_to_fire",
+    "auto_release_overcharge",
+    "charge_cancel_attack"
   ],
   "edge_cases": [
-    "Charged Attack is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Charged Attack overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Charged Attack runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Damage, stun, dodge, weapon swap, or resource loss during charge must define cancel and refund behavior.",
+    "Charge state during pause, slow motion, or hit stop should use one clock.",
+    "Input release on the same frame as full charge needs deterministic level selection.",
+    "Multiplayer prediction should not show full charge if the server rejects the hold duration."
   ],
   "common_bugs": [
-    "Charged Attack state does not reset correctly after interruption or reload.",
-    "Feedback for Charged Attack plays even when the mechanic fails or is rejected.",
-    "Charged Attack produces different results between frame rates, platforms, or network clients."
+    "Charge continues after the button is released because input-up events are missed during UI focus changes.",
+    "Charge damage stacks every frame after full charge and exceeds intended multiplier.",
+    "Animation shows full charge but combat metadata still uses undercharged values.",
+    "Canceling charge leaves movement slow or aim locked."
   ],
   "balancing_notes": [
-    "Make Charged Attack strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Higher charge payoff should come with exposure, resource cost, clear telegraphing, or reduced mobility.",
+    "Partial-charge usefulness prevents the mechanic from feeling binary and wasted when interrupted."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Charged Attack becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer hold/toggle or charge-confirm alternatives where long button holds are common.",
+    "Use audio, visual, and haptic cues for charge levels rather than relying on small particles alone."
   ],
   "implementation_notes": {
-    "unity": "Implement Charged Attack with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Charged Attack as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Charged Attack with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Charged Attack as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
+    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
+    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
+    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
   },
   "related_mechanics": [
-    "camera.screen_shake",
     "combat.melee_attack",
     "combat.ranged_attack",
-    "ui_ux.damage_numbers"
+    "combat.combo_chain",
+    "accessibility.toggle_hold_option"
   ],
   "combines_well_with": [
     "camera.screen_shake",
-    "combat.combo_chain",
-    "combat.parry",
-    "ui_ux.damage_numbers"
+    "combat.guard_break",
+    "ui_ux.cooldown_indicator",
+    "ui_ux.hit_marker"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Mega Man",
+      "note": "Uses charged shots as a stronger held-fire option."
+    },
+    {
+      "title": "Monster Hunter: World",
+      "note": "Uses charged weapon attacks with commitment and payoff."
+    }
+  ],
   "tags": [
-    "charged",
     "combat",
-    "offense",
-    "timing"
+    "charge",
+    "commitment",
+    "timing",
+    "accessibility"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

@@ -25,7 +25,7 @@
     "rpg",
     "soulslike"
   ],
-  "description": "A defensive state that reduces or prevents incoming damage within defined limits.",
+  "description": "A defensive state that reduces, redirects, or prevents eligible incoming damage within defined limits.",
   "design_notes": "Block is a defensive baseline that must coexist with dodge, parry, armor, and positioning. It needs clear rules for guard direction, chip damage, stamina drain, guard break, and unblockable attacks. If the player cannot tell why a block failed, the system will feel unfair even when technically correct.",
   "design_purpose": [
     "Give players a reliable defensive option against readable pressure.",
@@ -100,10 +100,10 @@
     "Use distinct indicators for blockable, guard-breaking, and unblockable attacks where readability is critical."
   ],
   "implementation_notes": {
-    "unity": "Model startup, active, recovery, and cancel windows as data, then drive hitboxes, animation events, and damage application from one combat state source. For Block, validate this path with parameters such as guard_arc_degrees and block_damage_reduction_ratio.",
-    "godot": "Use Area2D or Area3D hit volumes with frame-window state on the actor; avoid placing damage authority inside animation-only callbacks. For Block, validate this path with parameters such as guard_arc_degrees and block_damage_reduction_ratio.",
-    "unreal": "Implement the action as a Gameplay Ability or Actor Component with montage notifies for windows and authoritative damage on the server when networked. For Block, validate this path with parameters such as guard_arc_degrees and block_damage_reduction_ratio.",
-    "web": "Update combat windows in the fixed simulation step, evaluate hurtbox overlap from cached transforms, and emit presentation events separately from damage state. For Block, validate this path with parameters such as guard_arc_degrees and block_damage_reduction_ratio."
+    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
+    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
+    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
+    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
   },
   "related_mechanics": [
     "combat.parry",
@@ -117,7 +117,16 @@
     "ui_ux.cooldown_indicator",
     "accessibility.toggle_hold_option"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Dark Souls",
+      "note": "Uses blocking with shields, stamina cost, and directional pressure."
+    },
+    {
+      "title": "For Honor",
+      "note": "Uses guard direction and blocking as central combat concepts."
+    }
+  ],
   "tags": [
     "combat",
     "defense",
