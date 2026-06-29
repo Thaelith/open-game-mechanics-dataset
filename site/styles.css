@@ -260,12 +260,13 @@ main {
 
 .detail-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 8px;
   margin-top: 12px;
 }
 
 .detail-metric {
+  min-width: 0;
   padding: 10px;
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -283,6 +284,11 @@ main {
 .detail-metric strong {
   display: block;
   margin-top: 2px;
+}
+
+.detail-metric span,
+.detail-metric strong {
+  overflow-wrap: anywhere;
 }
 
 .related-button {
