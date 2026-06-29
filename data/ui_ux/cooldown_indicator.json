@@ -41,16 +41,16 @@
   ],
   "parameters": [
     {
-      "name": "remaining_cooldown_seconds",
-      "type": "float",
-      "typical_range": "0-300 seconds",
-      "description": "Time left before the action becomes available."
+      "name": "action_ready_remaining_ms",
+      "type": "integer",
+      "typical_range": "0-300000 ms",
+      "description": "Milliseconds remaining before the source action becomes available."
     },
     {
-      "name": "cooldown_fill_mode",
+      "name": "action_recharge_fill_style_id",
       "type": "string",
       "typical_range": "radial, bar, numeric, icon_desaturate",
-      "description": "Visual mode used to show recharge progress."
+      "description": "Visual fill style for radial, bar, pip, or numeric display."
     },
     {
       "name": "ready_flash_ms",

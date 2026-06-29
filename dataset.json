@@ -4,7 +4,7 @@
   "license": "CC0-1.0",
   "tool_license": "MIT",
   "total_mechanics": 223,
-  "last_generated": "2026-06-29T20:24:05+00:00",
+  "last_generated": "2026-06-29T20:50:25+00:00",
   "mechanics": [
     {
       "id": "accessibility.adjustable_difficulty",
@@ -450,7 +450,7 @@
       "id": "camera.cinematic_camera",
       "name": "Cinematic Camera",
       "category": "camera",
-      "subcategory": "view_control",
+      "subcategory": "cinematic_shot_control",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -463,10 +463,11 @@
         "simulation"
       ],
       "tags": [
-        "camera",
-        "cinematic",
-        "readability",
-        "view_control"
+        "cinematic_camera",
+        "shot_timeline",
+        "camera_blend",
+        "subtitle_sync",
+        "camera_comfort"
       ],
       "path": "data/camera/cinematic_camera.json"
     },
@@ -572,7 +573,7 @@
       "id": "camera.split_screen",
       "name": "Split Screen",
       "category": "camera",
-      "subcategory": "view_control",
+      "subcategory": "multiplayer_viewport",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -585,10 +586,11 @@
         "simulation"
       ],
       "tags": [
-        "camera",
-        "readability",
-        "split",
-        "view_control"
+        "split_screen",
+        "viewport_rect",
+        "local_coop",
+        "ui_scaling",
+        "camera_ownership"
       ],
       "path": "data/camera/split_screen.json"
     },
@@ -620,7 +622,7 @@
       "id": "camera.top_down_camera",
       "name": "Top-Down Camera",
       "category": "camera",
-      "subcategory": "view_control",
+      "subcategory": "top_down_view",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -633,10 +635,11 @@
         "simulation"
       ],
       "tags": [
-        "camera",
-        "readability",
-        "top",
-        "view_control"
+        "top_down_camera",
+        "zoom_level",
+        "screen_space_bounds",
+        "occlusion",
+        "input_mapping"
       ],
       "path": "data/camera/top_down_camera.json"
     },
@@ -869,7 +872,7 @@
       "id": "combat.invincibility_frames",
       "name": "Invincibility Frames",
       "category": "combat",
-      "subcategory": "defense",
+      "subcategory": "timed_immunity",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -882,10 +885,11 @@
         "fighting"
       ],
       "tags": [
-        "combat",
-        "defense",
-        "invincibility",
-        "timing"
+        "invincibility_frames",
+        "damage_resolver",
+        "i_frames",
+        "timed_immunity",
+        "combat_state"
       ],
       "path": "data/combat/invincibility_frames.json"
     },
@@ -2835,7 +2839,7 @@
       "id": "platforming.ledge_climb",
       "name": "Ledge Climb",
       "category": "platforming",
-      "subcategory": "vertical_mobility",
+      "subcategory": "ledge_interaction",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2848,10 +2852,11 @@
         "precision_platformer"
       ],
       "tags": [
-        "ledge",
-        "mobility",
-        "precision",
-        "vertical_mobility"
+        "ledge_climb",
+        "root_motion",
+        "clearance_check",
+        "collision_restore",
+        "platforming_state"
       ],
       "path": "data/platforming/ledge_climb.json"
     },
@@ -2859,7 +2864,7 @@
       "id": "platforming.ledge_grab",
       "name": "Ledge Grab",
       "category": "platforming",
-      "subcategory": "vertical_mobility",
+      "subcategory": "ledge_interaction",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2872,10 +2877,11 @@
         "precision_platformer"
       ],
       "tags": [
-        "ledge",
-        "mobility",
-        "precision",
-        "vertical_mobility"
+        "ledge_grab",
+        "ledge_detection",
+        "snap_position",
+        "clearance_check",
+        "input_forgiveness"
       ],
       "path": "data/platforming/ledge_grab.json"
     },
@@ -2883,7 +2889,7 @@
       "id": "platforming.variable_jump_height",
       "name": "Variable Jump Height",
       "category": "platforming",
-      "subcategory": "vertical_mobility",
+      "subcategory": "jump_control",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2896,10 +2902,11 @@
         "precision_platformer"
       ],
       "tags": [
-        "mobility",
-        "precision",
-        "variable",
-        "vertical_mobility"
+        "variable_jump_height",
+        "jump_hold",
+        "coyote_time",
+        "jump_buffer",
+        "input_forgiveness"
       ],
       "path": "data/platforming/variable_jump_height.json"
     },
@@ -5099,7 +5106,7 @@
       "id": "ui_ux.accessibility_remap_controls",
       "name": "Accessibility Remap Controls",
       "category": "ui_ux",
-      "subcategory": "ui_ux",
+      "subcategory": "input_settings",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -5112,10 +5119,11 @@
         "action"
       ],
       "tags": [
+        "control_remapping",
+        "input_binding",
         "accessibility",
-        "feedback",
-        "interface",
-        "ui_ux"
+        "profile_persistence",
+        "prompt_glyphs"
       ],
       "path": "data/ui_ux/accessibility_remap_controls.json"
     },
@@ -5123,7 +5131,7 @@
       "id": "ui_ux.checkpoint_notification",
       "name": "Checkpoint Notification",
       "category": "ui_ux",
-      "subcategory": "ui_ux",
+      "subcategory": "save_feedback",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -5136,10 +5144,11 @@
         "action"
       ],
       "tags": [
-        "checkpoint",
-        "feedback",
-        "interface",
-        "ui_ux"
+        "checkpoint_notification",
+        "save_feedback",
+        "notification_queue",
+        "safe_area",
+        "accessibility"
       ],
       "path": "data/ui_ux/checkpoint_notification.json"
     },
@@ -8371,6 +8380,7 @@
         "puzzle.sequence_memory",
         "stealth.visibility_meter",
         "ui_ux.accessibility_remap_controls",
+        "ui_ux.checkpoint_notification",
         "ui_ux.cooldown_indicator",
         "ui_ux.damage_numbers",
         "ui_ux.hit_marker",
@@ -8585,22 +8595,26 @@
       "camera": [
         "camera.camera_lock_on",
         "camera.camera_zoom",
-        "camera.cinematic_camera",
         "camera.dynamic_fov",
         "camera.first_person_camera",
         "camera.screen_shake",
         "camera.smooth_follow_camera",
-        "camera.split_screen",
         "camera.third_person_camera",
-        "camera.top_down_camera",
         "combat.aim_down_sights",
         "combat.lock_on_targeting"
       ],
+      "camera_blend": [
+        "camera.cinematic_camera"
+      ],
       "camera_comfort": [
+        "camera.cinematic_camera",
         "movement.slide",
         "movement.walk",
         "traversal.gliding",
         "traversal.jetpack"
+      ],
+      "camera_ownership": [
+        "camera.split_screen"
       ],
       "camera_transition": [
         "traversal.parkour_vault"
@@ -8637,7 +8651,9 @@
       "checkpoint": [
         "horror.safe_room",
         "puzzle.timed_door",
-        "time.timed_challenge",
+        "time.timed_challenge"
+      ],
+      "checkpoint_notification": [
         "ui_ux.checkpoint_notification"
       ],
       "choice": [
@@ -8654,11 +8670,15 @@
         "procedural_generation.procedural_terrain"
       ],
       "cinematic": [
-        "camera.cinematic_camera",
         "time.slow_motion"
+      ],
+      "cinematic_camera": [
+        "camera.cinematic_camera"
       ],
       "clearance_check": [
         "movement.prone",
+        "platforming.ledge_climb",
+        "platforming.ledge_grab",
         "traversal.mantling",
         "traversal.parkour_vault"
       ],
@@ -8691,6 +8711,9 @@
       "collision_damage": [
         "vehicles.vehicle_damage"
       ],
+      "collision_restore": [
+        "platforming.ledge_climb"
+      ],
       "color_matching": [
         "puzzle.color_matching"
       ],
@@ -8707,7 +8730,6 @@
         "combat.damage_over_time",
         "combat.guard_break",
         "combat.hit_stun",
-        "combat.invincibility_frames",
         "combat.knockback",
         "combat.lock_on_targeting",
         "combat.melee_attack",
@@ -8724,6 +8746,9 @@
       ],
       "combat_preview": [
         "strategy.unit_counter_system"
+      ],
+      "combat_state": [
+        "combat.invincibility_frames"
       ],
       "combo": [
         "combat.combo_chain",
@@ -8785,6 +8810,9 @@
       "contribution": [
         "multiplayer.team_objective"
       ],
+      "control_remapping": [
+        "ui_ux.accessibility_remap_controls"
+      ],
       "cooldown": [
         "movement.dash",
         "time.cooldown_time",
@@ -8809,6 +8837,9 @@
       ],
       "cover": [
         "ai.cover_seeking"
+      ],
+      "coyote_time": [
+        "platforming.variable_jump_height"
       ],
       "crafting": [
         "crafting.ingredient_quality",
@@ -8850,6 +8881,9 @@
       ],
       "damage_reduction": [
         "combat.block"
+      ],
+      "damage_resolver": [
+        "combat.invincibility_frames"
       ],
       "damage_rules": [
         "multiplayer.friendly_fire"
@@ -8899,7 +8933,6 @@
       ],
       "defense": [
         "combat.block",
-        "combat.invincibility_frames",
         "combat.parry",
         "combat.projectile_reflection",
         "combat.shield"
@@ -9057,8 +9090,6 @@
         "camera.screen_shake",
         "combat.critical_hit",
         "combat.shield",
-        "ui_ux.accessibility_remap_controls",
-        "ui_ux.checkpoint_notification",
         "ui_ux.cooldown_indicator"
       ],
       "first": [
@@ -9185,6 +9216,7 @@
         "survival.thirst"
       ],
       "i_frames": [
+        "combat.invincibility_frames",
         "movement.dash",
         "movement.dodge_roll"
       ],
@@ -9207,6 +9239,9 @@
       "input_assist": [
         "accessibility.assist_mode"
       ],
+      "input_binding": [
+        "ui_ux.accessibility_remap_controls"
+      ],
       "input_buffer": [
         "combat.combo_chain",
         "platforming.jump_buffering",
@@ -9215,11 +9250,18 @@
       "input_devices": [
         "multiplayer.local_coop"
       ],
+      "input_forgiveness": [
+        "platforming.ledge_grab",
+        "platforming.variable_jump_height"
+      ],
       "input_glyphs": [
         "ui_ux.tutorial_prompt"
       ],
       "input_judgment": [
         "rhythm.beat_matching"
+      ],
+      "input_mapping": [
+        "camera.top_down_camera"
       ],
       "input_navigation": [
         "ui_ux.inventory_grid"
@@ -9245,10 +9287,6 @@
         "puzzle.lever_switch",
         "ui_ux.interaction_prompt"
       ],
-      "interface": [
-        "ui_ux.accessibility_remap_controls",
-        "ui_ux.checkpoint_notification"
-      ],
       "inventory": [
         "crafting.recipe_crafting",
         "puzzle.key_and_lock",
@@ -9269,7 +9307,7 @@
       "investigation_target": [
         "stealth.distraction_throw"
       ],
-      "invincibility": [
+      "invincibility_frames": [
         "combat.invincibility_frames"
       ],
       "item_instance": [
@@ -9303,6 +9341,12 @@
       "jump_assist": [
         "platforming.coyote_time",
         "platforming.jump_buffering"
+      ],
+      "jump_buffer": [
+        "platforming.variable_jump_height"
+      ],
+      "jump_hold": [
+        "platforming.variable_jump_height"
       ],
       "jump_scare": [
         "horror.jump_scare_trigger"
@@ -9354,8 +9398,13 @@
       "leaderboard_result": [
         "rhythm.combo_multiplier"
       ],
-      "ledge": [
-        "platforming.ledge_climb",
+      "ledge_climb": [
+        "platforming.ledge_climb"
+      ],
+      "ledge_detection": [
+        "platforming.ledge_grab"
+      ],
+      "ledge_grab": [
         "platforming.ledge_grab"
       ],
       "ledge_id": [
@@ -9401,6 +9450,7 @@
         "multiplayer.matchmaking_lobby"
       ],
       "local_coop": [
+        "camera.split_screen",
         "multiplayer.local_coop"
       ],
       "localization": [
@@ -9479,9 +9529,6 @@
       "mobility": [
         "movement.dash",
         "platforming.double_jump",
-        "platforming.ledge_climb",
-        "platforming.ledge_grab",
-        "platforming.variable_jump_height",
         "platforming.wall_jump",
         "traversal.grappling_hook",
         "traversal.rope_swing",
@@ -9577,6 +9624,9 @@
       "note_lane": [
         "rhythm.note_lane"
       ],
+      "notification_queue": [
+        "ui_ux.checkpoint_notification"
+      ],
       "numbers": [
         "ui_ux.damage_numbers"
       ],
@@ -9594,6 +9644,7 @@
         "traversal.parkour_vault"
       ],
       "occlusion": [
+        "camera.top_down_camera",
         "horror.sound_lure"
       ],
       "offline_policy": [
@@ -9708,6 +9759,9 @@
         "platforming.wall_jump",
         "platforming.wall_slide"
       ],
+      "platforming_state": [
+        "platforming.ledge_climb"
+      ],
       "population_model": [
         "simulation.population_model"
       ],
@@ -9721,9 +9775,6 @@
         "traversal.jetpack"
       ],
       "precision": [
-        "platforming.ledge_climb",
-        "platforming.ledge_grab",
-        "platforming.variable_jump_height",
         "platforming.wall_jump",
         "platforming.wall_slide"
       ],
@@ -9774,7 +9825,8 @@
       ],
       "profile_persistence": [
         "accessibility.adjustable_difficulty",
-        "accessibility.toggle_hold_option"
+        "accessibility.toggle_hold_option",
+        "ui_ux.accessibility_remap_controls"
       ],
       "profile_progress": [
         "meta.collection_log"
@@ -9808,6 +9860,9 @@
       ],
       "prompt": [
         "ui_ux.interaction_prompt"
+      ],
+      "prompt_glyphs": [
+        "ui_ux.accessibility_remap_controls"
       ],
       "prone": [
         "movement.prone"
@@ -9877,13 +9932,10 @@
         "accessibility.text_scaling",
         "camera.camera_lock_on",
         "camera.camera_zoom",
-        "camera.cinematic_camera",
         "camera.dynamic_fov",
         "camera.first_person_camera",
         "camera.smooth_follow_camera",
-        "camera.split_screen",
         "camera.third_person_camera",
-        "camera.top_down_camera",
         "horror.limited_visibility",
         "narrative.environmental_storytelling",
         "time.slow_motion",
@@ -10060,6 +10112,7 @@
         "procedural_generation.room_connection_graph"
       ],
       "root_motion": [
+        "platforming.ledge_climb",
         "traversal.mantling",
         "traversal.parkour_vault"
       ],
@@ -10099,6 +10152,9 @@
       "rung_index": [
         "traversal.ladder_climb"
       ],
+      "safe_area": [
+        "ui_ux.checkpoint_notification"
+      ],
       "safe_room": [
         "horror.safe_room"
       ],
@@ -10108,6 +10164,9 @@
       "sanity": [
         "horror.sanity_meter"
       ],
+      "save_feedback": [
+        "ui_ux.checkpoint_notification"
+      ],
       "save_migration": [
         "meta.new_game_plus"
       ],
@@ -10116,6 +10175,9 @@
       ],
       "scouting": [
         "strategy.fog_of_war"
+      ],
+      "screen_space_bounds": [
+        "camera.top_down_camera"
       ],
       "scripted_event": [
         "horror.jump_scare_trigger"
@@ -10174,6 +10236,9 @@
       "shop_offer": [
         "roguelike.shop_between_levels"
       ],
+      "shot_timeline": [
+        "camera.cinematic_camera"
+      ],
       "simulation": [
         "ai.utility_scoring",
         "time.day_night_schedule"
@@ -10207,6 +10272,7 @@
         "camera.smooth_follow_camera"
       ],
       "snap_position": [
+        "platforming.ledge_grab",
         "traversal.mantling"
       ],
       "snapshot": [
@@ -10244,7 +10310,7 @@
       "spawn_budget": [
         "simulation.population_model"
       ],
-      "split": [
+      "split_screen": [
         "camera.split_screen"
       ],
       "spoiler_gating": [
@@ -10326,6 +10392,9 @@
       ],
       "submerged_state": [
         "physics.buoyancy"
+      ],
+      "subtitle_sync": [
+        "camera.cinematic_camera"
       ],
       "subtitles": [
         "accessibility.text_scaling"
@@ -10439,12 +10508,14 @@
       "timed_door": [
         "puzzle.timed_door"
       ],
+      "timed_immunity": [
+        "combat.invincibility_frames"
+      ],
       "timer": [
         "combat.damage_over_time"
       ],
       "timing": [
         "combat.charged_attack",
-        "combat.invincibility_frames",
         "combat.melee_attack",
         "combat.parry",
         "combat.projectile_reflection",
@@ -10460,7 +10531,7 @@
       "toggle": [
         "accessibility.toggle_hold_option"
       ],
-      "top": [
+      "top_down_camera": [
         "camera.top_down_camera"
       ],
       "traction": [
@@ -10510,9 +10581,8 @@
         "ui_ux.radial_menu",
         "ui_ux.tutorial_prompt"
       ],
-      "ui_ux": [
-        "ui_ux.accessibility_remap_controls",
-        "ui_ux.checkpoint_notification"
+      "ui_scaling": [
+        "camera.split_screen"
       ],
       "underwater": [
         "survival.oxygen"
@@ -10549,7 +10619,7 @@
         "procedural_generation.procedural_terrain",
         "procedural_generation.room_connection_graph"
       ],
-      "variable": [
+      "variable_jump_height": [
         "platforming.variable_jump_height"
       ],
       "vector_field": [
@@ -10583,9 +10653,6 @@
         "movement.climbing"
       ],
       "vertical_mobility": [
-        "platforming.ledge_climb",
-        "platforming.ledge_grab",
-        "platforming.variable_jump_height",
         "traversal.ladder_climb"
       ],
       "vertical_navigation": [
@@ -10597,13 +10664,13 @@
       "view_control": [
         "camera.camera_lock_on",
         "camera.camera_zoom",
-        "camera.cinematic_camera",
         "camera.dynamic_fov",
         "camera.first_person_camera",
         "camera.smooth_follow_camera",
-        "camera.split_screen",
-        "camera.third_person_camera",
-        "camera.top_down_camera"
+        "camera.third_person_camera"
+      ],
+      "viewport_rect": [
+        "camera.split_screen"
       ],
       "visibility": [
         "horror.light_resource",
@@ -10667,6 +10734,9 @@
       ],
       "zipline": [
         "traversal.zipline"
+      ],
+      "zoom_level": [
+        "camera.top_down_camera"
       ]
     }
   }

@@ -56,7 +56,7 @@
       "name": "icon_cull_priority",
       "type": "integer",
       "typical_range": "1-10",
-      "description": "Priority threshold for hiding low-value icons under clutter."
+      "description": "Priority threshold for hiding less important map icons during clutter."
     },
     {
       "name": "fog_reveal_padding",

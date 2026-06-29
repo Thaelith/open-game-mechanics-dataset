@@ -7,7 +7,7 @@
     "top-down camera"
   ],
   "category": "camera",
-  "subcategory": "view_control",
+  "subcategory": "top_down_view",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,121 @@
     "adventure",
     "simulation"
   ],
-  "description": "Top-Down Camera is a viewpoint behavior that frames action and communicates spatial information to the player.",
-  "design_notes": "Top-Down Camera should be designed around a clear player promise, a readable trigger, and a predictable result. For camera mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A camera mode that views the play space from above or at an angled overhead perspective while tracking targets within screen-space bounds.",
+  "design_notes": "Top-down camera design should define camera_target_id, zoom level, screen-space bounds, occlusion policy, input-relative movement, and camera limits. The view must expose threats and navigation routes while keeping player orientation, verticality, and indoor occlusion readable.",
   "design_purpose": [
-    "Give the player a readable way to use top-down camera as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect top-down camera to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Show tactical space, enemy positions, navigation routes, and interaction zones from a readable overhead view.",
+    "Support movement and aiming that are relative to screen, world, cursor, or controller direction.",
+    "Give designers stable framing for arenas, rooms, puzzles, and strategy-like layouts."
   ],
-  "player_fantasy": "The player feels oriented and confident because the game frames what matters.",
+  "player_fantasy": "The player feels aware of the surrounding play space and can plan movement or actions from a clear overhead perspective.",
   "required_systems": [
     "camera_controller",
     "target_tracking",
-    "smoothing",
+    "zoom_control",
+    "occlusion_handling",
     "screen_bounds"
   ],
   "parameters": [
     {
-      "name": "follow_lag",
-      "type": "float",
-      "typical_range": "0-0.5 seconds",
-      "description": "How far behind the target the camera is allowed to feel."
+      "name": "camera_target_id",
+      "type": "string",
+      "typical_range": "player, party_group, cursor_anchor, objective",
+      "description": "Target entity or group that anchors the overhead view."
     },
     {
-      "name": "framing_offset",
-      "type": "vector",
-      "typical_range": "0-40% of screen",
-      "description": "Offset used to keep the important subject away from dead center."
+      "name": "top_down_pitch_degrees",
+      "type": "float",
+      "typical_range": "45-90 degrees",
+      "description": "Camera pitch used for vertical or angled overhead composition."
     },
     {
-      "name": "transition_speed",
+      "name": "zoom_level",
       "type": "float",
-      "typical_range": "0.1-5.0 seconds",
-      "description": "How quickly the camera blends to the new behavior."
+      "typical_range": "0.5-3.0 multiplier",
+      "description": "Current zoom scalar for world-to-screen scale."
+    },
+    {
+      "name": "screen_space_bounds",
+      "type": "rect",
+      "typical_range": "5-30% margin",
+      "description": "Screen margin that target movement can occupy before camera follows."
+    },
+    {
+      "name": "camera_occlusion_policy_id",
+      "type": "string",
+      "typical_range": "fade_roofs, cutaway, outline, none",
+      "description": "Rule for handling roofs, walls, foliage, or tall objects above the player."
+    },
+    {
+      "name": "input_relative_policy_id",
+      "type": "string",
+      "typical_range": "screen, world, camera_yaw, cursor",
+      "description": "How movement or aiming input maps to the top-down view."
     }
   ],
   "common_variants": [
-    "top_down_camera_fixed_mode",
-    "top_down_camera_player_controlled_mode",
-    "context_sensitive_mode",
-    "cinematic_mode"
+    "orthographic_top_down",
+    "angled_isometric",
+    "twin_stick_camera",
+    "party_centered_camera",
+    "cursor_weighted_camera"
   ],
   "edge_cases": [
-    "Top-Down Camera is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Top-Down Camera overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Top-Down Camera runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Tall walls, roofs, trees, and bridges can hide the player or target unless occlusion policy is explicit.",
+    "Mouse/cursor aiming and gamepad aiming may need different camera_target_id or cursor weighting rules.",
+    "Zooming out can reveal spoiler areas, hidden rooms, or enemies behind fog-of-war bounds.",
+    "Vertical layers such as stairs, flying enemies, or basements can be ambiguous from overhead view."
   ],
   "common_bugs": [
-    "Top-Down Camera state does not reset correctly after interruption or reload.",
-    "Feedback for Top-Down Camera plays even when the mechanic fails or is rejected.",
-    "Top-Down Camera produces different results between frame rates, platforms, or network clients."
+    "Camera follows raw player position and jitters when the character collides with dense geometry.",
+    "Input-relative movement changes when the camera yaw or map rotation changes without remapping controls.",
+    "Occlusion fades the wrong roof or leaves invisible collision blocking the view.",
+    "Screen-space bounds ignore UI safe areas and place the player under HUD panels."
   ],
   "balancing_notes": [
-    "Make Top-Down Camera strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Wider zoom improves planning but can reduce surprise and reveal encounter setup.",
+    "Strict screen-space bounds make the camera stable; loose bounds make fast movement feel more responsive.",
+    "Top-down views often require enemy telegraphs and projectiles to be readable at smaller screen sizes."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Top-Down Camera becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide zoom options, high-contrast outlines, and reduced camera smoothing for players who need clearer spatial tracking.",
+    "Avoid critical information hidden only by vertical depth cues; use shadows, labels, or outlines."
   ],
   "implementation_notes": {
-    "unity": "Implement Top-Down Camera with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Top-Down Camera as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Top-Down Camera with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Top-Down Camera as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use orthographic or angled perspective cameras with a target group and screen-space dead zone. Occlusion volumes or roof fade components should use camera_occlusion_policy_id, and input mapping should read input_relative_policy_id.",
+    "godot": "Use Camera2D or Camera3D with explicit zoom and bounds. For tile or room games, clamp to authored camera limits and drive roof fading or outlines from visibility areas.",
+    "unreal": "Use a spring arm or top-down camera component with collision and roof/foliage fade rules. Enhanced Input should map movement through the chosen screen, world, or camera-relative policy.",
+    "web": "Represent top-down camera state with target id, zoom, bounds, and occlusion policy. Canvas, Phaser, or Three.js renderers should apply safe-area-aware screen bounds before projecting UI markers."
   },
   "related_mechanics": [
-    "camera.first_person_camera",
-    "camera.smooth_follow_camera",
-    "combat.lock_on_targeting",
+    "ui_ux.minimap",
+    "camera.camera_zoom",
+    "strategy.fog_of_war",
     "movement.run"
   ],
   "combines_well_with": [
-    "camera.camera_zoom",
-    "camera.third_person_camera",
-    "combat.lock_on_targeting",
-    "movement.run"
+    "combat.ranged_attack",
+    "ui_ux.quest_marker",
+    "puzzle.pressure_plate",
+    "camera.smooth_follow_camera"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Hades",
+      "note": "Uses an angled top-down view for combat readability."
+    },
+    {
+      "title": "Hotline Miami",
+      "note": "Uses top-down framing for fast combat and room awareness."
+    }
+  ],
   "tags": [
-    "camera",
-    "readability",
-    "top",
-    "view_control"
+    "top_down_camera",
+    "zoom_level",
+    "screen_space_bounds",
+    "occlusion",
+    "input_mapping"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

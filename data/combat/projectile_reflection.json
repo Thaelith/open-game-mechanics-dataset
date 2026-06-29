@@ -53,10 +53,10 @@
       "description": "Projectile tags eligible for reflection."
     },
     {
-      "name": "reflected_speed_multiplier",
+      "name": "reflected_velocity_multiplier",
       "type": "float",
       "typical_range": "0.5-3.0",
-      "description": "Velocity multiplier applied after reflection."
+      "description": "Velocity multiplier applied to the projectile after reflection ownership changes."
     },
     {
       "name": "reflected_damage_multiplier",

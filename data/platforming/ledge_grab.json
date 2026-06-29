@@ -7,7 +7,7 @@
     "ledge grab"
   ],
   "category": "platforming",
-  "subcategory": "vertical_mobility",
+  "subcategory": "ledge_interaction",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,121 @@
     "metroidvania",
     "precision_platformer"
   ],
-  "description": "Ledge Grab is a precision movement mechanic used to negotiate platforms, walls, gaps, and hazards.",
-  "design_notes": "Ledge Grab should be designed around a clear player promise, a readable trigger, and a predictable result. For platforming mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A platforming recovery state that detects a ledge, validates clearance, snaps the character to a hang point, and waits for climb, drop, or jump input.",
+  "design_notes": "Ledge grab requires reliable ledge detection and failure recovery. Define ledge_id, grab point, snap position, top clearance, blocked ledges, stamina or grip rules, camera behavior, and debug visualization. It should save intended near-misses without grabbing decorative edges or stealing control from other traversal actions.",
   "design_purpose": [
-    "Give the player a readable way to use ledge grab as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect ledge grab to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players a forgiving recovery when they almost reach a platform edge.",
+    "Support vertical level design with readable ledges, drops, and climb routes.",
+    "Create a state bridge between jump, wall movement, climb, mantle, and fall recovery."
   ],
-  "player_fantasy": "The player feels precise, agile, and responsible for overcoming spatial challenges.",
+  "player_fantasy": "The player feels they can catch the edge at the last moment and choose how to recover.",
   "required_systems": [
-    "character_controller",
-    "jump_state",
-    "collision_detection",
-    "coyote_time_or_buffering"
+    "ledge_detection",
+    "collision_queries",
+    "platforming_state_machine",
+    "animation_state_machine",
+    "camera_follow"
   ],
   "parameters": [
     {
-      "name": "activation_window",
+      "name": "ledge_grab_probe_height_units",
       "type": "float",
-      "typical_range": "0.05-0.25 seconds",
-      "description": "Timing window in which the platforming action can start."
+      "typical_range": "0.4-1.6 world units",
+      "description": "Vertical probe span used to find candidate ledges."
     },
     {
-      "name": "vertical_velocity",
+      "name": "ledge_grab_forward_probe_units",
       "type": "float",
-      "typical_range": "4-20 world units/second",
-      "description": "Initial or sustained vertical movement contribution."
+      "typical_range": "0.2-1.2 world units",
+      "description": "Forward probe distance from character to ledge face."
     },
     {
-      "name": "control_lockout",
+      "name": "ledge_snap_position_offset",
+      "type": "vector",
+      "typical_range": "small local offset",
+      "description": "Offset applied when aligning character to hang position."
+    },
+    {
+      "name": "ledge_clearance_check_id",
+      "type": "string",
+      "typical_range": "standing, crouch, climb_top",
+      "description": "Clearance rule used before allowing hang or climb."
+    },
+    {
+      "name": "ledge_grab_input_buffer_ms",
+      "type": "integer",
+      "typical_range": "50-180 ms",
+      "description": "Buffered grab or jump input accepted near ledge contact."
+    },
+    {
+      "name": "ledge_grip_stamina_units",
       "type": "float",
-      "typical_range": "0-0.25 seconds",
-      "description": "Short period where player input is limited to preserve readability."
+      "typical_range": "0-100 units",
+      "description": "Optional stamina resource available while hanging."
     }
   ],
   "common_variants": [
-    "ledge_grab_assisted_version",
-    "ledge_grab_precision_version",
-    "upgrade_unlocked_version",
-    "hazard_sensitive_version"
+    "auto_ledge_grab",
+    "manual_ledge_grab",
+    "stamina_hang",
+    "combat_ledge_grab",
+    "one_way_ledge_grab"
   ],
   "edge_cases": [
-    "Ledge Grab is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Ledge Grab overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Ledge Grab runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The ledge is detected but top clearance is blocked by a moving crate, enemy, or closing door.",
+    "A player can approach the same edge from jump, wall slide, climb, or knockback states with different priorities.",
+    "Moving platforms need ledge_id and snap position stored relative to platform transform.",
+    "Networked ledge grabs require server validation of ledge id and character position correction."
   ],
   "common_bugs": [
-    "Ledge Grab state does not reset correctly after interruption or reload.",
-    "Feedback for Ledge Grab plays even when the mechanic fails or is rejected.",
-    "Ledge Grab produces different results between frame rates, platforms, or network clients."
+    "Detection rays catch decorative trim that has no safe hang or climb position.",
+    "Character snaps through the ledge because clearance is checked after changing position.",
+    "Hang state disables gravity but never restores it when drop input is buffered.",
+    "Camera recenters behind the wall and hides climb or drop options."
   ],
   "balancing_notes": [
-    "Make Ledge Grab strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Automatic ledge grab increases forgiveness but can interrupt intentional falls or speed routes.",
+    "Grip stamina adds tension but should not punish players while they are reading the next safe input.",
+    "Ledge detection tolerance should match art language so players learn which edges are valid."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Ledge Grab becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide optional auto-grab, input buffering, and visible ledge affordances for precision-heavy sections.",
+    "Avoid making required ledges distinguishable only by tiny geometry differences."
   ],
   "implementation_notes": {
-    "unity": "Implement Ledge Grab with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Ledge Grab as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Ledge Grab with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Ledge Grab as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use multiple raycasts or shape casts for ledge face, top surface, and clearance before committing ledge_id. Store snap offset, disable ordinary movement through platforming_state_id, and draw debug probes for designers.",
+    "godot": "Use RayCast or ShapeCast nodes for forward and top checks, then validate clearance before snapping. Keep ledge state on CharacterBody and restore gravity/input through a single drop or climb transition.",
+    "unreal": "Use trace channels or ledge components to find hang points. Server should validate ledge_id and snap transform, while animation montages read the committed hang state rather than driving detection.",
+    "web": "Store ledge candidates from deterministic collision probes in the fixed step. Commit hang state only after clearance passes, then render hang animation from the stored snap position."
   },
   "related_mechanics": [
-    "camera.smooth_follow_camera",
-    "movement.dash",
-    "platforming.double_jump",
-    "platforming.variable_jump_height"
+    "platforming.ledge_climb",
+    "traversal.mantling",
+    "movement.climbing",
+    "platforming.coyote_time"
   ],
   "combines_well_with": [
-    "camera.smooth_follow_camera",
-    "movement.dash",
+    "platforming.variable_jump_height",
     "platforming.wall_jump",
-    "platforming.wall_slide"
+    "camera.smooth_follow_camera",
+    "accessibility.assist_mode"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Tomb Raider",
+      "note": "Uses ledge grabs and hangs as a major traversal layer."
+    },
+    {
+      "title": "Prince of Persia: The Sands of Time",
+      "note": "Uses ledge grabs to connect jumps and climbing routes."
+    }
+  ],
   "tags": [
-    "ledge",
-    "mobility",
-    "precision",
-    "vertical_mobility"
+    "ledge_grab",
+    "ledge_detection",
+    "snap_position",
+    "clearance_check",
+    "input_forgiveness"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

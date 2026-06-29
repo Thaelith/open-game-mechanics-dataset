@@ -7,7 +7,7 @@
     "accessibility remap controls"
   ],
   "category": "ui_ux",
-  "subcategory": "ui_ux",
+  "subcategory": "input_settings",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,121 @@
     "strategy",
     "action"
   ],
-  "description": "Accessibility Remap Controls is an interface mechanic that presents game state, accepts decisions, or reduces player friction.",
-  "design_notes": "Accessibility Remap Controls should be designed around a clear player promise, a readable trigger, and a predictable result. For ui ux mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A control settings interface that lets players rebind input actions across keyboard, mouse, gamepad, touch, or accessibility devices with conflict handling and persistence.",
+  "design_notes": "Control remapping is an input profile workflow. Define input_action_id, input_binding_id, device profile, conflict policy, reserved system actions, reset defaults, per-player local co-op ownership, and persistence. The UI should preview the binding, explain conflicts, and keep gameplay prompts synchronized with the active mapping.",
   "design_purpose": [
-    "Give the player a readable way to use accessibility remap controls as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect accessibility remap controls to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players adapt controls to their device, body, handedness, and preference.",
+    "Keep gameplay prompts, tutorials, and action state aligned with the current input profile.",
+    "Prevent inaccessible or broken layouts through conflict rules, reserved bindings, and reset flows."
   ],
-  "player_fantasy": "The player feels informed without fighting the interface.",
+  "player_fantasy": "The player feels the interface respects their preferred device and lets them make controls usable without breaking the game.",
   "required_systems": [
-    "ui_framework",
-    "game_state_binding",
-    "input_navigation",
-    "localization_support"
+    "input_abstraction",
+    "settings_menu",
+    "profile_persistence",
+    "prompt_glyph_system",
+    "local_multiplayer_profiles"
   ],
   "parameters": [
     {
-      "name": "display_duration",
-      "type": "float",
-      "typical_range": "0.2-15 seconds",
-      "description": "How long the interface element remains visible after triggering."
-    },
-    {
-      "name": "priority_level",
-      "type": "integer",
-      "typical_range": "1-5",
-      "description": "Layering or importance compared with other UI messages."
-    },
-    {
-      "name": "input_focus_mode",
+      "name": "input_action_id",
       "type": "string",
-      "typical_range": "mouse, keyboard, gamepad, touch, mixed",
-      "description": "Control mode the UI must support cleanly."
+      "typical_range": "jump, interact, sprint, fire, inventory",
+      "description": "Gameplay action exposed for remapping."
+    },
+    {
+      "name": "input_binding_id",
+      "type": "string",
+      "typical_range": "keyboard_space, gamepad_a, touch_slot_1",
+      "description": "Device-specific binding assigned to an action."
+    },
+    {
+      "name": "remap_conflict_policy_id",
+      "type": "string",
+      "typical_range": "swap, unbind_old, reject, allow_duplicate",
+      "description": "Rule applied when a new binding already belongs to another action."
+    },
+    {
+      "name": "control_scheme_id",
+      "type": "string",
+      "typical_range": "keyboard_mouse, gamepad, touch, adaptive_controller",
+      "description": "Device profile that owns the binding set."
+    },
+    {
+      "name": "reserved_action_policy_id",
+      "type": "string",
+      "typical_range": "system_reserved, warn, allow_with_confirm",
+      "description": "Rule for platform, OS, or safety-critical reserved inputs."
+    },
+    {
+      "name": "binding_profile_save_version",
+      "type": "integer",
+      "typical_range": "1-100",
+      "description": "Version used to migrate saved bindings after input changes."
     }
   ],
   "common_variants": [
-    "accessibility_remap_controls_minimal_variant",
-    "accessibility_remap_controls_diegetic_variant",
-    "persistent_variant",
-    "contextual_variant"
+    "full_remap",
+    "per_action_remap",
+    "device_specific_remap",
+    "local_player_remap",
+    "preset_layouts"
   ],
   "edge_cases": [
-    "Accessibility Remap Controls is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Accessibility Remap Controls overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Accessibility Remap Controls runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A player unbinds confirm, cancel, pause, or menu navigation and needs a recovery path.",
+    "Two local players remap controls on one device and must not overwrite each other.",
+    "A platform reserves a button or key that the game exposes in its default binding list.",
+    "Localization changes action labels while saved input_action_id values must remain stable."
   ],
   "common_bugs": [
-    "Accessibility Remap Controls state does not reset correctly after interruption or reload.",
-    "Feedback for Accessibility Remap Controls plays even when the mechanic fails or is rejected.",
-    "Accessibility Remap Controls produces different results between frame rates, platforms, or network clients."
+    "Prompt glyphs keep showing default bindings after the player remaps input.",
+    "Conflict resolution updates the visible row but not the actual input map consumed by gameplay.",
+    "Reset defaults applies to keyboard but leaves gamepad or touch bindings stale.",
+    "Saved bindings from an old version map to the wrong action after input_action_id renames."
   ],
   "balancing_notes": [
-    "Make Accessibility Remap Controls strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Remapping should generally be allowed in ranked modes because it changes access, not action strength.",
+    "Some competitive games may restrict macros or multi-action bindings, but should explain that boundary clearly.",
+    "Preset layouts are useful, but full remapping is needed for many accessibility devices and preferences."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Accessibility Remap Controls becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Support keyboard, mouse, gamepad, touch, and adaptive controller profiles where the platform allows it.",
+    "Keep remap UI navigable without relying on the binding being changed; always provide reset and cancel paths."
   ],
   "implementation_notes": {
-    "unity": "Implement Accessibility Remap Controls with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Accessibility Remap Controls as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Accessibility Remap Controls with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Accessibility Remap Controls as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use the Input System action map as the source of input_action_id records, then store overrides per accessibility_profile_id or local player. UI Toolkit rows should validate conflicts, write profile data, and refresh prompt glyphs immediately.",
+    "godot": "Resolve remaps through InputMap action names but persist stable input_action_id values and device profiles separately. Use a remap capture mode with timeout, cancel, conflict preview, and default reset per scheme.",
+    "unreal": "Use Enhanced Input mapping contexts with per-player saved key profiles. UMG should apply remap_conflict_policy_id before committing, then rebuild input glyphs and local player mappings.",
+    "web": "Normalize KeyboardEvent, PointerEvent, Gamepad API, and touch bindings into input_binding_id records. Persist per-profile mappings and apply them before simulation code reads action state."
   },
   "related_mechanics": [
+    "accessibility.toggle_hold_option",
     "accessibility.text_scaling",
-    "camera.camera_zoom",
-    "ui_ux.minimap",
-    "ui_ux.quest_marker"
+    "ui_ux.interaction_prompt",
+    "ui_ux.tutorial_prompt"
   ],
   "combines_well_with": [
-    "accessibility.text_scaling",
-    "camera.camera_zoom",
+    "accessibility.assist_mode",
     "ui_ux.cooldown_indicator",
-    "ui_ux.damage_numbers"
+    "ui_ux.radial_menu",
+    "multiplayer.local_coop"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Hades",
+      "note": "Includes remappable controls across controller and keyboard inputs."
+    },
+    {
+      "title": "The Last of Us Part II",
+      "note": "Includes extensive control and accessibility remapping options."
+    }
+  ],
   "tags": [
+    "control_remapping",
+    "input_binding",
     "accessibility",
-    "feedback",
-    "interface",
-    "ui_ux"
+    "profile_persistence",
+    "prompt_glyphs"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

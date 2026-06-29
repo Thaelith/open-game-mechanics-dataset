@@ -7,7 +7,7 @@
     "cinematic camera"
   ],
   "category": "camera",
-  "subcategory": "view_control",
+  "subcategory": "cinematic_shot_control",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,121 @@
     "adventure",
     "simulation"
   ],
-  "description": "Cinematic Camera is a viewpoint behavior that frames action and communicates spatial information to the player.",
-  "design_notes": "Cinematic Camera should be designed around a clear player promise, a readable trigger, and a predictable result. For camera mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A directed camera mode that uses authored shots, cuts, blends, and control locks to frame scripted or dramatic moments.",
+  "design_notes": "Cinematic camera design should define cinematic_shot_id ownership, timeline triggers, blend profiles, player-control locks, skip behavior, subtitle sync, and restore rules. The camera must communicate drama without hiding required gameplay reads or leaving the player in a bad camera state after interruption.",
   "design_purpose": [
-    "Give the player a readable way to use cinematic camera as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect cinematic camera to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Frame story, traversal, combat, or reveal moments with authored composition.",
+    "Temporarily shift camera priority from player control to a shot timeline or scripted event.",
+    "Coordinate camera cuts, subtitles, animation, and gameplay locks without losing restore state."
   ],
-  "player_fantasy": "The player feels oriented and confident because the game frames what matters.",
+  "player_fantasy": "The player feels the game is deliberately directing attention to an important moment while preserving orientation afterward.",
   "required_systems": [
-    "camera_controller",
-    "target_tracking",
-    "smoothing",
-    "screen_bounds"
+    "camera_director",
+    "timeline_system",
+    "input_locking",
+    "subtitle_system",
+    "checkpoint_state"
   ],
   "parameters": [
     {
-      "name": "follow_lag",
-      "type": "float",
-      "typical_range": "0-0.5 seconds",
-      "description": "How far behind the target the camera is allowed to feel."
+      "name": "cinematic_shot_id",
+      "type": "string",
+      "typical_range": "intro_reveal, boss_phase_2, escape_cut",
+      "description": "Authored shot record selected by the camera director."
     },
     {
-      "name": "framing_offset",
-      "type": "vector",
-      "typical_range": "0-40% of screen",
-      "description": "Offset used to keep the important subject away from dead center."
+      "name": "shot_timeline_id",
+      "type": "string",
+      "typical_range": "timeline asset or sequence id",
+      "description": "Timeline that coordinates camera, animation, subtitles, and events."
     },
     {
-      "name": "transition_speed",
-      "type": "float",
-      "typical_range": "0.1-5.0 seconds",
-      "description": "How quickly the camera blends to the new behavior."
+      "name": "camera_blend_profile_id",
+      "type": "string",
+      "typical_range": "cut, ease_in, handheld, match_cut",
+      "description": "Blend profile used when entering or exiting the shot."
+    },
+    {
+      "name": "camera_transition_ms",
+      "type": "integer",
+      "typical_range": "0-2500 ms",
+      "description": "Milliseconds allocated for the camera blend."
+    },
+    {
+      "name": "player_control_lock_policy_id",
+      "type": "string",
+      "typical_range": "none, look_only, full_lock, skip_allowed",
+      "description": "Player input policy while the cinematic camera owns priority."
+    },
+    {
+      "name": "restore_camera_mode_id",
+      "type": "string",
+      "typical_range": "previous, gameplay_follow, combat_lock_on",
+      "description": "Camera mode restored after skip, completion, or checkpoint reload."
     }
   ],
   "common_variants": [
-    "cinematic_camera_fixed_mode",
-    "cinematic_camera_player_controlled_mode",
-    "context_sensitive_mode",
-    "cinematic_mode"
+    "cutscene_camera",
+    "boss_intro_camera",
+    "reveal_camera",
+    "dialogue_shot_camera",
+    "scripted_traversal_camera"
   ],
   "edge_cases": [
-    "Cinematic Camera is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Cinematic Camera overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Cinematic Camera runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A cinematic starts while the player is in lock-on, split screen, photo mode, or a multiplayer spectator camera.",
+    "Skipping the shot must restore camera mode, input locks, subtitles, and pending gameplay triggers exactly once.",
+    "Save/load during a cinematic needs either a safe replay point or restored gameplay camera state.",
+    "Subtitle timing and camera cuts can drift if the timeline is paused, skipped, or localized voice length changes."
   ],
   "common_bugs": [
-    "Cinematic Camera state does not reset correctly after interruption or reload.",
-    "Feedback for Cinematic Camera plays even when the mechanic fails or is rejected.",
-    "Cinematic Camera produces different results between frame rates, platforms, or network clients."
+    "Camera priority remains on the cinematic shot after the sequence ends or is skipped.",
+    "A cut triggers twice and fires the same gameplay event or subtitle cue twice.",
+    "Player control unlocks before the camera restores collision and occlusion handling.",
+    "Checkpoint restore places the player after the cut but the camera before the cut."
   ],
   "balancing_notes": [
-    "Make Cinematic Camera strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Cinematic shots should be brief or skippable when repeated after failure.",
+    "Camera control locks are acceptable for story emphasis but risky during active gameplay hazards.",
+    "Important combat or platforming information should not appear only during an unrepeatable camera cut."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Cinematic Camera becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Respect reduced-motion settings for handheld sway, rapid cuts, field-of-view shifts, and shake layered into the shot.",
+    "Keep subtitles and speaker labels synchronized with cinematic timing, including skip and pause behavior."
   ],
   "implementation_notes": {
-    "unity": "Implement Cinematic Camera with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Cinematic Camera as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Cinematic Camera with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Cinematic Camera as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use Cinemachine virtual cameras or a custom director keyed by cinematic_shot_id and camera_priority. Timeline signals should request gameplay locks and subtitle events, while the camera system stores restore_camera_mode_id before taking priority.",
+    "godot": "Model cinematic shots as Resources or AnimationPlayer timelines with camera anchors and restore state. On skip or reload, clear input locks, stop the timeline, and restore the previous camera mode in one transaction.",
+    "unreal": "Use Level Sequence or Camera Cut tracks with explicit shot ids, blend settings, and player control policies. Store restore state before possession or view-target changes, and handle skip through a single sequence-completion path.",
+    "web": "Represent cinematic camera state as a camera director record with shot id, blend ticks, and restore mode. Canvas, Phaser, or Three.js render layers should read committed camera transforms after timeline events resolve."
   },
   "related_mechanics": [
-    "camera.first_person_camera",
+    "camera.third_person_camera",
     "camera.smooth_follow_camera",
-    "combat.lock_on_targeting",
-    "movement.run"
+    "camera.screen_shake",
+    "narrative.branching_dialogue"
   ],
   "combines_well_with": [
-    "camera.third_person_camera",
-    "camera.top_down_camera",
-    "combat.lock_on_targeting",
-    "movement.run"
+    "camera.dynamic_fov",
+    "ui_ux.dialogue_choice",
+    "narrative.environmental_storytelling",
+    "time.slow_motion"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "God of War",
+      "note": "Uses directed camera composition during story and combat transitions."
+    },
+    {
+      "title": "Uncharted 4",
+      "note": "Uses cinematic camera moments to frame traversal and narrative scenes."
+    }
+  ],
   "tags": [
-    "camera",
-    "cinematic",
-    "readability",
-    "view_control"
+    "cinematic_camera",
+    "shot_timeline",
+    "camera_blend",
+    "subtitle_sync",
+    "camera_comfort"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

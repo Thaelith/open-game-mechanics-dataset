@@ -59,10 +59,10 @@
       "description": "Whether releasing the menu button confirms the highlighted option."
     },
     {
-      "name": "radial_time_scale",
+      "name": "radial_menu_slowdown_multiplier",
       "type": "float",
       "typical_range": "0-1",
-      "description": "Optional time scale while the menu is open."
+      "description": "Simulation slowdown multiplier applied while the radial menu is open."
     },
     {
       "name": "label_min_arc_degrees",

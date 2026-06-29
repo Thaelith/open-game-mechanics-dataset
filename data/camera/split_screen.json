@@ -7,7 +7,7 @@
     "split screen"
   ],
   "category": "camera",
-  "subcategory": "view_control",
+  "subcategory": "multiplayer_viewport",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,121 @@
     "adventure",
     "simulation"
   ],
-  "description": "Split Screen is a viewpoint behavior that frames action and communicates spatial information to the player.",
-  "design_notes": "Split Screen should be designed around a clear player promise, a readable trigger, and a predictable result. For camera mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A local multiplayer camera layout that assigns each player a viewport, camera owner, safe-area rules, and UI scaling profile.",
+  "design_notes": "Split screen is both camera and UI infrastructure. Define split_screen_layout_id, viewport_rect, per-player camera ownership, safe-area padding, local co-op settings, UI scaling, and performance budgets. The layout must preserve gameplay readability for each player rather than simply dividing the screen evenly.",
   "design_purpose": [
-    "Give the player a readable way to use split screen as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect split screen to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let multiple local players have independent camera views on one display.",
+    "Preserve player-specific UI, camera framing, and input ownership in couch co-op or versus play.",
+    "Support local multiplayer without requiring all players to stay inside one shared camera volume."
   ],
-  "player_fantasy": "The player feels oriented and confident because the game frames what matters.",
+  "player_fantasy": "Each player feels they have their own readable view and controls while sharing the same physical screen.",
   "required_systems": [
-    "camera_controller",
-    "target_tracking",
-    "smoothing",
-    "screen_bounds"
+    "local_player_manager",
+    "camera_manager",
+    "viewport_layout",
+    "ui_scaling",
+    "performance_budgeting"
   ],
   "parameters": [
     {
-      "name": "follow_lag",
-      "type": "float",
-      "typical_range": "0-0.5 seconds",
-      "description": "How far behind the target the camera is allowed to feel."
+      "name": "split_screen_layout_id",
+      "type": "string",
+      "typical_range": "vertical_two, horizontal_two, quadrant_four, dynamic",
+      "description": "Layout definition used to assign player viewports."
     },
     {
-      "name": "framing_offset",
-      "type": "vector",
-      "typical_range": "0-40% of screen",
-      "description": "Offset used to keep the important subject away from dead center."
+      "name": "viewport_rect",
+      "type": "rect",
+      "typical_range": "normalized x,y,w,h",
+      "description": "Normalized viewport rectangle assigned to one local player."
     },
     {
-      "name": "transition_speed",
+      "name": "local_player_camera_id",
+      "type": "string",
+      "typical_range": "player_1_camera, player_2_camera",
+      "description": "Camera instance owned by a specific local player."
+    },
+    {
+      "name": "safe_area_padding_units",
+      "type": "integer",
+      "typical_range": "0-80 px",
+      "description": "Padding reserved for edges, gutters, and platform overlays."
+    },
+    {
+      "name": "ui_scaling_profile_id",
+      "type": "string",
+      "typical_range": "split_small, split_large, handheld",
+      "description": "UI scale profile applied inside each viewport."
+    },
+    {
+      "name": "viewport_render_budget_ms",
       "type": "float",
-      "typical_range": "0.1-5.0 seconds",
-      "description": "How quickly the camera blends to the new behavior."
+      "typical_range": "4-16 ms",
+      "description": "Frame budget allocated to each local camera render."
     }
   ],
   "common_variants": [
-    "split_screen_fixed_mode",
-    "split_screen_player_controlled_mode",
-    "context_sensitive_mode",
-    "cinematic_mode"
+    "vertical_split",
+    "horizontal_split",
+    "four_player_grid",
+    "dynamic_split_merge",
+    "shared_camera_fallback"
   ],
   "edge_cases": [
-    "Split Screen is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Split Screen overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Split Screen runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A player joins or leaves while another player is in a menu, cutscene, vehicle, or lock-on camera.",
+    "One viewport needs subtitles, prompts, or accessibility settings that differ from another local player.",
+    "Four-player layouts can make minimaps, text, and target indicators unreadable without UI scaling changes.",
+    "Performance can drop sharply because scene rendering and post effects run once per viewport."
   ],
   "common_bugs": [
-    "Split Screen state does not reset correctly after interruption or reload.",
-    "Feedback for Split Screen plays even when the mechanic fails or is rejected.",
-    "Split Screen produces different results between frame rates, platforms, or network clients."
+    "Input focus goes to the wrong player after layout changes.",
+    "UI uses full-screen coordinates instead of viewport_rect and appears in another player’s view.",
+    "Camera effects such as shake, FOV, or post-process settings bleed between players.",
+    "Safe-area padding is applied twice in nested viewport containers."
   ],
   "balancing_notes": [
-    "Make Split Screen strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Small viewports reduce peripheral vision, so enemies, prompts, and hazards may need closer telegraphs.",
+    "Dynamic split/merge can improve screen space but may be disorienting without stable rules.",
+    "Competitive local play may require symmetric viewport layouts even when asymmetric layouts look better."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Split Screen becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Allow per-player UI scale, subtitle visibility, camera shake, and color settings where possible.",
+    "Avoid tiny text and low-contrast markers in split layouts; test from couch distance."
   ],
   "implementation_notes": {
-    "unity": "Implement Split Screen with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Split Screen as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Split Screen with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Split Screen as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Create one camera and UI canvas set per local player, each bound to a viewport_rect and local player id. Use URP/HDRP camera stacks carefully so post effects, shake, and UI overlays do not leak across viewports.",
+    "godot": "Use SubViewport or multiple Camera nodes with explicit player ownership. UI scenes should be scoped to the player viewport and read that player’s input map, safe area, and accessibility profile.",
+    "unreal": "Use local player splitscreen support or custom viewport layout with PlayerController-owned cameras. UMG widgets should be created per local player and scaled through a split-screen profile.",
+    "web": "Render each local camera into a viewport rectangle and clip UI to that rectangle. Canvas, Phaser, or Three.js should budget culling and post effects per viewport, not per full-screen pass."
   },
   "related_mechanics": [
-    "camera.first_person_camera",
-    "camera.smooth_follow_camera",
-    "combat.lock_on_targeting",
-    "movement.run"
+    "multiplayer.local_coop",
+    "camera.third_person_camera",
+    "ui_ux.minimap",
+    "accessibility.text_scaling"
   ],
   "combines_well_with": [
-    "camera.third_person_camera",
-    "camera.top_down_camera",
-    "combat.lock_on_targeting",
-    "movement.run"
+    "multiplayer.role_swap",
+    "camera.smooth_follow_camera",
+    "ui_ux.quest_marker",
+    "accessibility.colorblind_modes"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Mario Kart 8 Deluxe",
+      "note": "Uses split-screen layouts for local multiplayer racing."
+    },
+    {
+      "title": "Halo: Combat Evolved",
+      "note": "Uses split-screen cameras for local co-op and versus play."
+    }
+  ],
   "tags": [
-    "camera",
-    "readability",
-    "split",
-    "view_control"
+    "split_screen",
+    "viewport_rect",
+    "local_coop",
+    "ui_scaling",
+    "camera_ownership"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

@@ -65,10 +65,10 @@
       "description": "Tags that prevent critical hits on certain targets."
     },
     {
-      "name": "critical_feedback_priority",
+      "name": "critical_hit_event_prominence_id",
       "type": "integer",
       "typical_range": "1-10",
-      "description": "Priority used for hit markers, numbers, audio, and camera response."
+      "description": "Priority bucket used when critical hit feedback competes with other combat events."
     }
   ],
   "common_variants": [

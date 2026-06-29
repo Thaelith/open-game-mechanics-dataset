@@ -49,7 +49,7 @@
       "name": "sprint_fov_add_degrees",
       "type": "float",
       "typical_range": "0-18 degrees",
-      "description": "FOV increase applied during sprint or equivalent high-speed state."
+      "description": "Field-of-view increase applied when locomotion or vehicle state enters its high-velocity profile."
     },
     {
       "name": "boost_fov_add_degrees",

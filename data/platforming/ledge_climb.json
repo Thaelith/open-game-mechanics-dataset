@@ -7,7 +7,7 @@
     "ledge climb"
   ],
   "category": "platforming",
-  "subcategory": "vertical_mobility",
+  "subcategory": "ledge_interaction",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,121 @@
     "metroidvania",
     "precision_platformer"
   ],
-  "description": "Ledge Climb is a precision movement mechanic used to negotiate platforms, walls, gaps, and hazards.",
-  "design_notes": "Ledge Climb should be designed around a clear player promise, a readable trigger, and a predictable result. For platforming mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A recovery transition that moves a hanging character onto the top of a ledge using clearance checks, animation alignment, and collision restoration.",
+  "design_notes": "Ledge climb is the commit step after a grab. Define ledge_id, climb animation, top clearance, root-motion policy, collision disable/enable timing, cancel rules, and fallback behavior when the landing area becomes blocked. The climb should feel reliable even when the ledge belongs to a moving platform or multiplayer authority corrects the character.",
   "design_purpose": [
-    "Give the player a readable way to use ledge climb as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect ledge climb to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Complete a ledge recovery by moving the player from hang state to safe standing or crouched ground.",
+    "Let designers author vertical routes that recover from imperfect jumps.",
+    "Coordinate animation, collision, camera, and input lock during a short committed traversal transition."
   ],
-  "player_fantasy": "The player feels precise, agile, and responsible for overcoming spatial challenges.",
+  "player_fantasy": "The player feels they can pull themselves up from danger into a stable position.",
   "required_systems": [
-    "character_controller",
-    "jump_state",
-    "collision_detection",
-    "coyote_time_or_buffering"
+    "ledge_detection",
+    "animation_montage",
+    "root_motion_policy",
+    "collision_queries",
+    "platforming_state_machine"
   ],
   "parameters": [
     {
-      "name": "activation_window",
-      "type": "float",
-      "typical_range": "0.05-0.25 seconds",
-      "description": "Timing window in which the platforming action can start."
+      "name": "ledge_climb_animation_id",
+      "type": "string",
+      "typical_range": "low_climb, high_climb, fast_climb",
+      "description": "Animation or motion profile used for the climb transition."
     },
     {
-      "name": "vertical_velocity",
+      "name": "ledge_top_clearance_units",
       "type": "float",
-      "typical_range": "4-20 world units/second",
-      "description": "Initial or sustained vertical movement contribution."
+      "typical_range": "standing capsule height",
+      "description": "Clear vertical space required at the landing point."
     },
     {
-      "name": "control_lockout",
-      "type": "float",
-      "typical_range": "0-0.25 seconds",
-      "description": "Short period where player input is limited to preserve readability."
+      "name": "ledge_climb_window_ms",
+      "type": "integer",
+      "typical_range": "250-1200 ms",
+      "description": "Committed transition interval from hang to grounded state."
+    },
+    {
+      "name": "ledge_exit_position_offset",
+      "type": "vector",
+      "typical_range": "local ledge offset",
+      "description": "Placement offset applied when the climb finishes."
+    },
+    {
+      "name": "root_motion_policy_id",
+      "type": "string",
+      "typical_range": "animation_owned, scripted, hybrid",
+      "description": "Owner of character displacement during the climb."
+    },
+    {
+      "name": "ledge_cancel_policy_id",
+      "type": "string",
+      "typical_range": "none, drop_only, early_cancel, damage_cancel",
+      "description": "Allowed interruptions while climbing."
     }
   ],
   "common_variants": [
-    "ledge_climb_assisted_version",
-    "ledge_climb_precision_version",
-    "upgrade_unlocked_version",
-    "hazard_sensitive_version"
+    "low_ledge_climb",
+    "high_ledge_climb",
+    "fast_climb",
+    "stamina_climb",
+    "combat_vulnerable_climb"
   ],
   "edge_cases": [
-    "Ledge Climb is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Ledge Climb overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Ledge Climb runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The top landing area becomes blocked after the player starts climbing.",
+    "Damage, knockback, or a scripted event interrupts during root motion and must restore collision safely.",
+    "Moving ledges require exit offset relative to moving_platform_id rather than a world point.",
+    "Networked play needs correction if client animation reaches the top before server validation."
   ],
   "common_bugs": [
-    "Ledge Climb state does not reset correctly after interruption or reload.",
-    "Feedback for Ledge Climb plays even when the mechanic fails or is rejected.",
-    "Ledge Climb produces different results between frame rates, platforms, or network clients."
+    "Collision is disabled for the animation and never restored after cancel.",
+    "Root motion moves through the wall because no sweep validates the climb path.",
+    "Top clearance uses standing height even when the intended exit is crouched under an obstacle.",
+    "Camera snaps to grounded follow before the character exits hang state."
   ],
   "balancing_notes": [
-    "Make Ledge Climb strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Long climb animations create vulnerability and tension; short climbs make ledge recovery nearly automatic.",
+    "Combat encounters near ledges need clear rules for whether climbing grants protection or vulnerability.",
+    "Generous climb acceptance should be paired with clear ledge art so players know valid recovery points."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Ledge Climb becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Allow buffered climb input from hang state and avoid requiring rapid repeated presses to recover.",
+    "Use camera framing and prompts that remain readable while the character is hanging."
   ],
   "implementation_notes": {
-    "unity": "Implement Ledge Climb with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Ledge Climb as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Ledge Climb with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Ledge Climb as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Validate top clearance before starting and again near exit. If animation root motion moves the character, sweep the capsule along the path and keep platforming_state_id as the authority for collision restoration.",
+    "godot": "Use a climb state with stored ledge id, exit transform, and remaining ticks. Move the character through scripted positions in _physics_process unless animation is strictly visual, then restore collision after exit validation.",
+    "unreal": "Use Motion Warping, root motion, or a custom movement mode with a validated ledge target. Server should approve the climb start and final placement, while clients reconcile if montage timing diverges.",
+    "web": "Represent ledge climb as a deterministic transition from hang to exit position. Collision sweeps and top clearance checks run in fixed ticks before render animation advances."
   },
   "related_mechanics": [
-    "camera.smooth_follow_camera",
-    "movement.dash",
-    "platforming.double_jump",
-    "platforming.variable_jump_height"
+    "platforming.ledge_grab",
+    "traversal.mantling",
+    "movement.climbing",
+    "platforming.wall_jump"
   ],
   "combines_well_with": [
     "camera.smooth_follow_camera",
-    "movement.dash",
-    "platforming.wall_jump",
-    "platforming.wall_slide"
+    "accessibility.assist_mode",
+    "movement.stamina_movement",
+    "traversal.parkour_vault"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Uncharted 4",
+      "note": "Uses ledge climb transitions in authored traversal routes."
+    },
+    {
+      "title": "Hollow Knight",
+      "note": "Uses ledge-style recovery and climb-adjacent movement in platforming spaces."
+    }
+  ],
   "tags": [
-    "ledge",
-    "mobility",
-    "precision",
-    "vertical_mobility"
+    "ledge_climb",
+    "root_motion",
+    "clearance_check",
+    "collision_restore",
+    "platforming_state"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

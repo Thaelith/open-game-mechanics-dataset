@@ -51,7 +51,7 @@
       "name": "candidate_stability_ms",
       "type": "integer",
       "typical_range": "100-600 ms",
-      "description": "Minimum time before switching to a newly preferred candidate."
+      "description": "Minimum interval before replacing the currently shown interaction candidate."
     },
     {
       "name": "prompt_fade_ms",

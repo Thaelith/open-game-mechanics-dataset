@@ -7,7 +7,7 @@
     "invincibility frames"
   ],
   "category": "combat",
-  "subcategory": "defense",
+  "subcategory": "timed_immunity",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,121 @@
     "rpg",
     "fighting"
   ],
-  "description": "Invincibility Frames is an interaction that creates threat, defense, damage, timing, or tactical pressure during conflict.",
-  "design_notes": "Invincibility Frames should be designed around a clear player promise, a readable trigger, and a predictable result. For combat mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A temporary damage-immunity window that lets an actor ignore eligible hits from specific sources while preserving state priority and readable feedback.",
+  "design_notes": "Invincibility frames require precise timing and resolver ownership. Define i_frame_source_id, window start and end ticks, priority between roll, spawn protection, hit stun, and cutscene immunity, and which damage types bypass immunity. The system should prevent repeated-hit exploits while making immunity readable through animation, VFX, audio, or UI.",
   "design_purpose": [
-    "Give the player a readable way to use invincibility frames as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect invincibility frames to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players survive through skilled timing, recovery protection, or spawn safety without permanent invulnerability.",
+    "Coordinate dodge, parry, hit stun, respawn, and scripted states through one damage resolver rule.",
+    "Give combat designers clear tools for making attacks fair without weakening their visible threat."
   ],
-  "player_fantasy": "The player feels powerful, skillful, and able to read danger under pressure.",
+  "player_fantasy": "The player feels they slipped through danger at the exact moment their action or recovery state allowed it.",
   "required_systems": [
     "combat_state_machine",
-    "hit_detection",
-    "damage_model",
-    "animation_events"
+    "damage_resolver",
+    "hurtbox_system",
+    "animation_timing",
+    "network_authority"
   ],
   "parameters": [
     {
-      "name": "damage_value",
+      "name": "i_frame_source_id",
+      "type": "string",
+      "typical_range": "dodge_roll, spawn_protection, hit_recovery, cutscene",
+      "description": "State or action that grants temporary immunity."
+    },
+    {
+      "name": "invulnerability_window_ms",
       "type": "integer",
-      "typical_range": "1-250",
-      "description": "Base amount of damage or threat applied by the mechanic."
+      "typical_range": "50-600 ms",
+      "description": "Milliseconds during which eligible damage events are rejected."
     },
     {
-      "name": "startup_time",
-      "type": "float",
-      "typical_range": "0.05-1.2 seconds",
-      "description": "Delay before the active effect begins."
+      "name": "i_frame_priority_id",
+      "type": "string",
+      "typical_range": "spawn, cutscene, dodge, hit_recovery",
+      "description": "Priority used when multiple immunity sources overlap."
     },
     {
-      "name": "recovery_time",
-      "type": "float",
-      "typical_range": "0.05-1.5 seconds",
-      "description": "Delay after use before the actor can fully act again."
+      "name": "i_frame_start_tick_offset",
+      "type": "integer",
+      "typical_range": "0-20 ticks",
+      "description": "Simulation tick offset from action start to immunity begin."
+    },
+    {
+      "name": "i_frame_end_tick_offset",
+      "type": "integer",
+      "typical_range": "1-60 ticks",
+      "description": "Simulation tick offset from action start to immunity end."
+    },
+    {
+      "name": "bypass_damage_type_ids",
+      "type": "array",
+      "typical_range": "grab, hazard, scripted, void",
+      "description": "Damage types that can ignore this immunity source."
     }
   ],
   "common_variants": [
-    "invincibility_frames_light_version",
-    "invincibility_frames_heavy_version",
-    "timed_version",
-    "resource_limited_version"
+    "dodge_i_frames",
+    "spawn_protection",
+    "hit_recovery_immunity",
+    "cutscene_immunity",
+    "parry_immunity"
   ],
   "edge_cases": [
-    "Invincibility Frames is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Invincibility Frames overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Invincibility Frames runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A lingering area hit overlaps the exact first or last immunity tick and needs inclusive boundary rules.",
+    "Two immunity sources overlap with different bypass damage type rules.",
+    "A networked client predicts i-frames but the server receives the damage event on a different tick.",
+    "Grab, hazard, void, or scripted damage may intentionally bypass ordinary dodge immunity."
   ],
   "common_bugs": [
-    "Invincibility Frames state does not reset correctly after interruption or reload.",
-    "Feedback for Invincibility Frames plays even when the mechanic fails or is rejected.",
-    "Invincibility Frames produces different results between frame rates, platforms, or network clients."
+    "Invulnerability is driven only by animation events and changes when animation playback changes.",
+    "Damage resolver checks immunity after applying hit stun, knockback, or damage numbers.",
+    "Overlapping immunity sources clear each other in the wrong order and leave the actor permanently immune or exposed.",
+    "Server and client disagree on the active immunity window because they use wall-clock milliseconds instead of simulation ticks."
   ],
   "balancing_notes": [
-    "Make Invincibility Frames strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Long immunity windows lower execution pressure but can turn evasive actions into universal defense.",
+    "Bypass damage types should be rare and well-telegraphed, or players will stop trusting i-frames.",
+    "Recovery immunity can prevent unfair combo hits but should not erase intended pressure loops."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Invincibility Frames becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use readable attack telegraphs and optional assist settings for games that rely on narrow immunity timing.",
+    "Pair immunity feedback with visual and audio cues, but avoid intense flashing for players with sensitivity settings."
   ],
   "implementation_notes": {
-    "unity": "Implement Invincibility Frames with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Invincibility Frames as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Invincibility Frames with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Invincibility Frames as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store active immunity windows as combat state data with source id, priority, start tick, and end tick. The damage resolver should reject damage_event_id before hit stun, knockback, VFX, or damage numbers are emitted.",
+    "godot": "Keep i-frame windows on the combat body or hurtbox component and update them in fixed simulation ticks. Animation signals may request a window, but the damage resolver owns acceptance and bypass rules.",
+    "unreal": "Represent i-frames with Gameplay Tags, Gameplay Effects, or a replicated combat state component. Server authority should resolve damage against source priority and bypass damage tags before applying hit reactions.",
+    "web": "Store immunity windows in deterministic combat state keyed by actor id and source id. Resolve damage events in tick order, reject eligible hits, and record debug traces for replay or rollback validation."
   },
   "related_mechanics": [
-    "camera.screen_shake",
-    "combat.melee_attack",
-    "combat.ranged_attack",
-    "ui_ux.damage_numbers"
+    "movement.dodge_roll",
+    "combat.parry",
+    "combat.hit_stun",
+    "combat.knockback"
   ],
   "combines_well_with": [
+    "ui_ux.cooldown_indicator",
     "camera.screen_shake",
-    "combat.charged_attack",
     "combat.combo_chain",
-    "ui_ux.damage_numbers"
+    "accessibility.assist_mode"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Dark Souls",
+      "note": "Uses dodge-roll invincibility frames as a core defensive timing tool."
+    },
+    {
+      "title": "Hades",
+      "note": "Uses dash immunity and recovery windows in fast combat encounters."
+    }
+  ],
   "tags": [
-    "combat",
-    "defense",
-    "invincibility",
-    "timing"
+    "invincibility_frames",
+    "damage_resolver",
+    "i_frames",
+    "timed_immunity",
+    "combat_state"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

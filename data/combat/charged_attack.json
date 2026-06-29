@@ -68,7 +68,7 @@
       "name": "movement_multiplier_while_charging",
       "type": "float",
       "typical_range": "0-1",
-      "description": "Movement speed multiplier while holding the charge."
+      "description": "Movement pacing multiplier applied while the attack remains in charge state."
     }
   ],
   "common_variants": [

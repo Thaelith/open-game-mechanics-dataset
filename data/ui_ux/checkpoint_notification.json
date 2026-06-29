@@ -7,7 +7,7 @@
     "checkpoint notification"
   ],
   "category": "ui_ux",
-  "subcategory": "ui_ux",
+  "subcategory": "save_feedback",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,121 @@
     "strategy",
     "action"
   ],
-  "description": "Checkpoint Notification is an interface mechanic that presents game state, accepts decisions, or reduces player friction.",
-  "design_notes": "Checkpoint Notification should be designed around a clear player promise, a readable trigger, and a predictable result. For ui ux mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A notification that confirms checkpoint or save progress using queued UI, icon, text, audio, and failure-state handling.",
+  "design_notes": "Checkpoint notification should communicate save state without interrupting play. Define checkpoint_id, save transaction timing, notification queue priority, duplicate suppression, failure messaging, and whether the UI confirms start, commit, or completion. Players should know when progress is safe without needing to parse a tiny spinner.",
   "design_purpose": [
-    "Give the player a readable way to use checkpoint notification as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect checkpoint notification to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Confirm that progress, location, inventory, or narrative state has been saved.",
+    "Reduce anxiety around quitting, death, or retries by making save state readable.",
+    "Separate successful checkpoint commits from pending saves or failed persistence."
   ],
-  "player_fantasy": "The player feels informed without fighting the interface.",
+  "player_fantasy": "The player feels confident that progress was captured and understands when it is safe to move on or quit.",
   "required_systems": [
-    "ui_framework",
-    "game_state_binding",
-    "input_navigation",
-    "localization_support"
+    "save_system",
+    "notification_queue",
+    "hud_layering",
+    "localization_support",
+    "audio_visual_cues"
   ],
   "parameters": [
     {
-      "name": "display_duration",
-      "type": "float",
-      "typical_range": "0.2-15 seconds",
-      "description": "How long the interface element remains visible after triggering."
-    },
-    {
-      "name": "priority_level",
-      "type": "integer",
-      "typical_range": "1-5",
-      "description": "Layering or importance compared with other UI messages."
-    },
-    {
-      "name": "input_focus_mode",
+      "name": "checkpoint_id",
       "type": "string",
-      "typical_range": "mouse, keyboard, gamepad, touch, mixed",
-      "description": "Control mode the UI must support cleanly."
+      "typical_range": "level_03_gate, boss_retry, autosave_12",
+      "description": "Checkpoint or save record being communicated."
+    },
+    {
+      "name": "checkpoint_saved_at_ms",
+      "type": "integer",
+      "typical_range": "unix epoch or session milliseconds",
+      "description": "Commit timestamp associated with the saved checkpoint."
+    },
+    {
+      "name": "notification_id",
+      "type": "string",
+      "typical_range": "checkpoint_saved, autosave_failed, checkpoint_pending",
+      "description": "UI message record placed in the notification queue."
+    },
+    {
+      "name": "notification_queue_id",
+      "type": "string",
+      "typical_range": "hud_status, save_events, blocking_modal",
+      "description": "Queue that owns ordering and duplicate suppression."
+    },
+    {
+      "name": "duplicate_suppression_ms",
+      "type": "integer",
+      "typical_range": "500-5000 ms",
+      "description": "Window that merges repeated save notifications."
+    },
+    {
+      "name": "save_failure_state_id",
+      "type": "string",
+      "typical_range": "none, storage_full, network_failed, permission_denied",
+      "description": "Failure state shown when checkpoint persistence does not commit."
     }
   ],
   "common_variants": [
-    "checkpoint_notification_minimal_variant",
-    "checkpoint_notification_diegetic_variant",
-    "persistent_variant",
-    "contextual_variant"
+    "autosave_icon",
+    "checkpoint_text_banner",
+    "manual_save_toast",
+    "save_failed_modal",
+    "diegetic_checkpoint_effect"
   ],
   "edge_cases": [
-    "Checkpoint Notification is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Checkpoint Notification overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Checkpoint Notification runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The save starts but fails after the notification has already shown success.",
+    "Repeated checkpoint triggers in one room should not spam the notification queue.",
+    "Cloud sync, cross-save, or network profiles can have local commit success and remote sync failure.",
+    "A player quits during a pending save and needs truthful UI about commit status."
   ],
   "common_bugs": [
-    "Checkpoint Notification state does not reset correctly after interruption or reload.",
-    "Feedback for Checkpoint Notification plays even when the mechanic fails or is rejected.",
-    "Checkpoint Notification produces different results between frame rates, platforms, or network clients."
+    "Notification fires when checkpoint trigger is entered, not when the save transaction commits.",
+    "Save failed messages are hidden behind higher-priority combat or quest notifications.",
+    "Checkpoint icon persists forever because duplicate suppression cancels the hide event.",
+    "Localized text or text scaling overflows the safe-area padding on small screens."
   ],
   "balancing_notes": [
-    "Make Checkpoint Notification strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Checkpoint feedback should be noticeable enough to reassure players but not so large that it interrupts repeated retries.",
+    "Save failure deserves stronger priority than save success because it changes player risk.",
+    "Autosave frequency and notification frequency should be tuned separately."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Checkpoint Notification becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use icon, text, and optional audio together; do not rely only on a tiny animated save symbol.",
+    "Respect reduced-motion settings for pulsing save icons and support readable text scaling."
   ],
   "implementation_notes": {
-    "unity": "Implement Checkpoint Notification with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Checkpoint Notification as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Checkpoint Notification with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Checkpoint Notification as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Emit checkpoint notifications from the save transaction completion callback, not only trigger entry. UI Toolkit or Canvas widgets should read notification_id, localized text, queue priority, and failure state from a single notification service.",
+    "godot": "Route save commits through an autoloaded save service that enqueues checkpoint notifications after write success or failure. Control nodes should handle duplicate suppression and safe-area placement.",
+    "unreal": "Use a save subsystem or async save callback to publish notification events. UMG widgets should show success only after commit and escalate save_failure_state_id to a higher priority queue.",
+    "web": "Wrap local storage, IndexedDB, or backend save calls in a transaction result before showing success. DOM or Canvas HUD layers should merge duplicate notifications and expose accessible labels."
   },
   "related_mechanics": [
-    "accessibility.text_scaling",
-    "camera.camera_zoom",
-    "ui_ux.minimap",
-    "ui_ux.quest_marker"
+    "survival.day_night_cycle",
+    "ui_ux.tutorial_prompt",
+    "narrative.codex_journal",
+    "progression.achievement_system"
   ],
   "combines_well_with": [
+    "ui_ux.quest_marker",
     "accessibility.text_scaling",
-    "camera.camera_zoom",
-    "ui_ux.cooldown_indicator",
-    "ui_ux.damage_numbers"
+    "time.timed_challenge",
+    "roguelike.run_based_progression"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Resident Evil 4",
+      "note": "Uses visible save/checkpoint feedback to reassure players after progress commits."
+    },
+    {
+      "title": "Hollow Knight",
+      "note": "Uses bench and save feedback tied to progression restore points."
+    }
+  ],
   "tags": [
-    "checkpoint",
-    "feedback",
-    "interface",
-    "ui_ux"
+    "checkpoint_notification",
+    "save_feedback",
+    "notification_queue",
+    "safe_area",
+    "accessibility"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

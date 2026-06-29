@@ -53,10 +53,10 @@
       "description": "Primary radius or half-width of the area."
     },
     {
-      "name": "telegraph_duration_ms",
+      "name": "telegraph_window_ms",
       "type": "integer",
       "typical_range": "0-3000 ms",
-      "description": "Warning window before the area becomes active."
+      "description": "Pre-impact warning window shown before the area effect resolves."
     },
     {
       "name": "damage_falloff_curve",

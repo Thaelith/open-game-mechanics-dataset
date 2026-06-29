@@ -56,7 +56,7 @@
       "name": "minimum_visible_ms",
       "type": "integer",
       "typical_range": "500-5000 ms",
-      "description": "Minimum time the prompt remains visible once shown."
+      "description": "Minimum visible interval after the tutorial prompt appears."
     },
     {
       "name": "dismissal_persistence_scope",

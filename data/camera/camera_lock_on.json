@@ -59,10 +59,10 @@
       "description": "Occlusion grace before lock is broken."
     },
     {
-      "name": "target_switch_cooldown_ms",
+      "name": "target_switch_lockout_ms",
       "type": "integer",
       "typical_range": "100-500 ms",
-      "description": "Minimum delay between target switches."
+      "description": "Lockout window before another target cycle input is accepted."
     },
     {
       "name": "orbit_framing_offset",
