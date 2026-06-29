@@ -10,7 +10,15 @@ This is not a claim to contain every mechanic ever made. The current state is an
 
 ## Current Status
 
-Early MVP. The repository includes schema, validation tooling, documentation, contribution templates, and a seed dataset of mechanics across movement, combat, camera, physics, platforming, traversal, puzzle, survival, economy, progression, AI, multiplayer, UI/UX, procedural generation, roguelike, horror, time, vehicles, accessibility, strategy, simulation, and more.
+Early MVP / v0.1 release candidate. The repository currently includes:
+
+- 223 schema-valid mechanic files
+- A strict JSON Schema in `schema/mechanic.schema.json`
+- A generated `dataset.json` index for search and tooling
+- Validation tooling plus advisory quality lint
+- Engine-agnostic implementation notes for Unity, Godot, Unreal, Web/JavaScript, and other engines where practical
+
+Recommended GitHub topics: `game-design`, `game-development`, `dataset`, `json-schema`, `unity`, `godot`, `unreal`, `ai-agents`, `mechanics`.
 
 ## Dataset Format
 

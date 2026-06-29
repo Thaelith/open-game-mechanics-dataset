@@ -7,6 +7,13 @@
 - Add category metadata files and validate them with `schema/category.schema.json`.
 - Add richer query examples for Python, JavaScript, and command-line users.
 
+## Next Quality Passes
+
+- Economy/progression: de-template pricing, reward, unlock, respec, and build-planning entries.
+- AI/procedural generation: improve state modeling, validation rules, determinism notes, debug tooling, and generation failure modes.
+- Source/reference strategy: define citation expectations, confidence levels, and review rules for factual example references.
+- GitHub Pages browser: publish a static searchable browser backed by `dataset.json`.
+
 ## Medium Term
 
 - Add maintainer review states beyond `draft`.
