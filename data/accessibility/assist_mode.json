@@ -7,7 +7,7 @@
     "assist mode"
   ],
   "category": "accessibility",
-  "subcategory": "accessibility",
+  "subcategory": "assist_settings",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,85 +24,120 @@
     "educational",
     "family"
   ],
-  "description": "Assist Mode is a player-support mechanic that makes controls, perception, difficulty, or information more adaptable.",
-  "design_notes": "Assist Mode should be designed around a clear player promise, a readable trigger, and a predictable result. For accessibility mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A named accessibility preset or mode that enables one or more gameplay assists such as timing forgiveness, input help, reduced penalties, or navigation support.",
+  "design_notes": "Assist mode should be explicit about which features it enables, who owns the profile setting, and where it is restricted. Define assist_mode_id, intensity tiers, timing and input multipliers, privacy or telemetry boundaries, and whether the setting is per-save, per-account, or per-local-player.",
   "design_purpose": [
-    "Give the player a readable way to use assist mode as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect assist mode to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Bundle related support options into a discoverable path for players who need help quickly.",
+    "Let players adjust specific barriers such as timing, aiming, navigation, or penalty severity.",
+    "Provide support without implying that players are using the game incorrectly."
   ],
-  "player_fantasy": "The player feels the game can adapt to their needs without removing agency.",
+  "player_fantasy": "The player feels welcomed by a game that can meet them where they are without shaming the choice.",
   "required_systems": [
+    "accessibility_profile",
     "settings_menu",
-    "input_abstraction",
+    "assist_feature_registry",
     "profile_persistence",
-    "ui_feedback"
+    "telemetry_privacy"
   ],
   "parameters": [
     {
-      "name": "setting_steps",
-      "type": "integer",
-      "typical_range": "2-20",
-      "description": "Number of selectable strengths, sizes, or modes."
-    },
-    {
-      "name": "default_enabled",
-      "type": "boolean",
-      "typical_range": "true or false",
-      "description": "Whether the support option is active by default."
-    },
-    {
-      "name": "profile_scope",
+      "name": "assist_mode_id",
       "type": "string",
-      "typical_range": "device, account, save_file",
-      "description": "Where the preference is stored."
+      "typical_range": "off, light, custom, full_assist",
+      "description": "Preset or custom mode selected by the player."
+    },
+    {
+      "name": "assist_feature_ids",
+      "type": "array",
+      "typical_range": "timing, aiming, navigation, penalty, input",
+      "description": "Feature toggles included in the selected assist mode."
+    },
+    {
+      "name": "assist_intensity_level",
+      "type": "integer",
+      "typical_range": "0-5 tiers",
+      "description": "Preset strength used when applying bundled assists."
+    },
+    {
+      "name": "timing_assist_multiplier",
+      "type": "float",
+      "typical_range": "1.0-3.0",
+      "description": "Multiplier applied to timing windows such as jumps, parries, or prompts."
+    },
+    {
+      "name": "input_assist_policy_id",
+      "type": "string",
+      "typical_range": "none, buffer, auto_hold, simplified",
+      "description": "Input helper policy applied before gameplay systems consume actions."
+    },
+    {
+      "name": "profile_visibility_policy_id",
+      "type": "string",
+      "typical_range": "private, save_file, leaderboard_disclosed",
+      "description": "Disclosure rule for saves, analytics, or ranked modes."
     }
   ],
   "common_variants": [
-    "assist_mode_preset_variant",
-    "assist_mode_slider_based",
-    "per_profile",
-    "platform_integrated"
+    "assist_preset",
+    "custom_assist_menu",
+    "invulnerability_assist",
+    "timing_assist",
+    "navigation_assist"
   ],
   "edge_cases": [
-    "Assist Mode is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Assist Mode overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Assist Mode runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Assist mode is enabled after a checkpoint but before a deterministic challenge result is submitted.",
+    "Two local players use different assist modes in the same split-screen or couch co-op session.",
+    "A save created with assist features is loaded on a platform where one input helper is unavailable.",
+    "Telemetry or achievements record assist usage without clear privacy and disclosure rules."
   ],
   "common_bugs": [
-    "Assist Mode state does not reset correctly after interruption or reload.",
-    "Feedback for Assist Mode plays even when the mechanic fails or is rejected.",
-    "Assist Mode produces different results between frame rates, platforms, or network clients."
+    "Assist mode changes UI labels but does not update the feature registry consumed by gameplay systems.",
+    "Timing multipliers stack with coyote time and input buffering multiple times after scene reload.",
+    "One local player toggles assist mode and changes every player profile in the session.",
+    "Challenge restrictions disable assists silently instead of explaining the locked policy."
   ],
   "balancing_notes": [
-    "Make Assist Mode strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Assist mode should target barriers rather than broadly flattening every system unless the preset clearly says so.",
+    "Leaderboard and ranked restrictions should be handled through transparent mode policy, not hidden penalties.",
+    "Custom assist menus reduce frustration when players need one support feature but not a full preset."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Assist Mode becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Place assist mode near first-launch setup and keep it reachable from pause menus.",
+    "Avoid moralized labels; describe practical effects such as wider timing windows or reduced damage."
   ],
   "implementation_notes": {
-    "unity": "Implement Assist Mode with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Assist Mode as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Assist Mode with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Assist Mode as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use an assist_feature_registry keyed by assist_mode_id and profile id. Gameplay systems request resolved assists such as timing_assist_multiplier or input_assist_policy_id from one service, while UI Toolkit offers live preview and reset-to-default flows.",
+    "godot": "Store assist settings in a Resource-backed profile and expose a signal when committed settings change. Movement, combat, and UI scripts should subscribe to resolved feature ids rather than reading menu controls directly.",
+    "unreal": "Use a player settings subsystem plus Data Assets for assist presets. Gameplay Ability, Enhanced Input, and UI systems should query the same replicated or local profile, with server authority enforcing ranked restrictions.",
+    "web": "Keep assist profile data versioned in storage and resolve feature ids before the simulation tick. For local multiplayer, key settings by local_player_id so one player can use assists without changing another player."
   },
   "related_mechanics": [
     "accessibility.adjustable_difficulty",
-    "accessibility.colorblind_modes",
-    "ui_ux.accessibility_remap_controls",
-    "ui_ux.tutorial_prompt"
+    "accessibility.toggle_hold_option",
+    "platforming.coyote_time",
+    "platforming.jump_buffering"
   ],
   "combines_well_with": [
-    "accessibility.text_scaling",
-    "ui_ux.accessibility_remap_controls",
-    "ui_ux.tutorial_prompt"
+    "time.slow_motion",
+    "ui_ux.tutorial_prompt",
+    "movement.stamina_movement",
+    "combat.parry"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Celeste",
+      "note": "Uses an assist mode to expose practical support options for movement challenges."
+    },
+    {
+      "title": "Forza Motorsport",
+      "note": "Uses driving assists that can be adjusted to player needs and skill."
+    }
+  ],
   "tags": [
-    "accessibility",
-    "assist",
+    "assist_mode",
+    "accessibility_profile",
+    "timing_assist",
+    "input_assist",
     "settings"
   ],
   "source_confidence": "medium",

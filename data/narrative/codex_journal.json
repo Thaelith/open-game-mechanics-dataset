@@ -7,7 +7,7 @@
     "codex journal"
   ],
   "category": "narrative",
-  "subcategory": "narrative",
+  "subcategory": "journal_system",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,86 +24,121 @@
     "rpg",
     "visual_novel"
   ],
-  "description": "Codex Journal is a story-state mechanic that presents, records, branches, or reacts to player decisions.",
-  "design_notes": "Codex Journal should be designed around a clear player promise, a readable trigger, and a predictable result. For narrative mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A persistent lore, quest, or reference log that unlocks entries, tracks read state, and gives players a structured way to revisit narrative information.",
+  "design_notes": "Codex and journal systems need clear unlock sources, spoiler gates, sorting rules, search, localization, read/unread state, and persistence. Narrative content should be discoverable without burying critical quest information, and optional lore should remain skippable without blocking comprehension.",
   "design_purpose": [
-    "Give the player a readable way to use codex journal as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect codex journal to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players a reliable place to review lore, quests, characters, factions, tutorials, and discoveries.",
+    "Preserve narrative context across long sessions, breaks, and content updates.",
+    "Reward exploration with optional information while keeping spoiler-sensitive entries gated."
   ],
-  "player_fantasy": "The player feels their attention and decisions matter to the story state.",
+  "player_fantasy": "The player feels like they are building an archive of the world and can return to it whenever context is needed.",
   "required_systems": [
-    "dialogue_or_event_system",
-    "quest_state",
-    "save_state",
-    "content_flags"
+    "journal_database",
+    "unlock_triggers",
+    "localization",
+    "profile_persistence",
+    "search_and_sort"
   ],
   "parameters": [
     {
-      "name": "choice_count",
-      "type": "integer",
-      "typical_range": "1-8",
-      "description": "Number of options or branches presented to the player."
-    },
-    {
-      "name": "state_flag_count",
-      "type": "integer",
-      "typical_range": "1-100",
-      "description": "Number of flags or facts tracked by the mechanic."
-    },
-    {
-      "name": "reveal_timing",
+      "name": "codex_entry_id",
       "type": "string",
-      "typical_range": "immediate, delayed, chapter, ending",
-      "description": "When consequences or information become visible."
+      "typical_range": "lore_faction_01, enemy_wolf, tutorial_parry",
+      "description": "Stable id for a codex or journal entry."
+    },
+    {
+      "name": "discovery_trigger_id",
+      "type": "string",
+      "typical_range": "pickup, dialogue, quest_stage, scan, area_enter",
+      "description": "Source event that unlocks the entry."
+    },
+    {
+      "name": "read_state_id",
+      "type": "string",
+      "typical_range": "unseen, unread, read, updated",
+      "description": "Player-facing state for notifications and sorting."
+    },
+    {
+      "name": "spoiler_gate_flag_id",
+      "type": "string",
+      "typical_range": "chapter_2_seen, boss_defeated, faction_joined",
+      "description": "World flag required before the entry can appear."
+    },
+    {
+      "name": "journal_sort_key",
+      "type": "string",
+      "typical_range": "recent, category, faction, quest, region",
+      "description": "Sorting key used by the journal UI."
+    },
+    {
+      "name": "localized_string_id",
+      "type": "string",
+      "typical_range": "codex.region.old_city.body",
+      "description": "Localization key for title, body, and optional summary text."
     }
   ],
   "common_variants": [
-    "codex_journal_linear_variant",
-    "codex_journal_branching_variant",
-    "hidden_state_variant",
-    "reputation_based"
+    "lore_codex",
+    "quest_journal",
+    "bestiary",
+    "tutorial_archive",
+    "character_glossary"
   ],
   "edge_cases": [
-    "Codex Journal is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Codex Journal overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Codex Journal runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A codex entry is discovered before the player reaches the chapter where its full text is spoiler-safe.",
+    "An entry is updated by later dialogue and must preserve read state while marking new paragraphs unread.",
+    "Localization changes text length enough to affect sorting, search snippets, or page layout.",
+    "Save migration renames codex_entry_id records or splits one entry into several entries."
   ],
   "common_bugs": [
-    "Codex Journal state does not reset correctly after interruption or reload.",
-    "Feedback for Codex Journal plays even when the mechanic fails or is rejected.",
-    "Codex Journal produces different results between frame rates, platforms, or network clients."
+    "Unlock triggers fire repeatedly and spam journal notifications after reload.",
+    "Read/unread state is stored per UI tab instead of per codex_entry_id.",
+    "Search indexes source text but not localized strings, so search fails in non-default languages.",
+    "Spoiler-gated entries appear in related-entry lists before their world flag is set."
   ],
   "balancing_notes": [
-    "Make Codex Journal strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Critical quest guidance should be clearly separated from optional lore so players can find required information quickly.",
+    "Frequent notifications can train players to ignore the journal; reserve strong alerts for meaningful updates.",
+    "Search and categories are more valuable than very long linear lore lists in content-heavy games."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Codex Journal becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Support text scaling, contrast, screen-reader-friendly structure where applicable, and controller/keyboard navigation.",
+    "Offer audio replay or captioned transcript links when entries summarize voiced discoveries."
   ],
   "implementation_notes": {
-    "unity": "Implement Codex Journal with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Codex Journal as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Codex Journal with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Codex Journal as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store codex entries as ScriptableObjects or data rows with codex_entry_id, localized_string_id, spoiler flags, and category metadata. Unlocks should be idempotent transactions that update profile persistence and notification state once.",
+    "godot": "Represent entries as Resources or JSON and use an autoloaded journal service to unlock, update, sort, and persist read_state_id. UI scenes should query the service instead of storing local entry state.",
+    "unreal": "Use Data Assets or tables for journal entries and save only ids, read states, and unlock timestamps. UMG lists should use localized text and spoiler gates from the same data source as quest and dialogue systems.",
+    "web": "Keep journal content in localized JSON and store per-profile entry state separately. Search indexes should rebuild from localized strings and omit spoiler-gated entries until their world flags are active."
   },
   "related_mechanics": [
+    "narrative.environmental_storytelling",
     "narrative.branching_dialogue",
-    "narrative.reputation_choice",
-    "progression.achievement_system",
-    "ui_ux.dialogue_choice"
+    "narrative.reputation_gating",
+    "ui_ux.quest_marker"
   ],
   "combines_well_with": [
-    "narrative.environmental_storytelling",
+    "accessibility.text_scaling",
+    "ui_ux.inventory_grid",
     "progression.achievement_system",
-    "ui_ux.dialogue_choice"
+    "narrative.reputation_choice"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Mass Effect",
+      "note": "Uses a codex to organize world lore, species, technology, and history."
+    },
+    {
+      "title": "The Witcher 3: Wild Hunt",
+      "note": "Uses journal and bestiary entries to preserve narrative and gameplay context."
+    }
+  ],
   "tags": [
-    "choice",
     "codex",
-    "narrative"
+    "journal",
+    "lore",
+    "read_state",
+    "spoiler_gating"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

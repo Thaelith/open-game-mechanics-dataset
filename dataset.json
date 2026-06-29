@@ -4,13 +4,13 @@
   "license": "CC0-1.0",
   "tool_license": "MIT",
   "total_mechanics": 223,
-  "last_generated": "2026-06-29T15:50:42+00:00",
+  "last_generated": "2026-06-29T20:24:05+00:00",
   "mechanics": [
     {
       "id": "accessibility.adjustable_difficulty",
       "name": "Adjustable Difficulty",
       "category": "accessibility",
-      "subcategory": "accessibility",
+      "subcategory": "difficulty_options",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -24,8 +24,10 @@
       ],
       "tags": [
         "accessibility",
-        "adjustable",
-        "settings"
+        "difficulty_options",
+        "profile_persistence",
+        "assist_settings",
+        "ranked_policy"
       ],
       "path": "data/accessibility/adjustable_difficulty.json"
     },
@@ -33,7 +35,7 @@
       "id": "accessibility.assist_mode",
       "name": "Assist Mode",
       "category": "accessibility",
-      "subcategory": "accessibility",
+      "subcategory": "assist_settings",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -46,8 +48,10 @@
         "family"
       ],
       "tags": [
-        "accessibility",
-        "assist",
+        "assist_mode",
+        "accessibility_profile",
+        "timing_assist",
+        "input_assist",
         "settings"
       ],
       "path": "data/accessibility/assist_mode.json"
@@ -56,7 +60,7 @@
       "id": "accessibility.colorblind_modes",
       "name": "Colorblind Modes",
       "category": "accessibility",
-      "subcategory": "accessibility",
+      "subcategory": "visual_accessibility",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -69,9 +73,11 @@
         "family"
       ],
       "tags": [
-        "accessibility",
-        "colorblind",
-        "settings"
+        "colorblind_mode",
+        "visual_accessibility",
+        "contrast",
+        "palette",
+        "redundant_cues"
       ],
       "path": "data/accessibility/colorblind_modes.json"
     },
@@ -79,7 +85,7 @@
       "id": "accessibility.text_scaling",
       "name": "Text Scaling",
       "category": "accessibility",
-      "subcategory": "accessibility",
+      "subcategory": "readability_options",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -92,9 +98,11 @@
         "family"
       ],
       "tags": [
-        "accessibility",
-        "settings",
-        "text"
+        "text_scaling",
+        "readability",
+        "localization",
+        "layout_reflow",
+        "subtitles"
       ],
       "path": "data/accessibility/text_scaling.json"
     },
@@ -117,9 +125,10 @@
       ],
       "tags": [
         "accessibility",
-        "input",
+        "input_preference",
         "toggle",
-        "settings"
+        "hold",
+        "profile_persistence"
       ],
       "path": "data/accessibility/toggle_hold_option.json"
     },
@@ -2322,7 +2331,7 @@
       "id": "narrative.branching_dialogue",
       "name": "Branching Dialogue",
       "category": "narrative",
-      "subcategory": "narrative",
+      "subcategory": "dialogue_branching",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2335,9 +2344,11 @@
         "visual_novel"
       ],
       "tags": [
-        "branching",
-        "choice",
-        "narrative"
+        "branching_dialogue",
+        "dialogue_node",
+        "choice_history",
+        "localization",
+        "consequence"
       ],
       "path": "data/narrative/branching_dialogue.json"
     },
@@ -2345,7 +2356,7 @@
       "id": "narrative.codex_journal",
       "name": "Codex Journal",
       "category": "narrative",
-      "subcategory": "narrative",
+      "subcategory": "journal_system",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2358,9 +2369,11 @@
         "visual_novel"
       ],
       "tags": [
-        "choice",
         "codex",
-        "narrative"
+        "journal",
+        "lore",
+        "read_state",
+        "spoiler_gating"
       ],
       "path": "data/narrative/codex_journal.json"
     },
@@ -2368,7 +2381,7 @@
       "id": "narrative.environmental_storytelling",
       "name": "Environmental Storytelling",
       "category": "narrative",
-      "subcategory": "narrative",
+      "subcategory": "world_clues",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2381,9 +2394,11 @@
         "visual_novel"
       ],
       "tags": [
-        "choice",
-        "environmental",
-        "narrative"
+        "environmental_storytelling",
+        "world_clues",
+        "discovery_trigger",
+        "journal_unlock",
+        "readability"
       ],
       "path": "data/narrative/environmental_storytelling.json"
     },
@@ -2391,7 +2406,7 @@
       "id": "narrative.reputation_choice",
       "name": "Reputation Choice",
       "category": "narrative",
-      "subcategory": "narrative",
+      "subcategory": "choice_consequence",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2404,9 +2419,11 @@
         "visual_novel"
       ],
       "tags": [
-        "choice",
-        "narrative",
-        "reputation"
+        "reputation_choice",
+        "faction_state",
+        "choice_consequence",
+        "delayed_outcome",
+        "narrative_state"
       ],
       "path": "data/narrative/reputation_choice.json"
     },
@@ -2427,10 +2444,11 @@
         "simulation"
       ],
       "tags": [
-        "narrative",
-        "reputation",
-        "gating",
-        "choices"
+        "reputation_gating",
+        "faction_state",
+        "state_gate",
+        "spoiler_safe_ui",
+        "choice_history"
       ],
       "path": "data/narrative/reputation_gating.json"
     },
@@ -8339,9 +8357,6 @@
       ],
       "accessibility": [
         "accessibility.adjustable_difficulty",
-        "accessibility.assist_mode",
-        "accessibility.colorblind_modes",
-        "accessibility.text_scaling",
         "accessibility.toggle_hold_option",
         "camera.screen_shake",
         "combat.aim_down_sights",
@@ -8378,6 +8393,9 @@
       "accessibility_layout": [
         "rhythm.note_lane"
       ],
+      "accessibility_profile": [
+        "accessibility.assist_mode"
+      ],
       "account_profile": [
         "meta.daily_challenge"
       ],
@@ -8390,9 +8408,6 @@
       ],
       "action_cost": [
         "survival.stamina"
-      ],
-      "adjustable": [
-        "accessibility.adjustable_difficulty"
       ],
       "aerial_traversal": [
         "traversal.gliding"
@@ -8477,8 +8492,13 @@
         "combat.area_of_effect_attack"
       ],
       "assist": [
-        "accessibility.assist_mode",
         "vehicles.vehicle_braking"
+      ],
+      "assist_mode": [
+        "accessibility.assist_mode"
+      ],
+      "assist_settings": [
+        "accessibility.adjustable_difficulty"
       ],
       "asymmetric_roles": [
         "multiplayer.asymmetric_roles"
@@ -8537,7 +8557,7 @@
       "boss": [
         "ai.boss_phase_transition"
       ],
-      "branching": [
+      "branching_dialogue": [
         "narrative.branching_dialogue"
       ],
       "breakable": [
@@ -8621,13 +8641,13 @@
         "ui_ux.checkpoint_notification"
       ],
       "choice": [
-        "narrative.branching_dialogue",
-        "narrative.codex_journal",
-        "narrative.environmental_storytelling",
-        "narrative.reputation_choice",
         "ui_ux.dialogue_choice"
       ],
-      "choices": [
+      "choice_consequence": [
+        "narrative.reputation_choice"
+      ],
+      "choice_history": [
+        "narrative.branching_dialogue",
         "narrative.reputation_gating"
       ],
       "chunks": [
@@ -8674,7 +8694,7 @@
       "color_matching": [
         "puzzle.color_matching"
       ],
-      "colorblind": [
+      "colorblind_mode": [
         "accessibility.colorblind_modes"
       ],
       "combat": [
@@ -8737,6 +8757,9 @@
       "congestion": [
         "simulation.traffic_flow"
       ],
+      "consequence": [
+        "narrative.branching_dialogue"
+      ],
       "constraint": [
         "physics.pendulum_swing",
         "physics.physics_push_pull"
@@ -8755,6 +8778,9 @@
         "procedural_generation.random_encounters",
         "procedural_generation.seeded_generation",
         "procedural_generation.wave_generation"
+      ],
+      "contrast": [
+        "accessibility.colorblind_modes"
       ],
       "contribution": [
         "multiplayer.team_objective"
@@ -8881,6 +8907,9 @@
       "defense_counter": [
         "combat.guard_break"
       ],
+      "delayed_outcome": [
+        "narrative.reputation_choice"
+      ],
       "destruction": [
         "physics.destructible_environment"
       ],
@@ -8895,6 +8924,15 @@
       ],
       "dialogue": [
         "ui_ux.dialogue_choice"
+      ],
+      "dialogue_node": [
+        "narrative.branching_dialogue"
+      ],
+      "difficulty_options": [
+        "accessibility.adjustable_difficulty"
+      ],
+      "discovery_trigger": [
+        "narrative.environmental_storytelling"
       ],
       "distraction": [
         "stealth.distraction_throw"
@@ -8956,11 +8994,11 @@
         "physics.destructible_environment",
         "physics.wind_force"
       ],
-      "environmental": [
-        "narrative.environmental_storytelling"
-      ],
       "environmental_locomotion": [
         "movement.swimming"
+      ],
+      "environmental_storytelling": [
+        "narrative.environmental_storytelling"
       ],
       "equipment": [
         "progression.equipment_rarity",
@@ -8998,6 +9036,10 @@
       ],
       "exposure_score": [
         "stealth.visibility_meter"
+      ],
+      "faction_state": [
+        "narrative.reputation_choice",
+        "narrative.reputation_gating"
       ],
       "fall_control": [
         "platforming.wall_slide"
@@ -9066,9 +9108,6 @@
       "gamepad": [
         "ui_ux.radial_menu"
       ],
-      "gating": [
-        "narrative.reputation_gating"
-      ],
       "gliding": [
         "traversal.gliding"
       ],
@@ -9133,6 +9172,9 @@
       "hitbox": [
         "combat.melee_attack"
       ],
+      "hold": [
+        "accessibility.toggle_hold_option"
+      ],
       "horror_pressure": [
         "horror.sanity_meter"
       ],
@@ -9159,9 +9201,11 @@
         "crafting.ingredient_quality"
       ],
       "input": [
-        "accessibility.toggle_hold_option",
         "platforming.drop_through_platform",
         "ui_ux.interaction_prompt"
+      ],
+      "input_assist": [
+        "accessibility.assist_mode"
       ],
       "input_buffer": [
         "combat.combo_chain",
@@ -9179,6 +9223,9 @@
       ],
       "input_navigation": [
         "ui_ux.inventory_grid"
+      ],
+      "input_preference": [
+        "accessibility.toggle_hold_option"
       ],
       "input_processing": [
         "movement.run"
@@ -9241,6 +9288,12 @@
       "jetpack": [
         "traversal.jetpack"
       ],
+      "journal": [
+        "narrative.codex_journal"
+      ],
+      "journal_unlock": [
+        "narrative.environmental_storytelling"
+      ],
       "judgment": [
         "rhythm.sync_window"
       ],
@@ -9288,6 +9341,9 @@
       ],
       "latency_offset": [
         "rhythm.sync_window"
+      ],
+      "layout_reflow": [
+        "accessibility.text_scaling"
       ],
       "layout_validation": [
         "roguelike.procedural_floor"
@@ -9348,6 +9404,8 @@
         "multiplayer.local_coop"
       ],
       "localization": [
+        "accessibility.text_scaling",
+        "narrative.branching_dialogue",
         "ui_ux.dialogue_choice"
       ],
       "locomotion": [
@@ -9363,6 +9421,9 @@
         "economy.loot_table",
         "physics.breakable_object",
         "procedural_generation.loot_generation"
+      ],
+      "lore": [
+        "narrative.codex_journal"
       ],
       "low_gravity": [
         "physics.low_gravity_zone"
@@ -9468,12 +9529,10 @@
         "strategy.fog_of_war"
       ],
       "narrative": [
-        "narrative.branching_dialogue",
-        "narrative.codex_journal",
-        "narrative.environmental_storytelling",
-        "narrative.reputation_choice",
-        "narrative.reputation_gating",
         "ui_ux.dialogue_choice"
+      ],
+      "narrative_state": [
+        "narrative.reputation_choice"
       ],
       "navigation": [
         "ai.patrol",
@@ -9567,6 +9626,9 @@
       ],
       "pacing_spike": [
         "horror.jump_scare_trigger"
+      ],
+      "palette": [
+        "accessibility.colorblind_modes"
       ],
       "parkour": [
         "traversal.wall_run"
@@ -9710,6 +9772,10 @@
       "profile_binding": [
         "multiplayer.local_coop"
       ],
+      "profile_persistence": [
+        "accessibility.adjustable_difficulty",
+        "accessibility.toggle_hold_option"
+      ],
       "profile_progress": [
         "meta.collection_log"
       ],
@@ -9788,6 +9854,9 @@
         "combat.ranged_attack",
         "combat.reload"
       ],
+      "ranked_policy": [
+        "accessibility.adjustable_difficulty"
+      ],
       "rarity": [
         "economy.loot_table",
         "roguelike.random_powerups"
@@ -9801,7 +9870,11 @@
       "raycast": [
         "puzzle.mirror_light_reflection"
       ],
+      "read_state": [
+        "narrative.codex_journal"
+      ],
       "readability": [
+        "accessibility.text_scaling",
         "camera.camera_lock_on",
         "camera.camera_zoom",
         "camera.cinematic_camera",
@@ -9812,6 +9885,7 @@
         "camera.third_person_camera",
         "camera.top_down_camera",
         "horror.limited_visibility",
+        "narrative.environmental_storytelling",
         "time.slow_motion",
         "ui_ux.cooldown_indicator"
       ],
@@ -9840,6 +9914,9 @@
       ],
       "recovery_frames": [
         "movement.dodge_roll"
+      ],
+      "redundant_cues": [
+        "accessibility.colorblind_modes"
       ],
       "refill": [
         "vehicles.fuel"
@@ -9879,8 +9956,10 @@
         "procedural_generation.seeded_generation",
         "procedural_generation.wave_generation"
       ],
-      "reputation": [
-        "narrative.reputation_choice",
+      "reputation_choice": [
+        "narrative.reputation_choice"
+      ],
+      "reputation_gating": [
         "narrative.reputation_gating"
       ],
       "research": [
@@ -10071,11 +10150,7 @@
         "multiplayer.online_coop"
       ],
       "settings": [
-        "accessibility.adjustable_difficulty",
-        "accessibility.assist_mode",
-        "accessibility.colorblind_modes",
-        "accessibility.text_scaling",
-        "accessibility.toggle_hold_option"
+        "accessibility.assist_mode"
       ],
       "shadow_cover": [
         "stealth.shadow_cover"
@@ -10172,6 +10247,12 @@
       "split": [
         "camera.split_screen"
       ],
+      "spoiler_gating": [
+        "narrative.codex_journal"
+      ],
+      "spoiler_safe_ui": [
+        "narrative.reputation_gating"
+      ],
       "stack_rule": [
         "roguelike.curse_modifier"
       ],
@@ -10199,6 +10280,9 @@
       ],
       "state_cache": [
         "time.time_freeze"
+      ],
+      "state_gate": [
+        "narrative.reputation_gating"
       ],
       "state_history": [
         "time.time_rewind"
@@ -10242,6 +10326,9 @@
       ],
       "submerged_state": [
         "physics.buoyancy"
+      ],
+      "subtitles": [
+        "accessibility.text_scaling"
       ],
       "surface_anchor": [
         "movement.climbing"
@@ -10324,7 +10411,7 @@
       "territory_control": [
         "strategy.territory_control"
       ],
-      "text": [
+      "text_scaling": [
         "accessibility.text_scaling"
       ],
       "third": [
@@ -10363,6 +10450,9 @@
         "combat.projectile_reflection",
         "puzzle.timed_door",
         "time.cooldown_time"
+      ],
+      "timing_assist": [
+        "accessibility.assist_mode"
       ],
       "timing_window": [
         "rhythm.sync_window"
@@ -10525,6 +10615,9 @@
       "visibility_modifier": [
         "stealth.shadow_cover"
       ],
+      "visual_accessibility": [
+        "accessibility.colorblind_modes"
+      ],
       "vitality": [
         "survival.health"
       ],
@@ -10565,6 +10658,9 @@
       "world_clock": [
         "survival.day_night_cycle",
         "time.day_night_schedule"
+      ],
+      "world_clues": [
+        "narrative.environmental_storytelling"
       ],
       "world_state": [
         "simulation.systemic_weather"

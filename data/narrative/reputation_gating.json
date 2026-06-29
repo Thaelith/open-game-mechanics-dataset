@@ -24,96 +24,121 @@
     "adventure",
     "simulation"
   ],
-  "description": "A narrative or systemic gate that unlocks options based on reputation, faction standing, or social state.",
-  "design_notes": "Reputation gating turns player history into access rules. It should be transparent enough for players to understand consequences while preserving story texture and surprise.",
+  "description": "A narrative or systemic access rule that unlocks, hides, alters, or blocks content based on faction standing, relationship state, or social trust.",
+  "design_notes": "Reputation gating turns player history into access rules. Define reputation_faction_id, threshold ids, bypass conditions, lock explanation, save migration, and whether gates are hard blocks or soft alternatives. The player should understand why content is locked without exposing spoilers or reducing faction systems to raw arithmetic.",
   "design_purpose": [
-    "Make social choices affect available quests, dialogue, vendors, or areas.",
-    "Represent faction trust or hostility in world systems.",
-    "Reward or restrict play styles through accumulated reputation."
+    "Make social choices affect available quests, dialogue, vendors, areas, companions, or endings.",
+    "Represent faction trust or hostility in world systems that react to player history.",
+    "Reward or restrict play styles through accumulated reputation while preserving alternate paths where needed."
   ],
-  "player_fantasy": "The player feels their history with people and factions has practical consequences.",
+  "player_fantasy": "The player feels their history with people and factions has practical consequences in the world.",
   "required_systems": [
     "reputation_state",
+    "condition_evaluator",
     "dialogue_or_quest_system",
     "content_flags",
-    "save_state"
+    "save_migration"
   ],
   "parameters": [
     {
-      "name": "required_reputation_tier",
-      "type": "integer",
-      "typical_range": "-5 to +5 tiers",
-      "description": "Standing tier required for access."
+      "name": "reputation_faction_id",
+      "type": "string",
+      "typical_range": "canonical faction or relationship id",
+      "description": "Faction or relationship track used by the gate."
     },
     {
-      "name": "faction_id",
+      "name": "required_reputation_threshold_id",
       "type": "string",
-      "typical_range": "canonical faction id",
-      "description": "Faction or relationship track used by the gate."
+      "typical_range": "hostile, neutral, trusted, allied",
+      "description": "Standing threshold required for access."
     },
     {
       "name": "bypass_condition_ids",
       "type": "array",
-      "typical_range": "0-10 ids",
+      "typical_range": "item, disguise, quest flag, skill, bribe",
       "description": "Alternate story, item, or skill conditions that bypass the gate."
     },
     {
-      "name": "reputation_delta_on_choice",
-      "type": "integer",
-      "typical_range": "-100 to +100 points",
-      "description": "Standing change caused by a relevant choice."
+      "name": "gate_result_id",
+      "type": "string",
+      "typical_range": "show_locked, hide_option, alternate_route, combat",
+      "description": "Outcome applied when the reputation condition passes or fails."
+    },
+    {
+      "name": "lock_explanation_policy_id",
+      "type": "string",
+      "typical_range": "explicit, vague, hidden, spoiler_safe",
+      "description": "How the UI explains a locked reputation option."
+    },
+    {
+      "name": "gate_migration_rule_id",
+      "type": "string",
+      "typical_range": "clamp, remap_threshold, grandfather_unlock",
+      "description": "Save migration rule when thresholds move between versions."
     }
   ],
   "common_variants": [
     "vendor_reputation_gate",
     "dialogue_reputation_gate",
     "quest_reputation_gate",
-    "area_reputation_gate"
+    "area_reputation_gate",
+    "companion_trust_gate"
   ],
   "edge_cases": [
-    "Players can belong to hostile factions with conflicting gates.",
-    "Temporary disguises or story states may override reputation.",
-    "Content patches can move thresholds and affect existing saves."
+    "Players can belong to hostile factions with conflicting gates and bypass conditions.",
+    "Temporary disguises, bribes, or story states may override reputation without changing the underlying standing.",
+    "Content patches can move thresholds and affect existing saves in the middle of a quest line.",
+    "A hidden gate can look like missing content unless another route or explanation is available."
   ],
   "common_bugs": [
-    "UI hides a locked option without explaining the reputation requirement.",
-    "Negative reputation wraps around or uses the wrong faction key.",
-    "Bypass conditions unlock content but do not mark required story flags."
+    "UI hides a locked option without explaining the reputation requirement or alternate route.",
+    "Negative reputation uses the wrong faction key after save migration.",
+    "Bypass conditions unlock content but do not set required world_state_flag_id records.",
+    "Dialogue display checks one threshold while activation checks another threshold id."
   ],
   "balancing_notes": [
-    "Hard gates make choices consequential but can hide too much content.",
-    "Soft gates with alternate routes preserve agency while still honoring reputation."
+    "Hard gates make choices consequential but can hide too much content if no alternate route exists.",
+    "Soft gates with bypasses preserve agency while still honoring reputation history.",
+    "Locked-option visibility should match the narrative tone: explicit for systems clarity, hidden for mystery, spoiler-safe for story reveals."
   ],
   "accessibility_notes": [
-    "Explain locked options in plain language and avoid color-only faction standing indicators."
+    "Explain locked options in plain language and avoid color-only faction standing indicators.",
+    "Keep reputation summaries readable in journals or dialogue logs so players can review why a gate changed."
   ],
   "implementation_notes": {
-    "unity": "Store faction standings and gate definitions as data, then evaluate the same condition object for dialogue display, quest activation, vendors, and save migration.",
-    "godot": "Represent gates as Resources or dictionaries with faction_id, threshold, and bypass conditions, resolved through a central narrative-state service.",
-    "unreal": "Use Gameplay Tags, Data Assets, or quest data tables for faction IDs and evaluate reputation conditions in dialogue, vendor, and level-access systems.",
-    "web": "Keep reputation tracks and gate conditions in JSON, run pure condition checks for both locked-option display and activation, and include bypass reasons in UI data."
+    "unity": "Store faction standings and gate definitions as data, then evaluate the same condition object for dialogue display, quest activation, vendors, and save migration. UI should receive both gate_result_id and spoiler-safe lock explanation text.",
+    "godot": "Represent gates as Resources or dictionaries with reputation_faction_id, threshold id, and bypass conditions, resolved through a central narrative-state service. Save data should store faction ids, not translated names.",
+    "unreal": "Use Gameplay Tags, Data Assets, or quest data tables for faction IDs and evaluate reputation conditions in dialogue, vendor, and level-access systems. Replicated sessions should let the host or server own shared gate results.",
+    "web": "Keep reputation tracks and gate conditions in JSON, run pure condition checks for both locked-option display and activation, and include bypass reasons in UI data without exposing spoiler-only flags."
   },
   "related_mechanics": [
     "narrative.reputation_choice",
     "narrative.branching_dialogue",
-    "progression.respec"
+    "progression.respec",
+    "economy.shop"
   ],
   "combines_well_with": [
-    "economy.shop",
     "progression.skill_tree",
-    "ui_ux.dialogue_choice"
+    "ui_ux.dialogue_choice",
+    "narrative.codex_journal",
+    "multiplayer.role_swap"
   ],
   "example_games": [
     {
       "title": "Fallout: New Vegas",
-      "note": "Uses faction reputation to alter reactions and access to content."
+      "note": "Uses faction standing to change reactions and access to content."
+    },
+    {
+      "title": "Baldur's Gate 3",
+      "note": "Uses relationship and story state to alter dialogue and quest access."
     }
   ],
   "tags": [
-    "narrative",
-    "reputation",
-    "gating",
-    "choices"
+    "reputation_gating",
+    "faction_state",
+    "state_gate",
+    "spoiler_safe_ui",
+    "choice_history"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

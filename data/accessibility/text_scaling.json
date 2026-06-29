@@ -7,7 +7,7 @@
     "text scaling"
   ],
   "category": "accessibility",
-  "subcategory": "accessibility",
+  "subcategory": "readability_options",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,86 +24,121 @@
     "educational",
     "family"
   ],
-  "description": "Text Scaling is a player-support mechanic that makes controls, perception, difficulty, or information more adaptable.",
-  "design_notes": "Text Scaling should be designed around a clear player promise, a readable trigger, and a predictable result. For accessibility mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A readability setting that scales text and related UI layout while preserving interaction targets, localization, safe areas, and overflow behavior.",
+  "design_notes": "Text scaling is a layout system, not just a larger font. Define text_scale_multiplier, minimum hit targets, reflow behavior, safe area constraints, localization expansion, subtitle and HUD scopes, and live preview. Every screen that displays critical information needs an overflow strategy before large text ships.",
   "design_purpose": [
-    "Give the player a readable way to use text scaling as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect text scaling to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Make text-heavy UI, subtitles, prompts, inventories, and journals readable at different distances and display sizes.",
+    "Prevent larger text from breaking layouts, hiding controls, or truncating localized strings.",
+    "Support accessibility profiles that persist readability choices across sessions and devices."
   ],
-  "player_fantasy": "The player feels the game can adapt to their needs without removing agency.",
+  "player_fantasy": "The player feels able to read the game comfortably without leaning in, guessing, or sacrificing navigation.",
   "required_systems": [
+    "ui_layout_system",
+    "font_scaling",
+    "localization",
     "settings_menu",
-    "input_abstraction",
-    "profile_persistence",
-    "ui_feedback"
+    "safe_area_support"
   ],
   "parameters": [
     {
-      "name": "setting_steps",
-      "type": "integer",
-      "typical_range": "2-20",
-      "description": "Number of selectable strengths, sizes, or modes."
+      "name": "text_scale_multiplier",
+      "type": "float",
+      "typical_range": "0.8-2.5",
+      "description": "Multiplier applied to eligible text styles in the selected UI scope."
     },
     {
-      "name": "default_enabled",
-      "type": "boolean",
-      "typical_range": "true or false",
-      "description": "Whether the support option is active by default."
-    },
-    {
-      "name": "profile_scope",
+      "name": "layout_reflow_policy_id",
       "type": "string",
-      "typical_range": "device, account, save_file",
-      "description": "Where the preference is stored."
+      "typical_range": "wrap, stack, paginate, scroll, compact",
+      "description": "Rule used when scaled text exceeds the original container."
+    },
+    {
+      "name": "minimum_hit_target_units",
+      "type": "integer",
+      "typical_range": "32-64 px or dp",
+      "description": "Minimum interactive target size after text and layout changes."
+    },
+    {
+      "name": "localization_expansion_factor",
+      "type": "float",
+      "typical_range": "1.1-2.0",
+      "description": "Reserved layout growth factor for longer localized strings."
+    },
+    {
+      "name": "subtitle_profile_id",
+      "type": "string",
+      "typical_range": "default, large, high_contrast, custom",
+      "description": "Subtitle style profile affected by text scaling."
+    },
+    {
+      "name": "safe_area_margin_units",
+      "type": "integer",
+      "typical_range": "0-120 px or dp",
+      "description": "Margin preserved around screen edges and device cutouts."
     }
   ],
   "common_variants": [
-    "text_scaling_preset_variant",
-    "text_scaling_slider_based",
-    "per_profile",
-    "platform_integrated"
+    "global_text_scale",
+    "subtitle_only_scale",
+    "hud_scale",
+    "large_print_mode",
+    "dynamic_reflow_ui"
   ],
   "edge_cases": [
-    "Text Scaling is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Text Scaling overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Text Scaling runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Long localized strings at maximum scale need wrapping, scrolling, or pagination without hiding confirm buttons.",
+    "Split-screen and handheld modes can require different profile scopes from desktop or living-room displays.",
+    "Timed dialogue, tutorials, or captions must remain readable long enough after scaling changes.",
+    "User interface safe areas can shrink available space after platform overlays or device rotation."
   ],
   "common_bugs": [
-    "Text Scaling state does not reset correctly after interruption or reload.",
-    "Feedback for Text Scaling plays even when the mechanic fails or is rejected.",
-    "Text Scaling produces different results between frame rates, platforms, or network clients."
+    "Text increases but button hit boxes and focus rectangles keep the old dimensions.",
+    "Scaled subtitles overlap speaker labels, letterbox bars, or critical HUD warnings.",
+    "Layout reflow works in English but clips languages with longer words or different line breaking.",
+    "Settings preview uses a sample paragraph but real inventory, quest, and dialogue screens ignore the multiplier."
   ],
   "balancing_notes": [
-    "Make Text Scaling strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Large text should not be treated as a gameplay advantage; design dense HUDs to reflow rather than hide information.",
+    "Scaling critical prompts may require reducing noncritical decorative text to preserve screen clarity.",
+    "Readable text improves usability for many players, including small screens and couch-distance play."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Text Scaling becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer live preview and reset controls, and apply changes without requiring restart when possible.",
+    "Pair text scaling with contrast, background opacity, and subtitle speaker label settings for real readability. "
   ],
   "implementation_notes": {
-    "unity": "Implement Text Scaling with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Text Scaling as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Text Scaling with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Text Scaling as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use style tokens or TextMeshPro/UIToolkit variables rather than per-widget font sizes. Layout containers should reflow, scroll, or paginate based on layout_reflow_policy_id, and automated UI tests should cover maximum scale plus long localized strings.",
+    "godot": "Apply text_scale_multiplier through theme overrides and container layouts. Keep minimum hit target rules in reusable UI components so buttons, list rows, and dialogue choices grow with text.",
+    "unreal": "Use UMG style data, DPI scaling, and invalidation-safe layout containers. Subtitle, menu, HUD, and journal widgets should consume the same profile setting and respect platform safe areas.",
+    "web": "Use CSS custom properties for text scale, rem-based spacing, and container queries. Validate Canvas overlays, DOM UI, and WebGL labels at maximum scale with localization expansion samples."
   },
   "related_mechanics": [
-    "accessibility.adjustable_difficulty",
     "accessibility.colorblind_modes",
-    "ui_ux.accessibility_remap_controls",
-    "ui_ux.tutorial_prompt"
+    "ui_ux.dialogue_choice",
+    "ui_ux.inventory_grid",
+    "narrative.codex_journal"
   ],
   "combines_well_with": [
+    "ui_ux.quest_marker",
+    "ui_ux.tutorial_prompt",
     "accessibility.assist_mode",
-    "ui_ux.accessibility_remap_controls",
-    "ui_ux.tutorial_prompt"
+    "narrative.branching_dialogue"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Last of Us Part II",
+      "note": "Includes extensive text, subtitle, and UI readability options."
+    },
+    {
+      "title": "God of War Ragnarök",
+      "note": "Includes text size and readability accessibility settings."
+    }
+  ],
   "tags": [
-    "accessibility",
-    "settings",
-    "text"
+    "text_scaling",
+    "readability",
+    "localization",
+    "layout_reflow",
+    "subtitles"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

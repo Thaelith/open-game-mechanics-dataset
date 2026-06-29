@@ -7,7 +7,7 @@
     "branching dialogue"
   ],
   "category": "narrative",
-  "subcategory": "narrative",
+  "subcategory": "dialogue_branching",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,86 +24,127 @@
     "rpg",
     "visual_novel"
   ],
-  "description": "Branching Dialogue is a story-state mechanic that presents, records, branches, or reacts to player decisions.",
-  "design_notes": "Branching Dialogue should be designed around a clear player promise, a readable trigger, and a predictable result. For narrative mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A conversation system where player choices, dialogue nodes, conditions, and results move narrative state through authored branches.",
+  "design_notes": "Branching dialogue needs durable state ownership. Define dialogue_node_id, dialogue_choice_id, branch conditions, result events, localization ids, voice and subtitle synchronization, choice history, and save/load restoration before writing content. The system should make consequences understandable while supporting hidden conditions and delayed outcomes where appropriate.",
   "design_purpose": [
-    "Give the player a readable way to use branching dialogue as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect branching dialogue to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players express intent through dialogue choices that can alter story, quests, relationships, or information.",
+    "Give writers a structured way to author conditions, branches, callbacks, and consequences.",
+    "Preserve player choice history so later dialogue and world state can react consistently."
   ],
-  "player_fantasy": "The player feels their attention and decisions matter to the story state.",
+  "player_fantasy": "The player feels their words and priorities shape how characters respond and how the story unfolds.",
   "required_systems": [
-    "dialogue_or_event_system",
-    "quest_state",
-    "save_state",
-    "content_flags"
+    "dialogue_system",
+    "narrative_state",
+    "localization",
+    "save_system",
+    "subtitle_system"
   ],
   "parameters": [
     {
-      "name": "choice_count",
-      "type": "integer",
-      "typical_range": "1-8",
-      "description": "Number of options or branches presented to the player."
-    },
-    {
-      "name": "state_flag_count",
-      "type": "integer",
-      "typical_range": "1-100",
-      "description": "Number of flags or facts tracked by the mechanic."
-    },
-    {
-      "name": "reveal_timing",
+      "name": "conversation_id",
       "type": "string",
-      "typical_range": "immediate, delayed, chapter, ending",
-      "description": "When consequences or information become visible."
+      "typical_range": "npc_intro_01, faction_trial, ending_scene",
+      "description": "Stable identifier for the active conversation asset."
+    },
+    {
+      "name": "dialogue_node_id",
+      "type": "string",
+      "typical_range": "node_001, greeting, branch_a",
+      "description": "Current authored dialogue node in the conversation graph."
+    },
+    {
+      "name": "dialogue_choice_id",
+      "type": "string",
+      "typical_range": "ask_help, lie, refuse, accept_quest",
+      "description": "Choice selected by the player and recorded in history."
+    },
+    {
+      "name": "branch_condition_id",
+      "type": "string",
+      "typical_range": "has_item, faction_rank, quest_stage, world_flag",
+      "description": "Condition that decides whether a node or choice is available."
+    },
+    {
+      "name": "choice_timeout_ms",
+      "type": "integer",
+      "typical_range": "0-30000 ms",
+      "description": "Optional countdown before default or silence choice is selected."
+    },
+    {
+      "name": "localized_string_id",
+      "type": "string",
+      "typical_range": "dlg.npc_intro.choice_01",
+      "description": "Localization key for displayed dialogue text."
+    },
+    {
+      "name": "player_choice_history_id",
+      "type": "string",
+      "typical_range": "profile or save scoped history key",
+      "description": "Persistent record used by later narrative conditions."
     }
   ],
   "common_variants": [
-    "branching_dialogue_linear_variant",
-    "branching_dialogue_branching_variant",
-    "hidden_state_variant",
-    "reputation_based"
+    "binary_choice",
+    "multi_branch_dialogue",
+    "timed_choice",
+    "hidden_condition_choice",
+    "relationship_dialogue"
   ],
   "edge_cases": [
-    "Branching Dialogue is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Branching Dialogue overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Branching Dialogue runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A choice becomes invalid while the conversation is open because quest_stage_id or inventory state changes.",
+    "Voice playback, subtitle events, and choice UI must stay synchronized after skip, pause, or language change.",
+    "Multiplayer conversations need a policy for which player owns the choice and how others see it.",
+    "Save/load during a conversation should restore the node, speaker, camera, and pending consequence safely."
   ],
   "common_bugs": [
-    "Branching Dialogue state does not reset correctly after interruption or reload.",
-    "Feedback for Branching Dialogue plays even when the mechanic fails or is rejected.",
-    "Branching Dialogue produces different results between frame rates, platforms, or network clients."
+    "Choice history records display text instead of dialogue_choice_id, breaking localization and save migration.",
+    "Branch conditions are checked for display but not rechecked when the player confirms the choice.",
+    "Voice line ids and subtitle_event_id records drift after editing dialogue timing.",
+    "Skipping a line fires consequence_event_id twice because both skip and natural completion commit the node."
   ],
   "balancing_notes": [
-    "Make Branching Dialogue strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "High-impact choices need enough context that players understand the kind of consequence they are accepting.",
+    "Hidden conditions add depth, but too many invisible locked options make dialogue feel arbitrary.",
+    "Timed choices create tension but should have defaults and accessibility overrides."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Branching Dialogue becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Support readable text scaling, subtitle settings, pauseable dialogue, and optional choice timeout extensions.",
+    "Do not require players to process voiced dialogue without captions, speaker labels, and conversation logs."
   ],
   "implementation_notes": {
-    "unity": "Implement Branching Dialogue with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Branching Dialogue as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Branching Dialogue with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Branching Dialogue as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Represent conversations as graph assets with dialogue_node_id, dialogue_choice_id, localized_string_id, and branch_condition_id fields. Commit choices through a single transaction that records player_choice_history_id, triggers consequence events, and saves the resulting node state.",
+    "godot": "Store dialogue graphs as Resources or JSON data and evaluate branch conditions through a narrative-state autoload. UI, subtitles, and voice playback should consume the same node ids so skip and reload behavior remains consistent.",
+    "unreal": "Use Data Assets, data tables, or dialogue plugins with explicit node and choice ids. Server or host authority should own multiplayer choice commits, while UMG reads localized string ids and subtitle events from the selected node.",
+    "web": "Keep dialogue graph data in JSON with pure condition evaluators. Commit a choice by writing choice id, branch result id, and world-state flags before rendering the next node, so refresh or reload cannot duplicate consequences."
   },
   "related_mechanics": [
-    "narrative.codex_journal",
     "narrative.reputation_choice",
-    "progression.achievement_system",
+    "narrative.codex_journal",
+    "narrative.reputation_gating",
     "ui_ux.dialogue_choice"
   ],
   "combines_well_with": [
     "narrative.environmental_storytelling",
+    "ui_ux.dialogue_choice",
     "progression.achievement_system",
-    "ui_ux.dialogue_choice"
+    "accessibility.text_scaling"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Mass Effect",
+      "note": "Uses branching conversations that record choices and affect later story state."
+    },
+    {
+      "title": "Disco Elysium",
+      "note": "Uses dialogue branches tied to character state, checks, and consequences."
+    }
+  ],
   "tags": [
-    "branching",
-    "choice",
-    "narrative"
+    "branching_dialogue",
+    "dialogue_node",
+    "choice_history",
+    "localization",
+    "consequence"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

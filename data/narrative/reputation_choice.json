@@ -7,7 +7,7 @@
     "reputation choice"
   ],
   "category": "narrative",
-  "subcategory": "narrative",
+  "subcategory": "choice_consequence",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,86 +24,121 @@
     "rpg",
     "visual_novel"
   ],
-  "description": "Reputation Choice is a story-state mechanic that presents, records, branches, or reacts to player decisions.",
-  "design_notes": "Reputation Choice should be designed around a clear player promise, a readable trigger, and a predictable result. For narrative mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A narrative choice that changes faction standing, relationship state, or social trust and can trigger immediate or delayed consequences.",
+  "design_notes": "Reputation choices need clear commit boundaries and delayed consequence handling. Define reputation_faction_id, reputation point changes, thresholds, branch results, choice history, consequence events, and player-facing explanation. The system should support meaningful ambiguity without making social outcomes feel random or impossible to audit.",
   "design_purpose": [
-    "Give the player a readable way to use reputation choice as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect reputation choice to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Make social, moral, or faction choices affect future dialogue, quests, vendors, allies, or hostility.",
+    "Give players a reason to consider relationships and long-term consequences rather than only immediate rewards.",
+    "Provide narrative designers with reusable state that can be checked by dialogue, quest, and world systems."
   ],
-  "player_fantasy": "The player feels their attention and decisions matter to the story state.",
+  "player_fantasy": "The player feels their reputation is earned through choices and remembered by people in the world.",
   "required_systems": [
-    "dialogue_or_event_system",
+    "reputation_state",
+    "choice_history",
+    "dialogue_system",
     "quest_state",
-    "save_state",
-    "content_flags"
+    "save_system"
   ],
   "parameters": [
     {
-      "name": "choice_count",
-      "type": "integer",
-      "typical_range": "1-8",
-      "description": "Number of options or branches presented to the player."
-    },
-    {
-      "name": "state_flag_count",
-      "type": "integer",
-      "typical_range": "1-100",
-      "description": "Number of flags or facts tracked by the mechanic."
-    },
-    {
-      "name": "reveal_timing",
+      "name": "reputation_faction_id",
       "type": "string",
-      "typical_range": "immediate, delayed, chapter, ending",
-      "description": "When consequences or information become visible."
+      "typical_range": "town_guard, rebels, companion_ava, merchant_guild",
+      "description": "Faction, character, or relationship track affected by the choice."
+    },
+    {
+      "name": "reputation_delta_points",
+      "type": "integer",
+      "typical_range": "-100 to +100 points",
+      "description": "Standing change committed by the selected choice."
+    },
+    {
+      "name": "reputation_threshold_id",
+      "type": "string",
+      "typical_range": "hostile, wary, neutral, trusted, allied",
+      "description": "Named threshold used by later content gates and reactions."
+    },
+    {
+      "name": "consequence_event_id",
+      "type": "string",
+      "typical_range": "vendor_discount, ambush, companion_leaves, quest_unlock",
+      "description": "Immediate or delayed event triggered by the reputation change."
+    },
+    {
+      "name": "choice_commit_id",
+      "type": "string",
+      "typical_range": "quest_12_spare_guard, companion_truth",
+      "description": "Idempotent transaction id for saving and replay prevention."
+    },
+    {
+      "name": "player_explanation_policy_id",
+      "type": "string",
+      "typical_range": "explicit_delta, descriptive, hidden_until_result",
+      "description": "How much reputation impact is shown to the player."
     }
   ],
   "common_variants": [
-    "reputation_choice_linear_variant",
-    "reputation_choice_branching_variant",
-    "hidden_state_variant",
-    "reputation_based"
+    "faction_reputation_choice",
+    "companion_approval_choice",
+    "morality_choice",
+    "hidden_reputation_choice",
+    "delayed_consequence_choice"
   ],
   "edge_cases": [
-    "Reputation Choice is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Reputation Choice overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Reputation Choice runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A choice affects multiple factions with opposing reputation changes and delayed events.",
+    "The same conversation can be replayed after a save load and must not grant reputation twice.",
+    "A player makes a choice offline or in co-op where another player owns the narrative profile.",
+    "Localization may soften or intensify wording, changing perceived consequence without data changes."
   ],
   "common_bugs": [
-    "Reputation Choice state does not reset correctly after interruption or reload.",
-    "Feedback for Reputation Choice plays even when the mechanic fails or is rejected.",
-    "Reputation Choice produces different results between frame rates, platforms, or network clients."
+    "Reputation points are changed for UI preview and then committed again on confirmation.",
+    "Delayed consequence events fire after the faction or quest line has been removed by another branch.",
+    "Choice history records node order rather than stable choice_commit_id values.",
+    "Threshold checks use greater-than in one system and greater-than-or-equal in another."
   ],
   "balancing_notes": [
-    "Make Reputation Choice strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Large reputation swings should be tied to choices with enough context and consequence framing.",
+    "Hidden reputation can add role-playing texture, but players need enough feedback to understand social systems.",
+    "Delayed consequences are strongest when the later result references the remembered choice clearly."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Reputation Choice becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use clear text explanations and reviewable choice logs for players who need more time to process consequences.",
+    "Avoid using only color, tone of voice, or subtle facial animation to communicate reputation changes."
   ],
   "implementation_notes": {
-    "unity": "Implement Reputation Choice with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Reputation Choice as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Reputation Choice with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Reputation Choice as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Commit reputation changes through a narrative transaction that stores choice_commit_id, faction id, delta points, and consequence_event_id. Dialogue, quest, and vendor systems should read thresholds from the same reputation service.",
+    "godot": "Use a narrative-state autoload to apply reputation deltas and emit consequence events exactly once. Dialogue Resources should reference stable faction and threshold ids, not localized display labels.",
+    "unreal": "Store faction reputation in save data or a replicated narrative component. Gameplay Tags or Data Assets can define thresholds, while dialogue and quest systems consume the same committed reputation state.",
+    "web": "Keep reputation tracks and choice commits in profile JSON. Apply choices with pure transaction functions so browser refreshes, retries, or offline sync cannot duplicate consequences."
   },
   "related_mechanics": [
+    "narrative.reputation_gating",
     "narrative.branching_dialogue",
-    "narrative.codex_journal",
-    "progression.achievement_system",
-    "ui_ux.dialogue_choice"
+    "ui_ux.dialogue_choice",
+    "progression.achievement_system"
   ],
   "combines_well_with": [
-    "narrative.environmental_storytelling",
-    "progression.achievement_system",
-    "ui_ux.dialogue_choice"
+    "economy.shop",
+    "narrative.codex_journal",
+    "multiplayer.asymmetric_roles",
+    "progression.unlockable_abilities"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Fallout: New Vegas",
+      "note": "Uses faction reputation to alter reactions and access to content."
+    },
+    {
+      "title": "Dragon Age: Origins",
+      "note": "Uses companion approval and dialogue choices to alter relationships."
+    }
+  ],
   "tags": [
-    "choice",
-    "narrative",
-    "reputation"
+    "reputation_choice",
+    "faction_state",
+    "choice_consequence",
+    "delayed_outcome",
+    "narrative_state"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

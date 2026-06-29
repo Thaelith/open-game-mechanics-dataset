@@ -6,7 +6,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Metric | Value |
 | --- | --- |
-| Generated at | 2026-06-29T15:51:29+00:00 |
+| Generated at | 2026-06-29T20:25:00+00:00 |
 | Schema version | 0.1.0 |
 | Total mechanics | 223 |
 | Total categories | 26 |
@@ -46,26 +46,26 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Metric | Value |
 | --- | --- |
-| Total advisory warnings | 153 |
+| Total advisory warnings | 97 |
 
 ### Warning Count by Category
 
 | Category | Warnings |
 | --- | --- |
-| accessibility | 28 |
-| narrative | 28 |
 | camera | 26 |
 | ui_ux | 24 |
 | platforming | 21 |
 | combat | 15 |
 | economy | 8 |
 | procedural_generation | 3 |
+| accessibility | 0 |
 | ai | 0 |
 | crafting | 0 |
 | horror | 0 |
 | meta | 0 |
 | movement | 0 |
 | multiplayer | 0 |
+| narrative | 0 |
 | physics | 0 |
 | progression | 0 |
 | puzzle | 0 |
@@ -89,33 +89,33 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 | camera.top_down_camera | 8 |
 | ui_ux.accessibility_remap_controls | 8 |
 | ui_ux.checkpoint_notification | 8 |
-| accessibility.adjustable_difficulty | 7 |
-| accessibility.assist_mode | 7 |
-| accessibility.colorblind_modes | 7 |
-| accessibility.text_scaling | 7 |
-| narrative.branching_dialogue | 7 |
-| narrative.codex_journal | 7 |
-| narrative.environmental_storytelling | 7 |
-| narrative.reputation_choice | 7 |
 | platforming.ledge_climb | 7 |
 | platforming.ledge_grab | 7 |
 | platforming.variable_jump_height | 7 |
 | economy.idle_income | 4 |
 | ui_ux.cooldown_indicator | 3 |
 | economy.trading | 2 |
+| procedural_generation.wave_generation | 2 |
+| ui_ux.radial_menu | 2 |
+| camera.camera_lock_on | 1 |
+| camera.dynamic_fov | 1 |
+| combat.area_of_effect_attack | 1 |
+| combat.charged_attack | 1 |
+| combat.critical_hit | 1 |
+| combat.projectile_reflection | 1 |
 
 ### Top Repeated Weak or Generic Terms
 
 | Term | Count |
 | --- | --- |
-| clear player promise | 17 |
-| engine-agnostic state first | 17 |
-| high-priority state | 17 |
-| predictable result | 17 |
-| readable trigger | 17 |
-| scene transition, pause, respawn | 17 |
-| strong enough to justify attention | 17 |
 | time | 10 |
+| clear player promise | 9 |
+| engine-agnostic state first | 9 |
+| high-priority state | 9 |
+| predictable result | 9 |
+| readable trigger | 9 |
+| scene transition, pause, respawn | 9 |
+| strong enough to justify attention | 9 |
 | cooldown | 6 |
 | speed | 6 |
 | value | 5 |
@@ -127,7 +127,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Check | Count |
 | --- | --- |
-| Mechanics with empty example_games | 22 |
+| Mechanics with empty example_games | 14 |
 | Mechanics with empty related_mechanics | 0 |
 | Mechanics with empty combines_well_with | 0 |
 | Mechanics with fewer than 3 parameters | 0 |
@@ -149,20 +149,20 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Category | Mechanics | Generic Warnings | Avg Warnings | Missing Examples | Weak Impl Notes | Low Params | Low Edge Cases | Low Bugs |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| accessibility | 5 | 28 | 5.60 | 4 | 4 | 0 | 0 | 0 |
-| narrative | 5 | 28 | 5.60 | 4 | 4 | 0 | 0 | 0 |
 | camera | 10 | 26 | 2.60 | 3 | 3 | 0 | 0 | 0 |
 | platforming | 9 | 21 | 2.33 | 4 | 3 | 0 | 0 | 0 |
 | ui_ux | 12 | 24 | 2.00 | 2 | 2 | 0 | 0 | 0 |
 | economy | 10 | 8 | 0.80 | 0 | 0 | 0 | 0 | 0 |
 | combat | 19 | 15 | 0.79 | 2 | 1 | 0 | 0 | 0 |
 | procedural_generation | 9 | 3 | 0.33 | 0 | 0 | 0 | 0 | 0 |
+| accessibility | 5 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | ai | 11 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | crafting | 4 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | horror | 8 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | meta | 4 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | movement | 12 | 0 | 0.00 | 3 | 0 | 0 | 0 | 0 |
 | multiplayer | 10 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
+| narrative | 5 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | physics | 11 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | progression | 11 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | puzzle | 10 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
@@ -184,16 +184,17 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 | --- | --- | --- |
 | economy | economy | 9 |
 | progression | progression | 9 |
-| accessibility | accessibility | 4 |
-| narrative | narrative | 4 |
 | ui_ux | ui_ux | 2 |
 
 ### `accessibility`
 
 | Subcategory | Mechanics |
 | --- | --- |
-| accessibility | 4 |
+| assist_settings | 1 |
+| difficulty_options | 1 |
 | input_preference | 1 |
+| readability_options | 1 |
+| visual_accessibility | 1 |
 
 ### `ai`
 
@@ -303,8 +304,11 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Subcategory | Mechanics |
 | --- | --- |
-| narrative | 4 |
+| choice_consequence | 1 |
+| dialogue_branching | 1 |
+| journal_system | 1 |
 | state_gating | 1 |
+| world_clues | 1 |
 
 ### `physics`
 
@@ -486,7 +490,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Metric | Value |
 | --- | --- |
-| Total directed links | 1748 |
+| Total directed links | 1760 |
 | Broken internal references | 0 |
 | Mechanics with zero outgoing links | 0 |
 | Mechanics with zero incoming links | 1 |
@@ -495,38 +499,37 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Mechanic | Incoming Links |
 | --- | --- |
-| progression.achievement_system | 27 |
+| ui_ux.cooldown_indicator | 27 |
 | economy.loot_table | 26 |
-| ui_ux.cooldown_indicator | 25 |
+| ui_ux.damage_numbers | 24 |
 | ui_ux.hit_marker | 24 |
 | camera.screen_shake | 23 |
-| ui_ux.damage_numbers | 23 |
+| economy.shop | 22 |
+| progression.achievement_system | 22 |
+| ui_ux.interaction_prompt | 22 |
+| ui_ux.minimap | 22 |
 | camera.dynamic_fov | 21 |
 | camera.smooth_follow_camera | 21 |
-| economy.shop | 21 |
 | movement.run | 21 |
-| ui_ux.interaction_prompt | 21 |
-| ui_ux.minimap | 21 |
+| progression.skill_tree | 21 |
 | combat.lock_on_targeting | 20 |
-| progression.skill_tree | 20 |
+| ui_ux.inventory_grid | 20 |
+| platforming.coyote_time | 19 |
+| ui_ux.quest_marker | 19 |
+| progression.unlockable_abilities | 18 |
 | survival.base_building | 18 |
-| ui_ux.inventory_grid | 18 |
-| combat.ranged_attack | 17 |
-| economy.crafting_materials | 17 |
-| platforming.coyote_time | 17 |
-| progression.unlockable_abilities | 17 |
+| accessibility.toggle_hold_option | 17 |
 
 ### Categories with Lowest Average Outgoing Links
 
 | Category | Average Outgoing Links | Mechanics |
 | --- | --- | --- |
-| accessibility | 6.80 | 5 |
-| narrative | 6.80 | 5 |
 | platforming | 7.22 | 9 |
 | ui_ux | 7.25 | 12 |
 | combat | 7.37 | 19 |
 | physics | 7.82 | 11 |
 | traversal | 7.82 | 11 |
+| accessibility | 8.00 | 5 |
 | ai | 8.00 | 11 |
 | camera | 8.00 | 10 |
 | crafting | 8.00 | 4 |
@@ -534,6 +537,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 | meta | 8.00 | 4 |
 | movement | 8.00 | 12 |
 | multiplayer | 8.00 | 10 |
+| narrative | 8.00 | 5 |
 | procedural_generation | 8.00 | 9 |
 | puzzle | 8.00 | 10 |
 | rhythm | 8.00 | 4 |
@@ -565,16 +569,12 @@ _None._
 
 | Metric | Value |
 | --- | --- |
-| Mechanics with no example games | 22 |
+| Mechanics with no example games | 14 |
 
 ### Mechanics with No Example Games
 
 | Mechanic |
 | --- |
-| accessibility.adjustable_difficulty |
-| accessibility.assist_mode |
-| accessibility.colorblind_modes |
-| accessibility.text_scaling |
 | camera.cinematic_camera |
 | camera.split_screen |
 | camera.top_down_camera |
@@ -583,10 +583,6 @@ _None._
 | movement.crouch |
 | movement.sprint |
 | movement.swimming |
-| narrative.branching_dialogue |
-| narrative.codex_journal |
-| narrative.environmental_storytelling |
-| narrative.reputation_choice |
 | platforming.ledge_climb |
 | platforming.ledge_grab |
 | platforming.variable_jump_height |
@@ -601,7 +597,7 @@ _None._
 | Hades | 15 |
 | The Legend of Zelda: Breath of the Wild | 15 |
 | Minecraft | 13 |
-| Celeste | 10 |
+| Celeste | 12 |
 | Dark Souls | 8 |
 | Slay the Spire | 7 |
 | The Legend of Zelda: Ocarina of Time | 7 |
@@ -633,8 +629,6 @@ _None._
 
 | Category | Missing Examples |
 | --- | --- |
-| accessibility | 4 |
-| narrative | 4 |
 | platforming | 4 |
 | camera | 3 |
 | movement | 3 |
@@ -643,8 +637,8 @@ _None._
 
 ## Recommended Next Passes
 
-- Run a wording pass on `accessibility`; it has the highest average advisory warning rate (5.60 per mechanic).
-- Review implementation notes in `accessibility`; 4 mechanics have missing or weak notes.
-- Plan a focused subcategory cleanup for `accessibility`; 1 generic subcategory bucket(s) are present.
+- Run a wording pass on `camera`; it has the highest average advisory warning rate (2.60 per mechanic).
+- Review implementation notes in `camera`; 3 mechanics have missing or weak notes.
+- Plan a focused subcategory cleanup for `economy`; 1 generic subcategory bucket(s) are present.
 - Hand-review `combat.invincibility_frames` first among individual entries; it has 11 warning(s) and 7 incoming link(s).
-- Improve relationship coverage in `accessibility`; it averages 6.80 outgoing link(s) per mechanic.
+- Improve relationship coverage in `platforming`; it averages 7.22 outgoing link(s) per mechanic.

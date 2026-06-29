@@ -7,7 +7,7 @@
     "environmental storytelling"
   ],
   "category": "narrative",
-  "subcategory": "narrative",
+  "subcategory": "world_clues",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,86 +24,121 @@
     "rpg",
     "visual_novel"
   ],
-  "description": "Environmental Storytelling is a story-state mechanic that presents, records, branches, or reacts to player decisions.",
-  "design_notes": "Environmental Storytelling should be designed around a clear player promise, a readable trigger, and a predictable result. For narrative mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Narrative information delivered through placed objects, spaces, lighting, sound, bodies, props, or level composition rather than direct exposition.",
+  "design_notes": "Environmental storytelling relies on authored clues and player interpretation. Define environmental_story_node_id, clue ids, discovery triggers, camera readability, optional interaction, localization for inspect text, and validation rules that keep clues visible after lighting, physics, or art changes.",
   "design_purpose": [
-    "Give the player a readable way to use environmental storytelling as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect environmental storytelling to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Communicate backstory, mood, relationships, or consequences through the world itself.",
+    "Reward observation and exploration without forcing every story beat through dialogue.",
+    "Let level design, art, audio, and narrative collaborate on discoverable meaning."
   ],
-  "player_fantasy": "The player feels their attention and decisions matter to the story state.",
+  "player_fantasy": "The player feels like an investigator piecing together what happened by reading the space.",
   "required_systems": [
-    "dialogue_or_event_system",
-    "quest_state",
-    "save_state",
-    "content_flags"
+    "level_authoring",
+    "discovery_triggers",
+    "inspection_ui",
+    "localization",
+    "save_state"
   ],
   "parameters": [
     {
-      "name": "choice_count",
-      "type": "integer",
-      "typical_range": "1-8",
-      "description": "Number of options or branches presented to the player."
-    },
-    {
-      "name": "state_flag_count",
-      "type": "integer",
-      "typical_range": "1-100",
-      "description": "Number of flags or facts tracked by the mechanic."
-    },
-    {
-      "name": "reveal_timing",
+      "name": "environmental_story_node_id",
       "type": "string",
-      "typical_range": "immediate, delayed, chapter, ending",
-      "description": "When consequences or information become visible."
+      "typical_range": "room_aftermath_01, shrine_memory, campsite_clue",
+      "description": "Authored story node represented by placed world details."
+    },
+    {
+      "name": "authored_clue_id",
+      "type": "string",
+      "typical_range": "blood trail, broken_lock, photo, graffiti",
+      "description": "Specific clue object or composition element in the scene."
+    },
+    {
+      "name": "discovery_trigger_id",
+      "type": "string",
+      "typical_range": "proximity, inspect, camera_focus, quest_stage",
+      "description": "Trigger that marks the clue discovered or records optional inspection."
+    },
+    {
+      "name": "world_state_flag_id",
+      "type": "string",
+      "typical_range": "battle_seen, shrine_restored, suspect_revealed",
+      "description": "Flag changed or required by the environmental story node."
+    },
+    {
+      "name": "inspect_localized_string_id",
+      "type": "string",
+      "typical_range": "env.old_lab.note_01",
+      "description": "Optional localization key for inspected clue text."
+    },
+    {
+      "name": "readability_probe_distance_units",
+      "type": "float",
+      "typical_range": "1-12 world units",
+      "description": "Distance used to validate whether the clue can be seen or inspected."
     }
   ],
   "common_variants": [
-    "environmental_storytelling_linear_variant",
-    "environmental_storytelling_branching_variant",
-    "hidden_state_variant",
-    "reputation_based"
+    "prop_arrangement",
+    "inspectable_clue",
+    "audio_log_scene",
+    "aftermath_tableau",
+    "quest_clue_room"
   ],
   "edge_cases": [
-    "Environmental Storytelling is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Environmental Storytelling overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Environmental Storytelling runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Physics objects can move, break, or despawn before the player sees a required clue.",
+    "A lighting or camera pass can make the authored clue unreadable from normal player routes.",
+    "Quest state can change the meaning of a clue, requiring updated inspect text or spoiler gates.",
+    "Multiplayer players may discover the same clue at different moments and need shared or per-player journal state."
   ],
   "common_bugs": [
-    "Environmental Storytelling state does not reset correctly after interruption or reload.",
-    "Feedback for Environmental Storytelling plays even when the mechanic fails or is rejected.",
-    "Environmental Storytelling produces different results between frame rates, platforms, or network clients."
+    "Discovery trigger fires through walls or floors because proximity checks ignore line of sight.",
+    "Clue placement works in editor but becomes hidden behind dynamic objects, weather, or NPC crowds.",
+    "Journal unlocks use scene object names instead of stable authored_clue_id records.",
+    "Localized inspect text references an outdated prop after art revisions."
   ],
   "balancing_notes": [
-    "Make Environmental Storytelling strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Optional environmental clues can be subtle; required clues need redundancy through layout, lighting, interaction prompts, or journal fallback.",
+    "Too many inspectable props reduce trust that any single clue matters.",
+    "Ambiguity is useful for mood, but quest-critical clues should have player-readable confirmation."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Environmental Storytelling becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer inspect prompts, high-contrast clue highlighting, captions for ambient story audio, and journal summaries for discovered clues.",
+    "Do not rely only on tiny prop details, color, or spatial audio for required story comprehension."
   ],
   "implementation_notes": {
-    "unity": "Implement Environmental Storytelling with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Environmental Storytelling as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Environmental Storytelling with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Environmental Storytelling as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Attach stable authored_clue_id data to story props or trigger volumes and validate readability with editor tooling. Discovery should commit through a narrative service that updates world_state_flag_id and optional journal entries idempotently.",
+    "godot": "Use Area nodes or interactables with exported environmental_story_node_id and localized inspect text. Save discovered ids through a narrative-state autoload instead of relying on scene node names.",
+    "unreal": "Use Actor Components, Data Assets, or Gameplay Tags for clue ids and discovery triggers. Editor validation can check line of sight, distance, and required quest links before a level ships.",
+    "web": "Represent environmental clues as data attached to scene objects or tile markers. On discovery, commit stable clue ids and world flags before showing inspect UI or adding journal summaries."
   },
   "related_mechanics": [
-    "narrative.branching_dialogue",
-    "narrative.reputation_choice",
-    "progression.achievement_system",
-    "ui_ux.dialogue_choice"
+    "narrative.codex_journal",
+    "narrative.reputation_gating",
+    "horror.limited_visibility",
+    "puzzle.sequence_memory"
   ],
   "combines_well_with": [
-    "narrative.codex_journal",
-    "progression.achievement_system",
-    "ui_ux.dialogue_choice"
+    "ui_ux.interaction_prompt",
+    "camera.cinematic_camera",
+    "accessibility.text_scaling",
+    "narrative.branching_dialogue"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "BioShock",
+      "note": "Uses spaces, props, and audio context to communicate world history."
+    },
+    {
+      "title": "Gone Home",
+      "note": "Uses environmental details and discovered objects to build narrative understanding."
+    }
+  ],
   "tags": [
-    "choice",
-    "environmental",
-    "narrative"
+    "environmental_storytelling",
+    "world_clues",
+    "discovery_trigger",
+    "journal_unlock",
+    "readability"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

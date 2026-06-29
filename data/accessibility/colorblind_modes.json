@@ -7,7 +7,7 @@
     "colorblind modes"
   ],
   "category": "accessibility",
-  "subcategory": "accessibility",
+  "subcategory": "visual_accessibility",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,86 +24,121 @@
     "educational",
     "family"
   ],
-  "description": "Colorblind Modes is a player-support mechanic that makes controls, perception, difficulty, or information more adaptable.",
-  "design_notes": "Colorblind Modes should be designed around a clear player promise, a readable trigger, and a predictable result. For accessibility mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A set of color and contrast settings that make gameplay, UI, teams, hazards, and feedback readable without relying on color alone.",
+  "design_notes": "Colorblind modes work best when they combine palette changes with redundant cues. Define colorblind_filter_id, palette ids, contrast targets, preview content, and which UI or gameplay materials are affected. The setting should not recolor only the HUD while leaving critical world markers unreadable.",
   "design_purpose": [
-    "Give the player a readable way to use colorblind modes as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect colorblind modes to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Make color-coded information readable for players with different color perception profiles.",
+    "Reduce reliance on color-only communication by adding icons, shapes, labels, and patterns.",
+    "Give developers a validation path for UI, VFX, minimaps, team colors, and puzzle states."
   ],
-  "player_fantasy": "The player feels the game can adapt to their needs without removing agency.",
+  "player_fantasy": "The player feels the game communicates important information in a way they can reliably distinguish.",
   "required_systems": [
     "settings_menu",
-    "input_abstraction",
-    "profile_persistence",
-    "ui_feedback"
+    "color_palette_registry",
+    "ui_theme_system",
+    "material_overrides",
+    "accessibility_preview"
   ],
   "parameters": [
     {
-      "name": "setting_steps",
-      "type": "integer",
-      "typical_range": "2-20",
-      "description": "Number of selectable strengths, sizes, or modes."
-    },
-    {
-      "name": "default_enabled",
-      "type": "boolean",
-      "typical_range": "true or false",
-      "description": "Whether the support option is active by default."
-    },
-    {
-      "name": "profile_scope",
+      "name": "colorblind_filter_id",
       "type": "string",
-      "typical_range": "device, account, save_file",
-      "description": "Where the preference is stored."
+      "typical_range": "none, protanopia, deuteranopia, tritanopia, custom",
+      "description": "Selected filter or simulation profile used by UI and rendering systems."
+    },
+    {
+      "name": "color_palette_id",
+      "type": "string",
+      "typical_range": "default, high_contrast, team_safe, custom_palette",
+      "description": "Palette definition applied to UI and gameplay markers."
+    },
+    {
+      "name": "contrast_ratio_target",
+      "type": "float",
+      "typical_range": "3.0-7.0",
+      "description": "Minimum contrast target for text, symbols, and critical indicators."
+    },
+    {
+      "name": "redundant_cue_policy_id",
+      "type": "string",
+      "typical_range": "icons, patterns, labels, outlines, combined",
+      "description": "Non-color cue policy used alongside palette changes."
+    },
+    {
+      "name": "preview_scene_id",
+      "type": "string",
+      "typical_range": "hud, combat, puzzle, minimap, team_select",
+      "description": "Preview content used to test the selected color settings."
+    },
+    {
+      "name": "material_override_scope",
+      "type": "string",
+      "typical_range": "ui_only, gameplay_markers, full_scene, per_team",
+      "description": "Scope of materials affected by palette or filter changes."
     }
   ],
   "common_variants": [
-    "colorblind_modes_preset_variant",
-    "colorblind_modes_slider_based",
-    "per_profile",
-    "platform_integrated"
+    "palette_swap",
+    "post_process_filter",
+    "team_color_picker",
+    "high_contrast_mode",
+    "symbol_redundancy"
   ],
   "edge_cases": [
-    "Colorblind Modes is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Colorblind Modes overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Colorblind Modes runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A color puzzle, team marker, or damage telegraph becomes unsolvable if the mode changes hue but not symbol language.",
+    "Post-processing filters can alter screenshots or streaming output differently from actual gameplay materials.",
+    "Local multiplayer players may need different color settings on shared or split screens.",
+    "A new content pack adds UI markers that do not use the palette registry."
   ],
   "common_bugs": [
-    "Colorblind Modes state does not reset correctly after interruption or reload.",
-    "Feedback for Colorblind Modes plays even when the mechanic fails or is rejected.",
-    "Colorblind Modes produces different results between frame rates, platforms, or network clients."
+    "Only menu UI uses color_palette_id while world-space markers keep hard-coded colors.",
+    "Contrast passes in English but fails after localization changes text length and background placement.",
+    "Team colors update on the scoreboard but not minimap, outlines, or damage numbers.",
+    "Preview screen shows safe colors but does not include actual hazards, puzzle states, or enemy markers."
   ],
   "balancing_notes": [
-    "Make Colorblind Modes strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "High-contrast outlines may improve readability for everyone, so competitive games should decide whether they are universal or mode-specific.",
+    "Do not use colorblind mode as the only fix for color-dependent puzzles; redundant shapes and labels are more robust.",
+    "Custom palettes need guardrails so players cannot make critical warnings invisible by accident."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Colorblind Modes becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide live preview with UI, gameplay markers, minimap, enemy/friendly indicators, and warning states.",
+    "Do not communicate critical states by color alone; include symbols, text, position, animation, or pattern differences."
   ],
   "implementation_notes": {
-    "unity": "Implement Colorblind Modes with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Colorblind Modes as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Colorblind Modes with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Colorblind Modes as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Centralize color ids in ScriptableObjects or theme data and bind UI Toolkit, materials, VFX, and minimap icons to palette entries. A preview scene should apply colorblind_filter_id and redundant_cue_policy_id without requiring a full restart.",
+    "godot": "Store palettes in Resources and route Control themes plus world marker materials through the same color ids. Use live preview panels and avoid hard-coded Color values in gameplay scripts.",
+    "unreal": "Use Data Assets, material parameter collections, and UMG style data for palette ids. Gameplay markers, team colors, and HUD widgets should all consume the same palette registry, with platform overrides applied at profile load.",
+    "web": "Use CSS variables and renderer material maps keyed by color_palette_id. Canvas, Phaser, and Three.js layers should share tokens, and preview components should include gameplay examples rather than only settings text."
   },
   "related_mechanics": [
-    "accessibility.adjustable_difficulty",
     "accessibility.text_scaling",
-    "ui_ux.accessibility_remap_controls",
-    "ui_ux.tutorial_prompt"
+    "ui_ux.damage_numbers",
+    "ui_ux.minimap",
+    "ui_ux.cooldown_indicator"
   ],
   "combines_well_with": [
-    "accessibility.assist_mode",
-    "ui_ux.accessibility_remap_controls",
-    "ui_ux.tutorial_prompt"
+    "ui_ux.quest_marker",
+    "stealth.visibility_meter",
+    "strategy.fog_of_war",
+    "accessibility.adjustable_difficulty"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Overwatch 2",
+      "note": "Includes colorblind and UI color customization options."
+    },
+    {
+      "title": "Fortnite",
+      "note": "Includes colorblind mode settings affecting gameplay readability."
+    }
+  ],
   "tags": [
-    "accessibility",
-    "colorblind",
-    "settings"
+    "colorblind_mode",
+    "visual_accessibility",
+    "contrast",
+    "palette",
+    "redundant_cues"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

@@ -7,7 +7,7 @@
     "adjustable difficulty"
   ],
   "category": "accessibility",
-  "subcategory": "accessibility",
+  "subcategory": "difficulty_options",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,86 +24,121 @@
     "educational",
     "family"
   ],
-  "description": "Adjustable Difficulty is a player-support mechanic that makes controls, perception, difficulty, or information more adaptable.",
-  "design_notes": "Adjustable Difficulty should be designed around a clear player promise, a readable trigger, and a predictable result. For accessibility mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A configurable difficulty layer that lets players adjust challenge pressure through explicit modifiers, presets, or assist settings without changing the core content structure.",
+  "design_notes": "Adjustable difficulty should define difficulty_modifier_id records, setting scope, live-apply rules, save profile ownership, and which modes lock or disclose changes. Designers need to explain what each modifier changes, preserve player agency, and avoid hiding meaningful rules behind vague labels such as easy or hard.",
   "design_purpose": [
-    "Give the player a readable way to use adjustable difficulty as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect adjustable difficulty to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players tune challenge pressure to match ability, fatigue, device, or learning needs.",
+    "Expose difficulty changes as understandable settings rather than hidden failure correction.",
+    "Support more play styles while preserving fixed-rule spaces such as ranked, challenge, or leaderboard modes."
   ],
-  "player_fantasy": "The player feels the game can adapt to their needs without removing agency.",
+  "player_fantasy": "The player feels trusted to shape the challenge in a way that keeps the game playable and satisfying for them.",
   "required_systems": [
     "settings_menu",
-    "input_abstraction",
+    "accessibility_profile",
+    "difficulty_modifiers",
     "profile_persistence",
-    "ui_feedback"
+    "mode_rules"
   ],
   "parameters": [
     {
-      "name": "setting_steps",
-      "type": "integer",
-      "typical_range": "2-20",
-      "description": "Number of selectable strengths, sizes, or modes."
-    },
-    {
-      "name": "default_enabled",
-      "type": "boolean",
-      "typical_range": "true or false",
-      "description": "Whether the support option is active by default."
-    },
-    {
-      "name": "profile_scope",
+      "name": "accessibility_profile_id",
       "type": "string",
-      "typical_range": "device, account, save_file",
-      "description": "Where the preference is stored."
+      "typical_range": "account, save_file, local_player_1",
+      "description": "Profile record that owns the selected difficulty settings for this player."
+    },
+    {
+      "name": "difficulty_modifier_id",
+      "type": "string",
+      "typical_range": "enemy_damage, puzzle_hint, timing_assist, resource_abundance",
+      "description": "Named gameplay rule that can be adjusted through the difficulty menu."
+    },
+    {
+      "name": "modifier_step_count",
+      "type": "integer",
+      "typical_range": "2-10 selectable steps",
+      "description": "Number of authored stops exposed for a specific modifier."
+    },
+    {
+      "name": "assist_intensity_level",
+      "type": "integer",
+      "typical_range": "0-5 tiers",
+      "description": "Coarse preset tier used to apply several modifiers together."
+    },
+    {
+      "name": "setting_scope",
+      "type": "string",
+      "typical_range": "account, save_file, local_player, session_only",
+      "description": "Persistence boundary for the difficulty setting."
+    },
+    {
+      "name": "ranked_lock_policy_id",
+      "type": "string",
+      "typical_range": "allowed, disclosed, locked, separate_board",
+      "description": "Rule for challenge, achievement, or leaderboard modes when modifiers are active."
     }
   ],
   "common_variants": [
-    "adjustable_difficulty_preset_variant",
-    "adjustable_difficulty_slider_based",
-    "per_profile",
-    "platform_integrated"
+    "difficulty_presets",
+    "per_modifier_sliders",
+    "adaptive_assist_prompt",
+    "challenge_locked_settings",
+    "custom_difficulty_profile"
   ],
   "edge_cases": [
-    "Adjustable Difficulty is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Adjustable Difficulty overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Adjustable Difficulty runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A player changes enemy damage or timing assistance during a boss phase, checkpoint retry, or active multiplayer session.",
+    "A fixed-seed challenge or leaderboard run must decide whether modified settings invalidate ranking or use a separate board.",
+    "Cloud saves can merge difficulty settings from different devices with different platform defaults.",
+    "A content patch removes or renames difficulty_modifier_id records used by old saves."
   ],
   "common_bugs": [
-    "Adjustable Difficulty state does not reset correctly after interruption or reload.",
-    "Feedback for Adjustable Difficulty plays even when the mechanic fails or is rejected.",
-    "Adjustable Difficulty produces different results between frame rates, platforms, or network clients."
+    "The menu changes setting payloads but active enemies, timers, or encounters keep cached old modifier values.",
+    "Assist modifiers affect hidden achievement or leaderboard eligibility without player-facing disclosure.",
+    "Per-player local co-op settings overwrite each other because profile ids are stored globally.",
+    "Reset-to-default restores visual menu labels but not the underlying difficulty modifier records."
   ],
   "balancing_notes": [
-    "Make Adjustable Difficulty strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Each modifier should describe the specific rule it changes so players can choose support without guessing.",
+    "Challenge and ranked modes should declare their allowed assist policy before the player invests effort.",
+    "Presets are useful onboarding, but granular settings help players solve one barrier without lowering everything."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Adjustable Difficulty becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Make difficulty options available before gameplay starts and from pause menus where technically safe.",
+    "Use plain-language descriptions and live previews for timing, damage, hint, and resource changes."
   ],
   "implementation_notes": {
-    "unity": "Implement Adjustable Difficulty with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Adjustable Difficulty as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Adjustable Difficulty with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Adjustable Difficulty as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store settings in an accessibility_profile_id asset or save record, then resolve difficulty_modifier_id values through a central service read by combat, puzzle, economy, and timer systems. UI Toolkit sliders should preview changes and commit through profile persistence with ranked_lock_policy_id disclosure.",
+    "godot": "Keep difficulty settings in a Resource or autoloaded settings service keyed by profile id. Gameplay nodes should query resolved modifiers rather than duplicating menu values, and save migration should map old modifier ids to current definitions.",
+    "unreal": "Represent modifiers as Data Assets, Gameplay Tags, or config rows applied through a player settings subsystem. Server or host authority should decide ranked locks and replicate only the resolved modifier set needed by gameplay.",
+    "web": "Store profile-scoped settings in account or local storage with a profile_save_version. Apply modifier payloads through pure lookup functions so Canvas, Phaser, Three.js, or custom systems read the same committed difficulty state."
   },
   "related_mechanics": [
-    "accessibility.colorblind_modes",
-    "accessibility.text_scaling",
-    "ui_ux.accessibility_remap_controls",
-    "ui_ux.tutorial_prompt"
+    "accessibility.assist_mode",
+    "accessibility.toggle_hold_option",
+    "ui_ux.tutorial_prompt",
+    "time.timed_challenge"
   ],
   "combines_well_with": [
-    "accessibility.assist_mode",
-    "ui_ux.accessibility_remap_controls",
-    "ui_ux.tutorial_prompt"
+    "ui_ux.cooldown_indicator",
+    "progression.skill_tree",
+    "survival.health",
+    "platforming.coyote_time"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Celeste",
+      "note": "Includes Assist Mode options that alter challenge pressure while keeping play available."
+    },
+    {
+      "title": "The Last of Us Part II",
+      "note": "Includes granular difficulty and accessibility settings across several systems."
+    }
+  ],
   "tags": [
     "accessibility",
-    "adjustable",
-    "settings"
+    "difficulty_options",
+    "profile_persistence",
+    "assist_settings",
+    "ranked_policy"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

@@ -25,90 +25,121 @@
     "shooter",
     "adventure"
   ],
-  "description": "A setting that lets sustained actions use hold, toggle, or both input behavior.",
-  "design_notes": "Toggle/hold options reduce sustained input strain and make common actions adaptable. Each supported action needs reset rules so toggle state does not persist into unsafe contexts.",
+  "description": "A per-action input preference that lets sustained actions use hold, toggle, hybrid, or simplified behavior without changing the action itself.",
+  "design_notes": "Toggle and hold options reduce sustained input strain only when state reset and conflict rules are explicit. Define input_action_id, binding profile, reset contexts, per-player ownership, menu prompts, and how setting changes interact with currently active actions. The gameplay layer should consume normalized action state rather than knowing whether the player held or toggled it.",
   "design_purpose": [
-    "Make sustained actions usable for more players.",
-    "Respect player preference for aim, crouch, sprint, block, or interact actions.",
-    "Reduce accidental fatigue from long holds."
+    "Make sustained actions usable for players with different motor needs and device constraints.",
+    "Respect player preference for aim, crouch, sprint, block, interact, or camera actions.",
+    "Keep gameplay systems stable by converting input preferences before action state reaches movement or combat code."
   ],
-  "player_fantasy": "The player feels the control scheme adapts to their body and device rather than forcing one input style.",
+  "player_fantasy": "The player feels the control scheme adapts to their body, device, and session instead of forcing one input style.",
   "required_systems": [
     "input_abstraction",
     "settings_menu",
     "profile_persistence",
-    "state_reset_rules"
+    "state_reset_rules",
+    "prompt_text_system"
   ],
   "parameters": [
     {
-      "name": "supported_action_ids",
-      "type": "array",
-      "typical_range": "1-50 actions",
-      "description": "Actions that expose hold/toggle choice."
-    },
-    {
-      "name": "default_input_mode",
+      "name": "input_action_id",
       "type": "string",
-      "typical_range": "hold, toggle, hybrid",
-      "description": "Initial behavior before player customization."
+      "typical_range": "aim, crouch, sprint, block, interact",
+      "description": "Gameplay action whose sustained behavior can be customized."
     },
     {
-      "name": "toggle_reset_contexts",
+      "name": "input_mode_policy_id",
+      "type": "string",
+      "typical_range": "hold, toggle, hybrid_tap_hold, simplified",
+      "description": "Policy that converts raw device events into action active state."
+    },
+    {
+      "name": "toggle_reset_context_ids",
       "type": "array",
-      "typical_range": "death, menu, cutscene, weapon_swap",
+      "typical_range": "death, menu, cutscene, weapon_swap, mount",
       "description": "Contexts that clear active toggle state."
+    },
+    {
+      "name": "debounce_window_ms",
+      "type": "integer",
+      "typical_range": "50-250 ms",
+      "description": "Input filtering window that prevents accidental double toggles."
+    },
+    {
+      "name": "control_scheme_id",
+      "type": "string",
+      "typical_range": "keyboard_mouse, gamepad, touch, adaptive_controller",
+      "description": "Device profile that owns the binding behavior."
+    },
+    {
+      "name": "per_player_setting_scope",
+      "type": "string",
+      "typical_range": "account, local_player, save_file",
+      "description": "Persistence boundary for local co-op or shared-device profiles."
     }
   ],
   "common_variants": [
     "hold_only",
     "toggle_only",
     "hybrid_tap_toggle_hold",
-    "per_action_toggle"
+    "per_action_toggle",
+    "contextual_auto_hold"
   ],
   "edge_cases": [
-    "Toggle aim or crouch should clear on death, respawn, cutscene, and sometimes weapon swap.",
-    "Menus must not accidentally activate gameplay toggles.",
-    "Cloud saves and local profiles can disagree on preferences."
+    "Changing the setting while the action is currently active must choose whether to commit, cancel, or convert state.",
+    "Toggle aim or crouch should clear on death, respawn, cutscene, mount, and sometimes weapon swap.",
+    "Menus and text entry must not accidentally activate gameplay toggles.",
+    "Cloud saves and local profiles can disagree on per-device input preferences."
   ],
   "common_bugs": [
     "Changing setting while action is held leaves the action stuck active.",
     "Toggle state is saved as if it were a preference.",
-    "Prompt text says hold while behavior is toggle."
+    "Prompt text says hold while behavior is toggle.",
+    "One local player changes input mode and overwrites another player’s profile."
   ],
   "balancing_notes": [
-    "Accessibility input options should not be treated as difficulty cheats unless the action itself changes gameplay timing.",
-    "Hybrid modes need careful debounce windows to avoid accidental toggles."
+    "Accessibility input options should not be treated as difficulty changes unless the action itself changes gameplay timing.",
+    "Hybrid modes need careful debounce windows to avoid accidental toggles.",
+    "Ranked modes should generally allow input preference changes because they normalize access rather than altering action output."
   ],
   "accessibility_notes": [
-    "This mechanic is itself an accessibility affordance and should be available early in settings, not hidden behind gameplay progress."
+    "Make hold/toggle options available early in settings and near control remapping.",
+    "Use prompt text that reflects each player’s current input mode and device."
   ],
   "implementation_notes": {
-    "unity": "Put hold/toggle conversion in the input abstraction layer so gameplay code reads action state, while per-action preferences and reset contexts live in the player profile.",
-    "godot": "Store input-mode preferences in a settings Resource and resolve action active state through helper functions that can clear toggles on death, menus, or context changes.",
-    "unreal": "Use Enhanced Input triggers or a gameplay input component to apply per-action hold/toggle behavior before abilities or movement code consume the action.",
-    "web": "Convert keyboard, mouse, touch, and gamepad events into normalized action states using profile preferences, then clear toggles from configured reset contexts."
+    "unity": "Put hold/toggle conversion in the input abstraction layer so gameplay code reads action state. Store input_mode_policy_id per input_action_id in the player profile and clear active toggles from configured reset contexts.",
+    "godot": "Store input-mode preferences in a settings Resource and resolve action active state through helper functions. Signals from menu, death, cutscene, and context changes should clear toggles deterministically.",
+    "unreal": "Use Enhanced Input triggers or a gameplay input component to apply per-action hold/toggle behavior before abilities or movement code consume the action. Keep per-player settings separate for local multiplayer.",
+    "web": "Convert keyboard, mouse, touch, and gamepad events into normalized action states using profile preferences, then clear toggles from configured reset contexts before the simulation tick."
   },
   "related_mechanics": [
     "ui_ux.accessibility_remap_controls",
     "movement.crouch",
-    "combat.aim_down_sights"
+    "combat.aim_down_sights",
+    "movement.sprint"
   ],
   "combines_well_with": [
-    "movement.sprint",
     "combat.block",
-    "ui_ux.interaction_prompt"
+    "ui_ux.interaction_prompt",
+    "accessibility.assist_mode",
+    "accessibility.adjustable_difficulty"
   ],
   "example_games": [
     {
       "title": "The Last of Us Part II",
-      "note": "Includes accessibility settings that let players adjust hold and toggle behavior."
+      "note": "Includes settings that let players adjust hold and toggle behavior."
+    },
+    {
+      "title": "Destiny 2",
+      "note": "Includes input options for hold and toggle behavior on actions such as sprint or crouch."
     }
   ],
   "tags": [
     "accessibility",
-    "input",
+    "input_preference",
     "toggle",
-    "settings"
+    "hold",
+    "profile_persistence"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"
