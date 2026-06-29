@@ -6,7 +6,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Metric | Value |
 | --- | --- |
-| Generated at | 2026-06-29T14:01:35+00:00 |
+| Generated at | 2026-06-29T14:27:30+00:00 |
 | Schema version | 0.1.0 |
 | Total mechanics | 223 |
 | Total categories | 26 |
@@ -46,16 +46,14 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Metric | Value |
 | --- | --- |
-| Total advisory warnings | 684 |
+| Total advisory warnings | 539 |
 
 ### Warning Count by Category
 
 | Category | Warnings |
 | --- | --- |
-| puzzle | 81 |
 | movement | 70 |
 | roguelike | 64 |
-| vehicles | 64 |
 | horror | 56 |
 | traversal | 48 |
 | stealth | 36 |
@@ -76,8 +74,10 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 | multiplayer | 0 |
 | physics | 0 |
 | progression | 0 |
+| puzzle | 0 |
 | survival | 0 |
 | time | 0 |
+| vehicles | 0 |
 
 ### Top 20 Mechanics by Warning Count
 
@@ -95,31 +95,31 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 | movement.slide | 10 |
 | movement.stamina_movement | 10 |
 | movement.walk | 10 |
-| puzzle.color_matching | 9 |
-| puzzle.key_and_lock | 9 |
-| puzzle.lever_switch | 9 |
-| puzzle.mirror_light_reflection | 9 |
-| puzzle.physics_weight_puzzle | 9 |
-| puzzle.portal_pair | 9 |
-| puzzle.sequence_memory | 9 |
-| puzzle.sliding_block | 9 |
+| stealth.alert_state | 9 |
+| stealth.distraction_throw | 9 |
+| stealth.noise_meter | 9 |
+| stealth.shadow_cover | 9 |
+| camera.cinematic_camera | 8 |
+| camera.split_screen | 8 |
+| camera.top_down_camera | 8 |
+| roguelike.curse_modifier | 8 |
 
 ### Top Repeated Weak or Generic Terms
 
 | Term | Count |
 | --- | --- |
-| clear player promise | 81 |
-| engine-agnostic state first | 81 |
-| high-priority state | 81 |
-| predictable result | 81 |
-| readable trigger | 81 |
-| scene transition, pause, respawn | 81 |
-| strong enough to justify attention | 81 |
-| speed | 45 |
-| time | 24 |
+| clear player promise | 64 |
+| engine-agnostic state first | 64 |
+| high-priority state | 64 |
+| predictable result | 64 |
+| readable trigger | 64 |
+| scene transition, pause, respawn | 64 |
+| strong enough to justify attention | 64 |
+| speed | 37 |
 | amount | 15 |
-| feedback | 14 |
+| time | 15 |
 | cooldown | 6 |
+| feedback | 5 |
 | value | 5 |
 | duration | 4 |
 | range | 4 |
@@ -128,7 +128,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Check | Count |
 | --- | --- |
-| Mechanics with empty example_games | 80 |
+| Mechanics with empty example_games | 64 |
 | Mechanics with empty related_mechanics | 0 |
 | Mechanics with empty combines_well_with | 0 |
 | Mechanics with fewer than 3 parameters | 0 |
@@ -150,8 +150,6 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Category | Mechanics | Generic Warnings | Avg Warnings | Missing Examples | Weak Impl Notes | Low Params | Low Edge Cases | Low Bugs |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| puzzle | 10 | 81 | 8.10 | 9 | 9 | 0 | 0 | 0 |
-| vehicles | 8 | 64 | 8.00 | 7 | 8 | 0 | 0 | 0 |
 | roguelike | 9 | 64 | 7.11 | 7 | 8 | 0 | 0 | 0 |
 | horror | 8 | 56 | 7.00 | 7 | 8 | 0 | 0 | 0 |
 | meta | 4 | 28 | 7.00 | 4 | 4 | 0 | 0 | 0 |
@@ -174,8 +172,10 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 | multiplayer | 10 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | physics | 11 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | progression | 11 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
+| puzzle | 10 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | survival | 10 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | time | 7 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
+| vehicles | 8 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 
 ## Subcategory Distribution
 
@@ -187,7 +187,6 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 | progression | progression | 9 |
 | horror | horror | 8 |
 | roguelike | roguelike | 8 |
-| vehicles | vehicles | 8 |
 | accessibility | accessibility | 4 |
 | meta | meta | 4 |
 | narrative | narrative | 4 |
@@ -350,8 +349,16 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Subcategory | Mechanics |
 | --- | --- |
-| state_puzzle | 9 |
+| grid_object_puzzle | 1 |
+| ordered_input | 1 |
+| physical_mass_logic | 1 |
 | physical_trigger | 1 |
+| progression_gate | 1 |
+| ray_routing | 1 |
+| spatial_mapping | 1 |
+| switch_state | 1 |
+| symbol_matching | 1 |
+| timed_gate | 1 |
 
 ### `rhythm`
 
@@ -438,7 +445,14 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Subcategory | Mechanics |
 | --- | --- |
-| vehicles | 8 |
+| deceleration_control | 1 |
+| drivetrain_input | 1 |
+| resource_tank | 1 |
+| temporary_power | 1 |
+| traction_slide | 1 |
+| upgrade_installation | 1 |
+| vehicle_health | 1 |
+| wheel_contact | 1 |
 
 ## Link Graph Health
 
@@ -447,32 +461,32 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 | Total directed links | 1721 |
 | Broken internal references | 0 |
 | Mechanics with zero outgoing links | 0 |
-| Mechanics with zero incoming links | 15 |
+| Mechanics with zero incoming links | 8 |
 
 ### Top 20 Most-Linked Mechanics
 
 | Mechanic | Incoming Links |
 | --- | --- |
-| camera.dynamic_fov | 40 |
+| economy.shop | 34 |
 | camera.smooth_follow_camera | 33 |
-| economy.shop | 32 |
-| ui_ux.quest_marker | 30 |
-| ui_ux.cooldown_indicator | 29 |
-| physics.gravity | 25 |
+| ui_ux.cooldown_indicator | 32 |
+| camera.dynamic_fov | 28 |
+| ui_ux.damage_numbers | 26 |
 | procedural_generation.seeded_generation | 25 |
-| ui_ux.damage_numbers | 25 |
 | movement.run | 24 |
 | stealth.shadow_cover | 24 |
 | platforming.ledge_grab | 23 |
 | economy.loot_table | 22 |
 | ui_ux.minimap | 22 |
-| time.timed_challenge | 21 |
 | combat.lock_on_targeting | 20 |
 | progression.achievement_system | 20 |
-| ui_ux.hit_marker | 19 |
+| ui_ux.hit_marker | 20 |
 | horror.limited_visibility | 18 |
 | progression.skill_tree | 18 |
 | camera.screen_shake | 17 |
+| roguelike.run_based_progression | 17 |
+| survival.base_building | 17 |
+| ai.line_of_sight_detection | 16 |
 
 ### Categories with Lowest Average Outgoing Links
 
@@ -521,23 +535,16 @@ _None._
 | ai.flocking |
 | horror.safe_room |
 | movement.prone |
-| physics.physics_push_pull |
 | platforming.ledge_climb |
-| puzzle.color_matching |
-| puzzle.portal_pair |
-| puzzle.sequence_memory |
 | roguelike.curse_modifier |
 | roguelike.shop_between_levels |
 | traversal.parkour_vault |
-| traversal.vehicle_mount |
-| vehicles.upgradeable_vehicle |
-| vehicles.vehicle_boost |
 
 ## Example Game Usage
 
 | Metric | Value |
 | --- | --- |
-| Mechanics with no example games | 80 |
+| Mechanics with no example games | 64 |
 
 ### Mechanics with No Example Games
 
@@ -579,18 +586,21 @@ _None._
 | Title | Count |
 | --- | --- |
 | Minecraft | 13 |
-| The Legend of Zelda: Breath of the Wild | 12 |
+| The Legend of Zelda: Breath of the Wild | 13 |
 | Hades | 11 |
 | Celeste | 10 |
+| The Legend of Zelda: Ocarina of Time | 7 |
 | World of Warcraft | 6 |
 | Dark Souls | 5 |
+| Half-Life 2 | 5 |
+| Portal | 5 |
+| Portal 2 | 5 |
 | Subnautica | 5 |
 | The Elder Scrolls V: Skyrim | 5 |
-| The Legend of Zelda: Ocarina of Time | 5 |
 | Apex Legends | 4 |
 | Diablo III | 4 |
-| Half-Life 2 | 4 |
 | Left 4 Dead | 4 |
+| Mario Kart 8 | 4 |
 | Overwatch | 4 |
 | Resident Evil 4 | 4 |
 | Spelunky | 4 |
@@ -598,26 +608,21 @@ _None._
 | Deep Rock Galactic | 3 |
 | Diablo | 3 |
 | Don't Starve | 3 |
+| Forza Horizon 5 | 3 |
 | Hollow Knight | 3 |
 | Monster Hunter: World | 3 |
-| Portal | 3 |
+| Prince of Persia: The Sands of Time | 3 |
 | Super Mario Bros. | 3 |
 | Terraria | 3 |
 | The Long Dark | 3 |
-| Titanfall 2 | 3 |
-| Animal Crossing | 2 |
-| Call of Duty 4: Modern Warfare | 2 |
-| Cookie Clicker | 2 |
 
 ### Categories with Many Missing Examples
 
 | Category | Missing Examples |
 | --- | --- |
 | movement | 10 |
-| puzzle | 9 |
 | horror | 7 |
 | roguelike | 7 |
-| vehicles | 7 |
 | accessibility | 4 |
 | meta | 4 |
 | narrative | 4 |
@@ -633,8 +638,8 @@ _None._
 
 ## Recommended Next Passes
 
-- Run a wording pass on `puzzle`; it has the highest average advisory warning rate (8.10 per mechanic).
-- Review implementation notes in `puzzle`; 9 mechanics have missing or weak notes.
+- Run a wording pass on `roguelike`; it has the highest average advisory warning rate (7.11 per mechanic).
+- Review implementation notes in `horror`; 8 mechanics have missing or weak notes.
 - Plan a focused subcategory cleanup for `accessibility`; 1 generic subcategory bucket(s) are present.
 - Hand-review `combat.invincibility_frames` first among individual entries; it has 11 warning(s) and 6 incoming link(s).
 - Improve relationship coverage in `stealth`; it averages 6.67 outgoing link(s) per mechanic.

@@ -2,12 +2,12 @@
   "id": "puzzle.physics_weight_puzzle",
   "name": "Physics Weight Puzzle",
   "aliases": [
-    "physics weight puzzle mechanic",
-    "physics weight puzzle system",
-    "physics weight puzzle"
+    "weight puzzle",
+    "mass puzzle",
+    "weighted object puzzle"
   ],
   "category": "puzzle",
-  "subcategory": "state_puzzle",
+  "subcategory": "physical_mass_logic",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,97 +15,131 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
-    "implementation": "medium",
+    "design": "medium",
+    "implementation": "hard",
     "tuning": "hard"
   },
   "genres": [
     "puzzle",
     "adventure",
-    "escape_room"
+    "immersive_sim",
+    "sandbox"
   ],
-  "description": "Physics Weight Puzzle is a rule-based challenge that asks the player to observe, reason, manipulate state, or sequence actions.",
-  "design_notes": "Physics Weight Puzzle should be designed around a clear player promise, a readable trigger, and a predictable result. For puzzle mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Players use object mass, placement, buoyancy, gravity, or balance to satisfy a physical puzzle condition.",
+  "design_notes": "Weight puzzles must define which object_instance_id values count, how mass is measured, what reset policy prevents lost objects, and how physics variance is bounded. Solvability checks should verify that required objects can still reach target areas after player mistakes.",
   "design_purpose": [
-    "Give the player a readable way to use physics weight puzzle as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect physics weight puzzle to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Turn physical object manipulation into readable puzzle logic.",
+    "Connect gravity, buoyancy, pressure plates, moving platforms, and object placement.",
+    "Let players solve with spatial reasoning while still feeling grounded in world physics."
   ],
-  "player_fantasy": "The player feels clever when they infer the rule and manipulate the system correctly.",
+  "player_fantasy": "The player feels they are using real weight and placement to make the environment respond.",
   "required_systems": [
-    "interaction_system",
-    "state_tracking",
-    "feedback_system",
-    "save_state"
+    "rigidbody_simulation",
+    "object_tracking",
+    "puzzle_state_store",
+    "reset_system",
+    "solvability_tools"
   ],
   "parameters": [
     {
-      "name": "activation_condition",
+      "name": "weight_puzzle_id",
       "type": "string",
-      "typical_range": "single, all, ordered, timed",
-      "description": "Rule that determines when the puzzle element changes state."
+      "typical_range": "scale_room_a, bridge_counterweight, raft_balance",
+      "description": "Stable puzzle identifier used by validation, saves, and authoring tools."
     },
     {
-      "name": "reset_time",
+      "name": "object_instance_id",
+      "type": "string",
+      "typical_range": "crate_heavy_01, stone_sphere_b, metal_block",
+      "description": "Tracked object that can contribute mass or position to the puzzle."
+    },
+    {
+      "name": "mass_threshold_units",
       "type": "float",
-      "typical_range": "0-30 seconds",
-      "description": "Delay before the puzzle returns to its default state."
+      "typical_range": "1-1000 mass units",
+      "description": "Required accepted mass before the puzzle condition is satisfied."
     },
     {
-      "name": "feedback_intensity",
-      "type": "integer",
-      "typical_range": "1-5",
-      "description": "How strongly the game communicates success, failure, or partial progress."
+      "name": "target_zone_id",
+      "type": "string",
+      "typical_range": "scale_left, plate_center, raft_deck",
+      "description": "Zone where tracked objects must rest or balance to count."
+    },
+    {
+      "name": "reset_policy_id",
+      "type": "string",
+      "typical_range": "manual_reset, lost_object_reset, checkpoint_restore, never_reset",
+      "description": "Rule that restores objects after falling, despawning, or soft-locking the puzzle."
+    },
+    {
+      "name": "solvability_check_id",
+      "type": "string",
+      "typical_range": "object_reachable, mass_available, authored_solution",
+      "description": "Authoring or runtime check that confirms the puzzle can still be solved."
     }
   ],
   "common_variants": [
-    "physics_weight_puzzle_single_step",
-    "physics_weight_puzzle_multi_step",
-    "timed_variant",
-    "resetting_variant"
+    "counterweight_scale",
+    "weighted_pressure_plate",
+    "buoyancy_balance",
+    "heavy_object_bridge",
+    "multi_object_mass_sum"
   ],
   "edge_cases": [
-    "Physics Weight Puzzle is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Physics Weight Puzzle overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Physics Weight Puzzle runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A required object falls into an unreachable pit or is destroyed by another system.",
+    "Physics sleep makes an object appear stable while tiny motion still changes the solved state.",
+    "Two lighter objects stack in a way the designer did not intend but still pass the mass threshold.",
+    "A saved game restores the object but not its velocity, sleep state, or target-zone membership."
   ],
   "common_bugs": [
-    "Physics Weight Puzzle state does not reset correctly after interruption or reload.",
-    "Feedback for Physics Weight Puzzle plays even when the mechanic fails or is rejected.",
-    "Physics Weight Puzzle produces different results between frame rates, platforms, or network clients."
+    "Every collider on one object contributes mass separately and over-activates the puzzle.",
+    "Object reset runs while the player is carrying the object and teleports it away.",
+    "Solvability tools ignore locked doors or one-way ledges that block object return routes.",
+    "Network clients disagree on mass totals because physics authority is not centralized."
   ],
   "balancing_notes": [
-    "Make Physics Weight Puzzle strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Object classes should visually communicate relative weight so solutions feel deduced, not guessed.",
+    "Physics tolerance is important; near-solved arrangements should not flicker rapidly.",
+    "Manual reset should be nearby and fast when object manipulation is slow."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Physics Weight Puzzle becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide readable target zones and optional hints for which object classes can contribute.",
+    "Avoid requiring precise analog object placement without snap, guide, or reset support."
   ],
   "implementation_notes": {
-    "unity": "Implement Physics Weight Puzzle with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Physics Weight Puzzle as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Physics Weight Puzzle with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Physics Weight Puzzle as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Track unique Rigidbody roots by object_instance_id inside target zones and compute accepted mass from data, not collider count. Persist object transform, velocity, sleep state, and reset anchor so save/load does not change puzzle outcome.",
+    "godot": "Use Area2D or Area3D zones plus tracked body ids, and reconcile zone membership during physics ticks. Reset should restore object_instance_id to reset anchors only after checking player carry or interaction state.",
+    "unreal": "Use server or single-player authority to evaluate mass thresholds from component data and overlap sets. Debug draw target zones and accepted objects for level authors, and persist physics body state for required objects.",
+    "web": "For Matter.js, Phaser, or custom physics, keep puzzle logic in a deterministic object tracker rather than reading visual positions. Add lost-object checks that move required objects back to reset anchors safely."
   },
   "related_mechanics": [
-    "puzzle.key_and_lock",
     "puzzle.pressure_plate",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "physics.gravity",
+    "physics.buoyancy",
+    "physics.physics_push_pull"
   ],
   "combines_well_with": [
-    "puzzle.lever_switch",
-    "puzzle.mirror_light_reflection",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "puzzle.sliding_block",
+    "puzzle.timed_door",
+    "survival.inventory_limit",
+    "time.time_rewind"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Portal",
+      "note": "Uses weighted cubes and buttons as repeated spatial puzzle elements."
+    },
+    {
+      "title": "Half-Life 2",
+      "note": "Uses physical object weight and placement in environmental puzzles."
+    }
+  ],
   "tags": [
+    "weight_puzzle",
+    "mass",
+    "object_tracking",
     "physics",
-    "puzzle",
-    "state",
-    "state_puzzle"
+    "reset"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

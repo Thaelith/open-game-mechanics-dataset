@@ -2,12 +2,12 @@
   "id": "vehicles.drifting",
   "name": "Drifting",
   "aliases": [
-    "drifting mechanic",
-    "drifting system",
-    "drifting"
+    "vehicle drift",
+    "controlled slide",
+    "powerslide"
   ],
   "category": "vehicles",
-  "subcategory": "vehicles",
+  "subcategory": "traction_slide",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,105 +15,125 @@
     "3D"
   ],
   "difficulty": {
-    "design": "medium",
+    "design": "hard",
     "implementation": "hard",
-    "tuning": "hard"
+    "tuning": "expert"
   },
   "genres": [
     "racing",
-    "simulation",
-    "open_world"
+    "arcade",
+    "open_world",
+    "action"
   ],
-  "description": "Drifting is a controllable transport mechanic with dedicated movement, physics, resources, or damage behavior.",
-  "design_notes": "Drifting should be designed around a clear player promise, a readable trigger, and a predictable result. For vehicles mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A vehicle intentionally exceeds normal tire grip and slides through a turn while retaining steerable control.",
+  "design_notes": "Drifting depends on slip angle, tire grip curves, surface friction, counter-steer assist, and camera/audio cues. Designers should decide whether drift is a faster racing technique, a style reward, a boost charger, or a recovery tool before tuning vehicle handling.",
   "design_purpose": [
-    "Give the player a readable way to use drifting as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect drifting to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players an expressive cornering technique that rewards timing and steering control.",
+    "Make low-traction surfaces and sharp turns feel skillful rather than purely punishing.",
+    "Support score, boost, style, or chase fantasy in vehicle-focused games."
   ],
-  "player_fantasy": "The player feels mastery over a machine with distinct weight, speed, and handling.",
+  "player_fantasy": "The player feels stylish and in control while sliding at the edge of traction.",
   "required_systems": [
-    "vehicle_controller",
-    "physics_world",
-    "input_handling",
-    "camera_controller"
+    "vehicle_physics",
+    "tire_grip_model",
+    "surface_detection",
+    "camera_controller",
+    "audio_feedback"
   ],
   "parameters": [
     {
-      "name": "max_speed",
+      "name": "drift_angle_threshold",
       "type": "float",
-      "typical_range": "5-300 world units/second",
-      "description": "Maximum velocity the vehicle can reach."
+      "typical_range": "8-35 degrees",
+      "description": "Slip angle required before the vehicle enters drift handling or scoring state."
     },
     {
-      "name": "handling_response",
-      "type": "float",
-      "typical_range": "0.1-5",
-      "description": "How sharply steering or control input affects the vehicle."
+      "name": "tire_grip_curve_id",
+      "type": "string",
+      "typical_range": "arcade_drift, rally_gravel, sim_tire_sport",
+      "description": "Grip curve used while lateral slip increases and recovers."
     },
     {
-      "name": "traction",
+      "name": "countersteer_assist_strength",
       "type": "float",
-      "typical_range": "0-1",
-      "description": "Grip coefficient used for braking, turning, or drifting."
+      "typical_range": "0.0-1.0",
+      "description": "Assist strength that helps align steering with recoverable drift direction."
+    },
+    {
+      "name": "drift_charge_per_degree",
+      "type": "float",
+      "typical_range": "0-10 units per degree-second",
+      "description": "Optional boost or score gain accumulated from sustained drift angle."
+    },
+    {
+      "name": "surface_grip_modifier_id",
+      "type": "string",
+      "typical_range": "asphalt, gravel, snow, wet_road",
+      "description": "Surface modifier that changes drift initiation and recovery behavior."
     }
   ],
   "common_variants": [
-    "drifting_arcade_handling",
-    "drifting_simulation_handling",
-    "damage_enabled",
-    "upgrade_enabled"
+    "arcade_powerslide",
+    "rally_drift",
+    "boost_charging_drift",
+    "score_attack_drift",
+    "assisted_drift"
   ],
   "edge_cases": [
-    "Drifting is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Drifting overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Drifting runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The vehicle starts drifting while airborne or with partial wheel contact.",
+    "A collision occurs during drift and should cancel, preserve, or convert drift charge.",
+    "Surface changes mid-corner and grip recovery becomes abrupt.",
+    "Client prediction detects drift while server contact state says the vehicle is not grounded."
   ],
   "common_bugs": [
-    "Drifting state does not reset correctly after interruption or reload.",
-    "Feedback for Drifting plays even when the mechanic fails or is rejected.",
-    "Drifting produces different results between frame rates, platforms, or network clients."
+    "Drift state toggles rapidly around the threshold and flickers camera, score, or boost UI.",
+    "Countersteer assist fights player input and prevents intentional spin recovery.",
+    "Drift charge continues while sliding backward or scraping a wall.",
+    "Audio and tire smoke play from visual slip while physics state has already recovered."
   ],
   "balancing_notes": [
-    "Make Drifting strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "If drifting grants boost, normal cornering still needs a reason to exist on some track shapes.",
+    "Higher assist improves accessibility but can flatten mastery unless optional or difficulty-scaled.",
+    "Different surfaces should alter drift feel predictably rather than randomly reducing control."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Drifting becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer steer assist, reduced camera yaw, and optional drift automation for players who struggle with counter-steering.",
+    "Use visual, audio, and controller cues to indicate drift state without relying only on tire smoke."
   ],
   "implementation_notes": {
-    "unity": "Implement Drifting with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Drifting as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Drifting with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Drifting as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Compute slip angle from Rigidbody velocity and vehicle forward vector in FixedUpdate, then switch tire_grip_curve_id or lateral friction parameters. Use hysteresis around drift_angle_threshold and store drift state in rollback snapshots.",
+    "godot": "Custom VehicleBody3D or CharacterBody vehicle controllers should derive drift from local velocity and wheel contact. Apply countersteer assist after player steering input but before integration, and debug draw slip angle.",
+    "unreal": "Chaos Vehicles can expose tire slip; gameplay code should gate drift scoring from authoritative grounded contact and validated driver input. Replicate drift state or score events rather than raw tire telemetry.",
+    "web": "For arcade browser vehicles, compute local lateral velocity and slip angle in a fixed-step model. Keep camera shake, tire marks, and audio subscribed to committed drift state so prediction corrections do not leave stale effects."
   },
   "related_mechanics": [
-    "camera.dynamic_fov",
-    "physics.gravity",
     "vehicles.vehicle_acceleration",
-    "vehicles.vehicle_braking"
+    "vehicles.vehicle_braking",
+    "vehicles.vehicle_boost",
+    "vehicles.suspension_physics"
   ],
   "combines_well_with": [
     "camera.dynamic_fov",
-    "physics.gravity",
-    "vehicles.fuel",
-    "vehicles.vehicle_damage"
+    "vehicles.upgradeable_vehicle",
+    "ui_ux.hit_marker",
+    "time.slow_motion"
   ],
   "example_games": [
     {
-      "title": "Mario Kart",
-      "note": "Uses drifting as a cornering and boost skill."
+      "title": "Mario Kart 8",
+      "note": "Uses drifting as a cornering and boost-building mechanic."
     },
     {
-      "title": "Need for Speed",
-      "note": "Uses drift control as racing expression."
+      "title": "Need for Speed: Hot Pursuit",
+      "note": "Uses arcade drifting for pursuit and racing feel."
     }
   ],
   "tags": [
-    "control",
     "drifting",
-    "vehicles"
+    "slip_angle",
+    "traction",
+    "countersteer",
+    "boost"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

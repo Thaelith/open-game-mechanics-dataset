@@ -2,12 +2,12 @@
   "id": "puzzle.sliding_block",
   "name": "Sliding Block",
   "aliases": [
-    "sliding block mechanic",
-    "sliding block system",
-    "sliding block"
+    "push block",
+    "sliding tile",
+    "block puzzle"
   ],
   "category": "puzzle",
-  "subcategory": "state_puzzle",
+  "subcategory": "grid_object_puzzle",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,97 +15,131 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
+    "design": "medium",
     "implementation": "medium",
     "tuning": "hard"
   },
   "genres": [
     "puzzle",
     "adventure",
-    "escape_room"
+    "escape_room",
+    "platformer"
   ],
-  "description": "Sliding Block is a rule-based challenge that asks the player to observe, reason, manipulate state, or sequence actions.",
-  "design_notes": "Sliding Block should be designed around a clear player promise, a readable trigger, and a predictable result. For puzzle mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Players move blocks across constrained spaces to cover targets, open routes, or reach a solved arrangement.",
+  "design_notes": "Sliding block puzzles need grid coordinates, move locks, collision checks, reset anchors, undo depth, and solvability validation. Level authors should be able to prove the starting layout can reach the solution without relying on perfect physics behavior.",
   "design_purpose": [
-    "Give the player a readable way to use sliding block as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect sliding block to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create spatial reasoning challenges around occupancy, routes, and irreversible-looking moves.",
+    "Let players transform room layout by moving large objects into useful positions.",
+    "Support pressure plates, bridges, switches, and path-blocking puzzles with visible state."
   ],
-  "player_fantasy": "The player feels clever when they infer the rule and manipulate the system correctly.",
+  "player_fantasy": "The player feels clever when they arrange heavy blocks into the one layout that makes the room work.",
   "required_systems": [
-    "interaction_system",
-    "state_tracking",
-    "feedback_system",
-    "save_state"
+    "grid_occupancy",
+    "object_movement_lock",
+    "collision_detection",
+    "puzzle_state_store",
+    "reset_system"
   ],
   "parameters": [
     {
-      "name": "activation_condition",
+      "name": "block_instance_id",
       "type": "string",
-      "typical_range": "single, all, ordered, timed",
-      "description": "Rule that determines when the puzzle element changes state."
+      "typical_range": "block_a, ice_cube_03, stone_slider",
+      "description": "Stable block identifier used for movement, saves, undo, and reset anchors."
     },
     {
-      "name": "reset_time",
-      "type": "float",
-      "typical_range": "0-30 seconds",
-      "description": "Delay before the puzzle returns to its default state."
+      "name": "grid_cell_coordinate",
+      "type": "vector",
+      "typical_range": "(x,y) or (x,y,z) grid cell",
+      "description": "Current authored grid cell occupied by the block."
     },
     {
-      "name": "feedback_intensity",
+      "name": "move_lock_state",
+      "type": "string",
+      "typical_range": "idle, moving, blocked, falling, locked",
+      "description": "State that prevents overlapping pushes or interaction during movement."
+    },
+    {
+      "name": "reset_anchor_id",
+      "type": "string",
+      "typical_range": "start_cell_a, checkpoint_cell_b, room_reset",
+      "description": "Anchor used when the puzzle resets a block after failure or player request."
+    },
+    {
+      "name": "undo_stack_depth",
       "type": "integer",
-      "typical_range": "1-5",
-      "description": "How strongly the game communicates success, failure, or partial progress."
+      "typical_range": "0-100",
+      "description": "Number of recent block moves available for player undo or debug replay."
+    },
+    {
+      "name": "solvability_check_id",
+      "type": "string",
+      "typical_range": "bfs_grid_solver, authored_solution_path, none",
+      "description": "Validation pass used by tools or runtime to detect soft-locked layouts."
     }
   ],
   "common_variants": [
-    "sliding_block_single_step",
-    "sliding_block_multi_step",
-    "timed_variant",
-    "resetting_variant"
+    "grid_push_block",
+    "ice_slide_block",
+    "weighted_block_target",
+    "multi_block_sokoban",
+    "physics_assisted_block"
   ],
   "edge_cases": [
-    "Sliding Block is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Sliding Block overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Sliding Block runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A block is pushed into a corner where no legal move can recover it.",
+    "The player saves after a block starts moving but before it reaches the next grid cell.",
+    "Two blocks are pushed into the same destination cell by simultaneous interactions.",
+    "A physics body or enemy occupies a cell that the grid solver considers empty."
   ],
   "common_bugs": [
-    "Sliding Block state does not reset correctly after interruption or reload.",
-    "Feedback for Sliding Block plays even when the mechanic fails or is rejected.",
-    "Sliding Block produces different results between frame rates, platforms, or network clients."
+    "Block visuals move smoothly but grid_cell_coordinate updates early, allowing invalid overlapping moves.",
+    "Undo restores position but not linked pressure plate or door state.",
+    "Reset returns blocks to anchors while the player is standing in the destination cell.",
+    "Solvability checks ignore one-way movement rules and approve impossible layouts."
   ],
   "balancing_notes": [
-    "Make Sliding Block strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Small block puzzles benefit from undo; larger puzzles need reset shortcuts and readable goals.",
+    "Irreversible moves can create tension but should be used sparingly unless reset is fast.",
+    "Block weight, push cadence, and camera framing should support reasoning rather than slow the player down."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Sliding Block becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide undo or reset options for long spatial puzzles to reduce repetitive recovery.",
+    "Use high-contrast target markers and grid alignment cues so block goals are readable."
   ],
   "implementation_notes": {
-    "unity": "Implement Sliding Block with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Sliding Block as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Sliding Block with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Sliding Block as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Keep authoritative grid occupancy separate from rendered block transforms. A push request should reserve destination cell, set move_lock_state, animate toward the cell, then commit linked puzzle events after arrival.",
+    "godot": "Use TileMap or custom grid data for occupancy, with block nodes reading block_instance_id and grid_cell_coordinate from puzzle state. Store undo records containing block id, previous cell, next cell, and linked target deltas.",
+    "unreal": "Use an Actor Component for block grid state and movement lock, with traces validating destination cells. Server or single-player authority should commit cell changes and multicast animation from the accepted move result.",
+    "web": "Represent the puzzle as a grid model first and render blocks from model cells. Phaser tweens or canvas interpolation should never be the source of truth for occupancy or undo."
   },
   "related_mechanics": [
-    "puzzle.key_and_lock",
     "puzzle.pressure_plate",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "puzzle.physics_weight_puzzle",
+    "physics.physics_push_pull",
+    "puzzle.timed_door"
   ],
   "combines_well_with": [
-    "puzzle.lever_switch",
-    "puzzle.mirror_light_reflection",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "puzzle.color_matching",
+    "puzzle.sequence_memory",
+    "ui_ux.tutorial_prompt",
+    "time.time_rewind"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Sokoban",
+      "note": "Uses block pushing and grid occupancy as the core puzzle structure."
+    },
+    {
+      "title": "The Legend of Zelda: Link's Awakening",
+      "note": "Uses pushable block arrangements in dungeon rooms."
+    }
+  ],
   "tags": [
-    "puzzle",
-    "sliding",
-    "state",
-    "state_puzzle"
+    "sliding_block",
+    "grid",
+    "solvability",
+    "undo",
+    "soft_lock"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

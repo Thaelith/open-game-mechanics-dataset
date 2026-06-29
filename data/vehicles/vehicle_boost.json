@@ -2,12 +2,12 @@
   "id": "vehicles.vehicle_boost",
   "name": "Vehicle Boost",
   "aliases": [
-    "vehicle boost mechanic",
-    "vehicle boost system",
-    "vehicle boost"
+    "nitro boost",
+    "turbo boost",
+    "vehicle burst acceleration"
   ],
   "category": "vehicles",
-  "subcategory": "vehicles",
+  "subcategory": "temporary_power",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,95 +16,139 @@
   ],
   "difficulty": {
     "design": "medium",
-    "implementation": "hard",
+    "implementation": "medium",
     "tuning": "hard"
   },
   "genres": [
     "racing",
-    "simulation",
-    "open_world"
+    "action",
+    "open_world",
+    "arcade"
   ],
-  "description": "Vehicle Boost is a controllable transport mechanic with dedicated movement, physics, resources, or damage behavior.",
-  "design_notes": "Vehicle Boost should be designed around a clear player promise, a readable trigger, and a predictable result. For vehicles mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A temporary vehicle power state that converts a stored meter, pickup, drift reward, or scripted trigger into extra acceleration and stronger audiovisual emphasis.",
+  "design_notes": "Boost is a pacing lever for overtakes, recovery, shortcuts, and stunt rewards. It needs a clear resource rule and a predictable exit so the player can plan around it. The main design risk is turning every straightaway into mandatory boost use or letting chained boost states erase steering and collision tension.",
   "design_purpose": [
-    "Give the player a readable way to use vehicle boost as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect vehicle boost to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create short windows of high-intensity vehicle control.",
+    "Reward racing lines, pickups, drifting, drafting, or risk-taking with a visible payoff.",
+    "Let designers shape comeback moments without removing the need to steer well."
   ],
-  "player_fantasy": "The player feels mastery over a machine with distinct weight, speed, and handling.",
+  "player_fantasy": "The player feels a surge of power as the vehicle launches past rivals or clears a dangerous gap.",
   "required_systems": [
     "vehicle_controller",
-    "physics_world",
+    "boost_meter_system",
     "input_handling",
-    "camera_controller"
+    "camera_controller",
+    "audio_system"
   ],
   "parameters": [
     {
-      "name": "max_speed",
-      "type": "float",
-      "typical_range": "5-300 world units/second",
-      "description": "Maximum velocity the vehicle can reach."
+      "name": "vehicle_id",
+      "type": "string",
+      "typical_range": "active vehicle instance id",
+      "description": "Vehicle instance receiving the boost state."
     },
     {
-      "name": "handling_response",
-      "type": "float",
-      "typical_range": "0.1-5",
-      "description": "How sharply steering or control input affects the vehicle."
+      "name": "boost_input",
+      "type": "string",
+      "typical_range": "button, trigger, pickup_auto, drift_release",
+      "description": "Activation source accepted by the boost controller."
     },
     {
-      "name": "traction",
+      "name": "boost_meter_id",
+      "type": "string",
+      "typical_range": "nitro_meter, drift_charge, pickup_stack",
+      "description": "Stored resource pool consumed or checked on activation."
+    },
+    {
+      "name": "boost_window_ms",
+      "type": "integer",
+      "typical_range": "250-3000 ms",
+      "description": "Active burst window after a successful activation."
+    },
+    {
+      "name": "boost_acceleration_multiplier",
       "type": "float",
-      "typical_range": "0-1",
-      "description": "Grip coefficient used for braking, turning, or drifting."
+      "typical_range": "1.1-3.0",
+      "description": "Multiplier applied to drivetrain acceleration while boosting."
+    },
+    {
+      "name": "recharge_rule_id",
+      "type": "string",
+      "typical_range": "drift_charge, pickup_only, lap_refill",
+      "description": "Rule that grants meter after qualifying driving events."
+    },
+    {
+      "name": "overheat_state_id",
+      "type": "string",
+      "typical_range": "none, warning, locked_out",
+      "description": "Optional lockout state after excessive chained activation."
     }
   ],
   "common_variants": [
-    "vehicle_boost_arcade_handling",
-    "vehicle_boost_simulation_handling",
-    "damage_enabled",
-    "upgrade_enabled"
+    "nitro_meter",
+    "drift_reward_boost",
+    "pickup_boost",
+    "drafting_boost",
+    "overheat_boost"
   ],
   "edge_cases": [
-    "Vehicle Boost is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Vehicle Boost overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Vehicle Boost runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Boost activates while the vehicle is airborne and should not produce impossible steering correction.",
+    "A boost pickup is collected on the same server tick as meter activation.",
+    "The vehicle hits a wall during the burst and needs damage, camera, and meter state resolved in order.",
+    "Pause, replay rewind, or checkpoint restore occurs during an active boost_window_ms.",
+    "Client prediction starts boost locally but the server rejects the activation because meter was already spent."
   ],
   "common_bugs": [
-    "Vehicle Boost state does not reset correctly after interruption or reload.",
-    "Feedback for Vehicle Boost plays even when the mechanic fails or is rejected.",
-    "Vehicle Boost produces different results between frame rates, platforms, or network clients."
+    "Boost meter is deducted twice when activation and pickup collection arrive in the same update.",
+    "Camera field of view remains widened after interruption, respawn, or vehicle swap.",
+    "Boost acceleration ignores surface traction and makes ice, mud, and ramps behave like flat asphalt.",
+    "Predicted boost effects show on clients even after server reconciliation cancels the state.",
+    "Overheat lockout never clears because it uses paused UI clock instead of gameplay clock."
   ],
   "balancing_notes": [
-    "Make Vehicle Boost strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Short bursts reward timing; long bursts become route-planning resources and need stronger counterplay from turns or hazards.",
+    "Recharge rules determine behavior: drift charging encourages risky cornering, pickup charging encourages track control, and passive recharge reduces pressure.",
+    "Boost should amplify skillful positioning rather than fully correcting poor exits from corners."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Vehicle Boost becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer reduced camera push, reduced shake, and lower audio spike settings for boost feedback.",
+    "Make boost meter state readable through shape, text, or placement rather than color alone.",
+    "Support hold, toggle, or auto-trigger variants when repeated trigger pressure is uncomfortable."
   ],
   "implementation_notes": {
-    "unity": "Implement Vehicle Boost with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Vehicle Boost as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Vehicle Boost with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Vehicle Boost as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Track boost_meter_id, boost_window_ms, and overheat_state_id in the vehicle controller, then apply the acceleration multiplier inside FixedUpdate after traction limits are known. Netcode projects should send activation requests with client_input_sequence and reconcile rejected bursts without leaving camera or audio state active.",
+    "godot": "Use _physics_process for the burst solve and a separate Timer or gameplay clock field for boost_window_ms. Emit boost_started and boost_ended signals so camera FOV, particles, and UI subscribe to authoritative state changes instead of polling button input.",
+    "unreal": "Implement boost as a Gameplay Ability or vehicle component state with replicated activation, prediction keys, and explicit end events. Apply drivetrain modifiers before Chaos vehicle output, and clear camera and audio cues on ability cancel, crash, respawn, or possession change.",
+    "web": "Process boost through a fixed-step reducer that consumes meter, writes boost_active_until_ms, and logs the source event. Phaser or Three.js rendering should read state for effects, while rollback snapshots include meter, active window, and overheat fields."
   },
   "related_mechanics": [
-    "camera.dynamic_fov",
-    "physics.gravity",
     "vehicles.vehicle_acceleration",
-    "vehicles.vehicle_braking"
+    "vehicles.drifting",
+    "vehicles.fuel",
+    "camera.dynamic_fov"
   ],
   "combines_well_with": [
-    "camera.dynamic_fov",
-    "physics.gravity",
-    "vehicles.drifting",
-    "vehicles.fuel"
+    "vehicles.vehicle_damage",
+    "ui_ux.cooldown_indicator",
+    "time.slow_motion",
+    "vehicles.upgradeable_vehicle"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Mario Kart 8",
+      "note": "Uses temporary speed boosts from drifts, items, and track features."
+    },
+    {
+      "title": "Rocket League",
+      "note": "Uses a boost meter as a core vehicle movement resource."
+    }
+  ],
   "tags": [
-    "control",
-    "vehicle",
-    "vehicles"
+    "boost",
+    "nitro",
+    "meter",
+    "burst_acceleration",
+    "vehicle_feedback"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

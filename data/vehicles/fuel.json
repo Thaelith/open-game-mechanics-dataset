@@ -2,12 +2,12 @@
   "id": "vehicles.fuel",
   "name": "Fuel",
   "aliases": [
-    "fuel mechanic",
-    "fuel system",
-    "fuel"
+    "vehicle fuel",
+    "gas tank",
+    "energy reserve"
   ],
   "category": "vehicles",
-  "subcategory": "vehicles",
+  "subcategory": "resource_tank",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,95 +16,130 @@
   ],
   "difficulty": {
     "design": "medium",
-    "implementation": "hard",
+    "implementation": "medium",
     "tuning": "hard"
   },
   "genres": [
     "racing",
-    "simulation",
-    "open_world"
+    "survival",
+    "open_world",
+    "simulation"
   ],
-  "description": "Fuel is a controllable transport mechanic with dedicated movement, physics, resources, or damage behavior.",
-  "design_notes": "Fuel should be designed around a clear player promise, a readable trigger, and a predictable result. For vehicles mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A vehicle consumes a stored resource while driving, boosting, idling, or powering systems, and changes behavior when depleted.",
+  "design_notes": "Fuel is a vehicle resource transaction, not just a UI bar. The design should define fuel_tank_id capacity, consumption sources, refill transaction rules, empty behavior, save persistence, and exploit prevention around refuel items, stations, and multiplayer ownership.",
   "design_purpose": [
-    "Give the player a readable way to use fuel as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect fuel to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Make vehicle travel, route planning, and risk management depend on preparation.",
+    "Connect vehicles to economy, survival, repair, and upgrade systems.",
+    "Create meaningful decisions about idling, boosting, detours, and refueling stops."
   ],
-  "player_fantasy": "The player feels mastery over a machine with distinct weight, speed, and handling.",
+  "player_fantasy": "The player feels the freedom of vehicle travel while respecting the need to keep it supplied.",
   "required_systems": [
-    "vehicle_controller",
-    "physics_world",
-    "input_handling",
-    "camera_controller"
+    "vehicle_resource_system",
+    "inventory_transactions",
+    "ui_warning_bands",
+    "save_load_state",
+    "authority_validation"
   ],
   "parameters": [
     {
-      "name": "max_speed",
-      "type": "float",
-      "typical_range": "5-300 world units/second",
-      "description": "Maximum velocity the vehicle can reach."
+      "name": "fuel_tank_id",
+      "type": "string",
+      "typical_range": "tank_default, battery_pack_a, nitro_cell",
+      "description": "Tank or energy store identifier attached to a vehicle instance."
     },
     {
-      "name": "handling_response",
+      "name": "fuel_capacity_liters",
       "type": "float",
-      "typical_range": "0.1-5",
-      "description": "How sharply steering or control input affects the vehicle."
+      "typical_range": "1-200 liters or charge units",
+      "description": "Maximum stored fuel or charge before upgrade and damage modifiers."
     },
     {
-      "name": "traction",
+      "name": "fuel_consumption_per_km",
       "type": "float",
-      "typical_range": "0-1",
-      "description": "Grip coefficient used for braking, turning, or drifting."
+      "typical_range": "0.01-5 units per km",
+      "description": "Travel-based consumption used for driving route cost and UI estimates."
+    },
+    {
+      "name": "idle_consumption_per_minute",
+      "type": "float",
+      "typical_range": "0-2 units per minute",
+      "description": "Drain while the engine or powered systems run without meaningful travel."
+    },
+    {
+      "name": "refill_transaction_id",
+      "type": "string",
+      "typical_range": "generated per refuel attempt",
+      "description": "Idempotent transaction identifier for fuel items, stations, or shared resource spends."
+    },
+    {
+      "name": "empty_behavior_id",
+      "type": "string",
+      "typical_range": "stall_engine, limp_mode, disable_boost, slow_drain_battery",
+      "description": "Behavior applied when usable fuel reaches depletion."
     }
   ],
   "common_variants": [
-    "fuel_arcade_handling",
-    "fuel_simulation_handling",
-    "damage_enabled",
-    "upgrade_enabled"
+    "gasoline_tank",
+    "battery_charge",
+    "boost_fuel",
+    "survival_refuel_station",
+    "shared_vehicle_fuel"
   ],
   "edge_cases": [
-    "Fuel is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Fuel overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Fuel runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The driver exits or disconnects during a refuel transaction.",
+    "Fuel reaches zero while the vehicle is airborne, on a slope, or crossing a checkpoint.",
+    "A damaged fuel tank leaks while UI range estimates still assume normal capacity.",
+    "Two players attempt to refuel the same shared vehicle with different items."
   ],
   "common_bugs": [
-    "Fuel state does not reset correctly after interruption or reload.",
-    "Feedback for Fuel plays even when the mechanic fails or is rejected.",
-    "Fuel produces different results between frame rates, platforms, or network clients."
+    "Fuel drains from render delta and depends on frame rate.",
+    "Refuel items are consumed twice after retrying a failed network request.",
+    "Save/load restores vehicle position but resets fuel to full or empty.",
+    "Empty behavior disables input but not boost, engine audio, or AI driving."
   ],
   "balancing_notes": [
-    "Make Fuel strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Fuel pressure works best when refueling routes and fallback travel are readable.",
+    "Open-world fuel scarcity can create memorable planning, but it should not strand players without recovery options.",
+    "Boost or heavy vehicle upgrades can increase consumption to create tradeoffs."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Fuel becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show fuel warnings with text, icons, and route estimates rather than a tiny gauge only.",
+    "Allow relaxed fuel consumption or assist settings in exploration-focused modes."
   ],
   "implementation_notes": {
-    "unity": "Implement Fuel with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Fuel as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Fuel with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Fuel as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store fuel_tank_id, current units, capacity, and empty_behavior_id on the vehicle instance. Refuel should reserve fuel item instances, validate capacity, mutate tank state, and commit once through an inventory or station transaction.",
+    "godot": "Keep fuel state in a vehicle data resource and advance consumption from physics or simulation ticks. UI should display projected range from the same consumption model used by movement.",
+    "unreal": "A replicated vehicle component can own fuel state and server-authoritative refill requests. Apply consumption from movement or engine state on the authority, and replicate warning thresholds to UMG.",
+    "web": "Represent fuel as simulation state keyed by vehicle_id and fuel_tank_id. Browser clients should not trust local refuel clicks; use refill_transaction_id to make retries idempotent."
   },
   "related_mechanics": [
-    "camera.dynamic_fov",
-    "physics.gravity",
     "vehicles.vehicle_acceleration",
-    "vehicles.vehicle_braking"
+    "vehicles.vehicle_boost",
+    "vehicles.vehicle_damage",
+    "economy.resource_conversion"
   ],
   "combines_well_with": [
-    "camera.dynamic_fov",
-    "physics.gravity",
-    "vehicles.drifting",
-    "vehicles.vehicle_damage"
+    "survival.inventory_limit",
+    "economy.shop",
+    "vehicles.upgradeable_vehicle",
+    "ui_ux.cooldown_indicator"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Mad Max",
+      "note": "Uses fuel and vehicle resource pressure in open-world traversal."
+    },
+    {
+      "title": "Days Gone",
+      "note": "Uses motorcycle fuel as part of route planning and survival pressure."
+    }
+  ],
   "tags": [
-    "control",
     "fuel",
-    "vehicles"
+    "vehicle_resource",
+    "refill",
+    "survival",
+    "persistence"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

@@ -2,12 +2,12 @@
   "id": "puzzle.portal_pair",
   "name": "Portal Pair",
   "aliases": [
-    "portal pair mechanic",
-    "portal pair system",
-    "portal pair"
+    "linked portals",
+    "teleport pair",
+    "spatial portal"
   ],
   "category": "puzzle",
-  "subcategory": "state_puzzle",
+  "subcategory": "spatial_mapping",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,101 +16,130 @@
   ],
   "difficulty": {
     "design": "hard",
-    "implementation": "medium",
+    "implementation": "expert",
     "tuning": "hard"
   },
   "genres": [
     "puzzle",
+    "platformer",
     "adventure",
-    "escape_room"
+    "first_person"
   ],
-  "description": "Portal Pair is a rule-based challenge that asks the player to observe, reason, manipulate state, or sequence actions.",
-  "design_notes": "Portal Pair should be designed around a clear player promise, a readable trigger, and a predictable result. For puzzle mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Two linked surfaces or volumes remap position, velocity, orientation, visibility, or objects across space.",
+  "design_notes": "Portal pairs depend on transform mapping and loop prevention. The design should define portal_pair_id ownership, allowed body classes, teleport exit correction, camera orientation, cooldown after transfer, and how portals interact with projectiles, physics objects, saves, and moving platforms.",
   "design_purpose": [
-    "Give the player a readable way to use portal pair as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect portal pair to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create spatial reasoning puzzles based on non-local movement and line of sight.",
+    "Let players redirect momentum, objects, projectiles, or visibility between separated spaces.",
+    "Support compact levels that feel larger through transform mapping."
   ],
-  "player_fantasy": "The player feels clever when they infer the rule and manipulate the system correctly.",
+  "player_fantasy": "The player feels they can bend space and solve routes by thinking through linked surfaces.",
   "required_systems": [
-    "interaction_system",
-    "state_tracking",
-    "feedback_system",
-    "save_state"
+    "portal_transform_mapping",
+    "collision_detection",
+    "camera_controller",
+    "physics_state_transfer",
+    "loop_prevention"
   ],
   "parameters": [
     {
-      "name": "activation_condition",
+      "name": "portal_pair_id",
       "type": "string",
-      "typical_range": "single, all, ordered, timed",
-      "description": "Rule that determines when the puzzle element changes state."
+      "typical_range": "blue_orange_pair, door_pair_03, wormhole_a",
+      "description": "Stable identifier connecting entry and exit portals."
     },
     {
-      "name": "reset_time",
-      "type": "float",
-      "typical_range": "0-30 seconds",
-      "description": "Delay before the puzzle returns to its default state."
+      "name": "entry_portal_id",
+      "type": "string",
+      "typical_range": "portal_blue, gate_a_front",
+      "description": "Portal endpoint that detects entering bodies and computes source transform."
     },
     {
-      "name": "feedback_intensity",
+      "name": "exit_portal_id",
+      "type": "string",
+      "typical_range": "portal_orange, gate_a_back",
+      "description": "Linked endpoint that receives mapped bodies and camera orientation."
+    },
+    {
+      "name": "teleport_lockout_ms",
       "type": "integer",
-      "typical_range": "1-5",
-      "description": "How strongly the game communicates success, failure, or partial progress."
+      "typical_range": "50-500 ms",
+      "description": "Short lockout that prevents immediate re-entry loops after a transfer."
+    },
+    {
+      "name": "exit_clearance_policy_id",
+      "type": "string",
+      "typical_range": "sweep_to_safe_pose, block_if_occupied, push_out",
+      "description": "Rule used when the exit volume is obstructed or overlaps a body."
+    },
+    {
+      "name": "orientation_mapping_mode",
+      "type": "string",
+      "typical_range": "preserve_local, align_exit_normal, two_dimensional_flip",
+      "description": "Mapping rule for view direction, velocity, and character facing."
     }
   ],
   "common_variants": [
-    "portal_pair_single_step",
-    "portal_pair_multi_step",
-    "timed_variant",
-    "resetting_variant"
+    "bidirectional_portal_pair",
+    "one_way_portal",
+    "object_only_portal",
+    "projectile_portal",
+    "screen_wrap_portal"
   ],
   "edge_cases": [
-    "Portal Pair is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Portal Pair overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Portal Pair runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "An object is partially inside the portal and collides with both rooms during the same step.",
+    "Two portals face each other and create an infinite transfer loop.",
+    "The exit portal moves, rotates, or becomes blocked while a body is crossing.",
+    "A save occurs while a player or object is mid-transfer."
   ],
   "common_bugs": [
-    "Portal Pair state does not reset correctly after interruption or reload.",
-    "Feedback for Portal Pair plays even when the mechanic fails or is rejected.",
-    "Portal Pair produces different results between frame rates, platforms, or network clients."
+    "Velocity is mapped but angular velocity, camera pitch, or carried objects are not.",
+    "Teleport lockout is global and prevents other actors from using the portal pair.",
+    "Collision correction pushes the player back into the entry portal and causes flicker.",
+    "Portal rendering shows the correct view but authority collision still uses old room coordinates."
   ],
   "balancing_notes": [
-    "Make Portal Pair strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Portals are easier to reason about when entry and exit surfaces have strong visual identity.",
+    "Momentum-preserving portals create expressive solutions but require larger safety margins around exits.",
+    "If portals carry enemies or projectiles, combat difficulty can change sharply."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Portal Pair becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer comfort options for sudden camera rotation, FOV shifts, and rapid visual recursion.",
+    "Use labels, colors plus shapes, or directional arrows so linked endpoints are identifiable."
   ],
   "implementation_notes": {
-    "unity": "Implement Portal Pair with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Portal Pair as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Portal Pair with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Portal Pair as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use trigger volumes for endpoints and map transforms through portal-local matrices. Transfer Rigidbody velocity and angular velocity, CharacterController state, camera orientation, and carried object references in one transaction with per-body teleport lockout.",
+    "godot": "Represent each endpoint as an Area node with a linked portal_pair_id. Use Transform2D or Transform3D mapping for pose and velocity, and apply exit_clearance_policy_id before committing the new transform.",
+    "unreal": "Use portal actors with scene capture or custom rendering for view, but keep gameplay transfer in server or authoritative movement code. CharacterMovement needs correction for orientation, velocity, and penetration at the exit.",
+    "web": "In Phaser or Three.js, keep portals as simulation volumes with transform mapping separate from rendering tricks. Store per-object lockout and last portal id to prevent re-entry loops."
   },
   "related_mechanics": [
-    "puzzle.key_and_lock",
-    "puzzle.pressure_plate",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "traversal.teleport_blink",
+    "time.time_rewind",
+    "physics.moving_platform",
+    "camera.first_person_camera"
   ],
   "combines_well_with": [
-    "puzzle.lever_switch",
+    "puzzle.pressure_plate",
     "puzzle.mirror_light_reflection",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "combat.projectile_reflection",
+    "camera.dynamic_fov"
   ],
   "example_games": [
     {
       "title": "Portal",
-      "note": "Uses paired portals as the central spatial puzzle tool."
+      "note": "Uses paired portals for spatial reasoning and momentum puzzles."
+    },
+    {
+      "title": "The Talos Principle",
+      "note": "Uses connector-style spatial and line-of-sight logic in puzzle spaces."
     }
   ],
   "tags": [
     "portal",
-    "puzzle",
-    "state",
-    "state_puzzle"
+    "transform_mapping",
+    "teleport",
+    "loop_prevention",
+    "spatial_puzzle"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

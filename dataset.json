@@ -4,7 +4,7 @@
   "license": "CC0-1.0",
   "tool_license": "MIT",
   "total_mechanics": 223,
-  "last_generated": "2026-06-29T14:01:04+00:00",
+  "last_generated": "2026-06-29T14:27:00+00:00",
   "mechanics": [
     {
       "id": "accessibility.adjustable_difficulty",
@@ -3373,7 +3373,7 @@
       "id": "puzzle.color_matching",
       "name": "Color Matching",
       "category": "puzzle",
-      "subcategory": "state_puzzle",
+      "subcategory": "symbol_matching",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3383,21 +3383,23 @@
       "genres": [
         "puzzle",
         "adventure",
-        "escape_room"
+        "escape_room",
+        "educational"
       ],
       "tags": [
-        "color",
-        "puzzle",
-        "state",
-        "state_puzzle"
+        "color_matching",
+        "symbols",
+        "accessibility",
+        "solution_hash",
+        "puzzle"
       ],
       "path": "data/puzzle/color_matching.json"
     },
     {
       "id": "puzzle.key_and_lock",
-      "name": "Key and Lock",
+      "name": "Key And Lock",
       "category": "puzzle",
-      "subcategory": "state_puzzle",
+      "subcategory": "progression_gate",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3407,13 +3409,15 @@
       "genres": [
         "puzzle",
         "adventure",
+        "metroidvania",
         "escape_room"
       ],
       "tags": [
-        "key",
-        "puzzle",
-        "state",
-        "state_puzzle"
+        "key_lock",
+        "progression_gate",
+        "inventory",
+        "persistence",
+        "interaction"
       ],
       "path": "data/puzzle/key_and_lock.json"
     },
@@ -3421,7 +3425,7 @@
       "id": "puzzle.lever_switch",
       "name": "Lever Switch",
       "category": "puzzle",
-      "subcategory": "state_puzzle",
+      "subcategory": "switch_state",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3431,13 +3435,15 @@
       "genres": [
         "puzzle",
         "adventure",
-        "escape_room"
+        "escape_room",
+        "immersive_sim"
       ],
       "tags": [
         "lever",
-        "puzzle",
-        "state",
-        "state_puzzle"
+        "switch_state",
+        "linked_targets",
+        "puzzle_logic",
+        "interaction"
       ],
       "path": "data/puzzle/lever_switch.json"
     },
@@ -3445,7 +3451,7 @@
       "id": "puzzle.mirror_light_reflection",
       "name": "Mirror Light Reflection",
       "category": "puzzle",
-      "subcategory": "state_puzzle",
+      "subcategory": "ray_routing",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3455,13 +3461,15 @@
       "genres": [
         "puzzle",
         "adventure",
-        "escape_room"
+        "escape_room",
+        "first_person"
       ],
       "tags": [
+        "light_reflection",
         "mirror",
-        "puzzle",
-        "state",
-        "state_puzzle"
+        "raycast",
+        "receiver",
+        "debug_visualization"
       ],
       "path": "data/puzzle/mirror_light_reflection.json"
     },
@@ -3469,7 +3477,7 @@
       "id": "puzzle.physics_weight_puzzle",
       "name": "Physics Weight Puzzle",
       "category": "puzzle",
-      "subcategory": "state_puzzle",
+      "subcategory": "physical_mass_logic",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3479,13 +3487,15 @@
       "genres": [
         "puzzle",
         "adventure",
-        "escape_room"
+        "immersive_sim",
+        "sandbox"
       ],
       "tags": [
+        "weight_puzzle",
+        "mass",
+        "object_tracking",
         "physics",
-        "puzzle",
-        "state",
-        "state_puzzle"
+        "reset"
       ],
       "path": "data/puzzle/physics_weight_puzzle.json"
     },
@@ -3493,7 +3503,7 @@
       "id": "puzzle.portal_pair",
       "name": "Portal Pair",
       "category": "puzzle",
-      "subcategory": "state_puzzle",
+      "subcategory": "spatial_mapping",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3502,14 +3512,16 @@
       ],
       "genres": [
         "puzzle",
+        "platformer",
         "adventure",
-        "escape_room"
+        "first_person"
       ],
       "tags": [
         "portal",
-        "puzzle",
-        "state",
-        "state_puzzle"
+        "transform_mapping",
+        "teleport",
+        "loop_prevention",
+        "spatial_puzzle"
       ],
       "path": "data/puzzle/portal_pair.json"
     },
@@ -3531,11 +3543,11 @@
         "immersive_sim"
       ],
       "tags": [
-        "puzzle",
-        "trigger",
+        "pressure_plate",
+        "trigger_volume",
         "weight",
-        "state",
-        "physics"
+        "object_tracking",
+        "puzzle"
       ],
       "path": "data/puzzle/pressure_plate.json"
     },
@@ -3543,7 +3555,7 @@
       "id": "puzzle.sequence_memory",
       "name": "Sequence Memory",
       "category": "puzzle",
-      "subcategory": "state_puzzle",
+      "subcategory": "ordered_input",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3553,13 +3565,15 @@
       "genres": [
         "puzzle",
         "adventure",
-        "escape_room"
+        "escape_room",
+        "educational"
       ],
       "tags": [
-        "puzzle",
         "sequence",
-        "state",
-        "state_puzzle"
+        "memory",
+        "ordered_input",
+        "hints",
+        "accessibility"
       ],
       "path": "data/puzzle/sequence_memory.json"
     },
@@ -3567,7 +3581,7 @@
       "id": "puzzle.sliding_block",
       "name": "Sliding Block",
       "category": "puzzle",
-      "subcategory": "state_puzzle",
+      "subcategory": "grid_object_puzzle",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3577,13 +3591,15 @@
       "genres": [
         "puzzle",
         "adventure",
-        "escape_room"
+        "escape_room",
+        "platformer"
       ],
       "tags": [
-        "puzzle",
-        "sliding",
-        "state",
-        "state_puzzle"
+        "sliding_block",
+        "grid",
+        "solvability",
+        "undo",
+        "soft_lock"
       ],
       "path": "data/puzzle/sliding_block.json"
     },
@@ -3591,7 +3607,7 @@
       "id": "puzzle.timed_door",
       "name": "Timed Door",
       "category": "puzzle",
-      "subcategory": "state_puzzle",
+      "subcategory": "timed_gate",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3600,14 +3616,16 @@
       ],
       "genres": [
         "puzzle",
+        "platformer",
         "adventure",
         "escape_room"
       ],
       "tags": [
-        "puzzle",
-        "state",
-        "state_puzzle",
-        "timed"
+        "timed_door",
+        "countdown",
+        "door_state",
+        "checkpoint",
+        "timing"
       ],
       "path": "data/puzzle/timed_door.json"
     },
@@ -5247,7 +5265,7 @@
       "id": "vehicles.drifting",
       "name": "Drifting",
       "category": "vehicles",
-      "subcategory": "vehicles",
+      "subcategory": "traction_slide",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -5256,13 +5274,16 @@
       ],
       "genres": [
         "racing",
-        "simulation",
-        "open_world"
+        "arcade",
+        "open_world",
+        "action"
       ],
       "tags": [
-        "control",
         "drifting",
-        "vehicles"
+        "slip_angle",
+        "traction",
+        "countersteer",
+        "boost"
       ],
       "path": "data/vehicles/drifting.json"
     },
@@ -5270,7 +5291,7 @@
       "id": "vehicles.fuel",
       "name": "Fuel",
       "category": "vehicles",
-      "subcategory": "vehicles",
+      "subcategory": "resource_tank",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -5279,13 +5300,16 @@
       ],
       "genres": [
         "racing",
-        "simulation",
-        "open_world"
+        "survival",
+        "open_world",
+        "simulation"
       ],
       "tags": [
-        "control",
         "fuel",
-        "vehicles"
+        "vehicle_resource",
+        "refill",
+        "survival",
+        "persistence"
       ],
       "path": "data/vehicles/fuel.json"
     },
@@ -5293,10 +5317,9 @@
       "id": "vehicles.suspension_physics",
       "name": "Suspension Physics",
       "category": "vehicles",
-      "subcategory": "vehicles",
+      "subcategory": "wheel_contact",
       "status": "draft",
       "dimensions": [
-        "2D",
         "2.5D",
         "3D"
       ],
@@ -5306,9 +5329,11 @@
         "open_world"
       ],
       "tags": [
-        "control",
         "suspension",
-        "vehicles"
+        "wheel_contact",
+        "traction",
+        "vehicle_physics",
+        "surface_response"
       ],
       "path": "data/vehicles/suspension_physics.json"
     },
@@ -5316,7 +5341,7 @@
       "id": "vehicles.upgradeable_vehicle",
       "name": "Upgradeable Vehicle",
       "category": "vehicles",
-      "subcategory": "vehicles",
+      "subcategory": "upgrade_installation",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -5326,12 +5351,15 @@
       "genres": [
         "racing",
         "simulation",
-        "open_world"
+        "open_world",
+        "survival"
       ],
       "tags": [
-        "control",
-        "upgradeable",
-        "vehicles"
+        "vehicle_upgrades",
+        "parts",
+        "progression",
+        "inventory_transaction",
+        "buildcraft"
       ],
       "path": "data/vehicles/upgradeable_vehicle.json"
     },
@@ -5339,7 +5367,7 @@
       "id": "vehicles.vehicle_acceleration",
       "name": "Vehicle Acceleration",
       "category": "vehicles",
-      "subcategory": "vehicles",
+      "subcategory": "drivetrain_input",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -5349,12 +5377,15 @@
       "genres": [
         "racing",
         "simulation",
-        "open_world"
+        "open_world",
+        "action"
       ],
       "tags": [
-        "control",
-        "vehicle",
-        "vehicles"
+        "vehicle_acceleration",
+        "throttle",
+        "traction",
+        "drivetrain",
+        "prediction"
       ],
       "path": "data/vehicles/vehicle_acceleration.json"
     },
@@ -5362,7 +5393,7 @@
       "id": "vehicles.vehicle_boost",
       "name": "Vehicle Boost",
       "category": "vehicles",
-      "subcategory": "vehicles",
+      "subcategory": "temporary_power",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -5371,13 +5402,16 @@
       ],
       "genres": [
         "racing",
-        "simulation",
-        "open_world"
+        "action",
+        "open_world",
+        "arcade"
       ],
       "tags": [
-        "control",
-        "vehicle",
-        "vehicles"
+        "boost",
+        "nitro",
+        "meter",
+        "burst_acceleration",
+        "vehicle_feedback"
       ],
       "path": "data/vehicles/vehicle_boost.json"
     },
@@ -5385,7 +5419,7 @@
       "id": "vehicles.vehicle_braking",
       "name": "Vehicle Braking",
       "category": "vehicles",
-      "subcategory": "vehicles",
+      "subcategory": "deceleration_control",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -5395,12 +5429,15 @@
       "genres": [
         "racing",
         "simulation",
-        "open_world"
+        "open_world",
+        "action"
       ],
       "tags": [
-        "control",
-        "vehicle",
-        "vehicles"
+        "vehicle_braking",
+        "handbrake",
+        "traction",
+        "reverse",
+        "assist"
       ],
       "path": "data/vehicles/vehicle_braking.json"
     },
@@ -5408,7 +5445,7 @@
       "id": "vehicles.vehicle_damage",
       "name": "Vehicle Damage",
       "category": "vehicles",
-      "subcategory": "vehicles",
+      "subcategory": "vehicle_health",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -5417,13 +5454,16 @@
       ],
       "genres": [
         "racing",
+        "action",
         "simulation",
         "open_world"
       ],
       "tags": [
-        "control",
-        "vehicle",
-        "vehicles"
+        "vehicle_damage",
+        "durability",
+        "collision_damage",
+        "repair",
+        "part_health"
       ],
       "path": "data/vehicles/vehicle_damage.json"
     }
@@ -6146,7 +6186,6 @@
         "ui_ux.tutorial_prompt",
         "vehicles.drifting",
         "vehicles.fuel",
-        "vehicles.suspension_physics",
         "vehicles.upgradeable_vehicle",
         "vehicles.vehicle_acceleration",
         "vehicles.vehicle_boost",
@@ -6395,6 +6434,8 @@
           "platforming.coyote_time",
           "platforming.drop_through_platform",
           "platforming.jump_buffering",
+          "puzzle.key_and_lock",
+          "puzzle.lever_switch",
           "puzzle.pressure_plate",
           "ui_ux.hit_marker",
           "ui_ux.interaction_prompt"
@@ -6462,15 +6503,8 @@
           "progression.skill_tree",
           "progression.unlockable_abilities",
           "progression.upgrade_shop",
-          "puzzle.color_matching",
-          "puzzle.key_and_lock",
-          "puzzle.lever_switch",
           "puzzle.mirror_light_reflection",
-          "puzzle.physics_weight_puzzle",
           "puzzle.portal_pair",
-          "puzzle.sequence_memory",
-          "puzzle.sliding_block",
-          "puzzle.timed_door",
           "roguelike.curse_modifier",
           "roguelike.permadeath",
           "roguelike.pick_one_upgrade_choice",
@@ -6497,7 +6531,8 @@
           "survival.temperature",
           "time.rhythm_timing",
           "time.time_freeze",
-          "traversal.wall_run"
+          "traversal.wall_run",
+          "vehicles.drifting"
         ],
         "medium": [
           "accessibility.adjustable_difficulty",
@@ -6564,6 +6599,11 @@
           "platforming.wall_jump",
           "platforming.wall_slide",
           "progression.respec",
+          "puzzle.color_matching",
+          "puzzle.physics_weight_puzzle",
+          "puzzle.sequence_memory",
+          "puzzle.sliding_block",
+          "puzzle.timed_door",
           "rhythm.beat_matching",
           "rhythm.combo_multiplier",
           "rhythm.note_lane",
@@ -6601,7 +6641,6 @@
           "ui_ux.quest_marker",
           "ui_ux.radial_menu",
           "ui_ux.tutorial_prompt",
-          "vehicles.drifting",
           "vehicles.fuel",
           "vehicles.suspension_physics",
           "vehicles.upgradeable_vehicle",
@@ -6630,6 +6669,7 @@
           "multiplayer.matchmaking_lobby",
           "multiplayer.online_coop",
           "physics.destructible_environment",
+          "puzzle.portal_pair",
           "time.time_rewind"
         ],
         "hard": [
@@ -6666,6 +6706,8 @@
           "procedural_generation.room_connection_graph",
           "procedural_generation.seeded_generation",
           "procedural_generation.wave_generation",
+          "puzzle.mirror_light_reflection",
+          "puzzle.physics_weight_puzzle",
           "rhythm.beat_matching",
           "rhythm.combo_multiplier",
           "rhythm.note_lane",
@@ -6700,11 +6742,8 @@
           "traversal.wall_run",
           "traversal.zipline",
           "vehicles.drifting",
-          "vehicles.fuel",
           "vehicles.suspension_physics",
-          "vehicles.upgradeable_vehicle",
           "vehicles.vehicle_acceleration",
-          "vehicles.vehicle_boost",
           "vehicles.vehicle_braking",
           "vehicles.vehicle_damage"
         ],
@@ -6803,9 +6842,6 @@
           "puzzle.color_matching",
           "puzzle.key_and_lock",
           "puzzle.lever_switch",
-          "puzzle.mirror_light_reflection",
-          "puzzle.physics_weight_puzzle",
-          "puzzle.portal_pair",
           "puzzle.pressure_plate",
           "puzzle.sequence_memory",
           "puzzle.sliding_block",
@@ -6841,7 +6877,10 @@
           "ui_ux.minimap",
           "ui_ux.quest_marker",
           "ui_ux.radial_menu",
-          "ui_ux.tutorial_prompt"
+          "ui_ux.tutorial_prompt",
+          "vehicles.fuel",
+          "vehicles.upgradeable_vehicle",
+          "vehicles.vehicle_boost"
         ]
       },
       "tuning": {
@@ -6908,7 +6947,8 @@
           "survival.temperature",
           "time.rhythm_timing",
           "time.time_freeze",
-          "time.time_rewind"
+          "time.time_rewind",
+          "vehicles.drifting"
         ],
         "hard": [
           "ai.boss_phase_transition",
@@ -6981,13 +7021,9 @@
           "platforming.variable_jump_height",
           "platforming.wall_jump",
           "progression.respec",
-          "puzzle.color_matching",
-          "puzzle.key_and_lock",
-          "puzzle.lever_switch",
           "puzzle.mirror_light_reflection",
           "puzzle.physics_weight_puzzle",
           "puzzle.portal_pair",
-          "puzzle.sequence_memory",
           "puzzle.sliding_block",
           "puzzle.timed_door",
           "stealth.alert_state",
@@ -7019,7 +7055,6 @@
           "traversal.vehicle_mount",
           "traversal.wall_run",
           "traversal.zipline",
-          "vehicles.drifting",
           "vehicles.fuel",
           "vehicles.suspension_physics",
           "vehicles.upgradeable_vehicle",
@@ -7062,7 +7097,11 @@
           "platforming.drop_through_platform",
           "platforming.jump_buffering",
           "platforming.wall_slide",
+          "puzzle.color_matching",
+          "puzzle.key_and_lock",
+          "puzzle.lever_switch",
           "puzzle.pressure_plate",
+          "puzzle.sequence_memory",
           "ui_ux.accessibility_remap_controls",
           "ui_ux.checkpoint_notification",
           "ui_ux.cooldown_indicator",
@@ -7202,7 +7241,12 @@
         "ui_ux.minimap",
         "ui_ux.quest_marker",
         "ui_ux.radial_menu",
-        "ui_ux.tutorial_prompt"
+        "ui_ux.tutorial_prompt",
+        "vehicles.drifting",
+        "vehicles.vehicle_acceleration",
+        "vehicles.vehicle_boost",
+        "vehicles.vehicle_braking",
+        "vehicles.vehicle_damage"
       ],
       "adventure": [
         "accessibility.toggle_hold_option",
@@ -7288,7 +7332,9 @@
         "meta.daily_challenge",
         "meta.new_game_plus",
         "meta.player_profile_stats",
-        "time.rhythm_timing"
+        "time.rhythm_timing",
+        "vehicles.drifting",
+        "vehicles.vehicle_boost"
       ],
       "battle_royale": [
         "multiplayer.ping_system"
@@ -7330,15 +7376,15 @@
         "accessibility.adjustable_difficulty",
         "accessibility.assist_mode",
         "accessibility.colorblind_modes",
-        "accessibility.text_scaling"
+        "accessibility.text_scaling",
+        "puzzle.color_matching",
+        "puzzle.sequence_memory"
       ],
       "escape_room": [
         "puzzle.color_matching",
         "puzzle.key_and_lock",
         "puzzle.lever_switch",
         "puzzle.mirror_light_reflection",
-        "puzzle.physics_weight_puzzle",
-        "puzzle.portal_pair",
         "puzzle.sequence_memory",
         "puzzle.sliding_block",
         "puzzle.timed_door"
@@ -7367,6 +7413,10 @@
         "combat.projectile_reflection",
         "combat.shield"
       ],
+      "first_person": [
+        "puzzle.mirror_light_reflection",
+        "puzzle.portal_pair"
+      ],
       "horror": [
         "ai.patrol",
         "horror.hiding",
@@ -7389,6 +7439,8 @@
       "immersive_sim": [
         "ai.utility_scoring",
         "combat.stealth_kill",
+        "puzzle.lever_switch",
+        "puzzle.physics_weight_puzzle",
         "puzzle.pressure_plate",
         "stealth.alert_state",
         "stealth.distraction_throw",
@@ -7423,7 +7475,8 @@
         "platforming.ledge_grab",
         "platforming.variable_jump_height",
         "platforming.wall_jump",
-        "platforming.wall_slide"
+        "platforming.wall_slide",
+        "puzzle.key_and_lock"
       ],
       "multiplayer": [
         "survival.base_building"
@@ -7496,7 +7549,10 @@
         "platforming.variable_jump_height",
         "platforming.wall_jump",
         "platforming.wall_slide",
+        "puzzle.portal_pair",
         "puzzle.pressure_plate",
+        "puzzle.sliding_block",
+        "puzzle.timed_door",
         "time.time_rewind",
         "time.timed_challenge",
         "traversal.gliding",
@@ -7688,6 +7744,7 @@
         "procedural_generation.random_encounters",
         "procedural_generation.seeded_generation",
         "procedural_generation.wave_generation",
+        "puzzle.physics_weight_puzzle",
         "simulation.needs_simulation",
         "simulation.population_model",
         "simulation.systemic_weather",
@@ -7773,12 +7830,10 @@
         "survival.thirst",
         "time.day_night_schedule",
         "ui_ux.interaction_prompt",
-        "vehicles.drifting",
         "vehicles.fuel",
         "vehicles.suspension_physics",
         "vehicles.upgradeable_vehicle",
         "vehicles.vehicle_acceleration",
-        "vehicles.vehicle_boost",
         "vehicles.vehicle_braking",
         "vehicles.vehicle_damage"
       ],
@@ -7889,7 +7944,9 @@
         "survival.stamina",
         "survival.temperature",
         "survival.thirst",
-        "time.day_night_schedule"
+        "time.day_night_schedule",
+        "vehicles.fuel",
+        "vehicles.upgradeable_vehicle"
       ],
       "tactical": [
         "multiplayer.friendly_fire"
@@ -8150,6 +8207,8 @@
         "movement.sprint",
         "multiplayer.ping_system",
         "platforming.jump_buffering",
+        "puzzle.color_matching",
+        "puzzle.sequence_memory",
         "stealth.visibility_meter",
         "ui_ux.accessibility_remap_controls",
         "ui_ux.cooldown_indicator",
@@ -8225,7 +8284,8 @@
         "combat.area_of_effect_attack"
       ],
       "assist": [
-        "accessibility.assist_mode"
+        "accessibility.assist_mode",
+        "vehicles.vehicle_braking"
       ],
       "asymmetric_roles": [
         "multiplayer.asymmetric_roles"
@@ -8261,6 +8321,10 @@
       "biome": [
         "procedural_generation.biome_generation"
       ],
+      "boost": [
+        "vehicles.drifting",
+        "vehicles.vehicle_boost"
+      ],
       "boss": [
         "ai.boss_phase_transition"
       ],
@@ -8275,11 +8339,15 @@
       ],
       "buildcraft": [
         "progression.respec",
-        "progression.skill_tree"
+        "progression.skill_tree",
+        "vehicles.upgradeable_vehicle"
       ],
       "buoyancy": [
         "movement.swimming",
         "physics.buoyancy"
+      ],
+      "burst_acceleration": [
+        "vehicles.vehicle_boost"
       ],
       "burst_movement": [
         "movement.dash",
@@ -8313,6 +8381,7 @@
         "ai.chase"
       ],
       "checkpoint": [
+        "puzzle.timed_door",
         "time.timed_challenge",
         "ui_ux.checkpoint_notification"
       ],
@@ -8360,7 +8429,10 @@
         "physics.ragdoll",
         "platforming.drop_through_platform"
       ],
-      "color": [
+      "collision_damage": [
+        "vehicles.vehicle_damage"
+      ],
+      "color_matching": [
         "puzzle.color_matching"
       ],
       "colorblind": [
@@ -8434,16 +8506,6 @@
       "contribution": [
         "multiplayer.team_objective"
       ],
-      "control": [
-        "vehicles.drifting",
-        "vehicles.fuel",
-        "vehicles.suspension_physics",
-        "vehicles.upgradeable_vehicle",
-        "vehicles.vehicle_acceleration",
-        "vehicles.vehicle_boost",
-        "vehicles.vehicle_braking",
-        "vehicles.vehicle_damage"
-      ],
       "controls": [
         "movement.climbing",
         "movement.dodge_roll",
@@ -8465,11 +8527,15 @@
         "multiplayer.local_coop"
       ],
       "countdown": [
+        "puzzle.timed_door",
         "survival.oxygen",
         "time.timed_challenge"
       ],
       "counterplay": [
         "combat.parry"
+      ],
+      "countersteer": [
+        "vehicles.drifting"
       ],
       "cover": [
         "ai.cover_seeking"
@@ -8525,6 +8591,9 @@
         "physics.breakable_object",
         "physics.destructible_environment"
       ],
+      "debug_visualization": [
+        "puzzle.mirror_light_reflection"
+      ],
       "debugging": [
         "ai.utility_scoring"
       ],
@@ -8566,6 +8635,9 @@
       "dodge": [
         "movement.dodge_roll"
       ],
+      "door_state": [
+        "puzzle.timed_door"
+      ],
       "downed_state": [
         "multiplayer.revive_teammate"
       ],
@@ -8575,11 +8647,15 @@
       "drifting": [
         "vehicles.drifting"
       ],
+      "drivetrain": [
+        "vehicles.vehicle_acceleration"
+      ],
       "drop_through": [
         "physics.one_way_platform"
       ],
       "durability": [
-        "survival.durability"
+        "survival.durability",
+        "vehicles.vehicle_damage"
       ],
       "dynamic": [
         "camera.dynamic_fov",
@@ -8696,6 +8772,9 @@
       "gravity_zone": [
         "physics.low_gravity_zone"
       ],
+      "grid": [
+        "puzzle.sliding_block"
+      ],
       "grief_prevention": [
         "multiplayer.friendly_fire"
       ],
@@ -8706,6 +8785,9 @@
       "gust": [
         "physics.wind_force"
       ],
+      "handbrake": [
+        "vehicles.vehicle_braking"
+      ],
       "hazard_volume": [
         "survival.oxygen"
       ],
@@ -8714,6 +8796,9 @@
       ],
       "hiding": [
         "horror.hiding"
+      ],
+      "hints": [
+        "puzzle.sequence_memory"
       ],
       "hit_confirm": [
         "ui_ux.hit_marker"
@@ -8783,6 +8868,8 @@
       ],
       "interaction": [
         "multiplayer.revive_teammate",
+        "puzzle.key_and_lock",
+        "puzzle.lever_switch",
         "ui_ux.interaction_prompt"
       ],
       "interface": [
@@ -8791,10 +8878,14 @@
       ],
       "inventory": [
         "crafting.recipe_crafting",
+        "puzzle.key_and_lock",
         "ui_ux.inventory_grid"
       ],
       "inventory_limit": [
         "survival.inventory_limit"
+      ],
+      "inventory_transaction": [
+        "vehicles.upgradeable_vehicle"
       ],
       "investigate": [
         "ai.investigate_noise"
@@ -8828,7 +8919,7 @@
         "platforming.coyote_time",
         "platforming.jump_buffering"
       ],
-      "key": [
+      "key_lock": [
         "puzzle.key_and_lock"
       ],
       "kinematic": [
@@ -8865,11 +8956,17 @@
       "light": [
         "horror.light_resource"
       ],
+      "light_reflection": [
+        "puzzle.mirror_light_reflection"
+      ],
       "limited": [
         "horror.limited_visibility"
       ],
       "line": [
         "ai.line_of_sight_detection"
+      ],
+      "linked_targets": [
+        "puzzle.lever_switch"
       ],
       "lobby": [
         "multiplayer.matchmaking_lobby"
@@ -8895,6 +8992,9 @@
         "traversal.vehicle_mount",
         "traversal.zipline"
       ],
+      "loop_prevention": [
+        "puzzle.portal_pair"
+      ],
       "loot": [
         "economy.loot_table",
         "physics.breakable_object",
@@ -8912,6 +9012,9 @@
       "marker": [
         "ui_ux.quest_marker"
       ],
+      "mass": [
+        "puzzle.physics_weight_puzzle"
+      ],
       "matchmaking": [
         "multiplayer.matchmaking_lobby"
       ],
@@ -8922,6 +9025,7 @@
         "combat.melee_attack"
       ],
       "memory": [
+        "puzzle.sequence_memory",
         "stealth.last_known_position_search"
       ],
       "meta": [
@@ -8930,6 +9034,9 @@
         "meta.new_game_plus",
         "meta.player_profile_stats",
         "progression.meta_progression"
+      ],
+      "meter": [
+        "vehicles.vehicle_boost"
       ],
       "mirror": [
         "puzzle.mirror_light_reflection"
@@ -9015,6 +9122,9 @@
       "night_pressure": [
         "survival.day_night_cycle"
       ],
+      "nitro": [
+        "vehicles.vehicle_boost"
+      ],
       "noise": [
         "movement.sprint",
         "stealth.noise_meter"
@@ -9028,6 +9138,10 @@
       "object_manipulation": [
         "physics.physics_push_pull"
       ],
+      "object_tracking": [
+        "puzzle.physics_weight_puzzle",
+        "puzzle.pressure_plate"
+      ],
       "objective": [
         "time.timed_challenge"
       ],
@@ -9039,6 +9153,9 @@
       ],
       "online_coop": [
         "multiplayer.online_coop"
+      ],
+      "ordered_input": [
+        "puzzle.sequence_memory"
       ],
       "ownership": [
         "survival.base_building"
@@ -9053,6 +9170,12 @@
       "parkour": [
         "traversal.parkour_vault",
         "traversal.wall_run"
+      ],
+      "part_health": [
+        "vehicles.vehicle_damage"
+      ],
+      "parts": [
+        "vehicles.upgradeable_vehicle"
       ],
       "passenger_transfer": [
         "physics.moving_platform"
@@ -9078,7 +9201,9 @@
       ],
       "persistence": [
         "physics.destructible_environment",
-        "survival.base_building"
+        "puzzle.key_and_lock",
+        "survival.base_building",
+        "vehicles.fuel"
       ],
       "phase_transition": [
         "time.day_night_schedule"
@@ -9088,8 +9213,7 @@
         "physics.gravity",
         "physics.low_gravity_zone",
         "physics.wind_force",
-        "puzzle.physics_weight_puzzle",
-        "puzzle.pressure_plate"
+        "puzzle.physics_weight_puzzle"
       ],
       "ping": [
         "multiplayer.ping_system"
@@ -9134,13 +9258,17 @@
         "platforming.wall_slide"
       ],
       "prediction": [
-        "multiplayer.online_coop"
+        "multiplayer.online_coop",
+        "vehicles.vehicle_acceleration"
       ],
       "presentation": [
         "camera.screen_shake"
       ],
       "pressure": [
         "time.timed_challenge"
+      ],
+      "pressure_plate": [
+        "puzzle.pressure_plate"
       ],
       "prestige": [
         "progression.prestige_reset"
@@ -9177,7 +9305,11 @@
         "progression.respec",
         "progression.skill_tree",
         "progression.unlockable_abilities",
-        "progression.upgrade_shop"
+        "progression.upgrade_shop",
+        "vehicles.upgradeable_vehicle"
+      ],
+      "progression_gate": [
+        "puzzle.key_and_lock"
       ],
       "projectile": [
         "combat.projectile_reflection",
@@ -9198,16 +9330,11 @@
       "puzzle": [
         "physics.physics_push_pull",
         "puzzle.color_matching",
-        "puzzle.key_and_lock",
-        "puzzle.lever_switch",
-        "puzzle.mirror_light_reflection",
-        "puzzle.physics_weight_puzzle",
-        "puzzle.portal_pair",
         "puzzle.pressure_plate",
-        "puzzle.sequence_memory",
-        "puzzle.sliding_block",
-        "puzzle.timed_door",
         "time.time_freeze"
+      ],
+      "puzzle_logic": [
+        "puzzle.lever_switch"
       ],
       "quest": [
         "ui_ux.quest_marker"
@@ -9238,6 +9365,9 @@
       "rate_limit": [
         "multiplayer.ping_system"
       ],
+      "raycast": [
+        "puzzle.mirror_light_reflection"
+      ],
       "readability": [
         "camera.camera_lock_on",
         "camera.camera_zoom",
@@ -9254,6 +9384,9 @@
       "ready_state": [
         "multiplayer.matchmaking_lobby"
       ],
+      "receiver": [
+        "puzzle.mirror_light_reflection"
+      ],
       "recharge": [
         "time.cooldown_time"
       ],
@@ -9269,6 +9402,9 @@
       ],
       "recovery": [
         "survival.health"
+      ],
+      "refill": [
+        "vehicles.fuel"
       ],
       "reflection": [
         "combat.projectile_reflection"
@@ -9287,7 +9423,8 @@
       ],
       "repair": [
         "economy.repair_cost",
-        "survival.durability"
+        "survival.durability",
+        "vehicles.vehicle_damage"
       ],
       "replayability": [
         "procedural_generation.biome_generation",
@@ -9301,6 +9438,9 @@
       "reputation": [
         "narrative.reputation_choice",
         "narrative.reputation_gating"
+      ],
+      "reset": [
+        "puzzle.physics_weight_puzzle"
       ],
       "resource": [
         "combat.reload",
@@ -9316,6 +9456,9 @@
         "meta.daily_challenge",
         "meta.new_game_plus",
         "meta.player_profile_stats"
+      ],
+      "reverse": [
+        "vehicles.vehicle_braking"
       ],
       "revive": [
         "multiplayer.revive_teammate"
@@ -9479,8 +9622,11 @@
       "slide": [
         "movement.slide"
       ],
-      "sliding": [
+      "sliding_block": [
         "puzzle.sliding_block"
+      ],
+      "slip_angle": [
+        "vehicles.drifting"
       ],
       "slow_motion": [
         "time.slow_motion"
@@ -9491,6 +9637,15 @@
       "snapshot": [
         "time.time_rewind"
       ],
+      "soft_lock": [
+        "puzzle.sliding_block"
+      ],
+      "solution_hash": [
+        "puzzle.color_matching"
+      ],
+      "solvability": [
+        "puzzle.sliding_block"
+      ],
       "sound": [
         "horror.sound_lure"
       ],
@@ -9500,6 +9655,9 @@
       "spacing": [
         "combat.knockback",
         "combat.melee_attack"
+      ],
+      "spatial_puzzle": [
+        "puzzle.portal_pair"
       ],
       "split": [
         "camera.split_screen"
@@ -9521,34 +9679,11 @@
       "stasis": [
         "time.time_freeze"
       ],
-      "state": [
-        "puzzle.color_matching",
-        "puzzle.key_and_lock",
-        "puzzle.lever_switch",
-        "puzzle.mirror_light_reflection",
-        "puzzle.physics_weight_puzzle",
-        "puzzle.portal_pair",
-        "puzzle.pressure_plate",
-        "puzzle.sequence_memory",
-        "puzzle.sliding_block",
-        "puzzle.timed_door"
-      ],
       "state_cache": [
         "time.time_freeze"
       ],
       "state_history": [
         "time.time_rewind"
-      ],
-      "state_puzzle": [
-        "puzzle.color_matching",
-        "puzzle.key_and_lock",
-        "puzzle.lever_switch",
-        "puzzle.mirror_light_reflection",
-        "puzzle.physics_weight_puzzle",
-        "puzzle.portal_pair",
-        "puzzle.sequence_memory",
-        "puzzle.sliding_block",
-        "puzzle.timed_door"
       ],
       "station": [
         "crafting.crafting_queue"
@@ -9582,8 +9717,12 @@
       "submerged_state": [
         "physics.buoyancy"
       ],
+      "surface_response": [
+        "vehicles.suspension_physics"
+      ],
       "survival": [
-        "movement.swimming"
+        "movement.swimming",
+        "vehicles.fuel"
       ],
       "survival_schedule": [
         "survival.day_night_cycle"
@@ -9596,6 +9735,12 @@
       ],
       "suspension": [
         "vehicles.suspension_physics"
+      ],
+      "switch_state": [
+        "puzzle.lever_switch"
+      ],
+      "symbols": [
+        "puzzle.color_matching"
       ],
       "sync": [
         "rhythm.sync_window"
@@ -9641,6 +9786,7 @@
         "combat.area_of_effect_attack"
       ],
       "teleport": [
+        "puzzle.portal_pair",
         "traversal.teleport_blink"
       ],
       "temperature": [
@@ -9671,10 +9817,13 @@
       "thirst": [
         "survival.thirst"
       ],
+      "throttle": [
+        "vehicles.vehicle_acceleration"
+      ],
       "time_scale": [
         "time.slow_motion"
       ],
-      "timed": [
+      "timed_door": [
         "puzzle.timed_door"
       ],
       "timer": [
@@ -9686,6 +9835,7 @@
         "combat.melee_attack",
         "combat.parry",
         "combat.projectile_reflection",
+        "puzzle.timed_door",
         "rhythm.beat_matching",
         "rhythm.combo_multiplier",
         "rhythm.note_lane",
@@ -9697,6 +9847,12 @@
       ],
       "top": [
         "camera.top_down_camera"
+      ],
+      "traction": [
+        "vehicles.drifting",
+        "vehicles.suspension_physics",
+        "vehicles.vehicle_acceleration",
+        "vehicles.vehicle_braking"
       ],
       "trading": [
         "economy.trading"
@@ -9711,15 +9867,16 @@
       "transactions": [
         "multiplayer.shared_resource_pool"
       ],
+      "transform_mapping": [
+        "puzzle.portal_pair"
+      ],
       "traversal": [
         "physics.pendulum_swing",
         "traversal.wall_run"
       ],
-      "trigger": [
-        "puzzle.pressure_plate"
-      ],
       "trigger_volume": [
-        "physics.low_gravity_zone"
+        "physics.low_gravity_zone",
+        "puzzle.pressure_plate"
       ],
       "tutorial": [
         "ui_ux.tutorial_prompt"
@@ -9745,6 +9902,9 @@
       "underwater": [
         "survival.oxygen"
       ],
+      "undo": [
+        "puzzle.sliding_block"
+      ],
       "unit": [
         "strategy.unit_counter_system"
       ],
@@ -9757,9 +9917,6 @@
       "upgrade": [
         "platforming.double_jump",
         "progression.upgrade_shop"
-      ],
-      "upgradeable": [
-        "vehicles.upgradeable_vehicle"
       ],
       "upgrades": [
         "roguelike.pick_one_upgrade_choice"
@@ -9778,21 +9935,28 @@
         "physics.wind_force"
       ],
       "vehicle": [
-        "traversal.vehicle_mount",
-        "vehicles.vehicle_acceleration",
-        "vehicles.vehicle_boost",
-        "vehicles.vehicle_braking",
+        "traversal.vehicle_mount"
+      ],
+      "vehicle_acceleration": [
+        "vehicles.vehicle_acceleration"
+      ],
+      "vehicle_braking": [
+        "vehicles.vehicle_braking"
+      ],
+      "vehicle_damage": [
         "vehicles.vehicle_damage"
       ],
-      "vehicles": [
-        "vehicles.drifting",
-        "vehicles.fuel",
-        "vehicles.suspension_physics",
-        "vehicles.upgradeable_vehicle",
-        "vehicles.vehicle_acceleration",
-        "vehicles.vehicle_boost",
-        "vehicles.vehicle_braking",
-        "vehicles.vehicle_damage"
+      "vehicle_feedback": [
+        "vehicles.vehicle_boost"
+      ],
+      "vehicle_physics": [
+        "vehicles.suspension_physics"
+      ],
+      "vehicle_resource": [
+        "vehicles.fuel"
+      ],
+      "vehicle_upgrades": [
+        "vehicles.upgradeable_vehicle"
       ],
       "vertical_mobility": [
         "movement.climbing",
@@ -9846,8 +10010,14 @@
       "weight": [
         "puzzle.pressure_plate"
       ],
+      "weight_puzzle": [
+        "puzzle.physics_weight_puzzle"
+      ],
       "wetness": [
         "survival.temperature"
+      ],
+      "wheel_contact": [
+        "vehicles.suspension_physics"
       ],
       "wind": [
         "physics.wind_force"

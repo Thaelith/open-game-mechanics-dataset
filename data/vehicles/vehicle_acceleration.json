@@ -2,12 +2,12 @@
   "id": "vehicles.vehicle_acceleration",
   "name": "Vehicle Acceleration",
   "aliases": [
-    "vehicle acceleration mechanic",
-    "vehicle acceleration system",
-    "vehicle acceleration"
+    "vehicle throttle",
+    "driving acceleration",
+    "engine pull"
   ],
   "category": "vehicles",
-  "subcategory": "vehicles",
+  "subcategory": "drivetrain_input",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -22,89 +22,124 @@
   "genres": [
     "racing",
     "simulation",
-    "open_world"
+    "open_world",
+    "action"
   ],
-  "description": "Vehicle Acceleration is a controllable transport mechanic with dedicated movement, physics, resources, or damage behavior.",
-  "design_notes": "Vehicle Acceleration should be designed around a clear player promise, a readable trigger, and a predictable result. For vehicles mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A vehicle converts driver throttle input into forward motion through engine, traction, surface, and authority rules.",
+  "design_notes": "Acceleration feel depends on more than a velocity cap. The design should define throttle_input sampling, acceleration_curve_id, torque response, traction limits, surface modifiers, fixed-step integration, and whether the driver or server owns input authority.",
   "design_purpose": [
-    "Give the player a readable way to use vehicle acceleration as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect vehicle acceleration to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Make vehicles feel responsive while preserving weight, traction, and readable handling.",
+    "Give designers control over launch feel, mid-pace pull, hill behavior, and surface differences.",
+    "Support upgrades, fuel, damage, and boost systems that modify vehicle movement coherently."
   ],
-  "player_fantasy": "The player feels mastery over a machine with distinct weight, speed, and handling.",
+  "player_fantasy": "The player feels the vehicle surge forward under their control and learns its power curve.",
   "required_systems": [
-    "vehicle_controller",
-    "physics_world",
-    "input_handling",
-    "camera_controller"
+    "vehicle_input",
+    "fixed_timestep_physics",
+    "surface_detection",
+    "drivetrain_model",
+    "network_prediction"
   ],
   "parameters": [
     {
-      "name": "max_speed",
-      "type": "float",
-      "typical_range": "5-300 world units/second",
-      "description": "Maximum velocity the vehicle can reach."
+      "name": "vehicle_id",
+      "type": "string",
+      "typical_range": "car_sport_01, rover_a, kart_blue",
+      "description": "Stable vehicle identifier used for input ownership, physics state, persistence, and upgrades."
     },
     {
-      "name": "handling_response",
-      "type": "float",
-      "typical_range": "0.1-5",
-      "description": "How sharply steering or control input affects the vehicle."
+      "name": "driver_player_id",
+      "type": "string",
+      "typical_range": "player_id or ai_driver_id",
+      "description": "Player or AI currently authorized to provide throttle and steering input."
     },
     {
-      "name": "traction",
+      "name": "throttle_input",
       "type": "float",
-      "typical_range": "0-1",
-      "description": "Grip coefficient used for braking, turning, or drifting."
+      "typical_range": "0.0-1.0",
+      "description": "Normalized driver acceleration input captured for the current simulation tick."
+    },
+    {
+      "name": "acceleration_curve_id",
+      "type": "string",
+      "typical_range": "linear_kart, heavy_truck, electric_flat_torque",
+      "description": "Curve mapping throttle and current velocity into drive acceleration."
+    },
+    {
+      "name": "traction_coefficient",
+      "type": "float",
+      "typical_range": "0.1-2.0",
+      "description": "Surface-adjusted grip multiplier that limits how much drive can become motion."
+    },
+    {
+      "name": "velocity_cap_kph",
+      "type": "float",
+      "typical_range": "20-400 kph",
+      "description": "Upper forward velocity target used by drivetrain and upgrade balancing."
     }
   ],
   "common_variants": [
-    "vehicle_acceleration_arcade_handling",
-    "vehicle_acceleration_simulation_handling",
-    "damage_enabled",
-    "upgrade_enabled"
+    "arcade_throttle",
+    "torque_curve_drivetrain",
+    "surface_limited_acceleration",
+    "server_authoritative_driving",
+    "ai_vehicle_acceleration"
   ],
   "edge_cases": [
-    "Vehicle Acceleration is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Vehicle Acceleration overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Vehicle Acceleration runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Throttle is held while the vehicle is airborne, upside down, or missing wheel contact.",
+    "Surface changes from asphalt to mud during the same fixed step that acceleration is applied.",
+    "Client prediction applies throttle but the server rejects driver ownership after a seat swap.",
+    "A vehicle loads on a slope and starts moving before input authority has been restored."
   ],
   "common_bugs": [
-    "Vehicle Acceleration state does not reset correctly after interruption or reload.",
-    "Feedback for Vehicle Acceleration plays even when the mechanic fails or is rejected.",
-    "Vehicle Acceleration produces different results between frame rates, platforms, or network clients."
+    "Acceleration is integrated from render delta and changes with frame rate.",
+    "Throttle input remains latched after driver disconnect, pause, or seat exit.",
+    "Traction modifiers are applied after velocity cap, making mud affect launch but not top pace.",
+    "Network correction restores transform but not wheel contact or drivetrain state."
   ],
   "balancing_notes": [
-    "Make Vehicle Acceleration strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Strong launch acceleration feels responsive but can make tight tracks or combat encounters hard to read.",
+    "Surface traction should change route choices without making vehicles feel randomly underpowered.",
+    "Upgrade modifiers should affect curves predictably so players can compare parts before installing them."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Vehicle Acceleration becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer throttle assist, input smoothing, or digital trigger support for players without analog controls.",
+    "Provide camera options that reduce sudden pitch or acceleration shake."
   ],
   "implementation_notes": {
-    "unity": "Implement Vehicle Acceleration with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Vehicle Acceleration as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Vehicle Acceleration with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Vehicle Acceleration as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Read throttle_input from the active driver, queue it with a client_input_sequence, and apply drivetrain acceleration in FixedUpdate. Rigidbody or WheelCollider state should include traction_coefficient, surface id, velocity, and authority_owner_id for rollback snapshots.",
+    "godot": "Use _physics_process for vehicle integration and keep input state separate from rendered vehicle nodes. VehicleBody3D or custom controllers should sample ground_surface_id before applying acceleration_curve_id so tire behavior and UI telemetry agree.",
+    "unreal": "Chaos Vehicles or custom movement components should receive compressed throttle input from the owning PlayerController, while the server validates driver_player_id and seat ownership. Replicate movement state with correction for wheel contact and drivetrain variables.",
+    "web": "For Phaser, Three.js, or custom physics, run vehicle acceleration in a fixed-step loop with stored input frames. Browser clients can predict throttle response, but authoritative sessions should reconcile vehicle pose, velocity, and surface state from server ticks."
   },
   "related_mechanics": [
-    "camera.dynamic_fov",
-    "physics.gravity",
+    "vehicles.vehicle_braking",
     "vehicles.drifting",
-    "vehicles.vehicle_braking"
+    "vehicles.fuel",
+    "vehicles.suspension_physics"
   ],
   "combines_well_with": [
+    "vehicles.vehicle_boost",
+    "vehicles.upgradeable_vehicle",
     "camera.dynamic_fov",
-    "physics.gravity",
-    "vehicles.fuel",
-    "vehicles.vehicle_damage"
+    "traversal.vehicle_mount"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Mario Kart 8",
+      "note": "Uses readable acceleration and traction differences across kart setups."
+    },
+    {
+      "title": "Forza Horizon 5",
+      "note": "Uses vehicle acceleration curves as part of car handling and tuning."
+    }
+  ],
   "tags": [
-    "control",
-    "vehicle",
-    "vehicles"
+    "vehicle_acceleration",
+    "throttle",
+    "traction",
+    "drivetrain",
+    "prediction"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

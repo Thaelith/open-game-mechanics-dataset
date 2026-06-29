@@ -2,12 +2,12 @@
   "id": "puzzle.color_matching",
   "name": "Color Matching",
   "aliases": [
-    "color matching mechanic",
-    "color matching system",
-    "color matching"
+    "color puzzle",
+    "channel matching",
+    "color code"
   ],
   "category": "puzzle",
-  "subcategory": "state_puzzle",
+  "subcategory": "symbol_matching",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,97 +15,125 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
+    "design": "medium",
     "implementation": "medium",
-    "tuning": "hard"
+    "tuning": "medium"
   },
   "genres": [
     "puzzle",
     "adventure",
-    "escape_room"
+    "escape_room",
+    "educational"
   ],
-  "description": "Color Matching is a rule-based challenge that asks the player to observe, reason, manipulate state, or sequence actions.",
-  "design_notes": "Color Matching should be designed around a clear player promise, a readable trigger, and a predictable result. For puzzle mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "The player aligns colored channels, symbols, lights, or objects so the current pattern matches the required solution.",
+  "design_notes": "Color matching puzzles need color_channel_id data plus a non-color representation so the solution is not hidden from color-blind players. State should be compared through solution_state_hash or channel mappings, and reset or hint behavior should preserve the player's latest understandable progress.",
   "design_purpose": [
-    "Give the player a readable way to use color matching as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect color matching to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create readable categorization puzzles using color, symbol, shape, or channel alignment.",
+    "Support lock codes, light routing, item sorting, and pattern completion in compact spaces.",
+    "Give designers a puzzle form that can scale from simple matching to multi-channel logic."
   ],
-  "player_fantasy": "The player feels clever when they infer the rule and manipulate the system correctly.",
+  "player_fantasy": "The player feels observant when they notice the pattern and align the right channels.",
   "required_systems": [
+    "puzzle_state_store",
+    "symbol_registry",
     "interaction_system",
-    "state_tracking",
-    "feedback_system",
-    "save_state"
+    "hint_system",
+    "accessibility_settings"
   ],
   "parameters": [
     {
-      "name": "activation_condition",
+      "name": "puzzle_id",
       "type": "string",
-      "typical_range": "single, all, ordered, timed",
-      "description": "Rule that determines when the puzzle element changes state."
+      "typical_range": "color_gate_a, mural_code_02, lens_panel",
+      "description": "Stable puzzle identifier used by state, hints, and save data."
     },
     {
-      "name": "reset_time",
-      "type": "float",
-      "typical_range": "0-30 seconds",
-      "description": "Delay before the puzzle returns to its default state."
+      "name": "color_channel_id",
+      "type": "string",
+      "typical_range": "red, blue, green, amber, symbol_triangle",
+      "description": "Channel or symbol identifier that participates in the matching rule."
     },
     {
-      "name": "feedback_intensity",
-      "type": "integer",
-      "typical_range": "1-5",
-      "description": "How strongly the game communicates success, failure, or partial progress."
+      "name": "channel_assignment_map",
+      "type": "object",
+      "typical_range": "slot ids mapped to channel ids",
+      "description": "Current player-authored assignment for slots, receivers, or objects."
+    },
+    {
+      "name": "solution_state_hash",
+      "type": "string",
+      "typical_range": "hash of canonical channel assignment",
+      "description": "Canonical solved arrangement used by validation and authoring tests."
+    },
+    {
+      "name": "hint_stage_id",
+      "type": "string",
+      "typical_range": "none, show_symbols, mark_wrong_slot, show_target",
+      "description": "Assistance stage that reveals pattern structure without requiring color perception."
     }
   ],
   "common_variants": [
-    "color_matching_single_step",
-    "color_matching_multi_step",
-    "timed_variant",
-    "resetting_variant"
+    "color_socket_match",
+    "symbol_and_color_match",
+    "light_channel_match",
+    "paint_mixing_match",
+    "multi_room_color_code"
   ],
   "edge_cases": [
-    "Color Matching is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Color Matching overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Color Matching runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Two colors are visually similar under lighting, post-processing, or colorblind display modes.",
+    "A channel changes during animation while validation reads the previous assignment.",
+    "The puzzle is solved by symbols but the UI still reports only color names.",
+    "Save/load restores object positions but not the current channel assignment map."
   ],
   "common_bugs": [
-    "Color Matching state does not reset correctly after interruption or reload.",
-    "Feedback for Color Matching plays even when the mechanic fails or is rejected.",
-    "Color Matching produces different results between frame rates, platforms, or network clients."
+    "Validation compares display color values instead of stable color_channel_id identifiers.",
+    "Hint state reveals an old solution after designers reorder channels in content data.",
+    "A solved state fires repeatedly when players continue rotating already-correct pieces.",
+    "Colorblind mode changes the palette but not particle, icon, or prompt colors."
   ],
   "balancing_notes": [
-    "Make Color Matching strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "A good color puzzle should be solvable from structure, symbols, or placement, not color alone.",
+    "More channels increase difficulty quickly; use grouping or intermediate feedback for larger sets.",
+    "Randomized channel assignments need reproducible seeds if the puzzle appears in guides, dailies, or multiplayer."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Color Matching becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Always pair color with icons, labels, shapes, patterns, or placement cues.",
+    "Offer high-contrast and colorblind-safe palettes for puzzle-critical channels."
   ],
   "implementation_notes": {
-    "unity": "Implement Color Matching with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Color Matching as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Color Matching with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Color Matching as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store channel assignments as identifiers in a puzzle component and derive materials, icons, and lights from those ids. Use solution_state_hash for validation, and keep accessibility palette swaps separate from the solved-state data.",
+    "godot": "Use Resources for channel definitions and a puzzle node for current assignment. Controls or interactables should submit channel ids to one validator, while shaders and sprites render the selected accessibility palette.",
+    "unreal": "Use Gameplay Tags or data assets for channel ids, with replicated puzzle state if co-op players can manipulate pieces. Material parameter changes should observe committed state rather than being the source of validation.",
+    "web": "Keep puzzle state as channel ids and render CSS/canvas colors from a palette table. Store symbol labels alongside colors so the same model supports colorblind modes and text-based hints."
   },
   "related_mechanics": [
-    "puzzle.key_and_lock",
-    "puzzle.pressure_plate",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "puzzle.sequence_memory",
+    "puzzle.mirror_light_reflection",
+    "ui_ux.tutorial_prompt",
+    "accessibility.colorblind_modes"
   ],
   "combines_well_with": [
-    "puzzle.lever_switch",
-    "puzzle.mirror_light_reflection",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "puzzle.key_and_lock",
+    "puzzle.sliding_block",
+    "narrative.environmental_storytelling",
+    "ui_ux.dialogue_choice"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Witness",
+      "note": "Uses color and symbol logic in several puzzle rule sets."
+    },
+    {
+      "title": "Portal 2",
+      "note": "Uses colored gels and clear channel affordances in spatial puzzles."
+    }
+  ],
   "tags": [
-    "color",
-    "puzzle",
-    "state",
-    "state_puzzle"
+    "color_matching",
+    "symbols",
+    "accessibility",
+    "solution_hash",
+    "puzzle"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

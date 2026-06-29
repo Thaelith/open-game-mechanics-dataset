@@ -2,12 +2,12 @@
   "id": "puzzle.mirror_light_reflection",
   "name": "Mirror Light Reflection",
   "aliases": [
-    "mirror light reflection mechanic",
-    "mirror light reflection system",
-    "mirror light reflection"
+    "light beam puzzle",
+    "mirror puzzle",
+    "ray reflection"
   ],
   "category": "puzzle",
-  "subcategory": "state_puzzle",
+  "subcategory": "ray_routing",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,96 +16,130 @@
   ],
   "difficulty": {
     "design": "hard",
-    "implementation": "medium",
+    "implementation": "hard",
     "tuning": "hard"
   },
   "genres": [
     "puzzle",
     "adventure",
-    "escape_room"
+    "escape_room",
+    "first_person"
   ],
-  "description": "Mirror Light Reflection is a rule-based challenge that asks the player to observe, reason, manipulate state, or sequence actions.",
-  "design_notes": "Mirror Light Reflection should be designed around a clear player promise, a readable trigger, and a predictable result. For puzzle mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Players rotate or place reflectors so a simulated light path reaches receivers, filters, or targets.",
+  "design_notes": "Mirror-light puzzles need deterministic ray routing, receiver ids, occlusion, snap increments, and debug visualization. Designers should know when rays update, how many bounces are allowed, whether mirrors can be moved while active, and how the solved state is saved.",
   "design_purpose": [
-    "Give the player a readable way to use mirror light reflection as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect mirror light reflection to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create line-of-sight puzzles that make spatial angles and occlusion visible.",
+    "Let players manipulate receivers, mirrors, filters, and blockers to complete a circuit.",
+    "Support layered rooms where one beam can affect doors, hazards, or color channels."
   ],
-  "player_fantasy": "The player feels clever when they infer the rule and manipulate the system correctly.",
+  "player_fantasy": "The player feels like they are aligning a precise optical machine and watching the room respond.",
   "required_systems": [
-    "interaction_system",
-    "state_tracking",
-    "feedback_system",
-    "save_state"
+    "raycast_system",
+    "mirror_rotation",
+    "receiver_registry",
+    "puzzle_state_store",
+    "debug_visualization"
   ],
   "parameters": [
     {
-      "name": "activation_condition",
+      "name": "reflection_ray_id",
       "type": "string",
-      "typical_range": "single, all, ordered, timed",
-      "description": "Rule that determines when the puzzle element changes state."
+      "typical_range": "beam_a, sunlight_ray_03, laser_blue",
+      "description": "Stable light path identifier used by receivers, effects, and save data."
     },
     {
-      "name": "reset_time",
+      "name": "mirror_instance_id",
+      "type": "string",
+      "typical_range": "mirror_a, prism_02, rotating_lens",
+      "description": "Reflector object that changes ray direction through rotation or placement."
+    },
+    {
+      "name": "light_receiver_id",
+      "type": "string",
+      "typical_range": "door_sensor, crystal_receiver, target_socket",
+      "description": "Receiver that reacts when the correct ray or channel reaches it."
+    },
+    {
+      "name": "rotation_snap_degrees",
       "type": "float",
-      "typical_range": "0-30 seconds",
-      "description": "Delay before the puzzle returns to its default state."
+      "typical_range": "5-90 degrees",
+      "description": "Angular increment used to make mirror alignment readable and reproducible."
     },
     {
-      "name": "feedback_intensity",
+      "name": "max_bounce_count",
       "type": "integer",
-      "typical_range": "1-5",
-      "description": "How strongly the game communicates success, failure, or partial progress."
+      "typical_range": "1-16",
+      "description": "Maximum reflections evaluated before the ray stops to avoid runaway loops."
+    },
+    {
+      "name": "occlusion_layer_mask",
+      "type": "array",
+      "typical_range": "walls, doors, blockers, movable_crates",
+      "description": "Collision layers that can block or interrupt the light path."
     }
   ],
   "common_variants": [
-    "mirror_light_reflection_single_step",
-    "mirror_light_reflection_multi_step",
-    "timed_variant",
-    "resetting_variant"
+    "rotating_mirror",
+    "movable_reflector",
+    "color_filtered_beam",
+    "multi_receiver_circuit",
+    "sunlight_alignment"
   ],
   "edge_cases": [
-    "Mirror Light Reflection is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Mirror Light Reflection overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Mirror Light Reflection runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A mirror rotates while the raycast update is evaluating later bounces.",
+    "Two mirrors create a loop that repeatedly hits the same reflectors.",
+    "A moving blocker interrupts a beam after the receiver has already opened a door.",
+    "Ray visuals and receiver state update at different cadences and briefly disagree."
   ],
   "common_bugs": [
-    "Mirror Light Reflection state does not reset correctly after interruption or reload.",
-    "Feedback for Mirror Light Reflection plays even when the mechanic fails or is rejected.",
-    "Mirror Light Reflection produces different results between frame rates, platforms, or network clients."
+    "Floating-point drift makes a visually aligned mirror miss the receiver by a tiny angle.",
+    "Raycasts hit the mirror's back face or decorative mesh instead of the intended reflective plane.",
+    "Receivers remain active after the ray is blocked because deactivation events are not emitted.",
+    "Save/load restores mirror rotation but not active receiver state or beam color."
   ],
   "balancing_notes": [
-    "Make Mirror Light Reflection strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Snap increments make optical puzzles easier to reason about than free rotation.",
+    "Long bounce chains should expose intermediate beam segments so players can locate the mistake.",
+    "Receivers that require color channels or filters should reveal that requirement before players brute force angles."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Mirror Light Reflection becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use beam thickness, receiver labels, sound, and icons in addition to color.",
+    "Offer reduced glare and high-contrast beam rendering for players sensitive to bright effects."
   ],
   "implementation_notes": {
-    "unity": "Implement Mirror Light Reflection with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Mirror Light Reflection as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Mirror Light Reflection with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Mirror Light Reflection as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use Physics.Raycast or 2D raycasts from a reflection_ray_id source, reflecting across mirror normals with a bounded max_bounce_count. Store mirror_instance_id rotations and receiver active state, and draw debug segments for level authors.",
+    "godot": "Use PhysicsRayQueryParameters2D or 3D ray queries and reflector nodes with snapped rotation. Receiver nodes should subscribe to a ray evaluation result rather than polling visuals.",
+    "unreal": "Line traces can evaluate beam segments, while mirror actors expose a reflective plane and snap increment. Replicate mirror rotation or receiver state if co-op players can manipulate the puzzle.",
+    "web": "Use deterministic vector math and segment intersection for 2D puzzles, or Three.js raycasters for 3D. Keep visual beam meshes derived from the current ray path and clear stale receiver ids on every evaluation."
   },
   "related_mechanics": [
-    "puzzle.key_and_lock",
-    "puzzle.pressure_plate",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "puzzle.color_matching",
+    "puzzle.lever_switch",
+    "puzzle.portal_pair",
+    "camera.first_person_camera"
   ],
   "combines_well_with": [
-    "puzzle.lever_switch",
-    "puzzle.sliding_block",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "puzzle.timed_door",
+    "puzzle.pressure_plate",
+    "ui_ux.quest_marker",
+    "accessibility.colorblind_modes"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Legend of Zelda: Ocarina of Time",
+      "note": "Uses light reflection and mirror alignment in temple puzzles."
+    },
+    {
+      "title": "The Talos Principle",
+      "note": "Uses beam routing and receivers as core puzzle elements."
+    }
+  ],
   "tags": [
+    "light_reflection",
     "mirror",
-    "puzzle",
-    "state",
-    "state_puzzle"
+    "raycast",
+    "receiver",
+    "debug_visualization"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

@@ -2,12 +2,12 @@
   "id": "vehicles.vehicle_damage",
   "name": "Vehicle Damage",
   "aliases": [
-    "vehicle damage mechanic",
-    "vehicle damage system",
-    "vehicle damage"
+    "car damage",
+    "vehicle health",
+    "part damage"
   ],
   "category": "vehicles",
-  "subcategory": "vehicles",
+  "subcategory": "vehicle_health",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -21,90 +21,134 @@
   },
   "genres": [
     "racing",
+    "action",
     "simulation",
     "open_world"
   ],
-  "description": "Vehicle Damage is a controllable transport mechanic with dedicated movement, physics, resources, or damage behavior.",
-  "design_notes": "Vehicle Damage should be designed around a clear player promise, a readable trigger, and a predictable result. For vehicles mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A vehicle durability model where collisions, weapons, terrain hazards, or misuse reduce whole-vehicle or part-specific health and can affect handling, visuals, and repair needs.",
+  "design_notes": "Vehicle damage can create stakes for reckless driving, combat encounters, and survival travel. The design has to decide whether damage is mostly visual, a repair economy, a handling penalty, or a failure condition. Strong implementations separate impact detection, damage attribution, part state, repair transactions, and replicated presentation so crashes remain understandable and hard to exploit.",
   "design_purpose": [
-    "Give the player a readable way to use vehicle damage as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect vehicle damage to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Add consequence to collisions, risky routes, and combat pressure.",
+    "Connect vehicles to repair costs, crafting, economy, or survival planning.",
+    "Give designers a way to differentiate fragile, armored, civilian, and racing vehicles."
   ],
-  "player_fantasy": "The player feels mastery over a machine with distinct weight, speed, and handling.",
+  "player_fantasy": "The player feels the machine survive punishment, show scars, and demand care after dangerous driving.",
   "required_systems": [
     "vehicle_controller",
-    "physics_world",
-    "input_handling",
-    "camera_controller"
+    "collision_detection",
+    "health_component",
+    "repair_system",
+    "visual_damage_system"
   ],
   "parameters": [
     {
-      "name": "max_speed",
-      "type": "float",
-      "typical_range": "5-300 world units/second",
-      "description": "Maximum velocity the vehicle can reach."
+      "name": "vehicle_id",
+      "type": "string",
+      "typical_range": "active vehicle instance id",
+      "description": "Vehicle instance receiving collision or hazard damage."
     },
     {
-      "name": "handling_response",
-      "type": "float",
-      "typical_range": "0.1-5",
-      "description": "How sharply steering or control input affects the vehicle."
+      "name": "health_component_id",
+      "type": "string",
+      "typical_range": "chassis_health, engine_health, tire_health",
+      "description": "Damage bucket changed by the resolved hit."
     },
     {
-      "name": "traction",
+      "name": "collision_impulse_threshold",
       "type": "float",
-      "typical_range": "0-1",
-      "description": "Grip coefficient used for braking, turning, or drifting."
+      "typical_range": "1-100 impulse units",
+      "description": "Minimum resolved contact impulse before damage is considered."
+    },
+    {
+      "name": "damage_zone_id",
+      "type": "string",
+      "typical_range": "front, rear, left_side, wheel",
+      "description": "Hit region used for part health and visual state."
+    },
+    {
+      "name": "damage_source_id",
+      "type": "string",
+      "typical_range": "collision, projectile, fire, fall",
+      "description": "Cause label used for attribution, resistances, and analytics."
+    },
+    {
+      "name": "repair_state_id",
+      "type": "string",
+      "typical_range": "intact, damaged, disabled, repaired",
+      "description": "Repair workflow state exposed to UI and persistence."
+    },
+    {
+      "name": "visual_damage_stage_id",
+      "type": "string",
+      "typical_range": "clean, dented, smoking, burning",
+      "description": "Presentation stage matched to health and damage zone."
     }
   ],
   "common_variants": [
-    "vehicle_damage_arcade_handling",
-    "vehicle_damage_simulation_handling",
-    "damage_enabled",
-    "upgrade_enabled"
+    "cosmetic_damage_only",
+    "handling_penalty_damage",
+    "part_based_damage",
+    "combat_vehicle_damage",
+    "repairable_survival_vehicle"
   ],
   "edge_cases": [
-    "Vehicle Damage is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Vehicle Damage overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Vehicle Damage runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A vehicle receives several contact impulses in one physics step and should not apply duplicate damage for one crash.",
+    "A player exits or swaps seats while the vehicle transitions from damaged to disabled.",
+    "A repaired vehicle still has old smoke, tire, or dent presentation attached to pooled objects.",
+    "Multiplayer clients disagree about which player caused a collision or explosive hit.",
+    "A checkpoint restores vehicle position but not health_component_id and repair_state_id values."
   ],
   "common_bugs": [
-    "Vehicle Damage state does not reset correctly after interruption or reload.",
-    "Feedback for Vehicle Damage plays even when the mechanic fails or is rejected.",
-    "Vehicle Damage produces different results between frame rates, platforms, or network clients."
+    "Damage uses raw velocity difference instead of resolved collision impulse, causing harmless scrapes to destroy vehicles.",
+    "Part health reaches zero but drivetrain, steering, or wheel constraints continue as if intact.",
+    "Repair consumes materials client-side before the server accepts the repair transaction.",
+    "Visual damage stages advance on prediction and never roll back after authoritative correction.",
+    "Destroyed vehicles keep collision enabled and block level routes after respawn."
   ],
   "balancing_notes": [
-    "Make Vehicle Damage strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Pure handling penalties can make recovery frustrating; reserve severe penalties for readable impacts or optional simulation modes.",
+    "Repair costs should scale with route risk and economy pacing, not punish small cosmetic mistakes excessively.",
+    "Damage thresholds need different profiles for racing contact, combat hits, off-road falls, and scripted set pieces."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Vehicle Damage becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show damage state through text, icons, sound, and visual stages so it is not dependent on subtle deformation.",
+    "Offer reduced handling penalty or assisted recovery options for players who struggle with damaged steering.",
+    "Avoid persistent smoke or flashing damage warnings that obscure road visibility."
   ],
   "implementation_notes": {
-    "unity": "Implement Vehicle Damage with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Vehicle Damage as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Vehicle Damage with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Vehicle Damage as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Read collision.impulse during OnCollisionEnter or OnCollisionStay, map contacts to damage_zone_id, and process health changes through a VehicleDamageService. Keep repair transactions server-authoritative in Netcode and reset particles, colliders, and wheel constraints when pooled vehicles respawn.",
+    "godot": "Use RigidBody3D contact data or area hazard callbacks to create damage events with vehicle_id, damage_source_id, and damage_zone_id. Apply changes in _physics_process order, then emit state change signals for UI, audio, mesh swaps, and save persistence.",
+    "unreal": "Use Chaos hit events, physical material data, and replicated components for health_component_id state. Server authority should resolve source attribution, part health, and disabled state before multicasting visual_damage_stage_id updates or repair success.",
+    "web": "For custom or cannon-like physics, convert contact manifolds into normalized damage events and process them in a deterministic reducer. Store vehicle health, zone states, and repair_state_id in saves and rollback snapshots instead of deriving them from visuals."
   },
   "related_mechanics": [
-    "camera.dynamic_fov",
-    "physics.gravity",
     "vehicles.vehicle_acceleration",
-    "vehicles.vehicle_braking"
+    "vehicles.vehicle_braking",
+    "vehicles.fuel",
+    "survival.durability"
   ],
   "combines_well_with": [
-    "camera.dynamic_fov",
-    "physics.gravity",
-    "vehicles.drifting",
-    "vehicles.fuel"
+    "physics.destructible_environment",
+    "economy.repair_cost",
+    "multiplayer.friendly_fire",
+    "ui_ux.damage_numbers"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Grand Theft Auto V",
+      "note": "Includes visible vehicle damage and repair interactions."
+    },
+    {
+      "title": "BeamNG.drive",
+      "note": "Focuses heavily on vehicle deformation and crash behavior."
+    }
+  ],
   "tags": [
-    "control",
-    "vehicle",
-    "vehicles"
+    "vehicle_damage",
+    "durability",
+    "collision_damage",
+    "repair",
+    "part_health"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

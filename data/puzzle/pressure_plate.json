@@ -2,9 +2,9 @@
   "id": "puzzle.pressure_plate",
   "name": "Pressure Plate",
   "aliases": [
-    "floor switch",
-    "weight plate",
-    "pressure switch"
+    "floor plate",
+    "weighted switch",
+    "trigger plate"
   ],
   "category": "puzzle",
   "subcategory": "physical_trigger",
@@ -25,105 +25,115 @@
     "platformer",
     "immersive_sim"
   ],
-  "description": "A trigger surface that changes state when a qualifying actor or object applies pressure.",
-  "design_notes": "Pressure plates are readable puzzle inputs when their activation rules are explicit. The mechanic should define what counts as weight, whether activation is binary or analog, how long the state persists, and what output it controls. Good plates teach cause and effect before asking for timing or multi-object reasoning.",
+  "description": "A floor trigger activates when enough valid bodies or objects rest inside its tracked volume.",
+  "design_notes": "Pressure plates are physical state detectors, so enter and exit ordering, object filtering, weight thresholds, reset delays, and stacked objects need deterministic rules. A good plate exposes which objects count and why it has activated or released.",
   "design_purpose": [
-    "Let players activate world state through body position, objects, or weight.",
-    "Create puzzles around placement, timing, cooperation, and object transport.",
-    "Make cause-and-effect relationships visible in the environment."
+    "Let players solve puzzles by moving themselves, companions, or objects onto a visible trigger.",
+    "Connect spatial positioning, object physics, doors, lifts, and timed routes.",
+    "Teach cause and effect through a clear input surface and linked output."
   ],
-  "player_fantasy": "The player feels they are manipulating a physical space where weight and position matter.",
+  "player_fantasy": "The player feels they can use weight and placement to hold part of the room in a desired state.",
   "required_systems": [
     "trigger_volume",
-    "object_tagging",
-    "puzzle_state",
-    "feedback_system",
-    "save_state"
+    "physics_body_tracking",
+    "puzzle_state_store",
+    "linked_target_registry",
+    "debug_visualization"
   ],
   "parameters": [
     {
-      "name": "activation_mass_threshold",
-      "type": "float",
-      "typical_range": "0.1-500 mass units",
-      "description": "Combined qualifying mass required to activate the plate."
+      "name": "trigger_volume_id",
+      "type": "string",
+      "typical_range": "plate_a_volume, bridge_plate_03, altar_trigger",
+      "description": "Stable trigger volume identifier used for object tracking and save restoration."
     },
     {
-      "name": "plate_depress_depth",
+      "name": "plate_weight_threshold",
       "type": "float",
-      "typical_range": "0.01-0.3 world units",
-      "description": "Visual movement used when the plate activates."
+      "typical_range": "1-500 mass units",
+      "description": "Minimum total accepted body mass required before the plate enters activated state."
     },
     {
-      "name": "release_linger_ms",
+      "name": "accepted_body_mask",
+      "type": "array",
+      "typical_range": "player, crate, metal_ball, companion",
+      "description": "Body classes that contribute to plate activation."
+    },
+    {
+      "name": "release_delay_ms",
       "type": "integer",
       "typical_range": "0-3000 ms",
-      "description": "Delay before deactivation after pressure is removed."
+      "description": "Delay after the last valid body exits before linked targets receive release."
     },
     {
-      "name": "accepted_actor_tags",
+      "name": "tracked_object_ids",
       "type": "array",
-      "typical_range": "1-20 tags",
-      "description": "Tags allowed to contribute pressure."
-    },
-    {
-      "name": "output_channel_id",
-      "type": "string",
-      "typical_range": "local puzzle channel",
-      "description": "Puzzle signal or channel controlled by the plate."
+      "typical_range": "crate_01, player_1, sphere_b",
+      "description": "Objects currently contributing to the plate state for debugging and save recovery."
     }
   ],
   "common_variants": [
-    "binary_plate",
-    "weighted_plate",
-    "timed_plate",
-    "multi_plate_sequence",
-    "player_only_plate"
+    "player_plate",
+    "weighted_object_plate",
+    "multi_object_plate",
+    "timed_release_plate",
+    "networked_coop_plate"
   ],
   "edge_cases": [
-    "Stacked objects should specify whether mass adds, only top object counts, or each collider counts separately.",
-    "Objects resting partly on the plate need stable contribution rules to avoid flicker.",
-    "Physics sleep should not prevent a resting object from keeping the plate active.",
-    "Save/load must restore both depressed visual state and linked puzzle output."
+    "Two objects enter and one exits during the same physics tick, changing threshold ordering.",
+    "A stacked object rests on another object that rests on the plate and should or should not count.",
+    "A carried object is inside the trigger volume but not actually resting on the plate surface.",
+    "The plate is saved while depressed and the contributing object is later missing or moved."
   ],
   "common_bugs": [
-    "Multiple colliders on one object count as multiple objects and over-activate the plate.",
-    "The output toggles every frame instead of changing only on state transitions.",
-    "A destroyed object never sends exit, leaving the plate permanently active.",
-    "Networked co-op clients disagree about activation because physics authority is not centralized."
+    "Trigger exit is missed when a physics body is destroyed, pooled, or teleported away.",
+    "Every overlapping collider on one object contributes mass and activates the plate incorrectly.",
+    "Release delay fires after the plate reactivated, closing a door on the player.",
+    "Client-side trigger state opens a door while the server still considers the plate inactive."
   ],
   "balancing_notes": [
-    "Visible wiring, sound, or camera framing should show what the plate controls before puzzles become complex.",
-    "Release delays can make timing puzzles more forgiving without changing the visible rule."
+    "Plate surfaces should be large enough for intended objects but not so large that accidental activation is common.",
+    "Weighted plates are easier to read when object mass classes are visually distinct.",
+    "Timed release delays can reduce frustration when plates control traversal doors."
   ],
   "accessibility_notes": [
-    "Use shape, motion, sound, and color together to show plate activation.",
-    "Avoid puzzles that require holding a plate and reading distant results without camera or UI support."
+    "Use plate depression, sound, light, and linked-target indicators so activation is not conveyed only by color.",
+    "Avoid requiring extremely precise object placement unless the level supports camera and input assists."
   ],
   "implementation_notes": {
-    "unity": "Use trigger colliders with a tracked set of qualifying rigidbodies or actors; aggregate mass by object identity rather than collider count.",
-    "godot": "Use Area2D or Area3D enter/exit signals, store qualifying bodies in a set, and emit puzzle-state changes only when activation changes.",
-    "unreal": "Use overlap volumes with Gameplay Tags or interfaces for qualifying actors; replicate activation state rather than raw overlap events in multiplayer.",
-    "web": "Use collision overlap queries against tagged entities and keep plate state as data that emits events only on threshold crossings."
+    "unity": "Track Rigidbody or CharacterController occupants by object_instance_id inside a trigger collider, and recompute mass from unique root bodies. Guard release_delay_ms with a state version so delayed release cannot override a fresh activation.",
+    "godot": "Use Area2D or Area3D body enter and exit signals, but reconcile tracked objects each physics tick to recover from deletion or teleport. Store trigger_volume_id, tracked_object_ids, and activated state for save/load.",
+    "unreal": "Use overlap events on a trigger component plus server-side validation of body class, mass, and contact state. Replicate plate active state, not raw overlap spam, and debug draw accepted bodies for level authors.",
+    "web": "For Phaser, Matter.js, or custom engines, maintain a set of body ids intersecting the trigger and filter to accepted classes. Resolve activation in the fixed simulation step so render frame ordering cannot flicker linked targets."
   },
   "related_mechanics": [
-    "puzzle.timed_door",
     "puzzle.physics_weight_puzzle",
+    "puzzle.lever_switch",
     "physics.one_way_platform",
-    "puzzle.lever_switch"
+    "ui_ux.interaction_prompt"
   ],
   "combines_well_with": [
-    "physics.moving_platform",
-    "puzzle.key_and_lock",
-    "multiplayer.local_coop",
-    "ui_ux.checkpoint_notification"
+    "puzzle.timed_door",
+    "puzzle.sliding_block",
+    "physics.physics_push_pull",
+    "multiplayer.local_coop"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Portal",
+      "note": "Uses weighted buttons and cubes as central puzzle interactions."
+    },
+    {
+      "title": "The Legend of Zelda: Breath of the Wild",
+      "note": "Uses floor switches and object placement in shrine puzzles."
+    }
+  ],
   "tags": [
-    "puzzle",
-    "trigger",
+    "pressure_plate",
+    "trigger_volume",
     "weight",
-    "state",
-    "physics"
+    "object_tracking",
+    "puzzle"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

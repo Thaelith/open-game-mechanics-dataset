@@ -2,12 +2,12 @@
   "id": "puzzle.sequence_memory",
   "name": "Sequence Memory",
   "aliases": [
-    "sequence memory mechanic",
-    "sequence memory system",
-    "sequence memory"
+    "memory sequence",
+    "ordered input puzzle",
+    "pattern recall"
   ],
   "category": "puzzle",
-  "subcategory": "state_puzzle",
+  "subcategory": "ordered_input",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,97 +15,131 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
+    "design": "medium",
     "implementation": "medium",
-    "tuning": "hard"
+    "tuning": "medium"
   },
   "genres": [
     "puzzle",
     "adventure",
-    "escape_room"
+    "escape_room",
+    "educational"
   ],
-  "description": "Sequence Memory is a rule-based challenge that asks the player to observe, reason, manipulate state, or sequence actions.",
-  "design_notes": "Sequence Memory should be designed around a clear player promise, a readable trigger, and a predictable result. For puzzle mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "The player observes or discovers an ordered sequence, then repeats it through buttons, symbols, notes, or interactions.",
+  "design_notes": "Sequence memory puzzles need explicit input_sequence_id data, current puzzle_step_index, wrong-input policy, replay or hint options, and checkpoint behavior. The puzzle should test recall or deduction, not whether players can perceive inaccessible cues.",
   "design_purpose": [
-    "Give the player a readable way to use sequence memory as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect sequence memory to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Challenge players to observe, remember, and reproduce an ordered pattern.",
+    "Gate rewards or routes behind readable clues distributed through a room or narrative context.",
+    "Support audio, visual, symbol, or spatial memory in compact puzzle setups."
   ],
-  "player_fantasy": "The player feels clever when they infer the rule and manipulate the system correctly.",
+  "player_fantasy": "The player feels attentive and clever when they recall the pattern and enter it correctly.",
   "required_systems": [
+    "input_sequence_registry",
     "interaction_system",
-    "state_tracking",
-    "feedback_system",
-    "save_state"
+    "puzzle_state_store",
+    "hint_system",
+    "ui_prompt"
   ],
   "parameters": [
     {
-      "name": "activation_condition",
+      "name": "input_sequence_id",
       "type": "string",
-      "typical_range": "single, all, ordered, timed",
-      "description": "Rule that determines when the puzzle element changes state."
+      "typical_range": "bell_order_a, rune_code_03, keypad_pattern",
+      "description": "Stable sequence definition used by clues, input validation, and save state."
     },
     {
-      "name": "reset_time",
-      "type": "float",
-      "typical_range": "0-30 seconds",
-      "description": "Delay before the puzzle returns to its default state."
-    },
-    {
-      "name": "feedback_intensity",
+      "name": "puzzle_step_index",
       "type": "integer",
-      "typical_range": "1-5",
-      "description": "How strongly the game communicates success, failure, or partial progress."
+      "typical_range": "0-32",
+      "description": "Current accepted position within the sequence."
+    },
+    {
+      "name": "activation_order",
+      "type": "array",
+      "typical_range": "red, blue, green or button ids",
+      "description": "Ordered interactable ids, symbols, notes, or colors that solve the puzzle."
+    },
+    {
+      "name": "wrong_input_policy_id",
+      "type": "string",
+      "typical_range": "reset_sequence, keep_prefix, lockout, reveal_hint",
+      "description": "Rule applied after a player enters an incorrect sequence step."
+    },
+    {
+      "name": "hint_stage_id",
+      "type": "string",
+      "typical_range": "none, replay_once, show_first_step, show_full_pattern",
+      "description": "Assistance stage available through difficulty, repeated failure, or accessibility settings."
+    },
+    {
+      "name": "sequence_entry_window_ms",
+      "type": "integer",
+      "typical_range": "0-30000 ms",
+      "description": "Optional interval allowed between accepted steps before the sequence resets."
     }
   ],
   "common_variants": [
-    "sequence_memory_single_step",
-    "sequence_memory_multi_step",
-    "timed_variant",
-    "resetting_variant"
+    "audio_pattern_sequence",
+    "symbol_order_sequence",
+    "button_order_sequence",
+    "simon_style_replay",
+    "environmental_clue_sequence"
   ],
   "edge_cases": [
-    "Sequence Memory is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Sequence Memory overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Sequence Memory runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A player presses two inputs during the same frame or network tick.",
+    "The sequence clue is visible only once and the player reloads after seeing half of it.",
+    "Wrong input should reset the step index but not reset other solved room state.",
+    "Co-op players press different sequence buttons nearly simultaneously."
   ],
   "common_bugs": [
-    "Sequence Memory state does not reset correctly after interruption or reload.",
-    "Feedback for Sequence Memory plays even when the mechanic fails or is rejected.",
-    "Sequence Memory produces different results between frame rates, platforms, or network clients."
+    "The displayed replay sequence differs from activation_order after localization or content edits.",
+    "Step index is saved after input but before the success event, causing repeated final-step rewards.",
+    "Audio-only cues fail for players with muted sound because no alternate clue path exists.",
+    "Input lockout blocks interactions but the UI still accepts hover or focus states as if active."
   ],
   "balancing_notes": [
-    "Make Sequence Memory strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Longer sequences should be paired with stronger clue repetition or chunking.",
+    "Wrong-input penalties should match the puzzle tone; harsh resets are poor fits for long memory chains.",
+    "If the puzzle is required for progression, hints should escalate before players abandon the route."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Sequence Memory becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide non-audio alternatives for sound sequences and non-color alternatives for color sequences.",
+    "Offer replay, notes, slower presentation, or hint-stage options for players with memory or perception differences."
   ],
   "implementation_notes": {
-    "unity": "Implement Sequence Memory with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Sequence Memory as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Sequence Memory with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Sequence Memory as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store input_sequence_id, puzzle_step_index, hint_stage_id, and solved state in a puzzle state component. Interactable buttons should submit ids to one validator so animation, audio, and success events cannot diverge.",
+    "godot": "Use a Resource for activation_order and a node or autoload store for runtime step state. Signals from buttons should be queued and resolved in order, with UI hints reading from the same sequence data.",
+    "unreal": "An Actor Component can validate input ids and replicate step state for co-op rooms. Gate repeated final-step events with a solved flag and use server authority if multiple players can input.",
+    "web": "Keep sequence validation in a small deterministic model and render cues from that model. Debounce pointer and keyboard events through input ids so rapid clicks cannot skip or double-count steps."
   },
   "related_mechanics": [
-    "puzzle.key_and_lock",
-    "puzzle.pressure_plate",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "puzzle.color_matching",
+    "puzzle.lever_switch",
+    "ui_ux.dialogue_choice",
+    "accessibility.toggle_hold_option"
   ],
   "combines_well_with": [
-    "puzzle.lever_switch",
-    "puzzle.mirror_light_reflection",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "puzzle.timed_door",
+    "puzzle.key_and_lock",
+    "narrative.environmental_storytelling",
+    "ui_ux.tutorial_prompt"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Witness",
+      "note": "Uses observation and pattern recall across puzzle spaces."
+    },
+    {
+      "title": "Simon",
+      "note": "Uses repeated ordered input as the central memory challenge."
+    }
+  ],
   "tags": [
-    "puzzle",
     "sequence",
-    "state",
-    "state_puzzle"
+    "memory",
+    "ordered_input",
+    "hints",
+    "accessibility"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

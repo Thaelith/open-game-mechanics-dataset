@@ -2,12 +2,12 @@
   "id": "vehicles.upgradeable_vehicle",
   "name": "Upgradeable Vehicle",
   "aliases": [
-    "upgradeable vehicle mechanic",
-    "upgradeable vehicle system",
-    "upgradeable vehicle"
+    "vehicle upgrades",
+    "modular vehicle parts",
+    "tunable vehicle"
   ],
   "category": "vehicles",
-  "subcategory": "vehicles",
+  "subcategory": "upgrade_installation",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,95 +16,139 @@
   ],
   "difficulty": {
     "design": "medium",
-    "implementation": "hard",
+    "implementation": "medium",
     "tuning": "hard"
   },
   "genres": [
     "racing",
     "simulation",
-    "open_world"
+    "open_world",
+    "survival"
   ],
-  "description": "Upgradeable Vehicle is a controllable transport mechanic with dedicated movement, physics, resources, or damage behavior.",
-  "design_notes": "Upgradeable Vehicle should be designed around a clear player promise, a readable trigger, and a predictable result. For vehicles mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A progression system where players install compatible vehicle parts that change handling, durability, utility, storage, fuel use, or traversal capability.",
+  "design_notes": "Vehicle upgrades work best when parts create recognizable tradeoffs instead of simple numeric escalation. A heavier armor plate can improve survivability while hurting acceleration; off-road tires can help dirt surfaces without replacing every other tire choice. The implementation should treat installation as an inventory transaction with previewed stat changes, compatibility checks, and persistent vehicle state.",
   "design_purpose": [
-    "Give the player a readable way to use upgradeable vehicle as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect upgradeable vehicle to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players specialize a vehicle for racing, hauling, survival, combat, or exploration.",
+    "Connect vehicle handling to economy, crafting, loot, and long-term progression.",
+    "Give designers knobs for build diversity without creating a separate vehicle for every playstyle."
   ],
-  "player_fantasy": "The player feels mastery over a machine with distinct weight, speed, and handling.",
+  "player_fantasy": "The player feels ownership over a machine they have tuned for their route, role, or driving style.",
   "required_systems": [
-    "vehicle_controller",
-    "physics_world",
-    "input_handling",
-    "camera_controller"
+    "vehicle_database",
+    "inventory_system",
+    "upgrade_slot_system",
+    "stat_modifier_pipeline",
+    "save_system"
   ],
   "parameters": [
     {
-      "name": "max_speed",
-      "type": "float",
-      "typical_range": "5-300 world units/second",
-      "description": "Maximum velocity the vehicle can reach."
+      "name": "vehicle_id",
+      "type": "string",
+      "typical_range": "stable vehicle archetype or instance id",
+      "description": "Vehicle receiving installed parts and saved modifiers."
     },
     {
-      "name": "handling_response",
-      "type": "float",
-      "typical_range": "0.1-5",
-      "description": "How sharply steering or control input affects the vehicle."
+      "name": "upgrade_part_id",
+      "type": "string",
+      "typical_range": "engine_tier_2, armor_plate_light",
+      "description": "Part item being installed, removed, or previewed."
     },
     {
-      "name": "traction",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "Grip coefficient used for braking, turning, or drifting."
+      "name": "part_slot_id",
+      "type": "string",
+      "typical_range": "engine, tires, armor, fuel_tank",
+      "description": "Vehicle slot that constrains compatible parts."
+    },
+    {
+      "name": "compatibility_rule_id",
+      "type": "string",
+      "typical_range": "per vehicle family or slot group",
+      "description": "Rule set used before accepting an install transaction."
+    },
+    {
+      "name": "install_transaction_id",
+      "type": "string",
+      "typical_range": "unique per upgrade operation",
+      "description": "Atomic operation covering item removal, part install, and refund."
+    },
+    {
+      "name": "stat_modifier_curve_id",
+      "type": "string",
+      "typical_range": "linear_torque_bonus, armor_mass_penalty",
+      "description": "Modifier profile applied to vehicle handling or utility stats."
+    },
+    {
+      "name": "save_migration_id",
+      "type": "string",
+      "typical_range": "content versioned migration key",
+      "description": "Compatibility key for old saves after part definitions change."
     }
   ],
   "common_variants": [
-    "upgradeable_vehicle_arcade_handling",
-    "upgradeable_vehicle_simulation_handling",
-    "damage_enabled",
-    "upgrade_enabled"
+    "slot_based_upgrades",
+    "tiered_upgrade_tree",
+    "craftable_vehicle_parts",
+    "cosmetic_and_stat_parts",
+    "temporary_race_mods"
   ],
   "edge_cases": [
-    "Upgradeable Vehicle is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Upgradeable Vehicle overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Upgradeable Vehicle runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A content update removes or renames an installed upgrade_part_id in an existing save.",
+    "The player previews an upgrade while another menu, teammate, or server request changes the same vehicle.",
+    "A part install would exceed storage capacity because removed parts need to return to inventory.",
+    "Two upgrades modify the same derived stat through different curves and apply in the wrong order.",
+    "A multiplayer vehicle owner disconnects during an install transaction."
   ],
   "common_bugs": [
-    "Upgradeable Vehicle state does not reset correctly after interruption or reload.",
-    "Feedback for Upgradeable Vehicle plays even when the mechanic fails or is rejected.",
-    "Upgradeable Vehicle produces different results between frame rates, platforms, or network clients."
+    "The UI preview uses client-only formulas that do not match the authoritative stat modifier pipeline.",
+    "Installed parts duplicate when an equip operation succeeds but inventory removal fails.",
+    "Vehicle physics caches are not rebuilt after part changes, so new handling appears only after reload.",
+    "Compatibility rules check vehicle archetype but not part_slot_id, allowing impossible combinations.",
+    "Save migration silently drops unknown parts instead of replacing them with a fallback or refund."
   ],
   "balancing_notes": [
-    "Make Upgradeable Vehicle strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Purely dominant parts collapse build variety; attach tradeoffs to mass, grip, durability, storage, or fuel use.",
+    "Upgrade availability can pace world traversal, but hard-gating too many routes can make vehicles feel like keys instead of tools.",
+    "Stat previews should show both gains and penalties so players understand why a heavier build behaves differently."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Upgradeable Vehicle becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Expose upgrade effects in text as well as bars or icons, especially for color-dependent comparisons.",
+    "Let players compare current, previewed, and previous configurations without relying on memory.",
+    "Avoid requiring fast menu navigation to swap important parts before timed events."
   ],
   "implementation_notes": {
-    "unity": "Implement Upgradeable Vehicle with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Upgradeable Vehicle as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Upgradeable Vehicle with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Upgradeable Vehicle as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Represent parts as ScriptableObjects or addressable data, but perform install_transaction_id handling in a service that checks item_instance_id ownership, part_slot_id compatibility, capacity for removed items, and stat cache rebuilds before saving the vehicle instance.",
+    "godot": "Store upgrade definitions as Resources and vehicle instances as saved dictionaries containing slot to upgrade_part_id mappings. Apply stat_modifier_curve_id during a single recompute pass so UI previews, driving state, and persistence use the same derived values.",
+    "unreal": "Use Data Assets for part definitions and a replicated VehicleUpgradeComponent for installed slot state. Server RPCs should validate permission, inventory locks, compatibility_rule_id, and rollback behavior before broadcasting changed derived stats to clients.",
+    "web": "Keep upgrade definitions in versioned JSON and process installs through an atomic reducer. Persist vehicle_id, part_slot_id, upgrade_part_id, and content version together so browser saves can migrate or refund removed parts deterministically."
   },
   "related_mechanics": [
-    "camera.dynamic_fov",
-    "physics.gravity",
     "vehicles.vehicle_acceleration",
-    "vehicles.vehicle_braking"
+    "vehicles.fuel",
+    "vehicles.vehicle_damage",
+    "progression.upgrade_shop"
   ],
   "combines_well_with": [
-    "camera.dynamic_fov",
-    "physics.gravity",
-    "vehicles.drifting",
-    "vehicles.fuel"
+    "economy.shop",
+    "crafting.recipe_crafting",
+    "survival.durability",
+    "ui_ux.inventory_grid"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Need for Speed Underground",
+      "note": "Uses vehicle upgrades as part of racing progression."
+    },
+    {
+      "title": "Forza Horizon 5",
+      "note": "Includes vehicle tuning and part-based performance changes."
+    }
+  ],
   "tags": [
-    "control",
-    "upgradeable",
-    "vehicles"
+    "vehicle_upgrades",
+    "parts",
+    "progression",
+    "inventory_transaction",
+    "buildcraft"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

@@ -2,12 +2,12 @@
   "id": "vehicles.vehicle_braking",
   "name": "Vehicle Braking",
   "aliases": [
-    "vehicle braking mechanic",
-    "vehicle braking system",
-    "vehicle braking"
+    "vehicle brake",
+    "reverse braking",
+    "handbrake"
   ],
   "category": "vehicles",
-  "subcategory": "vehicles",
+  "subcategory": "deceleration_control",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -22,89 +22,124 @@
   "genres": [
     "racing",
     "simulation",
-    "open_world"
+    "open_world",
+    "action"
   ],
-  "description": "Vehicle Braking is a controllable transport mechanic with dedicated movement, physics, resources, or damage behavior.",
-  "design_notes": "Vehicle Braking should be designed around a clear player promise, a readable trigger, and a predictable result. For vehicles mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A vehicle reduces velocity, reverses, or locks traction according to brake input, surface grip, and wheel state.",
+  "design_notes": "Braking needs clear separation between service brake, reverse throttle, handbrake, and collision stopping. The design should define brake_input, brake_bias, tire grip, surface friction, anti-lock behavior, and how braking interacts with drifting, boost cancellation, and network prediction.",
   "design_purpose": [
-    "Give the player a readable way to use vehicle braking as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect vehicle braking to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players control over stopping distance, corner entry, reverse movement, and vehicle safety.",
+    "Create handling skill through braking points, traction management, and handbrake turns.",
+    "Support vehicle damage, fuel, AI driving, and accessibility assists with consistent deceleration rules."
   ],
-  "player_fantasy": "The player feels mastery over a machine with distinct weight, speed, and handling.",
+  "player_fantasy": "The player feels they can slow, stop, and set up turns with deliberate control.",
   "required_systems": [
-    "vehicle_controller",
-    "physics_world",
-    "input_handling",
-    "camera_controller"
+    "vehicle_input",
+    "fixed_timestep_physics",
+    "wheel_contact_solver",
+    "surface_detection",
+    "network_prediction"
   ],
   "parameters": [
     {
-      "name": "max_speed",
-      "type": "float",
-      "typical_range": "5-300 world units/second",
-      "description": "Maximum velocity the vehicle can reach."
+      "name": "vehicle_id",
+      "type": "string",
+      "typical_range": "car_sport_01, buggy_03, truck_heavy",
+      "description": "Vehicle identifier used by brake state, damage, saves, and authority checks."
     },
     {
-      "name": "handling_response",
+      "name": "brake_input",
       "type": "float",
-      "typical_range": "0.1-5",
-      "description": "How sharply steering or control input affects the vehicle."
+      "typical_range": "0.0-1.0",
+      "description": "Normalized primary braking input captured for the current simulation tick."
     },
     {
-      "name": "traction",
+      "name": "handbrake_input",
       "type": "float",
-      "typical_range": "0-1",
-      "description": "Grip coefficient used for braking, turning, or drifting."
+      "typical_range": "0.0-1.0",
+      "description": "Secondary brake control used for rear lock, drift initiation, or parking behavior."
+    },
+    {
+      "name": "brake_bias_front_ratio",
+      "type": "float",
+      "typical_range": "0.3-0.8",
+      "description": "Distribution of braking authority toward front wheels or forward contact points."
+    },
+    {
+      "name": "abs_assist_profile_id",
+      "type": "string",
+      "typical_range": "off, arcade_abs, simulation_abs, accessibility_abs",
+      "description": "Anti-lock or assist profile that limits wheel lock under heavy braking."
+    },
+    {
+      "name": "reverse_engage_threshold_kph",
+      "type": "float",
+      "typical_range": "0-10 kph",
+      "description": "Forward velocity below which brake input may become reverse throttle."
     }
   ],
   "common_variants": [
-    "vehicle_braking_arcade_handling",
-    "vehicle_braking_simulation_handling",
-    "damage_enabled",
-    "upgrade_enabled"
+    "arcade_brake",
+    "simulation_abs",
+    "handbrake_turn",
+    "reverse_on_brake",
+    "regenerative_braking"
   ],
   "edge_cases": [
-    "Vehicle Braking is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Vehicle Braking overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Vehicle Braking runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Brake input is held while the vehicle is airborne or has only one wheel touching ground.",
+    "The player switches from reverse to forward throttle while sliding downhill.",
+    "Handbrake input overlaps with drift scoring, boost cancellation, or damage-induced wheel loss.",
+    "A network correction arrives while the client predicted a handbrake turn."
   ],
   "common_bugs": [
-    "Vehicle Braking state does not reset correctly after interruption or reload.",
-    "Feedback for Vehicle Braking plays even when the mechanic fails or is rejected.",
-    "Vehicle Braking produces different results between frame rates, platforms, or network clients."
+    "Braking applies a direct velocity clamp and ignores traction, causing instant stops on ice.",
+    "Reverse engages while the vehicle is still moving forward too quickly.",
+    "Handbrake state remains active after seat exit or input device disconnect.",
+    "Brake lights, audio, and physics use different thresholds and disagree visually."
   ],
   "balancing_notes": [
-    "Make Vehicle Braking strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Short stopping distances improve accessibility but reduce racing line skill.",
+    "Handbrakes should be useful for tight turns without becoming faster than normal cornering everywhere.",
+    "Reverse behavior should be predictable in combat and traversal spaces where backing out matters."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Vehicle Braking becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer braking assist or auto-brake options for players who struggle with analog timing.",
+    "Keep camera shake and skid audio adjustable during heavy braking."
   ],
   "implementation_notes": {
-    "unity": "Implement Vehicle Braking with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Vehicle Braking as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Vehicle Braking with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Vehicle Braking as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Apply brake_input in FixedUpdate through WheelCollider brake torque or a custom contact model, using surface grip and brake_bias_front_ratio. Store handbrake and reverse state in rollback snapshots with driver authority.",
+    "godot": "VehicleBody3D or custom controllers should compute braking from contact state and ground surface, not render frames. Keep reverse engagement as an explicit state so input UI, lights, and physics remain synchronized.",
+    "unreal": "Chaos Vehicles expose brake and handbrake inputs, but gameplay code should validate driver_player_id and assist profiles before applying them. Replicate compressed input and reconcile pose, wheel slip, and brake state from server corrections.",
+    "web": "Run braking in the fixed simulation pass and clamp by traction rather than raw velocity. For online play, keep brake_input and handbrake_input in input frames so prediction can be replayed after correction."
   },
   "related_mechanics": [
-    "camera.dynamic_fov",
-    "physics.gravity",
+    "vehicles.vehicle_acceleration",
     "vehicles.drifting",
-    "vehicles.vehicle_acceleration"
+    "vehicles.vehicle_damage",
+    "vehicles.suspension_physics"
   ],
   "combines_well_with": [
-    "camera.dynamic_fov",
-    "physics.gravity",
     "vehicles.fuel",
-    "vehicles.vehicle_damage"
+    "vehicles.vehicle_boost",
+    "camera.third_person_camera",
+    "accessibility.toggle_hold_option"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Gran Turismo 7",
+      "note": "Uses braking points and assist settings as major driving skill factors."
+    },
+    {
+      "title": "Mario Kart 8",
+      "note": "Uses braking and reverse controls in accessible racing scenarios."
+    }
+  ],
   "tags": [
-    "control",
-    "vehicle",
-    "vehicles"
+    "vehicle_braking",
+    "handbrake",
+    "traction",
+    "reverse",
+    "assist"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

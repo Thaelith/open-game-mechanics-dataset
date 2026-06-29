@@ -2,15 +2,14 @@
   "id": "vehicles.suspension_physics",
   "name": "Suspension Physics",
   "aliases": [
-    "suspension physics mechanic",
-    "suspension physics system",
-    "suspension physics"
+    "wheel suspension",
+    "spring suspension",
+    "vehicle suspension"
   ],
   "category": "vehicles",
-  "subcategory": "vehicles",
+  "subcategory": "wheel_contact",
   "status": "draft",
   "dimensions": [
-    "2D",
     "2.5D",
     "3D"
   ],
@@ -24,87 +23,130 @@
     "simulation",
     "open_world"
   ],
-  "description": "Suspension Physics is a controllable transport mechanic with dedicated movement, physics, resources, or damage behavior.",
-  "design_notes": "Suspension Physics should be designed around a clear player promise, a readable trigger, and a predictable result. For vehicles mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A vehicle handling model where wheels or hover points compress against terrain, transferring contact information into ride height, grip, stability, and body roll.",
+  "design_notes": "Suspension can make vehicles feel grounded without requiring full simulation accuracy. The design decision is how much road texture, jump landing, slope change, and impact instability the player should feel before the vehicle becomes tiring to control. Arcade games often exaggerate stability and response; simulation-leaning games expose more contact loss and body motion.",
   "design_purpose": [
-    "Give the player a readable way to use suspension physics as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect suspension physics to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create believable contact between vehicle bodies and uneven surfaces.",
+    "Give level designers terrain features that affect handling without manually scripting every bump.",
+    "Support readable differences between light, heavy, off-road, and high-performance vehicles."
   ],
-  "player_fantasy": "The player feels mastery over a machine with distinct weight, speed, and handling.",
+  "player_fantasy": "The player feels the machine bite into the road, absorb terrain, and recover from landings through skillful control.",
   "required_systems": [
     "vehicle_controller",
     "physics_world",
-    "input_handling",
+    "wheel_contact_solver",
+    "surface_materials",
     "camera_controller"
   ],
   "parameters": [
     {
-      "name": "max_speed",
-      "type": "float",
-      "typical_range": "5-300 world units/second",
-      "description": "Maximum velocity the vehicle can reach."
+      "name": "vehicle_id",
+      "type": "string",
+      "typical_range": "stable content identifier",
+      "description": "Vehicle archetype or instance owning the suspension profile."
     },
     {
-      "name": "handling_response",
-      "type": "float",
-      "typical_range": "0.1-5",
-      "description": "How sharply steering or control input affects the vehicle."
+      "name": "wheel_contact_state",
+      "type": "object",
+      "typical_range": "per wheel: grounded, compression, normal, slip",
+      "description": "Contact sample data cached for handling and effects."
     },
     {
-      "name": "traction",
+      "name": "suspension_stiffness",
       "type": "float",
-      "typical_range": "0-1",
-      "description": "Grip coefficient used for braking, turning, or drifting."
+      "typical_range": "10-200 spring units",
+      "description": "Compression resistance used by each wheel support."
+    },
+    {
+      "name": "damping_coefficient",
+      "type": "float",
+      "typical_range": "0.1-20",
+      "description": "Oscillation reduction applied after compression changes."
+    },
+    {
+      "name": "center_of_mass_offset",
+      "type": "vector3",
+      "typical_range": "-1 to 1 meters per axis",
+      "description": "Body balance adjustment for rollover and cornering response."
+    },
+    {
+      "name": "ground_surface_id",
+      "type": "string",
+      "typical_range": "asphalt, gravel, mud, ice",
+      "description": "Surface profile selected from the current contact material."
+    },
+    {
+      "name": "travel_limit_units",
+      "type": "float",
+      "typical_range": "0.15-0.8 world units",
+      "description": "Maximum spring compression from rest height to full bump."
     }
   ],
   "common_variants": [
-    "suspension_physics_arcade_handling",
-    "suspension_physics_simulation_handling",
-    "damage_enabled",
-    "upgrade_enabled"
+    "raycast_suspension",
+    "wheel_collider_suspension",
+    "hover_suspension",
+    "arcade_stability_assist",
+    "per_axle_suspension_profiles"
   ],
   "edge_cases": [
-    "Suspension Physics is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Suspension Physics overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Suspension Physics runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Only one wheel remains grounded on a curb or rock and the chassis receives a large roll impulse.",
+    "A vehicle lands from a jump with wheel contacts appearing over several physics steps instead of all at once.",
+    "Terrain triangles produce rapidly changing contact normals at road mesh seams.",
+    "Suspension samples continue after a vehicle is flipped, destroyed, or placed on a moving platform.",
+    "High-latency clients predict wheel contact differently from the server on rough terrain."
   ],
   "common_bugs": [
-    "Suspension Physics state does not reset correctly after interruption or reload.",
-    "Feedback for Suspension Physics plays even when the mechanic fails or is rejected.",
-    "Suspension Physics produces different results between frame rates, platforms, or network clients."
+    "Wheel contact rays start inside the ground after large bumps, causing sudden launch impulses.",
+    "Damping is applied with frame delta instead of fixed-step delta and produces platform-dependent bounce.",
+    "Surface material changes update tire effects but not grip, making mud or ice look correct but drive like asphalt.",
+    "Center of mass edits are applied after rigidbody initialization and silently ignored by the engine.",
+    "Suspension debug data is not replayable, making terrain-specific handling reports hard to reproduce."
   ],
   "balancing_notes": [
-    "Make Suspension Physics strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Higher stiffness improves steering precision but can make rough terrain unreadable and punishing.",
+    "More damping reduces bounce after jumps but can make the vehicle feel heavy and unresponsive.",
+    "Lowering the center of mass improves stability, but too much stability removes the risk from jumps, curbs, and aggressive turns."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Suspension Physics becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer camera shake and roll reduction for players sensitive to suspension-driven body motion.",
+    "Provide steering assist or stability assist presets when uneven terrain demands rapid correction.",
+    "Keep visual terrain cues readable so players can anticipate bumps before the handling changes."
   ],
   "implementation_notes": {
-    "unity": "Implement Suspension Physics with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Suspension Physics as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Suspension Physics with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Suspension Physics as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use WheelCollider for built-in setups or explicit raycasts per wheel in FixedUpdate. Store wheel_contact_state before applying motor and steering, set Rigidbody.centerOfMass from center_of_mass_offset during initialization, and draw contact normals and compression bars with Gizmos for tuning.",
+    "godot": "Sample suspension rays from VehicleBody3D or custom RayCast3D nodes during _physics_process. Keep compression, contact_normal, ground_surface_id, and slip estimates in vehicle state so camera, audio, particles, and traction all read the same contact result.",
+    "unreal": "Chaos Vehicles can expose wheel setup, suspension travel, spring rate, and damping per wheel. For custom vehicles, run line traces from wheel sockets, cache hit normals and surface types, and replicate compact wheel_contact_state only when remote prediction needs correction.",
+    "web": "In Three.js or a custom loop, separate rendered wheel animation from the fixed-step vehicle solve. Keep deterministic ray order, record contact samples in rollback snapshots, and avoid deriving grip from unsorted mesh triangle hits."
   },
   "related_mechanics": [
-    "camera.dynamic_fov",
     "physics.gravity",
     "vehicles.vehicle_acceleration",
-    "vehicles.vehicle_braking"
+    "vehicles.vehicle_braking",
+    "vehicles.drifting"
   ],
   "combines_well_with": [
-    "camera.dynamic_fov",
-    "physics.gravity",
-    "vehicles.drifting",
-    "vehicles.fuel"
+    "vehicles.vehicle_damage",
+    "vehicles.upgradeable_vehicle",
+    "camera.third_person_camera",
+    "physics.wind_force"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Forza Horizon 5",
+      "note": "Uses suspension and surface response as part of vehicle handling."
+    },
+    {
+      "title": "SnowRunner",
+      "note": "Highlights suspension travel and terrain contact in off-road traversal."
+    }
+  ],
   "tags": [
-    "control",
     "suspension",
-    "vehicles"
+    "wheel_contact",
+    "traction",
+    "vehicle_physics",
+    "surface_response"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

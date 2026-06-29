@@ -2,12 +2,12 @@
   "id": "puzzle.timed_door",
   "name": "Timed Door",
   "aliases": [
-    "timed door mechanic",
-    "timed door system",
-    "timed door"
+    "timer door",
+    "countdown gate",
+    "temporary door"
   ],
   "category": "puzzle",
-  "subcategory": "state_puzzle",
+  "subcategory": "timed_gate",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,97 +15,131 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
+    "design": "medium",
     "implementation": "medium",
     "tuning": "hard"
   },
   "genres": [
     "puzzle",
+    "platformer",
     "adventure",
     "escape_room"
   ],
-  "description": "Timed Door is a rule-based challenge that asks the player to observe, reason, manipulate state, or sequence actions.",
-  "design_notes": "Timed Door should be designed around a clear player promise, a readable trigger, and a predictable result. For puzzle mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A door or gate opens after a trigger and closes again when a countdown, condition, or reset rule expires.",
+  "design_notes": "Timed doors need a single authority for timer start, pause policy, door_state, grace windows, and checkpoint restoration. The player should know what started the door, how long it remains usable, and whether failure resets the room, the door, or only the timer.",
   "design_purpose": [
-    "Give the player a readable way to use timed door as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect timed door to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create route-planning pressure between a trigger and a destination.",
+    "Combine puzzle solving with execution without requiring permanent failure.",
+    "Encourage players to read the room layout and optimize movement."
   ],
-  "player_fantasy": "The player feels clever when they infer the rule and manipulate the system correctly.",
+  "player_fantasy": "The player feels the satisfaction of triggering a gate and reaching it just in time.",
   "required_systems": [
-    "interaction_system",
-    "state_tracking",
-    "feedback_system",
-    "save_state"
+    "timer_system",
+    "door_state_machine",
+    "trigger_registry",
+    "checkpoint_system",
+    "ui_countdown"
   ],
   "parameters": [
     {
-      "name": "activation_condition",
+      "name": "door_id",
       "type": "string",
-      "typical_range": "single, all, ordered, timed",
-      "description": "Rule that determines when the puzzle element changes state."
+      "typical_range": "gate_a, timed_door_03, escape_shutter",
+      "description": "Stable door identifier used by state, animation, and save data."
     },
     {
-      "name": "reset_time",
-      "type": "float",
-      "typical_range": "0-30 seconds",
-      "description": "Delay before the puzzle returns to its default state."
+      "name": "timer_start_trigger_id",
+      "type": "string",
+      "typical_range": "lever_a, pressure_plate_b, sequence_solved",
+      "description": "Trigger that starts or restarts the door countdown."
     },
     {
-      "name": "feedback_intensity",
+      "name": "open_window_ms",
       "type": "integer",
-      "typical_range": "1-5",
-      "description": "How strongly the game communicates success, failure, or partial progress."
+      "typical_range": "1000-120000 ms",
+      "description": "Countdown interval before the door closes or changes state."
+    },
+    {
+      "name": "timer_pause_policy_id",
+      "type": "string",
+      "typical_range": "pause_with_game, continue_in_menu, freeze_in_cutscene",
+      "description": "Rule that controls countdown behavior during pause, dialogue, loading, or cutscenes."
+    },
+    {
+      "name": "checkpoint_reset_policy_id",
+      "type": "string",
+      "typical_range": "restore_closed, restore_remaining, restart_trigger",
+      "description": "Rule applied after death, reload, or room reset while the timer is active."
+    },
+    {
+      "name": "close_grace_ms",
+      "type": "integer",
+      "typical_range": "0-1000 ms",
+      "description": "Small tolerance before closing so near-threshold crossings do not feel unfair."
     }
   ],
   "common_variants": [
-    "timed_door_single_step",
-    "timed_door_multi_step",
-    "timed_variant",
-    "resetting_variant"
+    "lever_timed_door",
+    "pressure_plate_timed_door",
+    "sequence_unlock_window",
+    "checkpoint_timer_gate",
+    "co_op_timed_gate"
   ],
   "edge_cases": [
-    "Timed Door is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Timed Door overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Timed Door runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The player crosses the door threshold on the same tick that the close window expires.",
+    "The start trigger is pressed again while the door is opening, open, closing, or blocked.",
+    "A save occurs with the door open and only part of the countdown remaining.",
+    "Co-op players are on opposite sides when the door closes."
   ],
   "common_bugs": [
-    "Timed Door state does not reset correctly after interruption or reload.",
-    "Feedback for Timed Door plays even when the mechanic fails or is rejected.",
-    "Timed Door produces different results between frame rates, platforms, or network clients."
+    "Door visuals close but collision remains open, or collision closes before animation communicates it.",
+    "Countdown UI rounds differently from authority state and shows one second remaining after closure.",
+    "Pause menu freezes the animation but not the underlying timer.",
+    "Repeated trigger events start multiple timers and close the door early."
   ],
   "balancing_notes": [
-    "Make Timed Door strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Timed doors should test route planning more than loading screens, camera confusion, or animation delay.",
+    "Grace windows and checkpoint placement reduce frustration without removing urgency.",
+    "If the door is required, failure recovery should be quick and obvious."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Timed Door becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show countdown state with text, audio cues, animation, and icon changes rather than sound alone.",
+    "Offer relaxed timers or alternate routes where strict execution is not the main challenge."
   ],
   "implementation_notes": {
-    "unity": "Implement Timed Door with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Timed Door as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Timed Door with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Timed Door as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store door_id, door_state, started_at tick, and open_window_ms in a timer component. Drive Animator and collider from committed door_state, and use one timer instance guarded by a state version.",
+    "godot": "Use a door node with explicit state and a timer service that respects timer_pause_policy_id. Save remaining interval or trigger state according to checkpoint_reset_policy_id rather than relying on Timer node internals.",
+    "unreal": "Use an Actor Component or Gameplay Ability task for timed state, with server authority if multiplayer players can trigger the door. Replicate door_state and remaining countdown to UMG, and resolve threshold crossings with close_grace_ms.",
+    "web": "Keep countdown in the simulation model using a monotonic tick and render UI from remaining milliseconds. Browser visibility changes should follow the pause policy instead of silently consuming the open window."
   },
   "related_mechanics": [
-    "puzzle.key_and_lock",
-    "puzzle.pressure_plate",
     "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "puzzle.lever_switch",
+    "puzzle.pressure_plate",
+    "ui_ux.cooldown_indicator"
   ],
   "combines_well_with": [
-    "puzzle.lever_switch",
-    "puzzle.mirror_light_reflection",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "puzzle.sequence_memory",
+    "puzzle.sliding_block",
+    "platforming.coyote_time",
+    "multiplayer.local_coop"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Portal 2",
+      "note": "Uses timed doors and switches to combine puzzle logic with traversal timing."
+    },
+    {
+      "title": "Prince of Persia: The Sands of Time",
+      "note": "Uses timed gates as part of traversal challenge rooms."
+    }
+  ],
   "tags": [
-    "puzzle",
-    "state",
-    "state_puzzle",
-    "timed"
+    "timed_door",
+    "countdown",
+    "door_state",
+    "checkpoint",
+    "timing"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

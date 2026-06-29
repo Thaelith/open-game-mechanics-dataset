@@ -2,12 +2,12 @@
   "id": "puzzle.lever_switch",
   "name": "Lever Switch",
   "aliases": [
-    "lever switch mechanic",
-    "lever switch system",
-    "lever switch"
+    "toggle lever",
+    "switch puzzle",
+    "pull switch"
   ],
   "category": "puzzle",
-  "subcategory": "state_puzzle",
+  "subcategory": "switch_state",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,97 +15,125 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
+    "design": "easy",
     "implementation": "medium",
-    "tuning": "hard"
+    "tuning": "medium"
   },
   "genres": [
     "puzzle",
     "adventure",
-    "escape_room"
+    "escape_room",
+    "immersive_sim"
   ],
-  "description": "Lever Switch is a rule-based challenge that asks the player to observe, reason, manipulate state, or sequence actions.",
-  "design_notes": "Lever Switch should be designed around a clear player promise, a readable trigger, and a predictable result. For puzzle mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "An interactable switch changes state and drives linked targets such as doors, platforms, hazards, or logic nodes.",
+  "design_notes": "Lever switches are readable when switch_state, linked_target_ids, debounce, and reset boundaries are explicit. Level designers need to know whether the lever is momentary, latched, timed, reversible, saved permanently, or part of a larger dependency graph.",
   "design_purpose": [
-    "Give the player a readable way to use lever switch as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect lever switch to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players a simple world interaction that visibly changes connected puzzle state.",
+    "Support cause-and-effect learning through doors, lights, platforms, traps, or multi-switch logic.",
+    "Create compact puzzle graphs that can be reset, saved, and debugged reliably."
   ],
-  "player_fantasy": "The player feels clever when they infer the rule and manipulate the system correctly.",
+  "player_fantasy": "The player feels they have manipulated the room and can read what changed because of their action.",
   "required_systems": [
     "interaction_system",
-    "state_tracking",
-    "feedback_system",
-    "save_state"
+    "puzzle_state_store",
+    "event_dispatch",
+    "linked_target_registry",
+    "save_load_state"
   ],
   "parameters": [
     {
-      "name": "activation_condition",
+      "name": "interactable_id",
       "type": "string",
-      "typical_range": "single, all, ordered, timed",
-      "description": "Rule that determines when the puzzle element changes state."
+      "typical_range": "lever_a, wall_switch_04, floor_handle",
+      "description": "Stable switch identifier used by interaction, save state, and debug visualization."
     },
     {
-      "name": "reset_time",
-      "type": "float",
-      "typical_range": "0-30 seconds",
-      "description": "Delay before the puzzle returns to its default state."
+      "name": "switch_state",
+      "type": "string",
+      "typical_range": "off, on, locked, returning, disabled",
+      "description": "Authoritative state used by animation, linked targets, and persistence."
     },
     {
-      "name": "feedback_intensity",
+      "name": "linked_target_ids",
+      "type": "array",
+      "typical_range": "door_a, bridge_motor, light_receiver_02",
+      "description": "Targets that receive switch-state changes through ordered puzzle events."
+    },
+    {
+      "name": "debounce_window_ms",
       "type": "integer",
-      "typical_range": "1-5",
-      "description": "How strongly the game communicates success, failure, or partial progress."
+      "typical_range": "100-1000 ms",
+      "description": "Minimum interval before repeated interaction requests may change the switch again."
+    },
+    {
+      "name": "reset_policy_id",
+      "type": "string",
+      "typical_range": "never_reset, reset_on_room_reload, timed_return, checkpoint_reset",
+      "description": "Rule that restores or preserves switch state across resets and reloads."
     }
   ],
   "common_variants": [
-    "lever_switch_single_step",
-    "lever_switch_multi_step",
-    "timed_variant",
-    "resetting_variant"
+    "toggle_lever",
+    "momentary_switch",
+    "timed_return_switch",
+    "multi_target_switch",
+    "networked_coop_switch"
   ],
   "edge_cases": [
-    "Lever Switch is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Lever Switch overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Lever Switch runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A switch is pulled while linked door animation is still moving from the previous state.",
+    "Multiple switches control one target and their dependency graph reaches a contradictory state.",
+    "A player saves after the switch changed but before all target events finished.",
+    "In multiplayer, two players interact with the same switch within one debounce window."
   ],
   "common_bugs": [
-    "Lever Switch state does not reset correctly after interruption or reload.",
-    "Feedback for Lever Switch plays even when the mechanic fails or is rejected.",
-    "Lever Switch produces different results between frame rates, platforms, or network clients."
+    "Lever animation changes locally but linked target state is rejected by authority validation.",
+    "Switch state resets visually after load while the door remains open.",
+    "Events fire in nondeterministic order and multi-switch puzzles become unsolvable after repeated toggles.",
+    "A disabled switch still accepts buffered interaction input."
   ],
   "balancing_notes": [
-    "Make Lever Switch strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Players should be able to see, hear, or infer at least one linked target when learning a new switch rule.",
+    "Timed return switches should give enough margin for route reading, not only perfect execution.",
+    "Complex switch networks need hints or spatial layout that makes the dependency graph learnable."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Lever Switch becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use persistent visual position, text prompts, and audio cues to show switch state.",
+    "Avoid making critical switches distinguishable only by small red/green light changes."
   ],
   "implementation_notes": {
-    "unity": "Implement Lever Switch with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Lever Switch as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Lever Switch with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Lever Switch as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Model the lever as a state component with interactable_id, switch_state, debounce_window_ms, and linked_target_ids. Dispatch target changes from the committed state, then let Animator and audio observe state instead of owning it.",
+    "godot": "Use a node with exported target ids and a puzzle state resource for persistence. Signals should carry switch_state and puzzle_step_index so linked nodes can apply events in stable order.",
+    "unreal": "An Actor Component can own switch state and target references, with server RPCs validating interaction distance and debounce in multiplayer. Replicate switch_state and drive lever mesh, sounds, and target actors from OnRep handlers.",
+    "web": "Keep switch state in the puzzle model and render lever pose from that model. Canvas or Phaser interactions should enqueue a single toggle request and ignore extra clicks until the committed state version changes."
   },
   "related_mechanics": [
-    "puzzle.key_and_lock",
+    "puzzle.timed_door",
     "puzzle.pressure_plate",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "puzzle.key_and_lock",
+    "ui_ux.interaction_prompt"
   ],
   "combines_well_with": [
+    "puzzle.sequence_memory",
     "puzzle.mirror_light_reflection",
-    "puzzle.sliding_block",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "physics.moving_platform",
+    "multiplayer.local_coop"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Portal 2",
+      "note": "Uses switches and linked targets in readable puzzle rooms."
+    },
+    {
+      "title": "The Talos Principle",
+      "note": "Uses switch-like interactables as part of room logic."
+    }
+  ],
   "tags": [
     "lever",
-    "puzzle",
-    "state",
-    "state_puzzle"
+    "switch_state",
+    "linked_targets",
+    "puzzle_logic",
+    "interaction"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

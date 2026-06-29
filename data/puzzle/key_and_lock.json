@@ -1,13 +1,13 @@
 {
   "id": "puzzle.key_and_lock",
-  "name": "Key and Lock",
+  "name": "Key And Lock",
   "aliases": [
-    "key and lock mechanic",
-    "key and lock system",
-    "key and lock"
+    "locked door",
+    "key gate",
+    "inventory lock"
   ],
   "category": "puzzle",
-  "subcategory": "state_puzzle",
+  "subcategory": "progression_gate",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,97 +15,125 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
+    "design": "easy",
     "implementation": "medium",
-    "tuning": "hard"
+    "tuning": "medium"
   },
   "genres": [
     "puzzle",
     "adventure",
+    "metroidvania",
     "escape_room"
   ],
-  "description": "Key and Lock is a rule-based challenge that asks the player to observe, reason, manipulate state, or sequence actions.",
-  "design_notes": "Key and Lock should be designed around a clear player promise, a readable trigger, and a predictable result. For puzzle mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A lock blocks progress until the player presents, consumes, or proves ownership of a required key item.",
+  "design_notes": "Key and lock puzzles are progression gates with inventory and persistence risks. The design should define key_item_id ownership, lock_id state, consumption policy, duplicate unlock prevention, and whether the gate is optional, required, reusable, or shared across multiple locks.",
   "design_purpose": [
-    "Give the player a readable way to use key and lock as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect key and lock to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Gate areas or rewards behind exploration, routing, or item acquisition.",
+    "Give players a concrete goal that can be tracked through inventory and level layout.",
+    "Support authored progression without requiring complex puzzle logic."
   ],
-  "player_fantasy": "The player feels clever when they infer the rule and manipulate the system correctly.",
+  "player_fantasy": "The player feels they found the right item and used it to open a previously blocked path.",
   "required_systems": [
+    "inventory_system",
     "interaction_system",
-    "state_tracking",
-    "feedback_system",
-    "save_state"
+    "puzzle_state_store",
+    "save_load_state",
+    "ui_prompt"
   ],
   "parameters": [
     {
-      "name": "activation_condition",
+      "name": "lock_id",
       "type": "string",
-      "typical_range": "single, all, ordered, timed",
-      "description": "Rule that determines when the puzzle element changes state."
+      "typical_range": "door_a_lock, treasure_gate_03, vault_socket",
+      "description": "Stable lock identifier persisted after the gate is opened or permanently changed."
     },
     {
-      "name": "reset_time",
-      "type": "float",
-      "typical_range": "0-30 seconds",
-      "description": "Delay before the puzzle returns to its default state."
+      "name": "key_item_id",
+      "type": "string",
+      "typical_range": "bronze_key, red_keycard, puzzle_gem_a",
+      "description": "Required inventory item or quest token checked when the player attempts unlock."
     },
     {
-      "name": "feedback_intensity",
-      "type": "integer",
-      "typical_range": "1-5",
-      "description": "How strongly the game communicates success, failure, or partial progress."
+      "name": "key_consumption_policy_id",
+      "type": "string",
+      "typical_range": "consume_once, keep_key, consume_stack_unit, mark_used",
+      "description": "Rule that decides whether the key is removed, retained, or marked after successful unlock."
+    },
+    {
+      "name": "progression_gate_id",
+      "type": "string",
+      "typical_range": "main_path_gate, optional_cache, shortcut_unlock",
+      "description": "Design-facing gate label used by progression validation and route planning."
+    },
+    {
+      "name": "unlock_transaction_id",
+      "type": "string",
+      "typical_range": "generated per interaction",
+      "description": "Idempotent transaction identifier that prevents duplicate unlocks or double consumption."
     }
   ],
   "common_variants": [
-    "key_and_lock_single_step",
-    "key_and_lock_multi_step",
-    "timed_variant",
-    "resetting_variant"
+    "single_use_key",
+    "reusable_master_key",
+    "color_keycard_lock",
+    "multi_key_socket",
+    "shared_party_unlock"
   ],
   "edge_cases": [
-    "Key and Lock is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Key and Lock overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Key and Lock runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The player unlocks a door and reloads before the key removal and lock state are both persisted.",
+    "Two players try to unlock the same shared lock with different keys in the same server tick.",
+    "A key is optional for one route but required to avoid a later soft-lock.",
+    "The lock is opened by script, physics, or quest state before the inventory key is used."
   ],
   "common_bugs": [
-    "Key and Lock state does not reset correctly after interruption or reload.",
-    "Feedback for Key and Lock plays even when the mechanic fails or is rejected.",
-    "Key and Lock produces different results between frame rates, platforms, or network clients."
+    "The key is consumed but the lock remains closed after an interrupted animation or scene transition.",
+    "Unlock prompts appear for players who lack the key because UI checks a stale inventory snapshot.",
+    "Duplicate interaction events consume multiple stack units for one lock.",
+    "Save data stores door animation state but not the authoritative lock_id opened flag."
   ],
   "balancing_notes": [
-    "Make Key and Lock strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Required keys should be placed where players can infer the route back to the lock.",
+    "Reusable keys reduce inventory friction but can weaken the sense of one-time progression.",
+    "Optional locks work well when their rewards justify revisiting without blocking the main path."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Key and Lock becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show the required key name or icon in text form, and make missing-key messages persistent enough to read.",
+    "Consider map or journal reminders for locks the player has found but cannot yet open."
   ],
   "implementation_notes": {
-    "unity": "Implement Key and Lock with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Key and Lock as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Key and Lock with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Key and Lock as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use a lock component keyed by lock_id that requests an inventory transaction with key_item_id and unlock_transaction_id. Commit lock state and key consumption together, then drive Animator, audio, and UI from the committed result.",
+    "godot": "Keep lock state in a puzzle state resource or autoload store, not only on the door node. Interaction RPC or signal handlers should validate key_item_id, apply key_consumption_policy_id, and save lock_id before playing the opening sequence.",
+    "unreal": "Store lock_id and required key data in an Actor Component, with the server or authority validating inventory before opening replicated doors. Use Gameplay Tags or inventory item ids for keys, and guard against repeated interaction RPCs.",
+    "web": "Represent locks as data records keyed by lock_id and inventory entries keyed by item instance. In Phaser or custom JavaScript, keep the confirm handler idempotent so double clicks or retries cannot consume the key twice."
   },
   "related_mechanics": [
     "puzzle.lever_switch",
-    "puzzle.pressure_plate",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "puzzle.timed_door",
+    "ui_ux.quest_marker",
+    "progression.unlockable_abilities"
   ],
   "combines_well_with": [
-    "puzzle.mirror_light_reflection",
-    "puzzle.sliding_block",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "puzzle.sequence_memory",
+    "puzzle.pressure_plate",
+    "narrative.reputation_gating",
+    "ui_ux.interaction_prompt"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Legend of Zelda: Ocarina of Time",
+      "note": "Uses keys and locked doors as dungeon progression gates."
+    },
+    {
+      "title": "Resident Evil 2",
+      "note": "Uses themed keys to gate routes and encourage backtracking."
+    }
+  ],
   "tags": [
-    "key",
-    "puzzle",
-    "state",
-    "state_puzzle"
+    "key_lock",
+    "progression_gate",
+    "inventory",
+    "persistence",
+    "interaction"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"
