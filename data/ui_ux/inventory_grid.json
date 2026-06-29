@@ -115,6 +115,36 @@
     "progression.equipment_rarity",
     "accessibility.text_scaling"
   ],
+  "relationships": [
+    {
+      "target": "economy.shop",
+      "type": "supports",
+      "reason": "Inventory grids provide item slots, stack counts, and capacity checks needed by shop buy and sell transactions.",
+      "strength": "strong"
+    },
+    {
+      "target": "crafting.recipe_crafting",
+      "type": "requires",
+      "reason": "Recipe crafting needs inventory slot and item instance data to validate ingredient consumption.",
+      "strength": "strong"
+    },
+    {
+      "target": "economy.trading",
+      "type": "supports",
+      "reason": "Trading uses inventory selection, item locks, and stack splitting before escrow commits.",
+      "strength": "strong"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 4,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 4,
+    "networking_risk": 4,
+    "save_load_risk": 5,
+    "ui_risk": 5
+  },
   "example_games": [
     {
       "title": "Resident Evil 4",
@@ -133,5 +163,5 @@
     "accessibility"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

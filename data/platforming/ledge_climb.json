@@ -123,6 +123,36 @@
     "movement.stamina_movement",
     "traversal.parkour_vault"
   ],
+  "relationships": [
+    {
+      "target": "platforming.ledge_grab",
+      "type": "requires",
+      "reason": "Ledge climb needs an established grab point, hang state, and clearance check before moving the character up.",
+      "strength": "strong"
+    },
+    {
+      "target": "traversal.mantling",
+      "type": "is_variant_of",
+      "reason": "Ledge climb is a slower or more explicit variant of mantling with stronger animation and clearance requirements.",
+      "strength": "medium"
+    },
+    {
+      "target": "movement.stamina_movement",
+      "type": "consumes",
+      "reason": "Some climb systems spend stamina during the climb to limit repeated ledge recovery.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 4,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 2,
+    "save_load_risk": 2,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "Uncharted 4",
@@ -141,5 +171,5 @@
     "platforming_state"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

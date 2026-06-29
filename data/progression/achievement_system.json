@@ -118,6 +118,36 @@
     "progression.crafting_unlocks",
     "ui_ux.dialogue_choice"
   ],
+  "relationships": [
+    {
+      "target": "meta.daily_challenge",
+      "type": "supports",
+      "reason": "Achievements and daily challenges can share account progress counters, claim state, and platform service sync.",
+      "strength": "medium"
+    },
+    {
+      "target": "progression.meta_progression",
+      "type": "enhances",
+      "reason": "Achievements can reinforce long-term goals without directly changing run balance.",
+      "strength": "weak"
+    },
+    {
+      "target": "external.platform_achievements",
+      "type": "supports",
+      "reason": "Platform achievement services may mirror internal unlock state for profile-level rewards.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "polish",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 3,
+    "content_cost": 3,
+    "networking_risk": 2,
+    "save_load_risk": 5,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Steam achievements",
@@ -134,5 +164,5 @@
     "rewards"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

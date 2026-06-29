@@ -124,6 +124,36 @@
     "ui_ux.radial_menu",
     "ui_ux.accessibility_remap_controls"
   ],
+  "relationships": [
+    {
+      "target": "camera.split_screen",
+      "type": "requires",
+      "reason": "Local co-op often needs split-screen or shared-camera rules to give each player usable visibility.",
+      "strength": "strong"
+    },
+    {
+      "target": "ui_ux.accessibility_remap_controls",
+      "type": "requires",
+      "reason": "Per-player local input bindings are needed when multiple devices share one machine.",
+      "strength": "strong"
+    },
+    {
+      "target": "multiplayer.online_coop",
+      "type": "is_variant_of",
+      "reason": "Local co-op is a same-device variant of cooperative play with different authority and connection costs.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 4,
+    "design_cost": 4,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 0,
+    "save_load_risk": 3,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Overcooked",
@@ -142,5 +172,5 @@
     "profile_binding"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

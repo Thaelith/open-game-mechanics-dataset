@@ -110,6 +110,36 @@
     "traversal.gliding",
     "progression.unlockable_abilities"
   ],
+  "relationships": [
+    {
+      "target": "platforming.variable_jump_height",
+      "type": "extends",
+      "reason": "Double jump extends the base jump state by adding an airborne jump charge and reset rule.",
+      "strength": "strong"
+    },
+    {
+      "target": "progression.unlockable_abilities",
+      "type": "unlocks",
+      "reason": "Double jump is often granted as a progression ability that changes reachable routes.",
+      "strength": "medium"
+    },
+    {
+      "target": "platforming.coyote_time",
+      "type": "soft_conflicts_with",
+      "reason": "Coyote windows must not accidentally restore or consume double-jump charges in unintended states.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 2,
+    "networking_risk": 2,
+    "save_load_risk": 2,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "Super Metroid",
@@ -128,5 +158,5 @@
     "upgrade"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

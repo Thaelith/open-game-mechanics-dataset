@@ -68,7 +68,7 @@ def build_index(root: Path) -> dict:
     mechanics.sort(key=lambda item: item["id"])
     return {
         "name": "Open Game Mechanics Dataset",
-        "schema_version": "0.1.0",
+        "schema_version": "0.2.0",
         "license": "CC0-1.0",
         "tool_license": "MIT",
         "total_mechanics": len(mechanics),

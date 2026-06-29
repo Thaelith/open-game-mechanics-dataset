@@ -121,6 +121,42 @@
     "platforming.wall_jump",
     "progression.skill_tree"
   ],
+  "relationships": [
+    {
+      "target": "time.cooldown_time",
+      "type": "requires",
+      "reason": "Dash usually needs a cooldown clock or charge rule to prevent unlimited burst repositioning.",
+      "strength": "strong"
+    },
+    {
+      "target": "camera.screen_shake",
+      "type": "enhances",
+      "reason": "A short shake or camera impulse can emphasize dash impact without changing the dash collision rules.",
+      "strength": "weak"
+    },
+    {
+      "target": "movement.air_dash",
+      "type": "unlocks",
+      "reason": "A ground or omnidirectional dash is often the base action upgraded into an airborne dash variant.",
+      "strength": "medium"
+    },
+    {
+      "target": "combat.invincibility_frames",
+      "type": "soft_conflicts_with",
+      "reason": "Combining dash with invulnerability can dominate defensive play unless windows, recovery, and cooldowns are constrained.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 2,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Celeste",
@@ -139,5 +175,5 @@
     "skill_expression"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

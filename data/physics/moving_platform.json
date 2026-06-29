@@ -118,6 +118,36 @@
     "time.time_rewind",
     "traversal.zipline"
   ],
+  "relationships": [
+    {
+      "target": "platforming.variable_jump_height",
+      "type": "soft_conflicts_with",
+      "reason": "Moving platform velocity transfer must not create inconsistent jump arcs when variable jump rules apply.",
+      "strength": "medium"
+    },
+    {
+      "target": "combat.knockback",
+      "type": "soft_conflicts_with",
+      "reason": "Passenger velocity and knockback vectors need clear priority when a target is hit on a moving platform.",
+      "strength": "medium"
+    },
+    {
+      "target": "time.time_rewind",
+      "type": "soft_conflicts_with",
+      "reason": "Rewind snapshots must capture platform phase, passenger carry state, and velocity transfer to replay correctly.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 4,
+    "design_cost": 3,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 4,
+    "save_load_risk": 4,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "Celeste",
@@ -136,5 +166,5 @@
     "kinematic"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

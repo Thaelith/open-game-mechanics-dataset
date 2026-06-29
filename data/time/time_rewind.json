@@ -118,6 +118,36 @@
     "time.timed_challenge",
     "camera.screen_shake"
   ],
+  "relationships": [
+    {
+      "target": "time.cooldown_time",
+      "type": "soft_conflicts_with",
+      "reason": "Cooldown clocks must define whether rewind restores elapsed time, remaining duration, or consumed charges.",
+      "strength": "strong"
+    },
+    {
+      "target": "traversal.grappling_hook",
+      "type": "soft_conflicts_with",
+      "reason": "Rewind snapshots must include grapple attachment, rope length, velocity, and collision state to replay traversal safely.",
+      "strength": "medium"
+    },
+    {
+      "target": "multiplayer.online_coop",
+      "type": "conflicts_with",
+      "reason": "Player-controlled rewind conflicts with ordinary online co-op authority unless rollback and shared timeline rules are designed first.",
+      "strength": "strong"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 5,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 5,
+    "save_load_risk": 5,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Braid",
@@ -136,5 +166,5 @@
     "determinism"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

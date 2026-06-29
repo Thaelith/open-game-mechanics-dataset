@@ -116,6 +116,36 @@
     "ui_ux.hit_marker",
     "camera.screen_shake"
   ],
+  "relationships": [
+    {
+      "target": "combat.knockback",
+      "type": "supports",
+      "reason": "Hit stun holds state long enough for knockback motion and recovery rules to be readable.",
+      "strength": "strong"
+    },
+    {
+      "target": "combat.combo_chain",
+      "type": "feeds",
+      "reason": "Hit stun duration creates the link window that lets combo steps connect before recovery ends.",
+      "strength": "strong"
+    },
+    {
+      "target": "combat.invincibility_frames",
+      "type": "balances",
+      "reason": "Post-hit immunity can prevent repeated hit-stun loops from locking a target indefinitely.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 1,
+    "networking_risk": 4,
+    "save_load_risk": 2,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "Street Fighter II",
@@ -134,5 +164,5 @@
     "hit_reaction"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

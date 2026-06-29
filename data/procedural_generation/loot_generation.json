@@ -117,6 +117,36 @@
     "roguelike.relic_synergy",
     "ui_ux.inventory_grid"
   ],
+  "relationships": [
+    {
+      "target": "economy.loot_table",
+      "type": "requires",
+      "reason": "Loot generation depends on weighted reward tables, rarity rows, and duplicate handling rules.",
+      "strength": "strong"
+    },
+    {
+      "target": "procedural_generation.seeded_generation",
+      "type": "supports",
+      "reason": "Seeded streams make loot results reproducible for rollback, bug reports, and deterministic runs.",
+      "strength": "medium"
+    },
+    {
+      "target": "roguelike.random_powerups",
+      "type": "feeds",
+      "reason": "Generated loot pools can provide the reward candidates used by random powerup choices.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 3,
+    "save_load_risk": 4,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Diablo",
@@ -134,5 +164,5 @@
     "replayability"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

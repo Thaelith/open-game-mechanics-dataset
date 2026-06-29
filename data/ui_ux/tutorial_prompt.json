@@ -115,6 +115,36 @@
     "combat.block",
     "crafting.recipe_crafting"
   ],
+  "relationships": [
+    {
+      "target": "platforming.coyote_time",
+      "type": "supports",
+      "reason": "Tutorial prompts can introduce forgiving jump behavior without exposing implementation-specific frame timing.",
+      "strength": "weak"
+    },
+    {
+      "target": "ui_ux.interaction_prompt",
+      "type": "soft_conflicts_with",
+      "reason": "Tutorial and interaction prompts need display priority so onboarding text does not hide actionable inputs.",
+      "strength": "medium"
+    },
+    {
+      "target": "accessibility.text_scaling",
+      "type": "requires",
+      "reason": "Tutorial prompts should respect text scaling and localization expansion because they often carry required learning information.",
+      "strength": "strong"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 2,
+    "design_cost": 3,
+    "tuning_cost": 3,
+    "content_cost": 3,
+    "networking_risk": 1,
+    "save_load_risk": 2,
+    "ui_risk": 5
+  },
   "example_games": [
     {
       "title": "Portal",
@@ -133,5 +163,5 @@
     "accessibility"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

@@ -124,6 +124,36 @@
     "crafting.crafting_queue",
     "progression.skill_tree"
   ],
+  "relationships": [
+    {
+      "target": "ui_ux.inventory_grid",
+      "type": "requires",
+      "reason": "Recipe crafting needs item instance slots, stack counts, and capacity checks before ingredients are consumed.",
+      "strength": "strong"
+    },
+    {
+      "target": "economy.crafting_materials",
+      "type": "consumes",
+      "reason": "Recipes usually spend crafting materials as validated ingredient inputs.",
+      "strength": "strong"
+    },
+    {
+      "target": "progression.crafting_unlocks",
+      "type": "supports",
+      "reason": "Crafting unlocks control which recipes appear and can be committed by the player.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 4,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 4,
+    "networking_risk": 3,
+    "save_load_risk": 5,
+    "ui_risk": 5
+  },
   "example_games": [
     {
       "title": "Minecraft",
@@ -142,5 +172,5 @@
     "item_instances"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

@@ -123,6 +123,36 @@
     "camera.smooth_follow_camera",
     "accessibility.assist_mode"
   ],
+  "relationships": [
+    {
+      "target": "platforming.coyote_time",
+      "type": "supports",
+      "reason": "Post-ground grace windows make variable jump starts feel consistent near ledges.",
+      "strength": "strong"
+    },
+    {
+      "target": "platforming.jump_buffering",
+      "type": "supports",
+      "reason": "Buffered input should carry press timing into the variable jump state instead of starting a separate jump path.",
+      "strength": "strong"
+    },
+    {
+      "target": "platforming.double_jump",
+      "type": "enhances",
+      "reason": "Double jump can reuse variable hold and release rules so both jumps share a consistent feel.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 1,
+    "networking_risk": 2,
+    "save_load_risk": 1,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "Super Mario Bros.",
@@ -141,5 +171,5 @@
     "input_forgiveness"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

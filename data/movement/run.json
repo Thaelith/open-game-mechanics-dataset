@@ -123,6 +123,36 @@
     "traversal.parkour_vault",
     "survival.stamina"
   ],
+  "relationships": [
+    {
+      "target": "movement.walk",
+      "type": "extends",
+      "reason": "Run builds on the same ground locomotion state as walk while changing acceleration, max velocity, and animation blend thresholds.",
+      "strength": "strong"
+    },
+    {
+      "target": "movement.stamina_movement",
+      "type": "consumes",
+      "reason": "Run often drains stamina or uses stamina gates when it acts as a sustained high-output movement state.",
+      "strength": "medium"
+    },
+    {
+      "target": "camera.dynamic_fov",
+      "type": "enhances",
+      "reason": "Dynamic FOV can make high-velocity running feel faster while preserving the same movement rules.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 2,
+    "design_cost": 2,
+    "tuning_cost": 3,
+    "content_cost": 2,
+    "networking_risk": 2,
+    "save_load_risk": 1,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "Super Mario Odyssey",
@@ -141,5 +171,5 @@
     "animation_blend"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

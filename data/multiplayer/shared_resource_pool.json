@@ -124,6 +124,36 @@
     "ui_ux.inventory_grid",
     "economy.trading"
   ],
+  "relationships": [
+    {
+      "target": "economy.coins",
+      "type": "consumes",
+      "reason": "Shared resource pools often spend team currency or pooled materials through ordered transactions.",
+      "strength": "medium"
+    },
+    {
+      "target": "multiplayer.team_objective",
+      "type": "supports",
+      "reason": "Shared resources reinforce team objectives by making contributions and spending visible to the group.",
+      "strength": "medium"
+    },
+    {
+      "target": "multiplayer.friendly_fire",
+      "type": "soft_conflicts_with",
+      "reason": "Shared resources and friendly fire both need anti-grief rules because one player can harm group progress.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 4,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 2,
+    "networking_risk": 5,
+    "save_load_risk": 5,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Deep Rock Galactic",
@@ -142,5 +172,5 @@
     "permissions"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

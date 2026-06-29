@@ -118,6 +118,36 @@
     "ui_ux.hit_marker",
     "time.cooldown_time"
   ],
+  "relationships": [
+    {
+      "target": "combat.parry",
+      "type": "enhances",
+      "reason": "Slow motion can emphasize successful timing windows and help players read counterattack opportunities.",
+      "strength": "weak"
+    },
+    {
+      "target": "camera.dynamic_fov",
+      "type": "soft_conflicts_with",
+      "reason": "Slow motion and FOV changes need stacking rules so camera comfort settings remain predictable.",
+      "strength": "medium"
+    },
+    {
+      "target": "future.reduced_motion_settings",
+      "type": "requires",
+      "reason": "Slow-motion presentation should respect reduced-motion settings for camera movement and visual intensity.",
+      "strength": "strong"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "polish",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 2,
+    "networking_risk": 4,
+    "save_load_risk": 2,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Max Payne",
@@ -136,5 +166,5 @@
     "clock_management"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

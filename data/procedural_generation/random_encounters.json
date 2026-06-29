@@ -117,6 +117,36 @@
     "horror.monster_patrol",
     "ui_ux.quest_marker"
   ],
+  "relationships": [
+    {
+      "target": "procedural_generation.seeded_generation",
+      "type": "requires",
+      "reason": "Random encounters need deterministic seed and content-version handling for reproducible debugging and save restoration.",
+      "strength": "strong"
+    },
+    {
+      "target": "procedural_generation.biome_generation",
+      "type": "supports",
+      "reason": "Biome state constrains encounter pools so enemies, hazards, and rewards fit the current region.",
+      "strength": "medium"
+    },
+    {
+      "target": "survival.day_night_cycle",
+      "type": "enhances",
+      "reason": "Day and night phases can change encounter pools and pacing without rewriting the generator.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 4,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 3,
+    "save_load_risk": 4,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Fallout",
@@ -134,5 +164,5 @@
     "replayability"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

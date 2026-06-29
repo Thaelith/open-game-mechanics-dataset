@@ -123,6 +123,36 @@
     "stealth.visibility_meter",
     "platforming.coyote_time"
   ],
+  "relationships": [
+    {
+      "target": "movement.run",
+      "type": "supports",
+      "reason": "Walk provides the baseline locomotion state that run usually extends with higher acceleration and animation blending.",
+      "strength": "strong"
+    },
+    {
+      "target": "movement.stamina_movement",
+      "type": "balances",
+      "reason": "A low-cost walk state gives exhausted players a fallback when stamina-gated movement is unavailable.",
+      "strength": "medium"
+    },
+    {
+      "target": "camera.smooth_follow_camera",
+      "type": "supports",
+      "reason": "Smooth follow cameras commonly tune their dead zones and damping around the default walk pace.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 2,
+    "design_cost": 2,
+    "tuning_cost": 2,
+    "content_cost": 2,
+    "networking_risk": 2,
+    "save_load_risk": 1,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "The Last of Us",
@@ -141,5 +171,5 @@
     "camera_comfort"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

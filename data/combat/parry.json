@@ -117,6 +117,36 @@
     "movement.dash",
     "ui_ux.hit_marker"
   ],
+  "relationships": [
+    {
+      "target": "combat.hit_stun",
+      "type": "feeds",
+      "reason": "A successful parry often creates a stun or stagger window that lets the player counterattack.",
+      "strength": "strong"
+    },
+    {
+      "target": "combat.block",
+      "type": "is_variant_of",
+      "reason": "Parry is a timing-focused defensive variant of blocking with narrower windows and stronger reward.",
+      "strength": "medium"
+    },
+    {
+      "target": "combat.invincibility_frames",
+      "type": "soft_conflicts_with",
+      "reason": "Parry windows and invulnerability windows must define which resolver owns the incoming damage event.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 4,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 4,
+    "save_load_risk": 2,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Sekiro: Shadows Die Twice",
@@ -135,5 +165,5 @@
     "stagger"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

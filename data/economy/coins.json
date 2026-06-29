@@ -118,6 +118,36 @@
     "economy.idle_income",
     "ui_ux.inventory_grid"
   ],
+  "relationships": [
+    {
+      "target": "economy.shop",
+      "type": "feeds",
+      "reason": "Coins provide the wallet balance spent by shop purchase transactions.",
+      "strength": "strong"
+    },
+    {
+      "target": "progression.upgrade_shop",
+      "type": "feeds",
+      "reason": "Coin rewards can fund long-term upgrade purchases and progression sinks.",
+      "strength": "strong"
+    },
+    {
+      "target": "economy.dynamic_pricing",
+      "type": "supports",
+      "reason": "Stable currency units make price modifiers and sellback ratios easier to audit and display.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 2,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 4,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Super Mario Bros.",
@@ -134,5 +164,5 @@
     "rewards"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

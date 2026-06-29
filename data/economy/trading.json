@@ -118,6 +118,36 @@
     "economy.resource_conversion",
     "progression.equipment_rarity"
   ],
+  "relationships": [
+    {
+      "target": "economy.coins",
+      "type": "consumes",
+      "reason": "Trades often escrow wallet currency alongside item instances before an atomic exchange commits.",
+      "strength": "strong"
+    },
+    {
+      "target": "multiplayer.online_coop",
+      "type": "requires",
+      "reason": "Player trading needs session identity, authority, disconnect handling, and anti-dupe validation in online games.",
+      "strength": "strong"
+    },
+    {
+      "target": "economy.dynamic_pricing",
+      "type": "soft_conflicts_with",
+      "reason": "Dynamic vendor prices and player trade prices can create arbitrage unless fees, limits, or market rules align.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 5,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 5,
+    "save_load_risk": 5,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "EVE Online",
@@ -134,5 +164,5 @@
     "trading"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

@@ -116,6 +116,36 @@
     "progression.skill_tree",
     "accessibility.text_scaling"
   ],
+  "relationships": [
+    {
+      "target": "time.cooldown_time",
+      "type": "requires",
+      "reason": "Cooldown indicators need remaining duration, charge count, and authoritative ready state from cooldown timers.",
+      "strength": "strong"
+    },
+    {
+      "target": "movement.dash",
+      "type": "supports",
+      "reason": "Dash availability is easier to read when cooldown or charge state is visible near the action prompt.",
+      "strength": "medium"
+    },
+    {
+      "target": "combat.charged_attack",
+      "type": "soft_conflicts_with",
+      "reason": "Charge indicators and cooldown indicators can overload the same HUD space unless priority rules are defined.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 2,
+    "design_cost": 3,
+    "tuning_cost": 3,
+    "content_cost": 2,
+    "networking_risk": 2,
+    "save_load_risk": 1,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "World of Warcraft",
@@ -134,5 +164,5 @@
     "accessibility"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

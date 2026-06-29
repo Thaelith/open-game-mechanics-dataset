@@ -123,6 +123,36 @@
     "combat.combo_chain",
     "accessibility.assist_mode"
   ],
+  "relationships": [
+    {
+      "target": "movement.dodge_roll",
+      "type": "supports",
+      "reason": "Timed immunity commonly resolves dodge-roll defensive windows without changing the movement animation itself.",
+      "strength": "strong"
+    },
+    {
+      "target": "combat.parry",
+      "type": "soft_conflicts_with",
+      "reason": "Parry and invincibility windows need priority rules when both could negate the same incoming damage event.",
+      "strength": "medium"
+    },
+    {
+      "target": "ui_ux.cooldown_indicator",
+      "type": "supports",
+      "reason": "Readable recovery or availability indicators help players understand when defensive immunity can be used again.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 2,
+    "networking_risk": 4,
+    "save_load_risk": 2,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Dark Souls",
@@ -141,5 +171,5 @@
     "combat_state"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

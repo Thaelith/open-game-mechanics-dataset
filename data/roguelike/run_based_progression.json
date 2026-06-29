@@ -133,6 +133,36 @@
     "progression.achievement_system",
     "ui_ux.inventory_grid"
   ],
+  "relationships": [
+    {
+      "target": "roguelike.permadeath",
+      "type": "supports",
+      "reason": "Run-based progression supplies the reset boundary that makes permadeath legible and enforceable.",
+      "strength": "strong"
+    },
+    {
+      "target": "roguelike.pick_one_upgrade_choice",
+      "type": "enhances",
+      "reason": "Run reward choices give each run build identity without requiring permanent unlocks.",
+      "strength": "medium"
+    },
+    {
+      "target": "progression.meta_progression",
+      "type": "soft_conflicts_with",
+      "reason": "Persistent account unlocks must be separated from run state to avoid erasing run-based stakes.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 4,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 4,
+    "networking_risk": 3,
+    "save_load_risk": 5,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Hades",
@@ -151,5 +181,5 @@
     "temporary_power"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

@@ -124,6 +124,36 @@
     "strategy.territory_control",
     "ai.enemy_spawn_director"
   ],
+  "relationships": [
+    {
+      "target": "economy.resource_conversion",
+      "type": "consumes",
+      "reason": "Base structures often spend converted resources or materials through placement transactions.",
+      "strength": "medium"
+    },
+    {
+      "target": "procedural_generation.random_encounters",
+      "type": "soft_conflicts_with",
+      "reason": "Random encounters must avoid spawning inside bases or invalidating protected construction areas.",
+      "strength": "medium"
+    },
+    {
+      "target": "multiplayer.shared_resource_pool",
+      "type": "supports",
+      "reason": "Shared pools let teams contribute materials toward base structures and repairs.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 5,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 5,
+    "networking_risk": 5,
+    "save_load_risk": 5,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Valheim",
@@ -142,5 +172,5 @@
     "persistence"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

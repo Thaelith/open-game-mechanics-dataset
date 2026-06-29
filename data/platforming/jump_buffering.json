@@ -97,6 +97,36 @@
     "movement.air_dash",
     "accessibility.toggle_hold_option"
   ],
+  "relationships": [
+    {
+      "target": "platforming.coyote_time",
+      "type": "enhances",
+      "reason": "Jump buffering complements coyote time by accepting input just before landing or becoming jump-eligible.",
+      "strength": "strong"
+    },
+    {
+      "target": "platforming.variable_jump_height",
+      "type": "supports",
+      "reason": "Buffered jump starts must feed the same press and release timestamps used by variable jump height.",
+      "strength": "strong"
+    },
+    {
+      "target": "movement.dash",
+      "type": "soft_conflicts_with",
+      "reason": "Buffered jumps and dash inputs can conflict when both consume the same button timing or cancel windows.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 2,
+    "design_cost": 2,
+    "tuning_cost": 3,
+    "content_cost": 1,
+    "networking_risk": 1,
+    "save_load_risk": 1,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "Celeste",
@@ -110,5 +140,5 @@
     "accessibility"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

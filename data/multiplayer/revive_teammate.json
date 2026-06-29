@@ -124,6 +124,36 @@
     "survival.stamina",
     "ui_ux.checkpoint_notification"
   ],
+  "relationships": [
+    {
+      "target": "survival.health",
+      "type": "requires",
+      "reason": "Revive needs a downed or incapacitated health state before a teammate can restore the player.",
+      "strength": "strong"
+    },
+    {
+      "target": "multiplayer.online_coop",
+      "type": "enhances",
+      "reason": "Revive gives online co-op teams a recovery verb that rewards positioning and coordination.",
+      "strength": "strong"
+    },
+    {
+      "target": "combat.invincibility_frames",
+      "type": "supports",
+      "reason": "A short protection window after revive prevents immediate repeated death from unresolved damage sources.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 4,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 5,
+    "save_load_risk": 4,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Left 4 Dead",
@@ -142,5 +172,5 @@
     "authority"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

@@ -124,6 +124,36 @@
     "crafting.crafting_queue",
     "multiplayer.friendly_fire"
   ],
+  "relationships": [
+    {
+      "target": "multiplayer.matchmaking_lobby",
+      "type": "requires",
+      "reason": "Online co-op usually needs a lobby or session flow for party formation, readiness, and reconnect state.",
+      "strength": "strong"
+    },
+    {
+      "target": "multiplayer.revive_teammate",
+      "type": "enhances",
+      "reason": "Revive mechanics add cooperative recovery pressure and reasons to protect teammates.",
+      "strength": "medium"
+    },
+    {
+      "target": "time.time_rewind",
+      "type": "conflicts_with",
+      "reason": "Authoritative online co-op is structurally hard to combine with player-controlled rewinds without rollback architecture.",
+      "strength": "strong"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 5,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 5,
+    "save_load_risk": 5,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Left 4 Dead",
@@ -142,5 +172,5 @@
     "reconnect"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

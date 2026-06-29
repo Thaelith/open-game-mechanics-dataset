@@ -33,6 +33,46 @@
     "source_confidence",
     "last_updated"
   ],
+  "$defs": {
+    "mechanic_reference": {
+      "type": "string",
+      "pattern": "^(?:(?:external|future)\\.[a-z0-9_]+(?:\\.[a-z0-9_]+)*|[a-z][a-z0-9_]*\\.[a-z0-9_]+(?:\\.[a-z0-9_]+)*)$"
+    },
+    "relationship_type": {
+      "type": "string",
+      "enum": [
+        "requires",
+        "supports",
+        "enhances",
+        "extends",
+        "is_variant_of",
+        "conflicts_with",
+        "soft_conflicts_with",
+        "balances",
+        "feeds",
+        "consumes",
+        "unlocks"
+      ]
+    },
+    "relationship_strength": {
+      "type": "string",
+      "enum": [
+        "weak",
+        "medium",
+        "strong"
+      ]
+    },
+    "scope_score": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "risk_score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5
+    }
+  },
   "properties": {
     "id": {
       "type": "string",
@@ -293,18 +333,91 @@
     "related_mechanics": {
       "type": "array",
       "items": {
-        "type": "string",
-        "pattern": "^(external|future)\\.[a-z0-9_]+(\\.[a-z0-9_]+)*|[a-z][a-z0-9_]*\\.[a-z0-9_]+(\\.[a-z0-9_]+)*$"
+        "$ref": "#/$defs/mechanic_reference"
       },
       "uniqueItems": true
     },
     "combines_well_with": {
       "type": "array",
       "items": {
-        "type": "string",
-        "pattern": "^(external|future)\\.[a-z0-9_]+(\\.[a-z0-9_]+)*|[a-z][a-z0-9_]*\\.[a-z0-9_]+(\\.[a-z0-9_]+)*$"
+        "$ref": "#/$defs/mechanic_reference"
       },
       "uniqueItems": true
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "target",
+          "type",
+          "reason",
+          "strength"
+        ],
+        "properties": {
+          "target": {
+            "$ref": "#/$defs/mechanic_reference"
+          },
+          "type": {
+            "$ref": "#/$defs/relationship_type"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 20
+          },
+          "strength": {
+            "$ref": "#/$defs/relationship_strength"
+          }
+        }
+      }
+    },
+    "scope_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mvp_role",
+        "implementation_cost",
+        "design_cost",
+        "tuning_cost",
+        "content_cost",
+        "networking_risk",
+        "save_load_risk",
+        "ui_risk"
+      ],
+      "properties": {
+        "mvp_role": {
+          "type": "string",
+          "enum": [
+            "core",
+            "support",
+            "optional",
+            "polish",
+            "unknown"
+          ]
+        },
+        "implementation_cost": {
+          "$ref": "#/$defs/scope_score"
+        },
+        "design_cost": {
+          "$ref": "#/$defs/scope_score"
+        },
+        "tuning_cost": {
+          "$ref": "#/$defs/scope_score"
+        },
+        "content_cost": {
+          "$ref": "#/$defs/scope_score"
+        },
+        "networking_risk": {
+          "$ref": "#/$defs/risk_score"
+        },
+        "save_load_risk": {
+          "$ref": "#/$defs/risk_score"
+        },
+        "ui_risk": {
+          "$ref": "#/$defs/risk_score"
+        }
+      }
     },
     "example_games": {
       "type": "array",

@@ -119,6 +119,36 @@
     "progression.crafting_unlocks",
     "narrative.reputation_gating"
   ],
+  "relationships": [
+    {
+      "target": "economy.coins",
+      "type": "consumes",
+      "reason": "Shop purchase transactions spend wallet currency before granting stock or item instances.",
+      "strength": "strong"
+    },
+    {
+      "target": "economy.dynamic_pricing",
+      "type": "enhances",
+      "reason": "Dynamic pricing lets shop offers react to stock, reputation, scarcity, or market region rules.",
+      "strength": "medium"
+    },
+    {
+      "target": "ui_ux.inventory_grid",
+      "type": "requires",
+      "reason": "Shops need inventory presentation, capacity checks, and item comparison for reliable buy and sell flows.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 4,
+    "networking_risk": 3,
+    "save_load_risk": 4,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Hades",
@@ -135,5 +165,5 @@
     "shop"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

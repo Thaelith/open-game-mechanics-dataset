@@ -116,6 +116,36 @@
     "survival.base_building",
     "crafting.workbench"
   ],
+  "relationships": [
+    {
+      "target": "traversal.vehicle_mount",
+      "type": "supports",
+      "reason": "Interaction prompts identify the selected vehicle, seat, and input action before mounting begins.",
+      "strength": "strong"
+    },
+    {
+      "target": "ui_ux.accessibility_remap_controls",
+      "type": "requires",
+      "reason": "Prompts need remapped input glyphs so displayed actions match the active binding profile.",
+      "strength": "strong"
+    },
+    {
+      "target": "ui_ux.dialogue_choice",
+      "type": "soft_conflicts_with",
+      "reason": "Interaction prompts and dialogue choices need focus priority rules when both can appear near the same NPC.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 2,
+    "networking_risk": 2,
+    "save_load_risk": 2,
+    "ui_risk": 5
+  },
   "example_games": [
     {
       "title": "The Legend of Zelda: Breath of the Wild",
@@ -130,5 +160,5 @@
     "accessibility"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

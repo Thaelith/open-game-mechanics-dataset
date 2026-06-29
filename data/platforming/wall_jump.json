@@ -110,6 +110,36 @@
     "traversal.mantling",
     "camera.smooth_follow_camera"
   ],
+  "relationships": [
+    {
+      "target": "platforming.wall_slide",
+      "type": "supports",
+      "reason": "Wall slide can stabilize contact and timing before a wall jump impulse is accepted.",
+      "strength": "strong"
+    },
+    {
+      "target": "traversal.wall_run",
+      "type": "enhances",
+      "reason": "Wall jump gives wall run a clean exit action and expands route composition.",
+      "strength": "strong"
+    },
+    {
+      "target": "platforming.coyote_time",
+      "type": "supports",
+      "reason": "Small contact grace windows make wall jump inputs more forgiving around corners and uneven surfaces.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 2,
+    "networking_risk": 2,
+    "save_load_risk": 1,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "Super Meat Boy",
@@ -128,5 +158,5 @@
     "precision"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

@@ -115,6 +115,36 @@
     "combat.guard_break",
     "vehicles.vehicle_damage"
   ],
+  "relationships": [
+    {
+      "target": "combat.hit_stun",
+      "type": "requires",
+      "reason": "Knockback usually needs hit-stun or movement lock state to prevent immediate input from canceling the reaction.",
+      "strength": "strong"
+    },
+    {
+      "target": "physics.moving_platform",
+      "type": "soft_conflicts_with",
+      "reason": "Platform velocity transfer and knockback vectors need clear ownership when a target is hit on moving geometry.",
+      "strength": "medium"
+    },
+    {
+      "target": "camera.screen_shake",
+      "type": "enhances",
+      "reason": "Camera impulse can reinforce heavy knockback without changing the physical displacement.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 2,
+    "networking_risk": 4,
+    "save_load_risk": 2,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "Super Smash Bros. Ultimate",
@@ -133,5 +163,5 @@
     "spacing"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

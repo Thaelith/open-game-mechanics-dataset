@@ -119,6 +119,36 @@
     "progression.experience_points",
     "progression.meta_progression"
   ],
+  "relationships": [
+    {
+      "target": "economy.coins",
+      "type": "consumes",
+      "reason": "Upgrade shops spend wallet currency or materials to grant persistent stat or ability improvements.",
+      "strength": "strong"
+    },
+    {
+      "target": "economy.idle_income",
+      "type": "balances",
+      "reason": "Upgrade costs can absorb recurring idle income so passive earnings do not inflate without sinks.",
+      "strength": "strong"
+    },
+    {
+      "target": "progression.unlockable_abilities",
+      "type": "unlocks",
+      "reason": "Upgrade shops can grant abilities through purchase rather than level or story gates.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 3,
+    "save_load_risk": 5,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Hades",
@@ -135,5 +165,5 @@
     "upgrade"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

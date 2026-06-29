@@ -117,6 +117,36 @@
     "progression.upgrade_shop",
     "progression.meta_progression"
   ],
+  "relationships": [
+    {
+      "target": "progression.level_up",
+      "type": "feeds",
+      "reason": "Experience points accumulate toward level-up thresholds and progression rewards.",
+      "strength": "strong"
+    },
+    {
+      "target": "progression.skill_tree",
+      "type": "feeds",
+      "reason": "XP or level gains can grant points spent in a skill tree.",
+      "strength": "medium"
+    },
+    {
+      "target": "ui_ux.cooldown_indicator",
+      "type": "soft_conflicts_with",
+      "reason": "XP bars and cooldown displays can compete for HUD attention if both are always visible.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 2,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 4,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Final Fantasy",
@@ -133,5 +163,5 @@
     "rewards"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

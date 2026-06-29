@@ -6,8 +6,8 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Metric | Value |
 | --- | --- |
-| Generated at | 2026-06-29T21:40:39+00:00 |
-| Schema version | 0.1.0 |
+| Generated at | 2026-06-29T22:31:56+00:00 |
+| Schema version | 0.2.0 |
 | Total mechanics | 223 |
 | Total categories | 26 |
 

@@ -118,6 +118,36 @@
     "economy.crafting_materials",
     "ui_ux.dialogue_choice"
   ],
+  "relationships": [
+    {
+      "target": "economy.shop",
+      "type": "supports",
+      "reason": "Dynamic pricing usually applies at vendor offers where quotes, stock, and wallet transactions meet.",
+      "strength": "strong"
+    },
+    {
+      "target": "economy.trading",
+      "type": "enhances",
+      "reason": "Market-like price curves can inform player trade expectations and prevent obvious arbitrage loops.",
+      "strength": "medium"
+    },
+    {
+      "target": "narrative.reputation_gating",
+      "type": "supports",
+      "reason": "Faction reputation can provide a readable reason for discounts, markups, or restricted pricing.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 4,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Animal Crossing",
@@ -134,5 +164,5 @@
     "rewards"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

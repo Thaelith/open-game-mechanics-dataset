@@ -133,6 +133,36 @@
     "roguelike.pick_one_upgrade_choice",
     "ui_ux.checkpoint_notification"
   ],
+  "relationships": [
+    {
+      "target": "roguelike.run_based_progression",
+      "type": "requires",
+      "reason": "Permadeath depends on a run state boundary that defines what resets and what persists after failure.",
+      "strength": "strong"
+    },
+    {
+      "target": "progression.meta_progression",
+      "type": "soft_conflicts_with",
+      "reason": "Meta progression can soften permadeath unless rewards preserve run stakes and failure identity.",
+      "strength": "medium"
+    },
+    {
+      "target": "procedural_generation.seeded_generation",
+      "type": "supports",
+      "reason": "Seed logging lets designers reproduce run-ending layouts or encounter chains after a permadeath report.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 2,
+    "networking_risk": 2,
+    "save_load_risk": 5,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Spelunky",
@@ -151,5 +181,5 @@
     "seed_logging"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

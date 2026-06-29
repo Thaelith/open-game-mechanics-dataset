@@ -123,6 +123,36 @@
     "camera.smooth_follow_camera",
     "accessibility.assist_mode"
   ],
+  "relationships": [
+    {
+      "target": "platforming.ledge_climb",
+      "type": "requires",
+      "reason": "Ledge grab usually provides the snap point and hang state that ledge climb resolves into a top-out state.",
+      "strength": "strong"
+    },
+    {
+      "target": "movement.stamina_movement",
+      "type": "consumes",
+      "reason": "Long ledge hangs can spend stamina to prevent indefinite safety on climbable edges.",
+      "strength": "medium"
+    },
+    {
+      "target": "traversal.mantling",
+      "type": "soft_conflicts_with",
+      "reason": "Automatic mantling and manual ledge grab need priority rules when the same ledge is detected.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 4,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 2,
+    "save_load_risk": 2,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "Tomb Raider",
@@ -141,5 +171,5 @@
     "input_forgiveness"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

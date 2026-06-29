@@ -34,5 +34,11 @@ jobs:
       - name: Print category coverage report
         run: python tools/category_coverage_report.py --json
 
+      - name: Validate mechanic graph
+        run: python tools/check_mechanic_graph.py
+
+      - name: Print mechanic graph coverage report
+        run: python tools/mechanic_graph_report.py --json
+
       - name: Smoke test dataset search
         run: python tools/search_dataset.py --query jump_assist --limit 5
