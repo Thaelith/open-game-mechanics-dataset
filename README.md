@@ -31,15 +31,28 @@ Example snippet:
   "id": "movement.dash",
   "name": "Dash",
   "category": "movement",
+  "subcategory": "burst_movement",
   "dimensions": ["2D", "2.5D", "3D"],
   "difficulty": {
     "design": "easy",
-    "implementation": "easy",
+    "implementation": "medium",
     "tuning": "medium"
   },
-  "description": "A short burst of movement in a chosen direction.",
-  "related_mechanics": ["camera.smooth_follow_camera", "movement.run", "movement.walk", "ui_ux.cooldown_indicator"],
-  "tags": ["burst_movement", "controls", "dash", "mobility"]
+  "description": "A short committed burst of movement in a chosen direction.",
+  "parameters": [
+    "dash_distance",
+    "dash_travel_ms",
+    "dash_recharge_seconds",
+    "dash_input_buffer_ms",
+    "dash_invulnerability_frames"
+  ],
+  "related_mechanics": [
+    "movement.air_dash",
+    "movement.dodge_roll",
+    "platforming.double_jump",
+    "ui_ux.cooldown_indicator"
+  ],
+  "tags": ["mobility", "burst_movement", "cooldown", "i_frames"]
 }
 ```
 
