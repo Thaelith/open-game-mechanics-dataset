@@ -123,6 +123,36 @@
     "platforming.coyote_time",
     "ui_ux.interaction_prompt"
   ],
+  "relationships": [
+    {
+      "target": "platforming.ledge_grab",
+      "type": "supports",
+      "reason": "Climbing often begins from ledge detection, snap points, and blocked-clearance checks.",
+      "strength": "medium"
+    },
+    {
+      "target": "movement.stamina_movement",
+      "type": "consumes",
+      "reason": "Climb stamina limits vertical traversal and gives level designers a tunable route constraint.",
+      "strength": "medium"
+    },
+    {
+      "target": "time.time_rewind",
+      "type": "soft_conflicts_with",
+      "reason": "Climbing requires rewind snapshots for snap points, surface attachment, stamina spend, and animation phase.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 4,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 3,
+    "save_load_risk": 2,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "The Legend of Zelda: Breath of the Wild",
@@ -141,5 +171,5 @@
     "ledge_transition"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

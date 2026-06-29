@@ -123,6 +123,36 @@
     "ui_ux.radial_menu",
     "multiplayer.local_coop"
   ],
+  "relationships": [
+    {
+      "target": "accessibility.toggle_hold_option",
+      "type": "supports",
+      "reason": "Remap screens should expose hold-or-toggle policies alongside binding changes for sustained actions.",
+      "strength": "medium"
+    },
+    {
+      "target": "ui_ux.interaction_prompt",
+      "type": "supports",
+      "reason": "Prompts need to display the current binding glyph or action label after remapping.",
+      "strength": "strong"
+    },
+    {
+      "target": "rhythm.sync_window",
+      "type": "soft_conflicts_with",
+      "reason": "Rhythm games need calibration and binding changes to avoid shifting judgment windows unexpectedly.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 4,
+    "design_cost": 3,
+    "tuning_cost": 3,
+    "content_cost": 2,
+    "networking_risk": 2,
+    "save_load_risk": 4,
+    "ui_risk": 5
+  },
   "example_games": [
     {
       "title": "Hades",
@@ -141,5 +171,5 @@
     "prompt_glyphs"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

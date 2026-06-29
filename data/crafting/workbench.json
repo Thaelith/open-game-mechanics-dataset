@@ -124,6 +124,36 @@
     "ui_ux.interaction_prompt",
     "multiplayer.shared_resource_pool"
   ],
+  "relationships": [
+    {
+      "target": "crafting.recipe_crafting",
+      "type": "supports",
+      "reason": "Workbench stations constrain available recipes by station id, tier, ownership, or proximity validation.",
+      "strength": "strong"
+    },
+    {
+      "target": "ui_ux.interaction_prompt",
+      "type": "requires",
+      "reason": "Workbench access needs prompts that distinguish valid station use, missing requirements, and busy states.",
+      "strength": "medium"
+    },
+    {
+      "target": "crafting.crafting_queue",
+      "type": "unlocks",
+      "reason": "Station-based crafting often unlocks queue slots and longer production workflows.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 3,
+    "content_cost": 3,
+    "networking_risk": 4,
+    "save_load_risk": 4,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Terraria",
@@ -142,5 +172,5 @@
     "base_building"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

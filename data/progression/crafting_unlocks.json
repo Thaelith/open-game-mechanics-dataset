@@ -117,6 +117,36 @@
     "progression.achievement_system",
     "ui_ux.inventory_grid"
   ],
+  "relationships": [
+    {
+      "target": "crafting.recipe_crafting",
+      "type": "unlocks",
+      "reason": "Crafting unlocks grant recipe availability after level, quest, station, or account requirements are met.",
+      "strength": "strong"
+    },
+    {
+      "target": "crafting.workbench",
+      "type": "supports",
+      "reason": "Workbench tiers can gate which unlocked recipes are currently craftable at a station.",
+      "strength": "medium"
+    },
+    {
+      "target": "progression.experience_points",
+      "type": "consumes",
+      "reason": "Experience or level milestones can provide the progression state that unlocks new recipes.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 4,
+    "networking_risk": 3,
+    "save_load_risk": 5,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Subnautica",

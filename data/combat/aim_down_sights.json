@@ -104,6 +104,36 @@
     "camera.dynamic_fov",
     "combat.lock_on_targeting"
   ],
+  "relationships": [
+    {
+      "target": "combat.ranged_attack",
+      "type": "extends",
+      "reason": "Aim-down-sights builds on ranged attack origin, spread, and ownership rules while changing precision and movement state.",
+      "strength": "strong"
+    },
+    {
+      "target": "camera.first_person_camera",
+      "type": "supports",
+      "reason": "Sight alignment often depends on first-person camera origin, weapon muzzle offsets, and viewmodel timing.",
+      "strength": "medium"
+    },
+    {
+      "target": "accessibility.toggle_hold_option",
+      "type": "supports",
+      "reason": "Aim modes should support hold and toggle input policies to reduce sustained button pressure.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 2,
+    "tuning_cost": 3,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 1,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Call of Duty 4: Modern Warfare",
@@ -118,5 +148,5 @@
     "accessibility"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

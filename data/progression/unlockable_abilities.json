@@ -118,6 +118,36 @@
     "progression.respec",
     "ui_ux.tutorial_prompt"
   ],
+  "relationships": [
+    {
+      "target": "progression.skill_tree",
+      "type": "supports",
+      "reason": "Unlockable abilities often need prerequisite graphs, refund rules, and migration-safe save data similar to skill trees.",
+      "strength": "medium"
+    },
+    {
+      "target": "platforming.double_jump",
+      "type": "unlocks",
+      "reason": "Movement abilities such as double jump can be granted through progression gates.",
+      "strength": "weak"
+    },
+    {
+      "target": "narrative.reputation_gating",
+      "type": "soft_conflicts_with",
+      "reason": "Ability unlocks tied to reputation need clear precedence between narrative gates and mechanical prerequisites.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 4,
+    "networking_risk": 3,
+    "save_load_risk": 5,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Metroid",

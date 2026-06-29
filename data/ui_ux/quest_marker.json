@@ -115,6 +115,36 @@
     "procedural_generation.procedural_quests",
     "accessibility.text_scaling"
   ],
+  "relationships": [
+    {
+      "target": "narrative.reputation_gating",
+      "type": "supports",
+      "reason": "Quest markers need reputation gate state when objectives should appear only after faction thresholds are met.",
+      "strength": "medium"
+    },
+    {
+      "target": "ui_ux.minimap",
+      "type": "enhances",
+      "reason": "Map projection makes quest markers useful beyond the current camera view or world-space prompt distance.",
+      "strength": "medium"
+    },
+    {
+      "target": "procedural_generation.procedural_quests",
+      "type": "soft_conflicts_with",
+      "reason": "Generated quests need marker validation so targets are reachable, current, and not leaked before discovery.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 2,
+    "design_cost": 3,
+    "tuning_cost": 3,
+    "content_cost": 3,
+    "networking_risk": 2,
+    "save_load_risk": 3,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "The Elder Scrolls V: Skyrim",
@@ -133,5 +163,5 @@
     "accessibility"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

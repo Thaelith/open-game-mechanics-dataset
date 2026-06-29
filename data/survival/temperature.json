@@ -124,6 +124,36 @@
     "simulation.systemic_weather",
     "survival.health"
   ],
+  "relationships": [
+    {
+      "target": "survival.day_night_cycle",
+      "type": "feeds",
+      "reason": "Day and night phases can drive exposure changes that raise or lower temperature pressure.",
+      "strength": "strong"
+    },
+    {
+      "target": "survival.base_building",
+      "type": "supports",
+      "reason": "Shelter volumes and base structures can provide insulation, safe zones, or recovery sources.",
+      "strength": "medium"
+    },
+    {
+      "target": "survival.health",
+      "type": "feeds",
+      "reason": "Extreme exposure can apply health penalties after cold or heat thresholds persist.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 4,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 4,
+    "networking_risk": 2,
+    "save_load_risk": 4,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "The Long Dark",
@@ -142,5 +172,5 @@
     "weather"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

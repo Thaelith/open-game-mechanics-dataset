@@ -124,6 +124,36 @@
     "crafting.workbench",
     "survival.temperature"
   ],
+  "relationships": [
+    {
+      "target": "survival.health",
+      "type": "feeds",
+      "reason": "Hunger depletion can produce health penalties after warning thresholds are crossed.",
+      "strength": "medium"
+    },
+    {
+      "target": "survival.stamina",
+      "type": "balances",
+      "reason": "Low hunger can cap stamina recovery so long-term resource planning affects moment-to-moment exertion.",
+      "strength": "medium"
+    },
+    {
+      "target": "ui_ux.cooldown_indicator",
+      "type": "supports",
+      "reason": "Survival meters need readable decay bands, warning thresholds, and recovery feedback before depletion becomes critical.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 2,
+    "save_load_risk": 4,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Don't Starve",
@@ -142,5 +172,5 @@
     "consumable"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

@@ -103,6 +103,36 @@
     "combat.damage_over_time",
     "ui_ux.hit_marker"
   ],
+  "relationships": [
+    {
+      "target": "time.cooldown_time",
+      "type": "requires",
+      "reason": "Reload needs a reliable timing window before the next valid firing action is accepted.",
+      "strength": "strong"
+    },
+    {
+      "target": "ui_ux.cooldown_indicator",
+      "type": "supports",
+      "reason": "Reload state benefits from visible progress, cancellation, and ready feedback for weapons with longer cycles.",
+      "strength": "medium"
+    },
+    {
+      "target": "combat.ranged_attack",
+      "type": "supports",
+      "reason": "Reload restores firing availability and should share ammo authority with ranged attack validation.",
+      "strength": "strong"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 2,
+    "design_cost": 2,
+    "tuning_cost": 3,
+    "content_cost": 2,
+    "networking_risk": 4,
+    "save_load_risk": 2,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Counter-Strike 2",
@@ -121,5 +151,5 @@
     "resource"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

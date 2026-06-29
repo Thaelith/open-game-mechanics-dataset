@@ -124,6 +124,36 @@
     "survival.day_night_cycle",
     "crafting.crafting_queue"
   ],
+  "relationships": [
+    {
+      "target": "survival.health",
+      "type": "feeds",
+      "reason": "Thirst depletion can trigger health loss or impairment after hydration thresholds expire.",
+      "strength": "medium"
+    },
+    {
+      "target": "time.day_night_schedule",
+      "type": "supports",
+      "reason": "Schedule phases can alter thirst pacing through heat, travel windows, or activity modifiers.",
+      "strength": "medium"
+    },
+    {
+      "target": "survival.inventory_limit",
+      "type": "soft_conflicts_with",
+      "reason": "Water-carrying limits need care so players are pressured without being trapped far from recovery sources.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 2,
+    "save_load_risk": 4,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "The Long Dark",
@@ -142,5 +172,5 @@
     "decay"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

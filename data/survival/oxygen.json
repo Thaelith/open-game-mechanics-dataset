@@ -124,6 +124,36 @@
     "horror.limited_visibility",
     "accessibility.toggle_hold_option"
   ],
+  "relationships": [
+    {
+      "target": "movement.swimming",
+      "type": "supports",
+      "reason": "Oxygen pressure is most readable when it is tied to underwater movement and resurfacing transitions.",
+      "strength": "strong"
+    },
+    {
+      "target": "survival.health",
+      "type": "feeds",
+      "reason": "Oxygen depletion can convert into health damage once the breath reserve is exhausted.",
+      "strength": "strong"
+    },
+    {
+      "target": "ui_ux.cooldown_indicator",
+      "type": "supports",
+      "reason": "Breath reserves need visible remaining-capacity feedback before drowning damage begins.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 2,
+    "networking_risk": 2,
+    "save_load_risk": 3,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Subnautica",
@@ -142,5 +172,5 @@
     "countdown"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

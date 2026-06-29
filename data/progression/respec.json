@@ -114,6 +114,36 @@
     "narrative.reputation_gating",
     "progression.achievement_system"
   ],
+  "relationships": [
+    {
+      "target": "progression.skill_tree",
+      "type": "supports",
+      "reason": "Respec mechanics need skill-node ownership, prerequisite recalculation, and refund transaction rules.",
+      "strength": "strong"
+    },
+    {
+      "target": "economy.coins",
+      "type": "consumes",
+      "reason": "Respec costs can spend currency to prevent constant build swapping without blocking experimentation.",
+      "strength": "medium"
+    },
+    {
+      "target": "progression.achievement_system",
+      "type": "soft_conflicts_with",
+      "reason": "Achievements tied to build choices need rules for refunded nodes and retroactive unlock state.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 5,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Elden Ring",
@@ -131,5 +161,5 @@
     "refund"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

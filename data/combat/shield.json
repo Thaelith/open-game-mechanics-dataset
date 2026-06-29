@@ -115,6 +115,36 @@
     "combat.projectile_reflection",
     "ui_ux.damage_numbers"
   ],
+  "relationships": [
+    {
+      "target": "combat.block",
+      "type": "extends",
+      "reason": "Shield play builds on block angle, stamina drain, and damage reduction rules with shield-specific state.",
+      "strength": "strong"
+    },
+    {
+      "target": "survival.stamina",
+      "type": "consumes",
+      "reason": "Shield defense commonly spends stamina or guard meter to limit passive turtling.",
+      "strength": "medium"
+    },
+    {
+      "target": "combat.area_of_effect_attack",
+      "type": "soft_conflicts_with",
+      "reason": "Area damage needs explicit shield coverage rules for partial overlap, facing, and splash-through cases.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 3,
+    "save_load_risk": 2,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Halo: Combat Evolved",
@@ -133,5 +163,5 @@
     "feedback"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

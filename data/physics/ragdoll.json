@@ -117,6 +117,36 @@
     "physics.breakable_object",
     "ui_ux.damage_numbers"
   ],
+  "relationships": [
+    {
+      "target": "combat.knockback",
+      "type": "enhances",
+      "reason": "Ragdoll reactions can visualize strong knockback while preserving damage and ownership state.",
+      "strength": "medium"
+    },
+    {
+      "target": "time.time_rewind",
+      "type": "soft_conflicts_with",
+      "reason": "Ragdoll rewind needs snapshots for skeletal bodies, joint constraints, collision layers, and wake state.",
+      "strength": "strong"
+    },
+    {
+      "target": "horror.jump_scare_trigger",
+      "type": "enhances",
+      "reason": "Ragdoll transitions can heighten scripted shock moments when used with restraint and recovery rules.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "polish",
+    "implementation_cost": 4,
+    "design_cost": 2,
+    "tuning_cost": 4,
+    "content_cost": 5,
+    "networking_risk": 5,
+    "save_load_risk": 3,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "Grand Theft Auto IV",
@@ -135,5 +165,5 @@
     "knockdown"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

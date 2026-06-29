@@ -115,6 +115,36 @@
     "camera.screen_shake",
     "combat.guard_break"
   ],
+  "relationships": [
+    {
+      "target": "combat.ranged_attack",
+      "type": "requires",
+      "reason": "Projectile reflection depends on projectile ownership, collision channels, and hit resolution from ranged attacks.",
+      "strength": "strong"
+    },
+    {
+      "target": "combat.parry",
+      "type": "enhances",
+      "reason": "Parry timing can create a skill-based reflection window for incoming projectile attacks.",
+      "strength": "medium"
+    },
+    {
+      "target": "multiplayer.online_coop",
+      "type": "soft_conflicts_with",
+      "reason": "Reflected projectiles need authoritative source attribution so clients cannot disagree on owner, team, or damage source.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 4,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 2,
+    "networking_risk": 5,
+    "save_load_risk": 1,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "The Legend of Zelda: Ocarina of Time",
@@ -133,5 +163,5 @@
     "defense"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

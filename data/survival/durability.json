@@ -124,6 +124,36 @@
     "survival.base_building",
     "ui_ux.inventory_grid"
   ],
+  "relationships": [
+    {
+      "target": "economy.repair_cost",
+      "type": "feeds",
+      "reason": "Durability loss creates repair decisions that consume currency, materials, or service access.",
+      "strength": "strong"
+    },
+    {
+      "target": "ui_ux.inventory_grid",
+      "type": "supports",
+      "reason": "Item durability needs inventory metadata, warning states, and repair previews attached to item instances.",
+      "strength": "medium"
+    },
+    {
+      "target": "progression.equipment_rarity",
+      "type": "soft_conflicts_with",
+      "reason": "Rare equipment durability must avoid punishing players into ignoring high-value drops.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 3,
+    "save_load_risk": 4,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Minecraft",
@@ -142,5 +172,5 @@
     "condition"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

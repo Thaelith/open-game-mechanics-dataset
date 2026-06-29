@@ -103,6 +103,36 @@
     "traversal.wall_run",
     "camera.smooth_follow_camera"
   ],
+  "relationships": [
+    {
+      "target": "movement.dash",
+      "type": "extends",
+      "reason": "Air dash reuses dash displacement and cooldown rules while applying them during airborne movement state.",
+      "strength": "strong"
+    },
+    {
+      "target": "platforming.double_jump",
+      "type": "supports",
+      "reason": "Air dash pairs with double jump when aerial verbs need separate counters and reset rules.",
+      "strength": "medium"
+    },
+    {
+      "target": "platforming.coyote_time",
+      "type": "soft_conflicts_with",
+      "reason": "High-speed air dash can make ground-leave grace windows feel inconsistent unless input priority is explicit.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 5,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 1,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "Celeste",
@@ -120,5 +150,5 @@
     "platforming"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

@@ -118,6 +118,36 @@
     "progression.upgrade_shop",
     "ui_ux.inventory_grid"
   ],
+  "relationships": [
+    {
+      "target": "crafting.recipe_crafting",
+      "type": "enhances",
+      "reason": "Ingredient quality modifies recipe outputs, substitution rules, and previewed result tiers.",
+      "strength": "strong"
+    },
+    {
+      "target": "progression.equipment_rarity",
+      "type": "supports",
+      "reason": "Quality tiers can map into rarity outcomes when crafted items need persistent value differences.",
+      "strength": "medium"
+    },
+    {
+      "target": "economy.resource_conversion",
+      "type": "soft_conflicts_with",
+      "reason": "Conversion rules need quality preservation or downgrade policies to prevent laundering low-tier ingredients.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 4,
+    "networking_risk": 3,
+    "save_load_risk": 4,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Monster Hunter: World",
@@ -136,5 +166,5 @@
     "preview"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

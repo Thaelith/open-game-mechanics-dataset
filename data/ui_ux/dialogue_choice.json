@@ -115,6 +115,36 @@
     "economy.shop",
     "accessibility.text_scaling"
   ],
+  "relationships": [
+    {
+      "target": "narrative.branching_dialogue",
+      "type": "requires",
+      "reason": "Dialogue choices need dialogue node ids, branch conditions, and committed choice history.",
+      "strength": "strong"
+    },
+    {
+      "target": "narrative.reputation_choice",
+      "type": "feeds",
+      "reason": "Committed choices can update faction reputation or delayed consequence state.",
+      "strength": "medium"
+    },
+    {
+      "target": "accessibility.text_scaling",
+      "type": "supports",
+      "reason": "Choice lists need text scaling, focus order, and layout reflow so all options remain readable.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 3,
+    "content_cost": 4,
+    "networking_risk": 2,
+    "save_load_risk": 4,
+    "ui_risk": 5
+  },
   "example_games": [
     {
       "title": "Mass Effect",
@@ -133,5 +163,5 @@
     "localization"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

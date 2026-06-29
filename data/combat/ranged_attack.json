@@ -124,6 +124,36 @@
     "combat.damage_over_time",
     "combat.critical_hit"
   ],
+  "relationships": [
+    {
+      "target": "combat.reload",
+      "type": "supports",
+      "reason": "Ranged attacks need reload or ammo recovery rules when shots are limited by magazines or charge cycles.",
+      "strength": "strong"
+    },
+    {
+      "target": "ui_ux.hit_marker",
+      "type": "supports",
+      "reason": "Ranged impacts benefit from hit confirmation when targets are distant, occluded, or partly outside the camera focus.",
+      "strength": "medium"
+    },
+    {
+      "target": "combat.projectile_reflection",
+      "type": "soft_conflicts_with",
+      "reason": "Reflected projectiles need ownership and damage attribution rules so ranged attacks cannot double-hit incorrectly.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 4,
+    "save_load_risk": 1,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Doom",
@@ -142,5 +172,5 @@
     "ranged"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

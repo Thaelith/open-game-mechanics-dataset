@@ -115,6 +115,36 @@
     "progression.skill_tree",
     "survival.health"
   ],
+  "relationships": [
+    {
+      "target": "ui_ux.inventory_grid",
+      "type": "supports",
+      "reason": "Radial menus often expose item slots or quick actions sourced from inventory state.",
+      "strength": "medium"
+    },
+    {
+      "target": "time.slow_motion",
+      "type": "enhances",
+      "reason": "Optional slow motion can make radial selection less stressful during real-time play.",
+      "strength": "weak"
+    },
+    {
+      "target": "ui_ux.accessibility_remap_controls",
+      "type": "supports",
+      "reason": "Radial selection needs remappable input behavior for controller, keyboard, mouse, and touch profiles.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 1,
+    "save_load_risk": 2,
+    "ui_risk": 5
+  },
   "example_games": [
     {
       "title": "The Legend of Zelda: Breath of the Wild",
@@ -133,5 +163,5 @@
     "accessibility"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

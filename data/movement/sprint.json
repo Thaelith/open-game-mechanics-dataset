@@ -111,6 +111,36 @@
     "combat.aim_down_sights",
     "ai.chase"
   ],
+  "relationships": [
+    {
+      "target": "movement.run",
+      "type": "extends",
+      "reason": "Sprint is a higher-intensity running state with its own acceleration, stamina, and camera implications.",
+      "strength": "strong"
+    },
+    {
+      "target": "movement.stamina_movement",
+      "type": "consumes",
+      "reason": "Sprint commonly drains movement stamina and triggers exhaustion or regeneration delay rules.",
+      "strength": "strong"
+    },
+    {
+      "target": "camera.dynamic_fov",
+      "type": "enhances",
+      "reason": "Dynamic FOV can reinforce sprint intensity while remaining optional for motion-comfort settings.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 2,
+    "design_cost": 2,
+    "tuning_cost": 3,
+    "content_cost": 1,
+    "networking_risk": 2,
+    "save_load_risk": 1,
+    "ui_risk": 1
+  },
   "example_games": [],
   "tags": [
     "locomotion",
@@ -120,5 +150,5 @@
     "accessibility"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

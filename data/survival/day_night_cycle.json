@@ -124,6 +124,36 @@
     "ai.enemy_spawn_director",
     "survival.health"
   ],
+  "relationships": [
+    {
+      "target": "time.day_night_schedule",
+      "type": "requires",
+      "reason": "Survival day-night pressure needs a schedule clock, phase boundaries, and save restoration rules.",
+      "strength": "strong"
+    },
+    {
+      "target": "survival.temperature",
+      "type": "feeds",
+      "reason": "Night and weather phases can change exposure pressure and shelter value.",
+      "strength": "medium"
+    },
+    {
+      "target": "procedural_generation.random_encounters",
+      "type": "enhances",
+      "reason": "Night phases can alter encounter pools, danger windows, and route-planning decisions.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 4,
+    "networking_risk": 2,
+    "save_load_risk": 4,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Minecraft",
@@ -142,5 +172,5 @@
     "world_clock"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

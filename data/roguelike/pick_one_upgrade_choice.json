@@ -133,6 +133,36 @@
     "roguelike.curse_modifier",
     "ui_ux.dialogue_choice"
   ],
+  "relationships": [
+    {
+      "target": "procedural_generation.loot_generation",
+      "type": "requires",
+      "reason": "Upgrade choices need deterministic reward pools, rarity weighting, and duplicate prevention.",
+      "strength": "strong"
+    },
+    {
+      "target": "ui_ux.dialogue_choice",
+      "type": "supports",
+      "reason": "Choice UI needs readable option focus, comparison text, and commit/cancel behavior.",
+      "strength": "medium"
+    },
+    {
+      "target": "progression.skill_tree",
+      "type": "soft_conflicts_with",
+      "reason": "Temporary run upgrades can blur with permanent skill trees unless persistence boundaries are explicit.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 4,
+    "networking_risk": 2,
+    "save_load_risk": 4,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Hades",
@@ -151,5 +181,5 @@
     "rng_stream"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

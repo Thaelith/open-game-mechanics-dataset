@@ -118,6 +118,36 @@
     "ui_ux.damage_numbers",
     "progression.crafting_unlocks"
   ],
+  "relationships": [
+    {
+      "target": "physics.destructible_environment",
+      "type": "supports",
+      "reason": "Breakable objects are small-scale destruction units with health, impulse thresholds, and debris state.",
+      "strength": "medium"
+    },
+    {
+      "target": "economy.loot_table",
+      "type": "feeds",
+      "reason": "Broken containers can grant loot through deterministic drop tables and source attribution.",
+      "strength": "medium"
+    },
+    {
+      "target": "ai.cover_seeking",
+      "type": "soft_conflicts_with",
+      "reason": "Cover AI needs updates when a breakable object stops blocking line of sight or projectiles.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 3,
+    "content_cost": 4,
+    "networking_risk": 4,
+    "save_load_risk": 3,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "The Legend of Zelda: Ocarina of Time",
@@ -136,5 +166,5 @@
     "collision"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

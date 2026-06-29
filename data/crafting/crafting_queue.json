@@ -124,6 +124,36 @@
     "progression.crafting_unlocks",
     "economy.idle_income"
   ],
+  "relationships": [
+    {
+      "target": "crafting.recipe_crafting",
+      "type": "requires",
+      "reason": "Crafting queues depend on recipe validation, ingredient reservation, and output grant transactions.",
+      "strength": "strong"
+    },
+    {
+      "target": "economy.crafting_materials",
+      "type": "consumes",
+      "reason": "Queued production reserves or spends material stacks and must refund them on valid cancellation.",
+      "strength": "strong"
+    },
+    {
+      "target": "crafting.workbench",
+      "type": "supports",
+      "reason": "Workbench stations can provide queue slots, station tier requirements, and completion access rules.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 4,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 4,
+    "save_load_risk": 5,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Factorio",
@@ -142,5 +172,5 @@
     "transaction"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

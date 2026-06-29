@@ -118,6 +118,36 @@
     "economy.coins",
     "ui_ux.checkpoint_notification"
   ],
+  "relationships": [
+    {
+      "target": "progression.experience_points",
+      "type": "consumes",
+      "reason": "Level-up thresholds consume or evaluate accumulated experience points to advance character state.",
+      "strength": "strong"
+    },
+    {
+      "target": "progression.skill_tree",
+      "type": "unlocks",
+      "reason": "Level gains can grant skill points or prerequisite access for skill tree nodes.",
+      "strength": "medium"
+    },
+    {
+      "target": "progression.unlockable_abilities",
+      "type": "feeds",
+      "reason": "Level milestones often grant new abilities, slots, or upgrade eligibility.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 2,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 2,
+    "networking_risk": 2,
+    "save_load_risk": 4,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Dragon Quest",

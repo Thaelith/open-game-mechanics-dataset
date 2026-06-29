@@ -111,6 +111,36 @@
     "survival.health",
     "traversal.ladder_climb"
   ],
+  "relationships": [
+    {
+      "target": "physics.buoyancy",
+      "type": "requires",
+      "reason": "Swimming depends on fluid volumes, submerged ratio, drag, and buoyancy state for believable movement.",
+      "strength": "strong"
+    },
+    {
+      "target": "survival.oxygen",
+      "type": "consumes",
+      "reason": "Underwater swimming can spend oxygen and escalate into survival pressure when submerged too long.",
+      "strength": "medium"
+    },
+    {
+      "target": "movement.stamina_movement",
+      "type": "consumes",
+      "reason": "Long swims often drain stamina so distance, currents, and safe exits matter.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 4,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 3,
+    "save_load_risk": 2,
+    "ui_risk": 2
+  },
   "example_games": [],
   "tags": [
     "water",
@@ -120,5 +150,5 @@
     "survival"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

@@ -127,6 +127,36 @@
     "ui_ux.damage_numbers",
     "progression.skill_tree"
   ],
+  "relationships": [
+    {
+      "target": "roguelike.random_powerups",
+      "type": "enhances",
+      "reason": "Relic synergies give random powerups build identity and encourage long-term run planning.",
+      "strength": "strong"
+    },
+    {
+      "target": "roguelike.curse_modifier",
+      "type": "balances",
+      "reason": "Curses can counterbalance strong relic combinations with constraints that affect build decisions.",
+      "strength": "medium"
+    },
+    {
+      "target": "combat.combo_chain",
+      "type": "enhances",
+      "reason": "Relic effects can modify combo windows, rewards, or on-hit triggers for action roguelike builds.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 4,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 5,
+    "networking_risk": 2,
+    "save_load_risk": 4,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Slay the Spire",
@@ -145,5 +175,5 @@
     "debug_trace"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

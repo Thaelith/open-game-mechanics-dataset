@@ -103,6 +103,36 @@
     "combat.combo_chain",
     "ui_ux.damage_numbers"
   ],
+  "relationships": [
+    {
+      "target": "combat.block",
+      "type": "balances",
+      "reason": "Guard break exists to punish overextended blocking and force defensive players to vary timing.",
+      "strength": "strong"
+    },
+    {
+      "target": "combat.hit_stun",
+      "type": "feeds",
+      "reason": "Successful guard breaks often apply a stun state that opens a limited punish window.",
+      "strength": "strong"
+    },
+    {
+      "target": "ui_ux.damage_numbers",
+      "type": "supports",
+      "reason": "Guard-break outcomes need distinct feedback from normal hits, chip damage, and blocked attacks.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 1,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Sekiro: Shadows Die Twice",
@@ -116,5 +146,5 @@
     "defense_counter"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

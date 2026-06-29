@@ -117,6 +117,36 @@
     "stealth.shadow_cover",
     "ui_ux.interaction_prompt"
   ],
+  "relationships": [
+    {
+      "target": "stealth.noise_meter",
+      "type": "supports",
+      "reason": "Crouch movement often lowers noise output, which stealth hearing systems can consume.",
+      "strength": "medium"
+    },
+    {
+      "target": "stealth.visibility_meter",
+      "type": "supports",
+      "reason": "Crouch stance can reduce silhouette exposure and feed visibility scoring.",
+      "strength": "medium"
+    },
+    {
+      "target": "movement.prone",
+      "type": "is_variant_of",
+      "reason": "Prone is a deeper low-stance variant with stricter capsule, camera, and transition rules.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 2,
+    "design_cost": 2,
+    "tuning_cost": 3,
+    "content_cost": 2,
+    "networking_risk": 2,
+    "save_load_risk": 1,
+    "ui_risk": 1
+  },
   "example_games": [],
   "tags": [
     "stance",
@@ -126,5 +156,5 @@
     "movement"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

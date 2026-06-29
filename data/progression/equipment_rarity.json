@@ -117,6 +117,36 @@
     "ui_ux.inventory_grid",
     "roguelike.relic_synergy"
   ],
+  "relationships": [
+    {
+      "target": "procedural_generation.loot_generation",
+      "type": "enhances",
+      "reason": "Rarity tiers shape loot generation weights, guarantees, and duplicate-handling rules.",
+      "strength": "strong"
+    },
+    {
+      "target": "survival.durability",
+      "type": "soft_conflicts_with",
+      "reason": "Rarity and durability must be balanced so rare items feel valuable instead of fragile chores.",
+      "strength": "medium"
+    },
+    {
+      "target": "economy.trading",
+      "type": "feeds",
+      "reason": "Rarity metadata can drive trade value, offer filtering, and player-facing item comparison.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 5,
+    "networking_risk": 3,
+    "save_load_risk": 4,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Diablo",

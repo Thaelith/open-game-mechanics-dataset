@@ -118,6 +118,36 @@
     "time.time_freeze",
     "ui_ux.cooldown_indicator"
   ],
+  "relationships": [
+    {
+      "target": "ui_ux.cooldown_indicator",
+      "type": "supports",
+      "reason": "Cooldown systems need visible remaining-window feedback for planning, input timing, and accessibility.",
+      "strength": "medium"
+    },
+    {
+      "target": "combat.reload",
+      "type": "supports",
+      "reason": "Reload windows can share cooldown timing state for ready checks and duplicate activation prevention.",
+      "strength": "medium"
+    },
+    {
+      "target": "movement.dash",
+      "type": "balances",
+      "reason": "Dash cooldowns limit repeated burst movement and create recovery windows between evasive actions.",
+      "strength": "strong"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 2,
+    "design_cost": 2,
+    "tuning_cost": 4,
+    "content_cost": 1,
+    "networking_risk": 3,
+    "save_load_risk": 2,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "World of Warcraft",
@@ -136,5 +166,5 @@
     "ui"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }
