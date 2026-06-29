@@ -2,12 +2,12 @@
   "id": "multiplayer.ping_system",
   "name": "Ping System",
   "aliases": [
-    "ping system mechanic",
-    "ping system system",
-    "ping system"
+    "context ping",
+    "team ping",
+    "quick communication"
   ],
   "category": "multiplayer",
-  "subcategory": "player_coordination",
+  "subcategory": "communication_ping",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,102 +15,131 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
-    "implementation": "expert",
-    "tuning": "hard"
+    "design": "medium",
+    "implementation": "medium",
+    "tuning": "medium"
   },
   "genres": [
-    "party",
+    "cooperative",
     "shooter",
-    "cooperative"
+    "battle_royale",
+    "strategy"
   ],
-  "description": "Ping System is a social or networked mechanic that coordinates multiple players within shared rules.",
-  "design_notes": "Ping System should be designed around a clear player promise, a readable trigger, and a predictable result. For multiplayer mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Players place contextual markers, callouts, or alerts that communicate location and intent without requiring voice chat.",
+  "design_notes": "A ping system is a communication channel with spam, visibility, and authority concerns. Designers should define ping categories, rate limits, team visibility, object tracking, expiration, mute behavior, and accessibility channels so pings remain useful instead of becoming noise.",
   "design_purpose": [
-    "Give the player a readable way to use ping system as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect ping system to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players coordinate targets, locations, loot, danger, and objectives without voice chat.",
+    "Support faster teamwork in noisy, cross-language, or accessibility-sensitive sessions.",
+    "Provide structured communication that AI agents, tutorials, and UI systems can interpret."
   ],
-  "player_fantasy": "Players feel coordinated, competitive, or socially expressive within shared rules.",
+  "player_fantasy": "Players feel understood by their team even when they cannot speak or type quickly.",
   "required_systems": [
-    "session_management",
-    "replication_or_sync",
-    "player_state",
-    "network_safe_events"
+    "raycast_or_selection",
+    "team_visibility",
+    "rate_limiting",
+    "ui_marker_system",
+    "audio_subtitle_cues"
   ],
   "parameters": [
     {
-      "name": "player_count",
-      "type": "integer",
-      "typical_range": "2-128",
-      "description": "Number of players supported by the mechanic."
+      "name": "ping_request_id",
+      "type": "string",
+      "typical_range": "ping_00042",
+      "description": "Request identifier used for de-duplication, correction, and moderation logs."
     },
     {
-      "name": "sync_rate",
-      "type": "integer",
-      "typical_range": "10-120 Hz",
-      "description": "Frequency at which state updates are exchanged or resolved."
+      "name": "ping_category_id",
+      "type": "string",
+      "typical_range": "danger, loot, defend, regroup, enemy_seen",
+      "description": "Semantic category that chooses icon, sound, subtitle, and response behavior."
     },
     {
-      "name": "failure_timeout",
-      "type": "float",
-      "typical_range": "1-60 seconds",
-      "description": "Time before the mechanic handles disconnects or missing responses."
+      "name": "ping_target_world_position",
+      "type": "vector",
+      "typical_range": "world or map coordinates",
+      "description": "Location attached to terrain, an object, or a last-known target."
+    },
+    {
+      "name": "ping_lifetime_ms",
+      "type": "integer",
+      "typical_range": "1000-30000 ms",
+      "description": "Marker lifetime before automatic expiration or replacement."
+    },
+    {
+      "name": "rate_limit_policy_id",
+      "type": "string",
+      "typical_range": "per_player_3_per_5s, category_burst, squad_leader_override",
+      "description": "Spam prevention rule applied before the ping is accepted."
+    },
+    {
+      "name": "visibility_team_id",
+      "type": "string",
+      "typical_range": "squad_alpha, all_allies, party_only",
+      "description": "Team or party audience allowed to receive the marker and audio cue."
     }
   ],
   "common_variants": [
-    "ping_system_local_variant",
-    "ping_system_online_variant",
-    "competitive_variant",
-    "cooperative_variant"
+    "single_button_context_ping",
+    "radial_ping_wheel",
+    "enemy_spotted_ping",
+    "loot_ping",
+    "map_ping"
   ],
   "edge_cases": [
-    "Ping System is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Ping System overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Ping System runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A ping targets an enemy, door, or loot item that despawns before teammates receive the marker.",
+    "A muted or blocked player sends pings that should be hidden for some teammates but not the whole squad.",
+    "Rapid pings are rate-limited while an urgent downed or danger ping should still get through.",
+    "The client predicts a ping at a raycast point the server rejects because line of sight or team visibility differs."
   ],
   "common_bugs": [
-    "Ping System state does not reset correctly after interruption or reload.",
-    "Feedback for Ping System plays even when the mechanic fails or is rejected.",
-    "Ping System produces different results between frame rates, platforms, or network clients."
+    "Pings attach to world coordinates but not moving targets, causing enemy markers to lag behind or reveal stale positions.",
+    "Rate limiting is local-only and can be bypassed by direct network requests.",
+    "Map pings and world pings use different category ids and show inconsistent icons.",
+    "Expired pings remain in minimap or subtitle queues after the world marker disappears."
   ],
   "balancing_notes": [
-    "Make Ping System strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Low friction pings improve coordination, but unlimited pings quickly drown out important callouts.",
+    "Enemy pings may need decay, uncertainty, or line-of-sight rules to avoid becoming wallhacks.",
+    "Category wheels should stay small enough for quick selection under pressure."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Ping System becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Pings should include visual icons, text labels, audio cues, and optional subtitles so they are not voice-dependent.",
+    "Allow players to mute, reduce, or filter ping categories without losing critical objective or danger alerts."
   ],
   "implementation_notes": {
-    "unity": "Implement Ping System with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Ping System as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Ping System with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Ping System as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Raycast locally for responsiveness, then send ping_request_id, category, target entity or position, and client_input_sequence to the server. The server applies rate_limit_policy_id and team visibility, then replicates accepted markers through a lightweight state channel.",
+    "godot": "Use client-side selection for preview but route accepted pings through an authoritative RPC. Store ping category, owner player_id, target id or position, expiry tick, and visibility_team_id so UI, minimap, and audio cues clear together.",
+    "unreal": "PlayerController can create local ping previews, while the server validates trace results, team visibility, and rate limits. Replicate accepted ping actors or structs to relevant clients only, and remove them by expiry tick rather than client timers alone.",
+    "web": "For WebSocket games, send ping requests to the server with category and target data; the server returns accepted ping ids and expiry ticks. Browser UI should reconcile rejected pings and keep world, minimap, and subtitle markers using the same ping_request_id."
   },
   "related_mechanics": [
-    "multiplayer.local_coop",
-    "multiplayer.online_coop",
-    "progression.achievement_system",
-    "ui_ux.cooldown_indicator"
+    "ui_ux.quest_marker",
+    "ui_ux.minimap",
+    "multiplayer.team_objective",
+    "stealth.last_known_position_search"
   ],
   "combines_well_with": [
     "multiplayer.revive_teammate",
-    "multiplayer.role_swap",
-    "progression.achievement_system",
-    "ui_ux.cooldown_indicator"
+    "multiplayer.friendly_fire",
+    "multiplayer.asymmetric_roles",
+    "accessibility.toggle_hold_option"
   ],
   "example_games": [
     {
       "title": "Apex Legends",
-      "note": "Uses contextual pings for non-verbal team communication."
+      "note": "Uses contextual pings for communication without requiring voice chat."
+    },
+    {
+      "title": "Portal 2",
+      "note": "Uses co-op pings and markers to support puzzle communication."
     }
   ],
   "tags": [
-    "coordination",
-    "multiplayer",
     "ping",
-    "player_coordination"
+    "communication",
+    "rate_limit",
+    "team_visibility",
+    "accessibility"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

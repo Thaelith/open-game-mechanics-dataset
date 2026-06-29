@@ -4,7 +4,7 @@
   "license": "CC0-1.0",
   "tool_license": "MIT",
   "total_mechanics": 223,
-  "last_generated": "2026-06-29T11:08:31+00:00",
+  "last_generated": "2026-06-29T14:01:04+00:00",
   "mechanics": [
     {
       "id": "accessibility.adjustable_difficulty",
@@ -2022,7 +2022,7 @@
       "id": "multiplayer.asymmetric_roles",
       "name": "Asymmetric Roles",
       "category": "multiplayer",
-      "subcategory": "player_coordination",
+      "subcategory": "role_authority",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2030,15 +2030,17 @@
         "3D"
       ],
       "genres": [
+        "cooperative",
         "party",
-        "shooter",
-        "cooperative"
+        "strategy",
+        "shooter"
       ],
       "tags": [
-        "asymmetric",
-        "coordination",
-        "multiplayer",
-        "player_coordination"
+        "asymmetric_roles",
+        "role_id",
+        "permissions",
+        "teamwork",
+        "communication"
       ],
       "path": "data/multiplayer/asymmetric_roles.json"
     },
@@ -2046,7 +2048,7 @@
       "id": "multiplayer.friendly_fire",
       "name": "Friendly Fire",
       "category": "multiplayer",
-      "subcategory": "player_coordination",
+      "subcategory": "team_damage_rules",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2054,23 +2056,25 @@
         "3D"
       ],
       "genres": [
-        "party",
         "shooter",
-        "cooperative"
+        "cooperative",
+        "tactical",
+        "survival"
       ],
       "tags": [
-        "coordination",
-        "friendly",
-        "multiplayer",
-        "player_coordination"
+        "friendly_fire",
+        "team_damage",
+        "grief_prevention",
+        "damage_rules",
+        "attribution"
       ],
       "path": "data/multiplayer/friendly_fire.json"
     },
     {
       "id": "multiplayer.local_coop",
-      "name": "Local Co-op",
+      "name": "Local Coop",
       "category": "multiplayer",
-      "subcategory": "player_coordination",
+      "subcategory": "local_session",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2078,15 +2082,17 @@
         "3D"
       ],
       "genres": [
+        "cooperative",
         "party",
-        "shooter",
-        "cooperative"
+        "platformer",
+        "action"
       ],
       "tags": [
-        "coordination",
-        "local",
-        "multiplayer",
-        "player_coordination"
+        "local_coop",
+        "input_devices",
+        "shared_camera",
+        "couch_coop",
+        "profile_binding"
       ],
       "path": "data/multiplayer/local_coop.json"
     },
@@ -2094,7 +2100,7 @@
       "id": "multiplayer.matchmaking_lobby",
       "name": "Matchmaking Lobby",
       "category": "multiplayer",
-      "subcategory": "player_coordination",
+      "subcategory": "session_lobby",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2102,23 +2108,25 @@
         "3D"
       ],
       "genres": [
-        "party",
         "shooter",
+        "party",
+        "competitive",
         "cooperative"
       ],
       "tags": [
-        "coordination",
+        "lobby",
         "matchmaking",
-        "multiplayer",
-        "player_coordination"
+        "session",
+        "ready_state",
+        "reconnect"
       ],
       "path": "data/multiplayer/matchmaking_lobby.json"
     },
     {
       "id": "multiplayer.online_coop",
-      "name": "Online Co-op",
+      "name": "Online Coop",
       "category": "multiplayer",
-      "subcategory": "player_coordination",
+      "subcategory": "networked_coop",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2126,15 +2134,17 @@
         "3D"
       ],
       "genres": [
-        "party",
-        "shooter",
-        "cooperative"
+        "cooperative",
+        "action",
+        "survival",
+        "rpg"
       ],
       "tags": [
-        "coordination",
-        "multiplayer",
-        "online",
-        "player_coordination"
+        "online_coop",
+        "session",
+        "authority",
+        "prediction",
+        "reconnect"
       ],
       "path": "data/multiplayer/online_coop.json"
     },
@@ -2142,7 +2152,7 @@
       "id": "multiplayer.ping_system",
       "name": "Ping System",
       "category": "multiplayer",
-      "subcategory": "player_coordination",
+      "subcategory": "communication_ping",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2150,15 +2160,17 @@
         "3D"
       ],
       "genres": [
-        "party",
+        "cooperative",
         "shooter",
-        "cooperative"
+        "battle_royale",
+        "strategy"
       ],
       "tags": [
-        "coordination",
-        "multiplayer",
         "ping",
-        "player_coordination"
+        "communication",
+        "rate_limit",
+        "team_visibility",
+        "accessibility"
       ],
       "path": "data/multiplayer/ping_system.json"
     },
@@ -2166,7 +2178,7 @@
       "id": "multiplayer.revive_teammate",
       "name": "Revive Teammate",
       "category": "multiplayer",
-      "subcategory": "player_coordination",
+      "subcategory": "downed_recovery",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2174,15 +2186,17 @@
         "3D"
       ],
       "genres": [
-        "party",
+        "cooperative",
         "shooter",
-        "cooperative"
+        "survival",
+        "action"
       ],
       "tags": [
-        "coordination",
-        "multiplayer",
-        "player_coordination",
-        "revive"
+        "revive",
+        "downed_state",
+        "interaction",
+        "cooperative",
+        "authority"
       ],
       "path": "data/multiplayer/revive_teammate.json"
     },
@@ -2190,7 +2204,7 @@
       "id": "multiplayer.role_swap",
       "name": "Role Swap",
       "category": "multiplayer",
-      "subcategory": "player_coordination",
+      "subcategory": "role_transfer",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2198,15 +2212,17 @@
         "3D"
       ],
       "genres": [
+        "cooperative",
         "party",
-        "shooter",
-        "cooperative"
+        "strategy",
+        "adventure"
       ],
       "tags": [
-        "coordination",
-        "multiplayer",
-        "player_coordination",
-        "role"
+        "role_swap",
+        "role_transfer",
+        "permissions",
+        "confirmation",
+        "teamwork"
       ],
       "path": "data/multiplayer/role_swap.json"
     },
@@ -2214,7 +2230,7 @@
       "id": "multiplayer.shared_resource_pool",
       "name": "Shared Resource Pool",
       "category": "multiplayer",
-      "subcategory": "player_coordination",
+      "subcategory": "shared_economy",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2222,15 +2238,17 @@
         "3D"
       ],
       "genres": [
-        "party",
-        "shooter",
-        "cooperative"
+        "cooperative",
+        "strategy",
+        "survival",
+        "rpg"
       ],
       "tags": [
-        "coordination",
-        "multiplayer",
-        "player_coordination",
-        "shared"
+        "shared_resources",
+        "transactions",
+        "team_economy",
+        "anti_grief",
+        "permissions"
       ],
       "path": "data/multiplayer/shared_resource_pool.json"
     },
@@ -2238,7 +2256,7 @@
       "id": "multiplayer.team_objective",
       "name": "Team Objective",
       "category": "multiplayer",
-      "subcategory": "player_coordination",
+      "subcategory": "team_goal",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2246,15 +2264,17 @@
         "3D"
       ],
       "genres": [
-        "party",
+        "cooperative",
         "shooter",
-        "cooperative"
+        "strategy",
+        "party"
       ],
       "tags": [
-        "coordination",
-        "multiplayer",
-        "player_coordination",
-        "team"
+        "team_objective",
+        "contribution",
+        "team_id",
+        "rewards",
+        "late_join"
       ],
       "path": "data/multiplayer/team_objective.json"
     },
@@ -6415,15 +6435,8 @@
           "horror.sanity_meter",
           "horror.sound_lure",
           "multiplayer.asymmetric_roles",
-          "multiplayer.friendly_fire",
-          "multiplayer.local_coop",
           "multiplayer.matchmaking_lobby",
           "multiplayer.online_coop",
-          "multiplayer.ping_system",
-          "multiplayer.revive_teammate",
-          "multiplayer.role_swap",
-          "multiplayer.shared_resource_pool",
-          "multiplayer.team_objective",
           "narrative.branching_dialogue",
           "narrative.codex_journal",
           "narrative.environmental_storytelling",
@@ -6528,6 +6541,13 @@
           "meta.player_profile_stats",
           "movement.air_dash",
           "movement.swimming",
+          "multiplayer.friendly_fire",
+          "multiplayer.local_coop",
+          "multiplayer.ping_system",
+          "multiplayer.revive_teammate",
+          "multiplayer.role_swap",
+          "multiplayer.shared_resource_pool",
+          "multiplayer.team_objective",
           "physics.buoyancy",
           "physics.gravity",
           "physics.low_gravity_zone",
@@ -6607,16 +6627,8 @@
           "ui_ux.hit_marker"
         ],
         "expert": [
-          "multiplayer.asymmetric_roles",
-          "multiplayer.friendly_fire",
-          "multiplayer.local_coop",
           "multiplayer.matchmaking_lobby",
           "multiplayer.online_coop",
-          "multiplayer.ping_system",
-          "multiplayer.revive_teammate",
-          "multiplayer.role_swap",
-          "multiplayer.shared_resource_pool",
-          "multiplayer.team_objective",
           "physics.destructible_environment",
           "time.time_rewind"
         ],
@@ -6633,6 +6645,13 @@
           "ai.utility_scoring",
           "combat.lock_on_targeting",
           "crafting.crafting_queue",
+          "multiplayer.asymmetric_roles",
+          "multiplayer.friendly_fire",
+          "multiplayer.local_coop",
+          "multiplayer.revive_teammate",
+          "multiplayer.role_swap",
+          "multiplayer.shared_resource_pool",
+          "multiplayer.team_objective",
           "physics.buoyancy",
           "physics.moving_platform",
           "physics.pendulum_swing",
@@ -6752,6 +6771,7 @@
           "movement.crouch",
           "movement.dash",
           "movement.swimming",
+          "multiplayer.ping_system",
           "narrative.branching_dialogue",
           "narrative.codex_journal",
           "narrative.environmental_storytelling",
@@ -6842,6 +6862,7 @@
           "economy.resource_conversion",
           "economy.shop",
           "economy.trading",
+          "multiplayer.asymmetric_roles",
           "physics.destructible_environment",
           "procedural_generation.biome_generation",
           "procedural_generation.loot_generation",
@@ -6933,12 +6954,9 @@
           "meta.player_profile_stats",
           "movement.air_dash",
           "movement.swimming",
-          "multiplayer.asymmetric_roles",
           "multiplayer.friendly_fire",
-          "multiplayer.local_coop",
           "multiplayer.matchmaking_lobby",
           "multiplayer.online_coop",
-          "multiplayer.ping_system",
           "multiplayer.revive_teammate",
           "multiplayer.role_swap",
           "multiplayer.shared_resource_pool",
@@ -7037,6 +7055,8 @@
           "movement.sprint",
           "movement.stamina_movement",
           "movement.walk",
+          "multiplayer.local_coop",
+          "multiplayer.ping_system",
           "physics.breakable_object",
           "platforming.coyote_time",
           "platforming.drop_through_platform",
@@ -7117,6 +7137,9 @@
         "movement.sprint",
         "movement.stamina_movement",
         "movement.walk",
+        "multiplayer.local_coop",
+        "multiplayer.online_coop",
+        "multiplayer.revive_teammate",
         "physics.breakable_object",
         "physics.destructible_environment",
         "physics.moving_platform",
@@ -7211,6 +7234,7 @@
         "movement.stamina_movement",
         "movement.swimming",
         "movement.walk",
+        "multiplayer.role_swap",
         "narrative.branching_dialogue",
         "narrative.codex_journal",
         "narrative.environmental_storytelling",
@@ -7266,9 +7290,15 @@
         "meta.player_profile_stats",
         "time.rhythm_timing"
       ],
+      "battle_royale": [
+        "multiplayer.ping_system"
+      ],
       "beat_em_up": [
         "combat.combo_chain",
         "combat.melee_attack"
+      ],
+      "competitive": [
+        "multiplayer.matchmaking_lobby"
       ],
       "cooperative": [
         "multiplayer.asymmetric_roles",
@@ -7431,14 +7461,9 @@
       ],
       "party": [
         "multiplayer.asymmetric_roles",
-        "multiplayer.friendly_fire",
         "multiplayer.local_coop",
         "multiplayer.matchmaking_lobby",
-        "multiplayer.online_coop",
-        "multiplayer.ping_system",
-        "multiplayer.revive_teammate",
         "multiplayer.role_swap",
-        "multiplayer.shared_resource_pool",
         "multiplayer.team_objective"
       ],
       "platformer": [
@@ -7455,6 +7480,7 @@
         "movement.stamina_movement",
         "movement.swimming",
         "movement.walk",
+        "multiplayer.local_coop",
         "physics.gravity",
         "physics.low_gravity_zone",
         "physics.moving_platform",
@@ -7607,6 +7633,8 @@
         "economy.resource_conversion",
         "economy.shop",
         "economy.trading",
+        "multiplayer.online_coop",
+        "multiplayer.shared_resource_pool",
         "narrative.branching_dialogue",
         "narrative.codex_journal",
         "narrative.environmental_storytelling",
@@ -7683,13 +7711,9 @@
         "movement.sprint",
         "multiplayer.asymmetric_roles",
         "multiplayer.friendly_fire",
-        "multiplayer.local_coop",
         "multiplayer.matchmaking_lobby",
-        "multiplayer.online_coop",
         "multiplayer.ping_system",
         "multiplayer.revive_teammate",
-        "multiplayer.role_swap",
-        "multiplayer.shared_resource_pool",
         "multiplayer.team_objective",
         "physics.destructible_environment",
         "physics.ragdoll",
@@ -7798,6 +7822,11 @@
         "economy.resource_conversion",
         "economy.shop",
         "economy.trading",
+        "multiplayer.asymmetric_roles",
+        "multiplayer.ping_system",
+        "multiplayer.role_swap",
+        "multiplayer.shared_resource_pool",
+        "multiplayer.team_objective",
         "progression.respec",
         "progression.skill_tree",
         "strategy.fog_of_war",
@@ -7835,6 +7864,10 @@
         "horror.sound_lure",
         "movement.sprint",
         "movement.swimming",
+        "multiplayer.friendly_fire",
+        "multiplayer.online_coop",
+        "multiplayer.revive_teammate",
+        "multiplayer.shared_resource_pool",
         "physics.buoyancy",
         "physics.physics_push_pull",
         "physics.wind_force",
@@ -7857,6 +7890,9 @@
         "survival.temperature",
         "survival.thirst",
         "time.day_night_schedule"
+      ],
+      "tactical": [
+        "multiplayer.friendly_fire"
       ],
       "visual_novel": [
         "narrative.branching_dialogue",
@@ -8112,6 +8148,7 @@
         "combat.lock_on_targeting",
         "movement.crouch",
         "movement.sprint",
+        "multiplayer.ping_system",
         "platforming.jump_buffering",
         "stealth.visibility_meter",
         "ui_ux.accessibility_remap_controls",
@@ -8181,17 +8218,27 @@
       "animation_blend": [
         "physics.ragdoll"
       ],
+      "anti_grief": [
+        "multiplayer.shared_resource_pool"
+      ],
       "aoe": [
         "combat.area_of_effect_attack"
       ],
       "assist": [
         "accessibility.assist_mode"
       ],
-      "asymmetric": [
+      "asymmetric_roles": [
         "multiplayer.asymmetric_roles"
+      ],
+      "attribution": [
+        "multiplayer.friendly_fire"
       ],
       "audio_sync": [
         "time.rhythm_timing"
+      ],
+      "authority": [
+        "multiplayer.online_coop",
+        "multiplayer.revive_teammate"
       ],
       "base_building": [
         "crafting.workbench",
@@ -8352,11 +8399,18 @@
       "commitment": [
         "combat.charged_attack"
       ],
+      "communication": [
+        "multiplayer.asymmetric_roles",
+        "multiplayer.ping_system"
+      ],
       "companion": [
         "ai.companion_follow"
       ],
       "condition": [
         "survival.durability"
+      ],
+      "confirmation": [
+        "multiplayer.role_swap"
       ],
       "constraint": [
         "physics.pendulum_swing",
@@ -8376,6 +8430,9 @@
         "procedural_generation.random_encounters",
         "procedural_generation.seeded_generation",
         "procedural_generation.wave_generation"
+      ],
+      "contribution": [
+        "multiplayer.team_objective"
       ],
       "control": [
         "vehicles.drifting",
@@ -8401,17 +8458,11 @@
         "time.cooldown_time",
         "ui_ux.cooldown_indicator"
       ],
-      "coordination": [
-        "multiplayer.asymmetric_roles",
-        "multiplayer.friendly_fire",
-        "multiplayer.local_coop",
-        "multiplayer.matchmaking_lobby",
-        "multiplayer.online_coop",
-        "multiplayer.ping_system",
-        "multiplayer.revive_teammate",
-        "multiplayer.role_swap",
-        "multiplayer.shared_resource_pool",
-        "multiplayer.team_objective"
+      "cooperative": [
+        "multiplayer.revive_teammate"
+      ],
+      "couch_coop": [
+        "multiplayer.local_coop"
       ],
       "countdown": [
         "survival.oxygen",
@@ -8456,6 +8507,9 @@
       ],
       "damage_reduction": [
         "combat.block"
+      ],
+      "damage_rules": [
+        "multiplayer.friendly_fire"
       ],
       "dash": [
         "movement.air_dash"
@@ -8511,6 +8565,9 @@
       ],
       "dodge": [
         "movement.dodge_roll"
+      ],
+      "downed_state": [
+        "multiplayer.revive_teammate"
       ],
       "drag": [
         "physics.buoyancy"
@@ -8608,7 +8665,7 @@
       "freeze": [
         "time.time_freeze"
       ],
-      "friendly": [
+      "friendly_fire": [
         "multiplayer.friendly_fire"
       ],
       "fuel": [
@@ -8638,6 +8695,9 @@
       ],
       "gravity_zone": [
         "physics.low_gravity_zone"
+      ],
+      "grief_prevention": [
+        "multiplayer.friendly_fire"
       ],
       "guard": [
         "combat.block",
@@ -8709,6 +8769,9 @@
         "platforming.jump_buffering",
         "time.rhythm_timing"
       ],
+      "input_devices": [
+        "multiplayer.local_coop"
+      ],
       "input_glyphs": [
         "ui_ux.tutorial_prompt"
       ],
@@ -8719,6 +8782,7 @@
         "platforming.coyote_time"
       ],
       "interaction": [
+        "multiplayer.revive_teammate",
         "ui_ux.interaction_prompt"
       ],
       "interface": [
@@ -8779,6 +8843,9 @@
       "ladder": [
         "traversal.ladder_climb"
       ],
+      "late_join": [
+        "multiplayer.team_objective"
+      ],
       "latency": [
         "time.rhythm_timing"
       ],
@@ -8804,7 +8871,10 @@
       "line": [
         "ai.line_of_sight_detection"
       ],
-      "local": [
+      "lobby": [
+        "multiplayer.matchmaking_lobby"
+      ],
+      "local_coop": [
         "multiplayer.local_coop"
       ],
       "localization": [
@@ -8907,18 +8977,6 @@
       "moving_platform": [
         "physics.moving_platform"
       ],
-      "multiplayer": [
-        "multiplayer.asymmetric_roles",
-        "multiplayer.friendly_fire",
-        "multiplayer.local_coop",
-        "multiplayer.matchmaking_lobby",
-        "multiplayer.online_coop",
-        "multiplayer.ping_system",
-        "multiplayer.revive_teammate",
-        "multiplayer.role_swap",
-        "multiplayer.shared_resource_pool",
-        "multiplayer.team_objective"
-      ],
       "narrative": [
         "narrative.branching_dialogue",
         "narrative.codex_journal",
@@ -8979,7 +9037,7 @@
       "onboarding": [
         "ui_ux.tutorial_prompt"
       ],
-      "online": [
+      "online_coop": [
         "multiplayer.online_coop"
       ],
       "ownership": [
@@ -9012,6 +9070,11 @@
       ],
       "permadeath": [
         "roguelike.permadeath"
+      ],
+      "permissions": [
+        "multiplayer.asymmetric_roles",
+        "multiplayer.role_swap",
+        "multiplayer.shared_resource_pool"
       ],
       "persistence": [
         "physics.destructible_environment",
@@ -9054,18 +9117,6 @@
       "player": [
         "meta.player_profile_stats"
       ],
-      "player_coordination": [
-        "multiplayer.asymmetric_roles",
-        "multiplayer.friendly_fire",
-        "multiplayer.local_coop",
-        "multiplayer.matchmaking_lobby",
-        "multiplayer.online_coop",
-        "multiplayer.ping_system",
-        "multiplayer.revive_teammate",
-        "multiplayer.role_swap",
-        "multiplayer.shared_resource_pool",
-        "multiplayer.team_objective"
-      ],
       "population": [
         "simulation.population_model"
       ],
@@ -9081,6 +9132,9 @@
         "platforming.variable_jump_height",
         "platforming.wall_jump",
         "platforming.wall_slide"
+      ],
+      "prediction": [
+        "multiplayer.online_coop"
       ],
       "presentation": [
         "camera.screen_shake"
@@ -9108,6 +9162,9 @@
       ],
       "production": [
         "crafting.crafting_queue"
+      ],
+      "profile_binding": [
+        "multiplayer.local_coop"
       ],
       "progression": [
         "progression.achievement_system",
@@ -9178,6 +9235,9 @@
       "rarity": [
         "economy.loot_table"
       ],
+      "rate_limit": [
+        "multiplayer.ping_system"
+      ],
       "readability": [
         "camera.camera_lock_on",
         "camera.camera_zoom",
@@ -9191,6 +9251,9 @@
         "time.slow_motion",
         "ui_ux.cooldown_indicator"
       ],
+      "ready_state": [
+        "multiplayer.matchmaking_lobby"
+      ],
       "recharge": [
         "time.cooldown_time"
       ],
@@ -9199,6 +9262,10 @@
       ],
       "recipes": [
         "crafting.workbench"
+      ],
+      "reconnect": [
+        "multiplayer.matchmaking_lobby",
+        "multiplayer.online_coop"
       ],
       "recovery": [
         "survival.health"
@@ -9264,6 +9331,7 @@
         "economy.resource_conversion",
         "economy.shop",
         "economy.trading",
+        "multiplayer.team_objective",
         "progression.achievement_system",
         "progression.crafting_unlocks",
         "progression.equipment_rarity",
@@ -9298,7 +9366,13 @@
         "roguelike.run_based_progression",
         "roguelike.shop_between_levels"
       ],
-      "role": [
+      "role_id": [
+        "multiplayer.asymmetric_roles"
+      ],
+      "role_swap": [
+        "multiplayer.role_swap"
+      ],
+      "role_transfer": [
         "multiplayer.role_swap"
       ],
       "rollback": [
@@ -9356,6 +9430,10 @@
       "sequence": [
         "puzzle.sequence_memory"
       ],
+      "session": [
+        "multiplayer.matchmaking_lobby",
+        "multiplayer.online_coop"
+      ],
       "settings": [
         "accessibility.adjustable_difficulty",
         "accessibility.assist_mode",
@@ -9366,7 +9444,10 @@
       "shadow": [
         "stealth.shadow_cover"
       ],
-      "shared": [
+      "shared_camera": [
+        "multiplayer.local_coop"
+      ],
+      "shared_resources": [
         "multiplayer.shared_resource_pool"
       ],
       "shelter": [
@@ -9534,8 +9615,24 @@
       "targeting": [
         "combat.lock_on_targeting"
       ],
-      "team": [
+      "team_damage": [
+        "multiplayer.friendly_fire"
+      ],
+      "team_economy": [
+        "multiplayer.shared_resource_pool"
+      ],
+      "team_id": [
         "multiplayer.team_objective"
+      ],
+      "team_objective": [
+        "multiplayer.team_objective"
+      ],
+      "team_visibility": [
+        "multiplayer.ping_system"
+      ],
+      "teamwork": [
+        "multiplayer.asymmetric_roles",
+        "multiplayer.role_swap"
       ],
       "tech": [
         "strategy.tech_tree"
@@ -9610,6 +9707,9 @@
       "transaction": [
         "crafting.crafting_queue",
         "crafting.recipe_crafting"
+      ],
+      "transactions": [
+        "multiplayer.shared_resource_pool"
       ],
       "traversal": [
         "physics.pendulum_swing",

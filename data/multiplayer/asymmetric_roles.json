@@ -2,12 +2,12 @@
   "id": "multiplayer.asymmetric_roles",
   "name": "Asymmetric Roles",
   "aliases": [
-    "asymmetric roles mechanic",
-    "asymmetric roles system",
-    "asymmetric roles"
+    "different player roles",
+    "asymmetric co-op",
+    "role specialization"
   ],
   "category": "multiplayer",
-  "subcategory": "player_coordination",
+  "subcategory": "role_authority",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,96 +16,130 @@
   ],
   "difficulty": {
     "design": "hard",
-    "implementation": "expert",
-    "tuning": "hard"
+    "implementation": "hard",
+    "tuning": "expert"
   },
   "genres": [
+    "cooperative",
     "party",
-    "shooter",
-    "cooperative"
+    "strategy",
+    "shooter"
   ],
-  "description": "Asymmetric Roles is a social or networked mechanic that coordinates multiple players within shared rules.",
-  "design_notes": "Asymmetric Roles should be designed around a clear player promise, a readable trigger, and a predictable result. For multiplayer mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Players occupy different roles with distinct abilities, permissions, information, cameras, or objective responsibilities.",
+  "design_notes": "Asymmetric roles need more than different ability lists. The design should define role_id assignment, authority ownership, role permissions, camera and UI differences, reconnect restoration, and communication support so a powerful role does not become an exploit or a confusing burden.",
   "design_purpose": [
-    "Give the player a readable way to use asymmetric roles as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect asymmetric roles to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create teamwork by giving players complementary information, tools, or responsibilities.",
+    "Support different skill levels and play preferences within the same session.",
+    "Make coordination meaningful because no single player has every action or perspective."
   ],
-  "player_fantasy": "Players feel coordinated, competitive, or socially expressive within shared rules.",
+  "player_fantasy": "Each player feels uniquely useful and sees why their role matters to the team's success.",
   "required_systems": [
-    "session_management",
-    "replication_or_sync",
+    "role_assignment",
+    "permission_system",
     "player_state",
-    "network_safe_events"
+    "role_specific_ui",
+    "communication_tools"
   ],
   "parameters": [
     {
-      "name": "player_count",
-      "type": "integer",
-      "typical_range": "2-128",
-      "description": "Number of players supported by the mechanic."
+      "name": "role_id",
+      "type": "string",
+      "typical_range": "pilot, engineer, medic, commander, infiltrator",
+      "description": "Assigned role identifier used by permissions, UI, abilities, and reconnect restoration."
     },
     {
-      "name": "sync_rate",
-      "type": "integer",
-      "typical_range": "10-120 Hz",
-      "description": "Frequency at which state updates are exchanged or resolved."
+      "name": "authority_owner_id",
+      "type": "string",
+      "typical_range": "server, host, role_player, station_actor",
+      "description": "Authority that accepts role-specific actions such as commands, heals, swaps, or station use."
     },
     {
-      "name": "failure_timeout",
-      "type": "float",
-      "typical_range": "1-60 seconds",
-      "description": "Time before the mechanic handles disconnects or missing responses."
+      "name": "role_permission_policy_id",
+      "type": "string",
+      "typical_range": "can_heal, can_open_map, can_call_vote, can_drive",
+      "description": "Permission set that controls role abilities and restricted interactions."
+    },
+    {
+      "name": "role_ui_profile_id",
+      "type": "string",
+      "typical_range": "commander_map, medic_status_panel, driver_dashboard",
+      "description": "UI and information layout assigned to the role."
+    },
+    {
+      "name": "role_assignment_seed",
+      "type": "integer",
+      "typical_range": "match seed or lobby assignment seed",
+      "description": "Deterministic seed used when roles are randomized or balanced during lobby setup."
+    },
+    {
+      "name": "role_swap_lock_ms",
+      "type": "integer",
+      "typical_range": "0-300000 ms",
+      "description": "Lockout after assignment or swap that prevents rapid role cycling and griefing."
     }
   ],
   "common_variants": [
-    "asymmetric_roles_local_variant",
-    "asymmetric_roles_online_variant",
-    "competitive_variant",
-    "cooperative_variant"
+    "class_based_coop",
+    "commander_and_field_team",
+    "driver_and_gunner",
+    "hidden_information_roles",
+    "accessibility_support_roles"
   ],
   "edge_cases": [
-    "Asymmetric Roles is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Asymmetric Roles overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Asymmetric Roles runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A player disconnects while holding the only role that can open a required route or revive teammates.",
+    "A role swap happens while an ability, camera mode, or restricted interaction is already in progress.",
+    "Late joiners need a role that does not invalidate the team's current objective state.",
+    "The player with a low-information role cannot understand why the team is failing without better communication tools."
   ],
   "common_bugs": [
-    "Asymmetric Roles state does not reset correctly after interruption or reload.",
-    "Feedback for Asymmetric Roles plays even when the mechanic fails or is rejected.",
-    "Asymmetric Roles produces different results between frame rates, platforms, or network clients."
+    "Role-specific UI remains visible after a role change and exposes hidden information to the wrong player.",
+    "Server action validation checks player_id but not role_id or role_permission_policy_id.",
+    "Reconnect restores the player character but assigns the default role instead of the previous role.",
+    "Random role assignment differs between clients because lobby slot ordering is not deterministic."
   ],
   "balancing_notes": [
-    "Make Asymmetric Roles strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Every role needs moments of agency; a support role should not spend most of the session waiting for others.",
+    "Powerful roles need responsibility, counterplay, or rotation rules so one player does not dominate the session.",
+    "Communication load is part of balance; roles that depend on hidden information need good ping and text tools."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Asymmetric Roles becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer roles with lower mechanical intensity and roles with lower communication demands where the game supports them.",
+    "Make role responsibilities, available actions, and team dependencies visible in text, not only voice chat."
   ],
   "implementation_notes": {
-    "unity": "Implement Asymmetric Roles with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Asymmetric Roles as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Asymmetric Roles with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Asymmetric Roles as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store role_id and permission policy in replicated player state, not only on UI prefabs. Netcode RPCs should include player_id and expected role_id, then the server validates role_permission_policy_id before mutating objectives, vehicles, or abilities.",
+    "godot": "Keep role data in an authoritative session dictionary keyed by player_id. Role-specific UI nodes should subscribe to role changes and clear restricted state on swap or disconnect, while RPC handlers reject actions that do not match current role_id.",
+    "unreal": "Replicate role_id through PlayerState and gate role abilities through server-side permission checks. Role UI can live in PlayerController, but GameMode or authoritative components should restore roles on seamless travel and reconnect.",
+    "web": "Maintain role assignments on the server and send role-specific snapshots that omit hidden information for other roles. Browser UI should rebuild from role_ui_profile_id after reconnect or swap rather than trusting cached panels."
   },
   "related_mechanics": [
+    "multiplayer.role_swap",
+    "multiplayer.team_objective",
     "multiplayer.local_coop",
-    "multiplayer.online_coop",
-    "progression.achievement_system",
-    "ui_ux.cooldown_indicator"
+    "multiplayer.online_coop"
   ],
   "combines_well_with": [
-    "multiplayer.revive_teammate",
-    "multiplayer.role_swap",
-    "progression.achievement_system",
-    "ui_ux.cooldown_indicator"
+    "multiplayer.ping_system",
+    "multiplayer.shared_resource_pool",
+    "ui_ux.radial_menu",
+    "strategy.unit_counter_system"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Keep Talking and Nobody Explodes",
+      "note": "Uses asymmetric information between the defuser and manual readers."
+    },
+    {
+      "title": "Deep Rock Galactic",
+      "note": "Uses class roles that support different team functions during missions."
+    }
+  ],
   "tags": [
-    "asymmetric",
-    "coordination",
-    "multiplayer",
-    "player_coordination"
+    "asymmetric_roles",
+    "role_id",
+    "permissions",
+    "teamwork",
+    "communication"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

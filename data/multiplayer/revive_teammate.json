@@ -2,12 +2,12 @@
   "id": "multiplayer.revive_teammate",
   "name": "Revive Teammate",
   "aliases": [
-    "revive teammate mechanic",
-    "revive teammate system",
-    "revive teammate"
+    "revive",
+    "teammate revive",
+    "rescue downed ally"
   ],
   "category": "multiplayer",
-  "subcategory": "player_coordination",
+  "subcategory": "downed_recovery",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,97 +15,131 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
-    "implementation": "expert",
+    "design": "medium",
+    "implementation": "hard",
     "tuning": "hard"
   },
   "genres": [
-    "party",
+    "cooperative",
     "shooter",
-    "cooperative"
+    "survival",
+    "action"
   ],
-  "description": "Revive Teammate is a social or networked mechanic that coordinates multiple players within shared rules.",
-  "design_notes": "Revive Teammate should be designed around a clear player promise, a readable trigger, and a predictable result. For multiplayer mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A player restores a downed teammate through a channel, interaction, item, or protected rescue sequence.",
+  "design_notes": "Revive mechanics are cooperative transactions with high grief risk. The design needs revive_target_id, reviver_player_id, channel progress, interruption rules, invulnerability after recovery, and authority over the downed state so clients cannot spoof rescues or chain-revive forever.",
   "design_purpose": [
-    "Give the player a readable way to use revive teammate as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect revive teammate to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Keep co-op players engaged after failure by giving teammates a recovery objective.",
+    "Create tactical decisions around risk, positioning, cover, and resource use.",
+    "Reward teamwork without erasing the consequences of taking lethal damage."
   ],
-  "player_fantasy": "Players feel coordinated, competitive, or socially expressive within shared rules.",
+  "player_fantasy": "The player feels heroic when they reach a teammate under pressure and bring them back into the fight.",
   "required_systems": [
-    "session_management",
-    "replication_or_sync",
-    "player_state",
-    "network_safe_events"
+    "downed_state",
+    "interaction_system",
+    "server_authority",
+    "animation_synchronization",
+    "ui_teammate_status"
   ],
   "parameters": [
     {
-      "name": "player_count",
-      "type": "integer",
-      "typical_range": "2-128",
-      "description": "Number of players supported by the mechanic."
+      "name": "revive_target_id",
+      "type": "string",
+      "typical_range": "player_id of downed teammate",
+      "description": "Player or character identifier for the teammate currently eligible for revival."
     },
     {
-      "name": "sync_rate",
-      "type": "integer",
-      "typical_range": "10-120 Hz",
-      "description": "Frequency at which state updates are exchanged or resolved."
+      "name": "reviver_player_id",
+      "type": "string",
+      "typical_range": "player_id of rescuer",
+      "description": "Player attempting the revive interaction and receiving channel ownership."
     },
     {
-      "name": "failure_timeout",
-      "type": "float",
-      "typical_range": "1-60 seconds",
-      "description": "Time before the mechanic handles disconnects or missing responses."
+      "name": "revive_channel_ms",
+      "type": "integer",
+      "typical_range": "1000-10000 ms",
+      "description": "Required uninterrupted channel window before the authority commits recovery."
+    },
+    {
+      "name": "interruption_rule_id",
+      "type": "string",
+      "typical_range": "damage_interrupts, movement_interrupts, line_of_sight_required, item_protected",
+      "description": "Rule set that cancels or preserves revive progress under damage, movement, or target changes."
+    },
+    {
+      "name": "post_revive_invulnerability_ms",
+      "type": "integer",
+      "typical_range": "0-3000 ms",
+      "description": "Short protection window after recovery to prevent instant re-downing."
+    },
+    {
+      "name": "chain_revive_lock_ms",
+      "type": "integer",
+      "typical_range": "0-60000 ms",
+      "description": "Lockout that prevents repeated revive loops or exploitative downed-state cycling."
     }
   ],
   "common_variants": [
-    "revive_teammate_local_variant",
-    "revive_teammate_online_variant",
-    "competitive_variant",
-    "cooperative_variant"
+    "hold_to_revive",
+    "revive_item_consumed",
+    "instant_revive_ability",
+    "two_player_rescue",
+    "limited_revive_tokens"
   ],
   "edge_cases": [
-    "Revive Teammate is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Revive Teammate overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Revive Teammate runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Two teammates revive the same target and one cancels while the other should continue.",
+    "The downed player disconnects, bleeds out, or changes teams during the revive channel.",
+    "The reviver loses line of sight or moves out of interaction radius due to knockback or platform motion.",
+    "A revive completes on the client but the server rejects it because damage interrupted the channel."
   ],
   "common_bugs": [
-    "Revive Teammate state does not reset correctly after interruption or reload.",
-    "Feedback for Revive Teammate plays even when the mechanic fails or is rejected.",
-    "Revive Teammate produces different results between frame rates, platforms, or network clients."
+    "Revive progress is owned by the client and can be completed after the target is no longer downed.",
+    "Animation starts on both players at different ticks and the target snaps or stands early.",
+    "Post-revive invulnerability applies to all damage sources, including hazards that should remain dangerous.",
+    "Chain revive lockout is not saved and resets after reconnect or host migration."
   ],
   "balancing_notes": [
-    "Make Revive Teammate strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Long channels create rescue tension, but they require enough cover, crowd control, or revive tools to feel fair.",
+    "Invulnerability should prevent spawn-kill frustration without letting revived players safely attack for free.",
+    "Limited revive resources can heighten stakes, but depleted players still need meaningful spectate or support options."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Revive Teammate becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer hold, toggle, or repeated-press revive input options for players with different motor needs.",
+    "Show downed timers, interruption causes, and revive progress through text and icons, not only radial fills."
   ],
   "implementation_notes": {
-    "unity": "Implement Revive Teammate with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Revive Teammate as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Revive Teammate with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Revive Teammate as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use a server-owned revive interaction record with interaction_request_id, reviver_player_id, revive_target_id, start tick, and interruption_rule_id. Clients can animate predicted progress, but Netcode should commit health, downed state, invulnerability, and lockout from one authority event.",
+    "godot": "Represent revive as an authoritative interaction state keyed by target and reviver. RPCs request start and cancel; the server verifies distance, team, downed state, and interruptions before broadcasting synchronized animation and recovery snapshots.",
+    "unreal": "GameMode or a server component should own downed and revive state. Use server RPCs for start/cancel, replicated progress for UI, Gameplay Tags for interruption and invulnerability, and a single commit path for health restoration.",
+    "web": "For WebSocket co-op, send revive requests with interaction_request_id and client_input_sequence, then let the server advance channel progress by server_tick. Browser clients should reconcile predicted progress when interruption or target state changes."
   },
   "related_mechanics": [
-    "multiplayer.local_coop",
     "multiplayer.online_coop",
-    "progression.achievement_system",
-    "ui_ux.cooldown_indicator"
+    "survival.health",
+    "multiplayer.team_objective",
+    "ui_ux.interaction_prompt"
   ],
   "combines_well_with": [
-    "multiplayer.role_swap",
-    "multiplayer.shared_resource_pool",
-    "progression.achievement_system",
-    "ui_ux.cooldown_indicator"
+    "multiplayer.ping_system",
+    "combat.block",
+    "survival.stamina",
+    "ui_ux.checkpoint_notification"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Left 4 Dead",
+      "note": "Uses teammate rescue and recovery as a core cooperative pressure point."
+    },
+    {
+      "title": "Apex Legends",
+      "note": "Uses downed states, revives, and respawn recovery within squad play."
+    }
+  ],
   "tags": [
-    "coordination",
-    "multiplayer",
-    "player_coordination",
-    "revive"
+    "revive",
+    "downed_state",
+    "interaction",
+    "cooperative",
+    "authority"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

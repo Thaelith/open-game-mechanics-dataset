@@ -1,13 +1,13 @@
 {
   "id": "multiplayer.local_coop",
-  "name": "Local Co-op",
+  "name": "Local Coop",
   "aliases": [
-    "local coop mechanic",
-    "local coop system",
-    "local co-op"
+    "local co-op",
+    "couch co-op",
+    "same-screen co-op"
   ],
   "category": "multiplayer",
-  "subcategory": "player_coordination",
+  "subcategory": "local_session",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,97 +15,131 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
-    "implementation": "expert",
-    "tuning": "hard"
+    "design": "medium",
+    "implementation": "hard",
+    "tuning": "medium"
   },
   "genres": [
+    "cooperative",
     "party",
-    "shooter",
-    "cooperative"
+    "platformer",
+    "action"
   ],
-  "description": "Local Co-op is a social or networked mechanic that coordinates multiple players within shared rules.",
-  "design_notes": "Local Co-op should be designed around a clear player promise, a readable trigger, and a predictable result. For multiplayer mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Multiple players share one device, session, camera model, and input space while cooperating in the same game flow.",
+  "design_notes": "Local co-op avoids network latency but still has ownership problems: input devices, save profiles, camera framing, pause authority, UI focus, and join/drop behavior must be explicit. The design should define whether players share one camera, split the viewport, share inventory, or keep separate progression records.",
   "design_purpose": [
-    "Give the player a readable way to use local co-op as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect local co-op to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players cooperate from one device without online accounts or matchmaking.",
+    "Create approachable social play for families, parties, and drop-in sessions.",
+    "Support shared-screen interaction where communication is immediate but screen and input focus are constrained."
   ],
-  "player_fantasy": "Players feel coordinated, competitive, or socially expressive within shared rules.",
+  "player_fantasy": "Players feel they can sit together, join quickly, and contribute without fighting the interface or camera.",
   "required_systems": [
-    "session_management",
-    "replication_or_sync",
-    "player_state",
-    "network_safe_events"
+    "local_input_manager",
+    "player_spawn_manager",
+    "camera_framing",
+    "profile_binding",
+    "shared_ui_focus"
   ],
   "parameters": [
     {
-      "name": "player_count",
+      "name": "local_player_index",
       "type": "integer",
-      "typical_range": "2-128",
-      "description": "Number of players supported by the mechanic."
+      "typical_range": "0-7",
+      "description": "Stable local seat used by input routing, UI prompts, and save profile binding."
     },
     {
-      "name": "sync_rate",
-      "type": "integer",
-      "typical_range": "10-120 Hz",
-      "description": "Frequency at which state updates are exchanged or resolved."
+      "name": "input_device_id",
+      "type": "string",
+      "typical_range": "gamepad_1, keyboard_left, keyboard_right",
+      "description": "Device or control partition assigned to a local player seat."
     },
     {
-      "name": "failure_timeout",
-      "type": "float",
-      "typical_range": "1-60 seconds",
-      "description": "Time before the mechanic handles disconnects or missing responses."
+      "name": "shared_camera_policy_id",
+      "type": "string",
+      "typical_range": "single_camera_bounds, split_screen, leader_camera, dynamic_zoom",
+      "description": "Camera rule used when players separate, rejoin, or enter different rooms."
+    },
+    {
+      "name": "drop_in_join_rule_id",
+      "type": "string",
+      "typical_range": "join_any_safe_area, join_at_checkpoint, menu_only",
+      "description": "Rule for when a new local player can enter an active session."
+    },
+    {
+      "name": "save_profile_binding_id",
+      "type": "string",
+      "typical_range": "guest, platform_profile, shared_save, per_player_save",
+      "description": "Binding that determines which progression, achievements, and settings belong to the player."
+    },
+    {
+      "name": "shared_pause_owner_id",
+      "type": "string",
+      "typical_range": "any_player, player_one, host_profile, vote_required",
+      "description": "Policy for who can pause, unpause, open menus, or change shared settings."
     }
   ],
   "common_variants": [
-    "local_coop_local_variant",
-    "local_coop_online_variant",
-    "competitive_variant",
-    "cooperative_variant"
+    "same_screen_coop",
+    "split_screen_coop",
+    "drop_in_local_coop",
+    "shared_keyboard_coop",
+    "local_plus_online_coop"
   ],
   "edge_cases": [
-    "Local Co-op is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Local Co-op overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Local Co-op runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A controller disconnects while its player is holding an item, aiming, or controlling a menu.",
+    "One player joins during a boss fight, cutscene, checkpoint load, or screen transition.",
+    "Two players open inventory, dialogue, or settings panels that compete for UI focus.",
+    "Shared camera bounds cannot keep both players visible without exposing hidden rooms or hazards."
   ],
   "common_bugs": [
-    "Local Co-op state does not reset correctly after interruption or reload.",
-    "Feedback for Local Co-op plays even when the mechanic fails or is rejected.",
-    "Local Co-op produces different results between frame rates, platforms, or network clients."
+    "Input is routed by device order instead of local_player_index and changes when controllers reconnect.",
+    "Guest players overwrite host settings, save data, or achievements because profile binding is implicit.",
+    "The camera teleports or zooms through walls when players separate vertically or enter different rooms.",
+    "Pause and menu state affects only one player while the other continues receiving gameplay input."
   ],
   "balancing_notes": [
-    "Make Local Co-op strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Same-screen co-op encourages teamwork but needs level layouts that tolerate players moving at different skill levels.",
+    "Split screen gives independence at the cost of UI density and performance.",
+    "Drop-in rules should avoid spawning new players into immediate failure or blocking active teammates."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Local Co-op becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Allow each local player to remap controls, invert axes, adjust text scale, and choose assist settings independently where possible.",
+    "Provide camera and UI options that reduce motion discomfort in dynamic zoom or split-screen modes."
   ],
   "implementation_notes": {
-    "unity": "Implement Local Co-op with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Local Co-op as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Local Co-op with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Local Co-op as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use PlayerInputManager or an explicit local input registry keyed by local_player_index and input_device_id. Keep shared camera policy, pause ownership, and profile bindings in session state rather than in scene-only objects, and test controller reconnect paths.",
+    "godot": "Map input devices to player seats through a local session service. Player nodes should read local_player_index for UI prompts and save binding, while camera and pause services arbitrate shared state instead of each player opening menus independently.",
+    "unreal": "Use LocalPlayer instances, PlayerControllers, and split-screen settings deliberately; do not assume controller index is stable after reconnect. Store profile binding and shared pause policy in GameInstance or a local session subsystem.",
+    "web": "Use the Gamepad API and keyboard partitions through a local seat registry. Canvas or Phaser layouts should calculate camera and UI rectangles from shared_camera_policy_id and preserve per-player settings in local storage profiles."
   },
   "related_mechanics": [
     "multiplayer.online_coop",
     "multiplayer.role_swap",
-    "progression.achievement_system",
-    "ui_ux.cooldown_indicator"
+    "multiplayer.shared_resource_pool",
+    "camera.split_screen"
   ],
   "combines_well_with": [
     "multiplayer.revive_teammate",
-    "multiplayer.shared_resource_pool",
-    "progression.achievement_system",
-    "ui_ux.cooldown_indicator"
+    "multiplayer.asymmetric_roles",
+    "ui_ux.radial_menu",
+    "ui_ux.accessibility_remap_controls"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Overcooked",
+      "note": "Uses local co-op around shared tasks, communication, and screen space."
+    },
+    {
+      "title": "Lovers in a Dangerous Spacetime",
+      "note": "Uses same-screen local co-op with role movement between ship stations."
+    }
+  ],
   "tags": [
-    "coordination",
-    "local",
-    "multiplayer",
-    "player_coordination"
+    "local_coop",
+    "input_devices",
+    "shared_camera",
+    "couch_coop",
+    "profile_binding"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

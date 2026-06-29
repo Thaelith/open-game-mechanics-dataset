@@ -2,12 +2,12 @@
   "id": "multiplayer.friendly_fire",
   "name": "Friendly Fire",
   "aliases": [
-    "friendly fire mechanic",
-    "friendly fire system",
-    "friendly fire"
+    "team damage",
+    "ally damage",
+    "friendly damage"
   ],
   "category": "multiplayer",
-  "subcategory": "player_coordination",
+  "subcategory": "team_damage_rules",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,97 +15,131 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
-    "implementation": "expert",
+    "design": "medium",
+    "implementation": "hard",
     "tuning": "hard"
   },
   "genres": [
-    "party",
     "shooter",
-    "cooperative"
+    "cooperative",
+    "tactical",
+    "survival"
   ],
-  "description": "Friendly Fire is a social or networked mechanic that coordinates multiple players within shared rules.",
-  "design_notes": "Friendly Fire should be designed around a clear player promise, a readable trigger, and a predictable result. For multiplayer mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Damage, healing denial, knockback, or penalties can apply when one player affects a teammate.",
+  "design_notes": "Friendly fire is both a damage rule and a social safety system. Designers should define friendly_fire_rule_id, team filters, source player attribution, exceptions for splash or pets, warning thresholds, and forgiveness or penalty policies before exposing team damage in live play.",
   "design_purpose": [
-    "Give the player a readable way to use friendly fire as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect friendly fire to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Increase tactical positioning and communication by making careless attacks risky.",
+    "Support realism, tension, or high-stakes cooperative combat.",
+    "Provide controlled penalties for griefing without punishing unavoidable accidents too harshly."
   ],
-  "player_fantasy": "Players feel coordinated, competitive, or socially expressive within shared rules.",
+  "player_fantasy": "Players feel their shots and area effects have weight because teammates are part of the tactical space.",
   "required_systems": [
-    "session_management",
-    "replication_or_sync",
-    "player_state",
-    "network_safe_events"
+    "damage_system",
+    "team_management",
+    "player_attribution",
+    "penalty_system",
+    "ui_warning_bands"
   ],
   "parameters": [
     {
-      "name": "player_count",
-      "type": "integer",
-      "typical_range": "2-128",
-      "description": "Number of players supported by the mechanic."
+      "name": "damage_source_player_id",
+      "type": "string",
+      "typical_range": "attacking player_id",
+      "description": "Player credited with the damage event, including projectiles, traps, pets, or delayed effects."
     },
     {
-      "name": "sync_rate",
-      "type": "integer",
-      "typical_range": "10-120 Hz",
-      "description": "Frequency at which state updates are exchanged or resolved."
+      "name": "damage_target_player_id",
+      "type": "string",
+      "typical_range": "ally player_id",
+      "description": "Teammate receiving damage, knockback, penalty, or blocked healing from the event."
     },
     {
-      "name": "failure_timeout",
+      "name": "friendly_fire_rule_id",
+      "type": "string",
+      "typical_range": "off, reduced_damage, full_damage, reflect_to_attacker, vote_punish",
+      "description": "Team damage rule applied after team, source, and target validation."
+    },
+    {
+      "name": "forgiveness_policy_id",
+      "type": "string",
+      "typical_range": "manual_forgive, auto_forgive_small_hits, no_forgiveness",
+      "description": "Rule for whether victims can forgive or reduce penalties after ally damage."
+    },
+    {
+      "name": "penalty_counter_id",
+      "type": "string",
+      "typical_range": "team_damage_warning, kick_threshold, ranked_penalty",
+      "description": "Counter that tracks repeated team damage for warnings, kicks, or matchmaking penalties."
+    },
+    {
+      "name": "reflected_damage_percent",
       "type": "float",
-      "typical_range": "1-60 seconds",
-      "description": "Time before the mechanic handles disconnects or missing responses."
+      "typical_range": "0-100 percent",
+      "description": "Portion of ally damage redirected to the attacker under reflection rules."
     }
   ],
   "common_variants": [
-    "friendly_fire_local_variant",
-    "friendly_fire_online_variant",
-    "competitive_variant",
-    "cooperative_variant"
+    "friendly_fire_off",
+    "reduced_team_damage",
+    "full_team_damage",
+    "reflected_friendly_fire",
+    "forgive_or_punish_system"
   ],
   "edge_cases": [
-    "Friendly Fire is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Friendly Fire overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Friendly Fire runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Area damage hits enemies and allies at the same tick with different team filters.",
+    "A player changes teams after firing a projectile but before it lands.",
+    "Pets, turrets, traps, or vehicles need source attribution back to the owning player.",
+    "Damage over time continues after a victim forgives the initial hit."
   ],
   "common_bugs": [
-    "Friendly Fire state does not reset correctly after interruption or reload.",
-    "Feedback for Friendly Fire plays even when the mechanic fails or is rejected.",
-    "Friendly Fire produces different results between frame rates, platforms, or network clients."
+    "Friendly fire checks current team at impact but ignores team at projectile spawn, enabling team-switch exploits.",
+    "Penalty counters increment for blocked damage or training-room hits that should be exempt.",
+    "Client-side hit markers show ally damage even though the server rejected the damage event.",
+    "Reflected damage recursively triggers another friendly fire event and loops."
   ],
   "balancing_notes": [
-    "Make Friendly Fire strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Full team damage creates strong tactical tension but can invite griefing without penalties or private-session controls.",
+    "Reduced damage often preserves positioning awareness while avoiding accidental mission failure.",
+    "Penalty thresholds should account for weapon type, splash radius, and victim forgiveness."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Friendly Fire becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide ally outlines, hit warnings, and clear damage-source labels to reduce accidental friendly fire.",
+    "Offer non-voice forgiveness prompts and readable penalty explanations."
   ],
   "implementation_notes": {
-    "unity": "Implement Friendly Fire with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Friendly Fire as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Friendly Fire with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Friendly Fire as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Route all damage through a server-owned resolver that receives damage_source_player_id, target id, team ids, projectile owner, and friendly_fire_rule_id. Netcode clients can predict hit markers, but health mutation and penalty counters should come only from authority results.",
+    "godot": "Keep team and damage attribution in authoritative player state. RPC damage requests should include source player, source team at spawn, target player, and damage event id; the server applies rule and broadcasts accepted damage or rejection.",
+    "unreal": "Use PlayerState for teams and instigator attribution, and evaluate friendly fire in server damage handlers before ApplyDamage changes health. Gameplay Tags can mark exempt zones, pets, projectiles, or reflection rules.",
+    "web": "For server-authoritative browser games, send hit requests with projectile id and owner id, then resolve team rules on the server. Clients should display predicted ally warnings as pending until the authoritative event confirms damage or rejection."
   },
   "related_mechanics": [
-    "multiplayer.local_coop",
-    "multiplayer.online_coop",
-    "progression.achievement_system",
-    "ui_ux.cooldown_indicator"
+    "combat.ranged_attack",
+    "combat.area_of_effect_attack",
+    "multiplayer.team_objective",
+    "multiplayer.online_coop"
   ],
   "combines_well_with": [
-    "multiplayer.revive_teammate",
-    "multiplayer.role_swap",
-    "progression.achievement_system",
-    "ui_ux.cooldown_indicator"
+    "multiplayer.ping_system",
+    "ui_ux.hit_marker",
+    "combat.block",
+    "multiplayer.matchmaking_lobby"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Rainbow Six Siege",
+      "note": "Uses team damage rules and penalties in tactical multiplayer."
+    },
+    {
+      "title": "Helldivers 2",
+      "note": "Uses friendly fire as part of cooperative positioning and risk."
+    }
+  ],
   "tags": [
-    "coordination",
-    "friendly",
-    "multiplayer",
-    "player_coordination"
+    "friendly_fire",
+    "team_damage",
+    "grief_prevention",
+    "damage_rules",
+    "attribution"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

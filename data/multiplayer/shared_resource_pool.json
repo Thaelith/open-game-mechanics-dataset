@@ -2,12 +2,12 @@
   "id": "multiplayer.shared_resource_pool",
   "name": "Shared Resource Pool",
   "aliases": [
-    "shared resource pool mechanic",
-    "shared resource pool system",
-    "shared resource pool"
+    "team resource pool",
+    "shared currency",
+    "communal inventory"
   ],
   "category": "multiplayer",
-  "subcategory": "player_coordination",
+  "subcategory": "shared_economy",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,97 +15,131 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
-    "implementation": "expert",
+    "design": "medium",
+    "implementation": "hard",
     "tuning": "hard"
   },
   "genres": [
-    "party",
-    "shooter",
-    "cooperative"
+    "cooperative",
+    "strategy",
+    "survival",
+    "rpg"
   ],
-  "description": "Shared Resource Pool is a social or networked mechanic that coordinates multiple players within shared rules.",
-  "design_notes": "Shared Resource Pool should be designed around a clear player promise, a readable trigger, and a predictable result. For multiplayer mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Multiple players contribute to and spend from a shared pool of currency, materials, charges, or objective resources.",
+  "design_notes": "Shared resources need atomic transactions and visible accountability. Designers should define shared_resource_id ownership, contribution logs, spend permissions, ordering, rollback on failed spends, and anti-grief rules so one player cannot silently drain team progress.",
   "design_purpose": [
-    "Give the player a readable way to use shared resource pool as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect shared resource pool to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Encourage teamwork by turning individual gains into group capabilities.",
+    "Support shared base upgrades, team abilities, objective payments, or communal survival stockpiles.",
+    "Reduce loot conflict when cooperation matters more than individual ownership."
   ],
-  "player_fantasy": "Players feel coordinated, competitive, or socially expressive within shared rules.",
+  "player_fantasy": "Players feel that their contributions matter to a shared plan and that group spending is trustworthy.",
   "required_systems": [
-    "session_management",
-    "replication_or_sync",
-    "player_state",
-    "network_safe_events"
+    "resource_accounting",
+    "transaction_log",
+    "permission_system",
+    "ui_team_status",
+    "server_authority"
   ],
   "parameters": [
     {
-      "name": "player_count",
-      "type": "integer",
-      "typical_range": "2-128",
-      "description": "Number of players supported by the mechanic."
+      "name": "shared_resource_id",
+      "type": "string",
+      "typical_range": "team_gold, base_materials, squad_energy, raid_keys",
+      "description": "Pool identifier used by contributions, spends, UI, persistence, and permission checks."
     },
     {
-      "name": "sync_rate",
-      "type": "integer",
-      "typical_range": "10-120 Hz",
-      "description": "Frequency at which state updates are exchanged or resolved."
+      "name": "contribution_log_id",
+      "type": "string",
+      "typical_range": "mission_42_pool_log",
+      "description": "Audit log for player_id, source, quantity, and tick of each accepted contribution."
     },
     {
-      "name": "failure_timeout",
-      "type": "float",
-      "typical_range": "1-60 seconds",
-      "description": "Time before the mechanic handles disconnects or missing responses."
+      "name": "spend_request_id",
+      "type": "string",
+      "typical_range": "spend_req_9281",
+      "description": "Transaction identifier used to authorize, reject, rollback, or de-duplicate a spend."
+    },
+    {
+      "name": "permission_policy_id",
+      "type": "string",
+      "typical_range": "any_member, leader_only, vote_required, station_owner",
+      "description": "Rule that decides which players may spend, reserve, withdraw, or reassign the shared pool."
+    },
+    {
+      "name": "spend_order_index",
+      "type": "integer",
+      "typical_range": "monotonic transaction index",
+      "description": "Monotonic transaction index that prevents simultaneous spends from consuming the same pool units twice."
+    },
+    {
+      "name": "anti_grief_rule_id",
+      "type": "string",
+      "typical_range": "spend_limit, vote_large_spend, cooldown_after_kick, refund_on_leave",
+      "description": "Rule used to reduce malicious or accidental depletion of shared resources."
     }
   ],
   "common_variants": [
-    "shared_resource_pool_local_variant",
-    "shared_resource_pool_online_variant",
-    "competitive_variant",
-    "cooperative_variant"
+    "shared_team_currency",
+    "communal_crafting_materials",
+    "squad_ability_charges",
+    "base_storage_pool",
+    "vote_to_spend_pool"
   ],
   "edge_cases": [
-    "Shared Resource Pool is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Shared Resource Pool overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Shared Resource Pool runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Two players spend the last available resource units on different upgrades during the same server tick.",
+    "A player disconnects after reserving resources but before the target craft, vote, or upgrade completes.",
+    "A party member leaves and the game must decide whether their contributions stay with the team.",
+    "Late joiners need pool totals and contribution history without replaying every old event."
   ],
   "common_bugs": [
-    "Shared Resource Pool state does not reset correctly after interruption or reload.",
-    "Feedback for Shared Resource Pool plays even when the mechanic fails or is rejected.",
-    "Shared Resource Pool produces different results between frame rates, platforms, or network clients."
+    "Clients subtract shared resources locally and later receive a server correction that makes UI totals jump backward.",
+    "Failed spend requests do not release reserved resources, permanently reducing the visible pool.",
+    "Contribution logs use display names instead of player_id and cannot survive renames or reconnects.",
+    "Permission checks happen in UI only, allowing direct network requests to spend restricted resources."
   ],
   "balancing_notes": [
-    "Make Shared Resource Pool strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Shared pools reduce individual hoarding but can create social friction if spending rights are unclear.",
+    "Large purchases benefit from confirmation, vote, or role restrictions so one player cannot erase group progress.",
+    "Contribution visibility helps players feel credited without turning cooperation into a blame scoreboard."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Shared Resource Pool becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show pool changes with readable text, contribution source, and spend reason for players who miss transient notifications.",
+    "Provide non-voice approval flows for vote-required spending."
   ],
   "implementation_notes": {
-    "unity": "Implement Shared Resource Pool with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Shared Resource Pool as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Shared Resource Pool with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Shared Resource Pool as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store shared_resource_id state in a server-owned service, not on individual UI widgets. Spend RPCs should include spend_request_id, expected spend_order_index, player_id, and permission policy; the server commits the pool mutation and contribution log together.",
+    "godot": "Use an authoritative resource service keyed by shared_resource_id and expose snapshots to UI. RPCs for contribute, reserve, spend, and cancel should all pass through one transaction path that records contribution_log_id entries.",
+    "unreal": "A replicated team state actor or subsystem can own shared resource totals and contribution logs. Server RPCs validate permission_policy_id and anti_grief_rule_id before mutating the pool, then replicate versioned totals to clients.",
+    "web": "Keep shared pool transactions on the backend or host authority with idempotent spend_request_id values. Browser clients should display optimistic pending spends separately from committed totals to avoid confusing correction jumps."
   },
   "related_mechanics": [
-    "multiplayer.local_coop",
-    "multiplayer.online_coop",
-    "progression.achievement_system",
-    "ui_ux.cooldown_indicator"
+    "multiplayer.team_objective",
+    "crafting.crafting_queue",
+    "survival.base_building",
+    "economy.resource_conversion"
   ],
   "combines_well_with": [
-    "multiplayer.revive_teammate",
-    "multiplayer.role_swap",
-    "progression.achievement_system",
-    "ui_ux.cooldown_indicator"
+    "multiplayer.asymmetric_roles",
+    "multiplayer.online_coop",
+    "ui_ux.inventory_grid",
+    "economy.trading"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Deep Rock Galactic",
+      "note": "Uses shared team resources during missions for support actions."
+    },
+    {
+      "title": "Helldivers 2",
+      "note": "Uses team-level mission resources and cooperative objective pressure."
+    }
+  ],
   "tags": [
-    "coordination",
-    "multiplayer",
-    "player_coordination",
-    "shared"
+    "shared_resources",
+    "transactions",
+    "team_economy",
+    "anti_grief",
+    "permissions"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"
