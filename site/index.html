@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Open Game Mechanics Dataset Browser</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <div>
+        <p class="eyebrow">Open Game Mechanics Dataset</p>
+        <h1>Mechanics Browser</h1>
+        <p class="intro">Search, filter, and inspect the engine-agnostic game mechanics dataset.</p>
+      </div>
+      <nav class="header-links" aria-label="Repository links">
+        <a href="../dataset.json">dataset.json</a>
+        <a href="../README.md">README</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="controls" aria-label="Dataset filters">
+        <label class="search-field">
+          <span>Search</span>
+          <input id="searchInput" type="search" placeholder="dash, roguelike, cooldown, movement" autocomplete="off">
+        </label>
+
+        <label>
+          <span>Category</span>
+          <select id="categoryFilter">
+            <option value="">All categories</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Dimension</span>
+          <select id="dimensionFilter">
+            <option value="">All dimensions</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Genre</span>
+          <select id="genreFilter">
+            <option value="">All genres</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Difficulty</span>
+          <select id="difficultyFilter">
+            <option value="">Any difficulty</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Status</span>
+          <select id="statusFilter">
+            <option value="">All statuses</option>
+          </select>
+        </label>
+
+        <button id="resetFilters" type="button">Reset</button>
+      </section>
+
+      <section class="status-bar" aria-live="polite">
+        <p id="statusText">Loading dataset...</p>
+      </section>
+
+      <div class="browser-layout">
+        <section class="results-section" aria-label="Search results">
+          <div id="results" class="results"></div>
+        </section>
+
+        <aside id="detailPanel" class="detail-panel" aria-label="Mechanic details">
+          <h2>Select a mechanic</h2>
+          <p>Choose a result to inspect difficulty, related mechanics, combinations, and the source JSON path.</p>
+        </aside>
+      </div>
+    </main>
+
+    <footer>
+      <p>Static browser. No analytics, no external assets, no build step.</p>
+    </footer>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>

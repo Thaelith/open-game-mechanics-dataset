@@ -58,6 +58,25 @@ Example snippet:
 
 The canonical schema is `schema/mechanic.schema.json`. The generated search index is `dataset.json`.
 
+## Browse the Dataset
+
+A dependency-free static browser is available at [site/index.html](site/index.html). It loads `dataset.json`, searches and filters mechanics, and fetches individual mechanic JSON files for expanded details.
+
+To test locally, serve the repository root over HTTP:
+
+```bash
+python -m http.server 8000
+```
+
+Then open `http://localhost:8000/site/`.
+
+To enable GitHub Pages:
+
+1. Open repository Settings, then Pages.
+2. Under Build and deployment, choose Deploy from a branch.
+3. Select the `main` branch and the `/ (root)` folder.
+4. Save, then open `https://thaelith.github.io/open-game-mechanics-dataset/site/`.
+
 ## Folder Structure
 
 ```text
@@ -66,6 +85,7 @@ schema/    JSON Schema files
 tools/     Python validation, indexing, and helper scripts
 docs/      Contributor and user documentation
 examples/  Example mechanic and query prompts
+site/      Static GitHub Pages browser
 .github/   CI workflow and issue/PR templates
 ```
 
