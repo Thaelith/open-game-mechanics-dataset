@@ -2,9 +2,9 @@
   "id": "progression.prestige_reset",
   "name": "Prestige Reset",
   "aliases": [
-    "prestige reset mechanic",
-    "prestige reset system",
-    "prestige reset"
+    "prestige",
+    "rebirth",
+    "ascension reset"
   ],
   "category": "progression",
   "subcategory": "progression",
@@ -24,83 +24,109 @@
     "action",
     "roguelike"
   ],
-  "description": "Prestige Reset is a long-term growth mechanic that changes player capability, goals, or account state.",
-  "design_notes": "Prestige Reset should be designed around a clear player promise, a readable trigger, and a predictable result. For progression mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A reset that trades current progression for a permanent reward, multiplier, unlock, or new progression layer.",
+  "design_notes": "Prestige resets are explicit bargains. They need a preview of what is lost, what becomes permanent, what multiplier or unlock is gained, and how account_progression_state migrates so players are not surprised by irreversible loss.",
   "design_purpose": [
-    "Give the player a readable way to use prestige reset as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect prestige reset to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Extend long-term progression after a track reaches its practical cap.",
+    "Let players convert temporary or completed progress into permanent account growth.",
+    "Refresh pacing by restarting parts of the game with new bonuses or goals."
   ],
-  "player_fantasy": "The player feels their effort is accumulating into lasting power or options.",
+  "player_fantasy": "The player feels they are sacrificing a completed build to return stronger, wiser, or with new possibilities.",
   "required_systems": [
-    "player_profile",
-    "reward_rules",
-    "unlock_system",
-    "save_state"
+    "progression_reset_rules",
+    "account_progression_state",
+    "reward_grants",
+    "confirmation_ui",
+    "save_migration"
   ],
   "parameters": [
     {
-      "name": "reward_amount",
-      "type": "integer",
-      "typical_range": "1-10000",
-      "description": "Progress awarded when the player completes the triggering action."
-    },
-    {
-      "name": "unlock_threshold",
-      "type": "integer",
-      "typical_range": "1-100",
-      "description": "Amount of progress required before the next reward unlocks."
-    },
-    {
-      "name": "scaling_curve",
+      "name": "prestige_requirement_id",
       "type": "string",
-      "typical_range": "linear, exponential, tiered",
-      "description": "Curve used to increase cost, reward, or requirement."
+      "typical_range": "max_level, campaign_clear, currency_goal",
+      "description": "Requirement that must be satisfied before the reset becomes available."
+    },
+    {
+      "name": "reset_scope_id",
+      "type": "string",
+      "typical_range": "character, run, account_track, world",
+      "description": "Progression scope that will be cleared or reduced by the reset."
+    },
+    {
+      "name": "prestige_reward_id",
+      "type": "string",
+      "typical_range": "multiplier, cosmetic, unlock_token, new_tree",
+      "description": "Permanent reward granted when the reset commits."
+    },
+    {
+      "name": "permanent_unlock_flag",
+      "type": "boolean",
+      "typical_range": "true or false",
+      "description": "Whether the prestige reward survives future resets."
+    },
+    {
+      "name": "prestige_multiplier_cap",
+      "type": "float",
+      "typical_range": "1.0-100.0",
+      "description": "Maximum stacking multiplier or bonus allowed from repeated resets."
     }
   ],
   "common_variants": [
-    "prestige_reset_linear_track",
-    "prestige_reset_branching_track",
-    "class_restricted",
-    "respec_enabled"
+    "idle_prestige",
+    "new_game_plus",
+    "season_rebirth",
+    "roguelike_ascension",
+    "account_reset_bonus"
   ],
   "edge_cases": [
-    "Prestige Reset is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Prestige Reset overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Prestige Reset runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A player triggers prestige while pending rewards, purchases, or crafting transactions are unresolved.",
+    "Reset scope includes abilities used to access the current area, risking a soft-lock after prestige.",
+    "Repeated prestige bonuses hit cap and need a clear explanation of remaining value.",
+    "A patch changes prestige_requirement_id for accounts that are already eligible."
   ],
   "common_bugs": [
-    "Prestige Reset state does not reset correctly after interruption or reload.",
-    "Feedback for Prestige Reset plays even when the mechanic fails or is rejected.",
-    "Prestige Reset produces different results between frame rates, platforms, or network clients."
+    "Reset clears the reward currency before prestige_reward_id is granted.",
+    "Temporary run bonuses are accidentally copied into permanent account_progression_state.",
+    "Confirmation preview omits items, currencies, or unlocks that will be lost.",
+    "Prestige commit is not atomic, so a crash can apply the reset without granting the permanent reward."
   ],
   "balancing_notes": [
-    "Make Prestige Reset strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Prestige rewards should make the next loop feel different, not only numerically faster.",
+    "Reset cost must respect player time investment; irreversible resets need unusually clear previews.",
+    "Diminishing returns or caps help repeated prestige stay valuable without destroying pacing."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Prestige Reset becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Require clear confirmation with a checklist of lost and retained progress.",
+    "Allow players to review prestige benefits and reset consequences without a countdown or pressure timer."
   ],
   "implementation_notes": {
-    "unity": "Implement Prestige Reset with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Prestige Reset as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Prestige Reset with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Prestige Reset as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Commit prestige as one transaction: validate prestige_requirement_id, snapshot reset_scope_id state, grant prestige_reward_id, clear scoped progress, save, then refresh UI from committed account state.",
+    "godot": "Keep reset previews as pure functions over saved state so confirmation UI matches the actual commit; write permanent rewards before clearing temporary resources.",
+    "unreal": "Use a progression subsystem or backend profile operation for prestige; authoritative code should reject stale eligibility and persist the reset plus reward atomically.",
+    "web": "Represent prestige as a migration-like save operation with before/after state, reset_scope_id, and transaction_id so interrupted commits can resume or roll back safely."
   },
   "related_mechanics": [
-    "economy.shop",
+    "progression.meta_progression",
     "progression.experience_points",
     "progression.level_up",
-    "ui_ux.quest_marker"
+    "progression.skill_tree"
   ],
   "combines_well_with": [
-    "economy.shop",
-    "progression.skill_tree",
-    "progression.upgrade_shop",
-    "ui_ux.quest_marker"
+    "economy.idle_income",
+    "progression.achievement_system",
+    "progression.unlockable_abilities",
+    "roguelike.run_based_progression"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Cookie Clicker",
+      "note": "Uses ascension to reset progress for persistent bonuses."
+    },
+    {
+      "title": "Realm Grinder",
+      "note": "Uses resets as a major layer of long-term progression."
+    }
+  ],
   "tags": [
     "prestige",
     "progression",

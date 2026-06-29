@@ -26,7 +26,7 @@
     "survival"
   ],
   "description": "A weighted reward definition that selects items, currency, upgrades, or resources from eligible entries.",
-  "design_notes": "Loot tables are economy tools as much as randomization tools. A useful table defines eligibility, weights, rarity, pity rules, duplicate handling, and progression constraints. The main design risk is not randomness itself, but reward output that breaks pacing, trivializes crafting, or makes players distrust the system.",
+  "design_notes": "Loot tables are economy tools as much as randomization tools. A useful table defines eligibility, drop_weight, rarity_tier, duplicate_rule, pity_counter behavior, and progression constraints. The main design risk is not randomness itself, but reward output that breaks pacing, trivializes crafting, or makes players distrust the system.",
   "design_purpose": [
     "Turn encounters, chests, rooms, or runs into varied reward outcomes.",
     "Control scarcity and progression through weighted entries and gating rules.",
@@ -45,31 +45,31 @@
       "name": "weighted_entry_count",
       "type": "integer",
       "typical_range": "1-500 entries",
-      "description": "Number of selectable entries in the table."
+      "description": "Number of selectable entries after table inheritance or content patching is resolved."
     },
     {
-      "name": "rarity_tier_weights",
-      "type": "object",
-      "typical_range": "tier to weight map",
-      "description": "Relative selection weights by rarity tier."
-    },
-    {
-      "name": "duplicate_suppression_window",
+      "name": "drop_weight",
       "type": "integer",
-      "typical_range": "0-100 rolls",
-      "description": "Recent rolls excluded or down-weighted to reduce repetition."
+      "typical_range": "1-100000 per entry",
+      "description": "Relative weight used when selecting an eligible reward entry."
     },
     {
-      "name": "pity_threshold_rolls",
+      "name": "rarity_tier",
+      "type": "string",
+      "typical_range": "common, uncommon, rare, epic, legendary",
+      "description": "Reward tier used for filtering, presentation, pity rules, and economy valuation."
+    },
+    {
+      "name": "duplicate_rule",
+      "type": "string",
+      "typical_range": "allow, suppress, convert, reroll",
+      "description": "Handling for selected rewards that the player already owns or cannot receive."
+    },
+    {
+      "name": "pity_counter_threshold",
       "type": "integer",
       "typical_range": "0-500 rolls",
-      "description": "Roll count after which a protected reward tier is forced or boosted."
-    },
-    {
-      "name": "player_level_gate_delta",
-      "type": "integer",
-      "typical_range": "-10 to +10 levels",
-      "description": "Allowed reward level offset from current player or area level."
+      "description": "Roll count after which a protected tier or reward group is forced or boosted."
     }
   ],
   "common_variants": [
@@ -80,16 +80,16 @@
     "smart_loot_table"
   ],
   "edge_cases": [
-    "All entries can become ineligible after filters; the table needs a fallback or explicit no-drop result.",
-    "Seeded runs must decide whether loot rolls are reproducible before or after player choices.",
-    "Inventory limits, stack caps, and duplicate suppression can reject a selected reward after the roll.",
-    "Live balance changes should not corrupt existing saves or deterministic challenge seeds."
+    "All entries can become ineligible after level, class, ownership, or biome filters; the table needs a fallback or explicit no-drop result.",
+    "Seeded runs must decide whether loot rolls are reproducible before or after player choices and table version changes.",
+    "Inventory limits, stack caps, duplicate_rule, and binding rules can reject a selected reward after the roll.",
+    "Live balance changes should not corrupt existing saves, pity_counter state, or deterministic challenge seeds."
   ],
   "common_bugs": [
-    "Weights are treated as percentages and do not sum to 100 after content edits.",
-    "Rarity is rolled twice, once by tier and once by item, making actual odds differ from design intent.",
+    "Weights are treated as percentages and expected to sum to 100 even though content edits use relative drop_weight values.",
+    "Rarity is rolled once by tier and again by item, making actual odds differ from published or intended odds.",
     "Pity counters reset on failed eligibility checks instead of successful protected drops.",
-    "Table edits reorder entries and break seeded generation compatibility."
+    "Table edits reorder entries and break seeded generation compatibility because entry IDs are not stable."
   ],
   "balancing_notes": [
     "Balance expected reward over many rolls, not only the most exciting rare outcome.",
@@ -100,10 +100,10 @@
     "When randomness affects progression, communicate broad odds or reward pools where appropriate."
   ],
   "implementation_notes": {
-    "unity": "Store tables as ScriptableObjects or imported JSON with validation tests that simulate drop distributions and check ineligible-table fallbacks.",
-    "godot": "Represent loot tables as Resources or JSON dictionaries and run editor or CI validation for weights, filters, and missing item IDs.",
-    "unreal": "Use DataTables or Primary Data Assets for entries and centralize roll authority on the server for multiplayer reward claims.",
-    "web": "Keep loot definitions as data files, use a seeded RNG when reproducibility matters, and log roll context for debugging balance issues."
+    "unity": "Store tables as ScriptableObjects or imported JSON with stable entry_id values; validation tests should simulate distributions, empty-filter fallbacks, duplicate_rule paths, and pity_counter transitions.",
+    "godot": "Represent loot tables as Resources or JSON dictionaries keyed by entry_id and run editor or CI validation for drop_weight totals, missing item IDs, and ineligible-table fallbacks.",
+    "unreal": "Use DataTables or Primary Data Assets for reward entries and centralize roll authority on the server for multiplayer claims; log seed, table version, and selected entry_id.",
+    "web": "Keep loot definitions as data files, use a seeded RNG when reproducibility matters, and record roll context, duplicate_rule outcome, and pity_counter state for debugging balance issues."
   },
   "related_mechanics": [
     "procedural_generation.loot_generation",

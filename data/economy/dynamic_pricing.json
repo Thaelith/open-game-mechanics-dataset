@@ -2,9 +2,9 @@
   "id": "economy.dynamic_pricing",
   "name": "Dynamic Pricing",
   "aliases": [
-    "dynamic pricing mechanic",
-    "dynamic pricing system",
-    "dynamic pricing"
+    "adaptive pricing",
+    "market pricing",
+    "price modifiers"
   ],
   "category": "economy",
   "subcategory": "economy",
@@ -24,83 +24,110 @@
     "simulation",
     "strategy"
   ],
-  "description": "Dynamic Pricing is a value-exchange mechanic that governs currency, prices, scarcity, rewards, and transactions.",
-  "design_notes": "Dynamic Pricing should be designed around a clear player promise, a readable trigger, and a predictable result. For economy mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A pricing rule set that changes item costs or sell values based on context, demand, reputation, scarcity, or time.",
+  "design_notes": "Dynamic pricing creates economic texture only when players can understand the cause of a price change. Hidden formulas can feel arbitrary, so each modifier should have a visible reason, a stable boundary, and protection against exploits such as buy-sell loops.",
   "design_purpose": [
-    "Give the player a readable way to use dynamic pricing as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect dynamic pricing to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Make shops respond to scarcity, faction status, demand, or player behavior.",
+    "Create timing and routing decisions around when and where to buy or sell.",
+    "Support economy sinks without relying on static prices for every item and game phase."
   ],
-  "player_fantasy": "The player feels they are making meaningful tradeoffs with scarce value.",
+  "player_fantasy": "The player feels like they are reading a market and choosing the right moment to trade.",
   "required_systems": [
-    "inventory_system",
+    "price_tables",
+    "vendor_state",
     "currency_wallet",
-    "transaction_rules",
-    "reward_tables"
+    "transaction_validation",
+    "economy_telemetry"
   ],
   "parameters": [
     {
-      "name": "base_value",
-      "type": "integer",
-      "typical_range": "1-100000",
-      "description": "Default value before modifiers."
+      "name": "price_curve_id",
+      "type": "string",
+      "typical_range": "linear_stock, reputation_discount, demand_spike",
+      "description": "Identifier for the formula or lookup table used to calculate final price."
     },
     {
-      "name": "scarcity_modifier",
+      "name": "base_price_minor_units",
+      "type": "integer",
+      "typical_range": "1-10000000",
+      "description": "Unmodified price stored in minor currency units before modifiers are applied."
+    },
+    {
+      "name": "stock_pressure_multiplier",
       "type": "float",
-      "typical_range": "0.1-10",
-      "description": "Multiplier that reflects rarity, supply, or demand."
+      "typical_range": "0.5-3.0",
+      "description": "Modifier derived from vendor stock, regional scarcity, or supply/demand state."
     },
     {
-      "name": "transaction_limit",
+      "name": "sellback_ratio",
+      "type": "float",
+      "typical_range": "0.05-0.95",
+      "description": "Fraction of purchase value returned when the player sells an item back."
+    },
+    {
+      "name": "price_floor_minor_units",
       "type": "integer",
-      "typical_range": "1-999",
-      "description": "Maximum units exchanged in one operation or period."
+      "typical_range": "0-10000",
+      "description": "Minimum allowed final price to prevent zero-cost purchases or infinite arbitrage."
     }
   ],
   "common_variants": [
-    "dynamic_pricing_fixed_value",
-    "dynamic_pricing_dynamic_value",
-    "player_traded",
-    "scarcity_based"
+    "reputation_discount",
+    "stock_based_pricing",
+    "regional_prices",
+    "time_limited_sale",
+    "demand_decay"
   ],
   "edge_cases": [
-    "Dynamic Pricing is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Dynamic Pricing overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Dynamic Pricing runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A price changes between confirmation and commit, so the transaction must decide whether to honor the quoted price or reject it.",
+    "Discounts and sellback ratios can combine into a profitable buy-sell loop if final prices are not checked together.",
+    "Vendor stock refreshes while the player has a purchase dialog open.",
+    "A balance patch changes price_curve_id values for items already listed in player-owned shops or orders."
   ],
   "common_bugs": [
-    "Dynamic Pricing state does not reset correctly after interruption or reload.",
-    "Feedback for Dynamic Pricing plays even when the mechanic fails or is rejected.",
-    "Dynamic Pricing produces different results between frame rates, platforms, or network clients."
+    "UI displays rounded prices while the transaction debits unrounded minor units, creating visible balance mismatches.",
+    "Client-side discount calculations are trusted by the server and allow edited price requests.",
+    "Price caches do not invalidate after reputation or stock changes, so players see stale prices.",
+    "Negative modifiers are applied after floor clamps and produce free or negative-cost purchases."
   ],
   "balancing_notes": [
-    "Make Dynamic Pricing strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Keep the visible reason for a price change close to the price display so players can plan rather than guess.",
+    "Simulate repeated buying and selling with all modifiers active; arbitrage bugs often appear only after several systems combine.",
+    "Use price floors, sellback caps, and purchase limits to protect against inflation without making every vendor feel identical."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Dynamic Pricing becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show final price, previous price, and reason for change in text as well as color.",
+    "Avoid time-limited price changes that require rushed decisions unless the player can review the item details comfortably."
   ],
   "implementation_notes": {
-    "unity": "Implement Dynamic Pricing with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Dynamic Pricing as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Dynamic Pricing with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Dynamic Pricing as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Keep price calculation in a pure pricing service that takes item_id, vendor_id, price_curve_id, stock state, and reputation; purchase UI should display a quote_id that the commit step validates.",
+    "godot": "Store price curves as Resources or JSON rows and require buy/sell calls to pass a quoted price plus vendor stock version before mutating the wallet.",
+    "unreal": "Run pricing on the authoritative vendor or economy subsystem; replicated UI can show quotes, but server purchase validation must recompute or verify price_curve_id and quote freshness.",
+    "web": "Use integer minor-unit math and keep a transaction log with quoted_price, final_price, modifiers, and transaction_id so pricing bugs are debuggable after a session."
   },
   "related_mechanics": [
-    "economy.coins",
     "economy.shop",
-    "progression.upgrade_shop",
-    "ui_ux.inventory_grid"
+    "economy.coins",
+    "economy.trading",
+    "economy.repair_cost",
+    "progression.upgrade_shop"
   ],
   "combines_well_with": [
-    "economy.loot_table",
+    "narrative.reputation_gating",
     "economy.resource_conversion",
-    "progression.upgrade_shop",
-    "ui_ux.inventory_grid"
+    "economy.crafting_materials",
+    "ui_ux.dialogue_choice"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Animal Crossing",
+      "note": "Uses changing item values and sell opportunities as part of its economy loop."
+    },
+    {
+      "title": "Mount & Blade",
+      "note": "Uses town economies and trade prices as strategic information."
+    }
+  ],
   "tags": [
     "dynamic",
     "economy",

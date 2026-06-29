@@ -2,9 +2,9 @@
   "id": "progression.experience_points",
   "name": "Experience Points",
   "aliases": [
-    "experience points mechanic",
-    "experience points system",
-    "experience points"
+    "XP",
+    "experience",
+    "character experience"
   ],
   "category": "progression",
   "subcategory": "progression",
@@ -24,83 +24,109 @@
     "action",
     "roguelike"
   ],
-  "description": "Experience Points is a long-term growth mechanic that changes player capability, goals, or account state.",
-  "design_notes": "Experience Points should be designed around a clear player promise, a readable trigger, and a predictable result. For progression mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A numeric progression resource earned from play and accumulated toward levels, unlocks, or reward thresholds.",
+  "design_notes": "Experience points are only useful when their sources, curve, level thresholds, and reward grants are coherent. XP should define xp_source_id, xp_curve_id, level_threshold_table, overflow behavior, and anti-farm rules so players trust that effort turns into progress.",
   "design_purpose": [
-    "Give the player a readable way to use experience points as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect experience points to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Reward repeated play with visible long-term growth.",
+    "Pace level-ups, unlocks, and skill point grants through a tunable curve.",
+    "Give designers a flexible reward amount that can connect combat, quests, exploration, and objectives."
   ],
-  "player_fantasy": "The player feels their effort is accumulating into lasting power or options.",
+  "player_fantasy": "The player feels that effort is accumulating into durable growth and future options.",
   "required_systems": [
-    "player_profile",
-    "reward_rules",
-    "unlock_system",
+    "xp_wallet",
+    "level_threshold_table",
+    "reward_grants",
+    "progression_state",
     "save_state"
   ],
   "parameters": [
     {
-      "name": "reward_amount",
-      "type": "integer",
-      "typical_range": "1-10000",
-      "description": "Progress awarded when the player completes the triggering action."
-    },
-    {
-      "name": "unlock_threshold",
-      "type": "integer",
-      "typical_range": "1-100",
-      "description": "Amount of progress required before the next reward unlocks."
-    },
-    {
-      "name": "scaling_curve",
+      "name": "xp_curve_id",
       "type": "string",
-      "typical_range": "linear, exponential, tiered",
-      "description": "Curve used to increase cost, reward, or requirement."
+      "typical_range": "linear, exponential, chapter_scaled",
+      "description": "Identifier for the threshold curve or table used by this progression track."
+    },
+    {
+      "name": "xp_source_id",
+      "type": "string",
+      "typical_range": "quest_complete, enemy_kill, discovery, match_bonus",
+      "description": "Source identifier logged with XP grants for balance and exploit auditing."
+    },
+    {
+      "name": "level_threshold_table",
+      "type": "array",
+      "typical_range": "2-200 thresholds",
+      "description": "Ordered XP totals required for each level or milestone."
+    },
+    {
+      "name": "xp_overflow_policy",
+      "type": "string",
+      "typical_range": "carry, cap, convert, discard",
+      "description": "Handling for XP earned after the current cap or track limit."
+    },
+    {
+      "name": "anti_farm_decay_window",
+      "type": "integer",
+      "typical_range": "0-100 repeated events",
+      "description": "Window used to reduce or reject repeated XP from the same source when farming must be controlled."
     }
   ],
   "common_variants": [
-    "experience_points_linear_track",
-    "experience_points_branching_track",
-    "class_restricted",
-    "respec_enabled"
+    "character_xp",
+    "account_xp",
+    "skill_xp",
+    "battle_pass_xp",
+    "quest_xp"
   ],
   "edge_cases": [
-    "Experience Points is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Experience Points overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Experience Points runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "One reward crosses multiple level_threshold_table entries and must grant every level reward exactly once.",
+    "XP is awarded while the player is at cap and later the cap increases.",
+    "A quest reward is retried after disconnect and must not duplicate xp_source_id grants.",
+    "Balance patches change xp_curve_id and need migration for partial progress."
   ],
   "common_bugs": [
-    "Experience Points state does not reset correctly after interruption or reload.",
-    "Feedback for Experience Points plays even when the mechanic fails or is rejected.",
-    "Experience Points produces different results between frame rates, platforms, or network clients."
+    "The UI increments XP optimistically but save data only stores the old value after a crash.",
+    "Multiple-level gains grant only the first skill point or unlock because the loop stops after one threshold.",
+    "XP is stored as a floating point value and threshold comparisons fail near exact boundaries.",
+    "Server and client use different level_threshold_table versions."
   ],
   "balancing_notes": [
-    "Make Experience Points strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Tune XP sources against expected session length and desired unlock cadence, not only enemy difficulty.",
+    "Large one-time rewards need overflow handling so they do not waste player effort at caps.",
+    "Anti-farm rules should be visible enough that players do not think rewards randomly stopped."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Experience Points becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show current XP, next threshold, and reward preview in readable text.",
+    "Avoid progress bars with no numeric context for players who need precise planning information."
   ],
   "implementation_notes": {
-    "unity": "Implement Experience Points with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Experience Points as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Experience Points with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Experience Points as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Keep XP grants as integer transactions with xp_source_id and xp_curve_id; process threshold crossing in a loop that grants all level rewards before saving progression_state.",
+    "godot": "Store level_threshold_table in a Resource or JSON file and update xp_wallet through a single progression service so combat, quests, and UI cannot apply different rules.",
+    "unreal": "Run XP authority in PlayerState or a progression subsystem; replicated clients should receive committed XP totals and level-up reward payloads from the server.",
+    "web": "Use integer XP totals and pure functions for threshold crossing; persist grant transaction IDs so page refresh or reconnect cannot replay quest XP."
   },
   "related_mechanics": [
-    "economy.shop",
     "progression.level_up",
     "progression.skill_tree",
+    "progression.unlockable_abilities",
     "ui_ux.quest_marker"
   ],
   "combines_well_with": [
     "economy.shop",
-    "progression.unlockable_abilities",
+    "progression.achievement_system",
     "progression.upgrade_shop",
-    "ui_ux.quest_marker"
+    "progression.meta_progression"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Final Fantasy",
+      "note": "Uses experience points to advance character levels in many entries."
+    },
+    {
+      "title": "The Elder Scrolls V: Skyrim",
+      "note": "Uses skill and character progression tied to repeated play."
+    }
+  ],
   "tags": [
     "experience",
     "progression",

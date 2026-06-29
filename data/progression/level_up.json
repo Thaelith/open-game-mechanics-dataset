@@ -2,9 +2,9 @@
   "id": "progression.level_up",
   "name": "Level Up",
   "aliases": [
-    "level up mechanic",
-    "level up system",
-    "level up"
+    "level gain",
+    "character level",
+    "level advancement"
   ],
   "category": "progression",
   "subcategory": "progression",
@@ -24,83 +24,110 @@
     "action",
     "roguelike"
   ],
-  "description": "Level Up is a long-term growth mechanic that changes player capability, goals, or account state.",
-  "design_notes": "Level Up should be designed around a clear player promise, a readable trigger, and a predictable result. For progression mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A threshold-crossing event that increases a player, character, account, or system level and grants associated rewards.",
+  "design_notes": "Level up is the moment where accumulated progress becomes a state change. It should define level_threshold_table crossing, reward grant order, multiple-level behavior, stat recalculation, unlock notifications, and migration rules for curve changes.",
   "design_purpose": [
-    "Give the player a readable way to use level up as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect level up to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create clear milestones in a longer progression curve.",
+    "Bundle rewards such as stats, skill points, abilities, or access gates into understandable moments.",
+    "Give players a reason to continue after each session by previewing the next level."
   ],
-  "player_fantasy": "The player feels their effort is accumulating into lasting power or options.",
+  "player_fantasy": "The player feels a clear jump in capability, status, or possibility when effort reaches a milestone.",
   "required_systems": [
-    "player_profile",
-    "reward_rules",
+    "xp_wallet",
+    "level_state",
+    "reward_grants",
+    "stat_recalculation",
     "unlock_system",
     "save_state"
   ],
   "parameters": [
     {
-      "name": "reward_amount",
-      "type": "integer",
-      "typical_range": "1-10000",
-      "description": "Progress awarded when the player completes the triggering action."
+      "name": "level_threshold_table",
+      "type": "array",
+      "typical_range": "2-200 thresholds",
+      "description": "Ordered cumulative progress values required for each level."
     },
     {
-      "name": "unlock_threshold",
-      "type": "integer",
-      "typical_range": "1-100",
-      "description": "Amount of progress required before the next reward unlocks."
-    },
-    {
-      "name": "scaling_curve",
+      "name": "level_reward_table_id",
       "type": "string",
-      "typical_range": "linear, exponential, tiered",
-      "description": "Curve used to increase cost, reward, or requirement."
+      "typical_range": "class_rewards, account_rewards, season_rewards",
+      "description": "Reward table used when a specific level is reached."
+    },
+    {
+      "name": "max_level_cap",
+      "type": "integer",
+      "typical_range": "1-999",
+      "description": "Highest level currently supported by the progression track."
+    },
+    {
+      "name": "skill_points_per_level",
+      "type": "integer",
+      "typical_range": "0-10 points",
+      "description": "Number of spendable points granted for each eligible level-up."
+    },
+    {
+      "name": "retroactive_reward_policy",
+      "type": "string",
+      "typical_range": "grant_missing, ignore_old, migration_only",
+      "description": "Handling for rewards added to levels the player already passed."
     }
   ],
   "common_variants": [
-    "level_up_linear_track",
-    "level_up_branching_track",
-    "class_restricted",
-    "respec_enabled"
+    "character_level",
+    "account_level",
+    "season_level",
+    "weapon_level",
+    "class_level"
   ],
   "edge_cases": [
-    "Level Up is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Level Up overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Level Up runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A single XP grant crosses several levels and must apply every stat and reward in order.",
+    "A max level cap increases after players stored overflow XP or reached the old cap.",
+    "Level rewards change in a patch and existing saves need retroactive_reward_policy handling.",
+    "A level-up occurs while in combat, dialogue, or matchmaking and notification timing must not interrupt control."
   ],
   "common_bugs": [
-    "Level Up state does not reset correctly after interruption or reload.",
-    "Feedback for Level Up plays even when the mechanic fails or is rejected.",
-    "Level Up produces different results between frame rates, platforms, or network clients."
+    "Only one level reward is granted during multi-level gains.",
+    "Derived stats recalculate before equipment or skill modifiers are reloaded, causing temporary wrong values.",
+    "Level-up notifications play before persistence, so a crash loses the reward but not the memory of seeing it.",
+    "Client predicts a level-up and unlocks UI that the server later rejects."
   ],
   "balancing_notes": [
-    "Make Level Up strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Early levels should arrive quickly enough to teach the loop; later thresholds can stretch only if rewards stay desirable.",
+    "Large power jumps need content difficulty, gear, and enemy scaling to account for the new level state.",
+    "Previewing next-level rewards helps players judge whether the grind is worth continuing."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Level Up becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide a reviewable summary of level rewards after the animation finishes.",
+    "Do not rely only on flashing effects or loud audio to communicate a level-up."
   ],
   "implementation_notes": {
-    "unity": "Implement Level Up with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Level Up as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Level Up with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Level Up as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Process level-up inside the progression service after XP commit: loop thresholds, grant level_reward_table_id rewards, recalc stats, persist level_state, then notify MonoBehaviour/UI listeners.",
+    "godot": "Keep level_threshold_table and reward tables as data Resources; update level_state through a deterministic service and emit signals only after save-ready state changes.",
+    "unreal": "Use PlayerState or a progression subsystem for authoritative level changes; Gameplay Ability or stat grants should be applied from committed reward payloads, not from UI events.",
+    "web": "Represent threshold crossing as a pure function returning new level, rewards, and overflow XP; persist the result before rendering celebration UI."
   },
   "related_mechanics": [
-    "economy.shop",
     "progression.experience_points",
     "progression.skill_tree",
-    "ui_ux.quest_marker"
+    "progression.unlockable_abilities",
+    "progression.achievement_system"
   ],
   "combines_well_with": [
-    "economy.shop",
-    "progression.unlockable_abilities",
     "progression.upgrade_shop",
-    "ui_ux.quest_marker"
+    "progression.respec",
+    "economy.coins",
+    "ui_ux.checkpoint_notification"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Dragon Quest",
+      "note": "Uses level-ups to grant stats and progression milestones."
+    },
+    {
+      "title": "World of Warcraft",
+      "note": "Uses character levels to gate content and abilities."
+    }
+  ],
   "tags": [
     "level",
     "progression",

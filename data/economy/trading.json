@@ -2,9 +2,9 @@
   "id": "economy.trading",
   "name": "Trading",
   "aliases": [
-    "trading mechanic",
-    "trading system",
-    "trading"
+    "player trading",
+    "barter",
+    "exchange trade"
   ],
   "category": "economy",
   "subcategory": "economy",
@@ -24,83 +24,110 @@
     "simulation",
     "strategy"
   ],
-  "description": "Trading is a value-exchange mechanic that governs currency, prices, scarcity, rewards, and transactions.",
-  "design_notes": "Trading should be designed around a clear player promise, a readable trigger, and a predictable result. For economy mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A negotiated or direct exchange of items, resources, or currency between players, NPCs, or systems.",
+  "design_notes": "Trading expands the economy beyond designer-authored shops. It needs strong boundaries around item_instance_id ownership, escrow, acceptance state, price visibility, trade locks, and fraud prevention so players cannot duplicate or lose items through timing races.",
   "design_purpose": [
-    "Give the player a readable way to use trading as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect trading to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players convert surplus items into value through other actors or players.",
+    "Support social economies, barter quests, or market-like play without a fixed vendor price for every item.",
+    "Create alternative acquisition routes for rare drops, crafting materials, or build-defining gear."
   ],
-  "player_fantasy": "The player feels they are making meaningful tradeoffs with scarce value.",
+  "player_fantasy": "The player feels like a negotiator, merchant, or collaborator exchanging goods for mutual benefit.",
   "required_systems": [
     "inventory_system",
-    "currency_wallet",
-    "transaction_rules",
-    "reward_tables"
+    "trade_session",
+    "ownership_validation",
+    "escrow_state",
+    "transaction_log"
   ],
   "parameters": [
     {
-      "name": "base_value",
-      "type": "integer",
-      "typical_range": "1-100000",
-      "description": "Default value before modifiers."
+      "name": "trade_session_id",
+      "type": "string",
+      "typical_range": "unique transaction identifier",
+      "description": "Identifier used to lock, audit, commit, or cancel a trade."
     },
     {
-      "name": "scarcity_modifier",
+      "name": "offered_item_instance_ids",
+      "type": "array",
+      "typical_range": "0-100 item IDs",
+      "description": "Item instances each participant has placed into the trade offer."
+    },
+    {
+      "name": "currency_offer_minor_units",
+      "type": "integer",
+      "typical_range": "0-100000000",
+      "description": "Currency amount offered as part of the trade, stored in minor units."
+    },
+    {
+      "name": "acceptance_lock_seconds",
       "type": "float",
-      "typical_range": "0.1-10",
-      "description": "Multiplier that reflects rarity, supply, or demand."
+      "typical_range": "0-10 seconds",
+      "description": "Delay or lock window that prevents last-moment offer swaps after one side accepts."
     },
     {
-      "name": "transaction_limit",
-      "type": "integer",
-      "typical_range": "1-999",
-      "description": "Maximum units exchanged in one operation or period."
+      "name": "trade_tax_ratio",
+      "type": "float",
+      "typical_range": "0.0-0.3",
+      "description": "Optional fee removed from currency or item value when a trade commits."
     }
   ],
   "common_variants": [
-    "trading_fixed_value",
-    "trading_dynamic_value",
-    "player_traded",
-    "scarcity_based"
+    "player_to_player_trade",
+    "npc_barter",
+    "auction_listing",
+    "gift_trade",
+    "escrow_trade"
   ],
   "edge_cases": [
-    "Trading is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Trading overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Trading runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "One participant disconnects after items enter escrow but before final acceptance.",
+    "An item is equipped, bound, damaged, or modified while it is shown in the trade window.",
+    "Both participants accept, then one inventory becomes full before receiving the traded item.",
+    "Cross-platform or cross-region accounts have different item restrictions or currency limits."
   ],
   "common_bugs": [
-    "Trading state does not reset correctly after interruption or reload.",
-    "Feedback for Trading plays even when the mechanic fails or is rejected.",
-    "Trading produces different results between frame rates, platforms, or network clients."
+    "Item ownership is checked when added to the window but not rechecked when trade_session_id commits.",
+    "Accept state is not cleared after an offer changes, enabling last-second item swaps.",
+    "Currency debit succeeds for one side while item transfer fails for the other side.",
+    "Client-local item_instance_id arrays are trusted and allow duplicated or nonexistent items to be traded."
   ],
   "balancing_notes": [
-    "Make Trading strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Trading can bypass loot rarity, crafting costs, and progression gates; bind rules and level requirements should be deliberate.",
+    "Trade taxes, listing fees, or cooldowns can reduce inflation but should not make ordinary exchange feel punitive.",
+    "If players can trade high-rarity items freely, drop rates and duplicate_rule values need to account for market circulation."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Trading becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use clear confirmation summaries that list both sides of the trade in text, including item names, quantities, and currency.",
+    "Provide enough review time and avoid accept buttons that can be triggered accidentally during offer changes."
   ],
   "implementation_notes": {
-    "unity": "Implement Trading with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Trading as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Trading with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Trading as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "For multiplayer, keep trade_session_id and escrow state on the server; Unity UI should only display locked offer snapshots and send accept/cancel requests.",
+    "godot": "Model trade sessions as authoritative data objects with participant IDs, offered_item_instance_ids, and acceptance flags; clear acceptance whenever either offer changes.",
+    "unreal": "Use server RPCs for offer changes and final commit; validate ownership, bind rules, inventory capacity, and currency in one transaction before replicating results.",
+    "web": "Represent trades as state machines: draft, locked, accepted, committed, canceled. Persist every transition with transaction_id so refreshes and reconnects cannot duplicate items."
   },
   "related_mechanics": [
     "economy.coins",
     "economy.shop",
-    "progression.upgrade_shop",
-    "ui_ux.inventory_grid"
+    "economy.dynamic_pricing",
+    "economy.crafting_materials",
+    "multiplayer.shared_resource_pool"
   ],
   "combines_well_with": [
-    "economy.dynamic_pricing",
+    "ui_ux.inventory_grid",
+    "narrative.reputation_gating",
     "economy.resource_conversion",
-    "progression.upgrade_shop",
-    "ui_ux.inventory_grid"
+    "progression.equipment_rarity"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "EVE Online",
+      "note": "Uses player trade and markets as central economic systems."
+    },
+    {
+      "title": "Animal Crossing",
+      "note": "Supports item exchange between players through social play."
+    }
+  ],
   "tags": [
     "economy",
     "rewards",

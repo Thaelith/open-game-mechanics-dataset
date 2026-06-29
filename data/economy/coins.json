@@ -2,9 +2,9 @@
   "id": "economy.coins",
   "name": "Coins",
   "aliases": [
-    "coins mechanic",
-    "coins system",
-    "coins"
+    "soft currency",
+    "coin wallet",
+    "spendable currency"
   ],
   "category": "economy",
   "subcategory": "economy",
@@ -24,83 +24,110 @@
     "simulation",
     "strategy"
   ],
-  "description": "Coins is a value-exchange mechanic that governs currency, prices, scarcity, rewards, and transactions.",
-  "design_notes": "Coins should be designed around a clear player promise, a readable trigger, and a predictable result. For economy mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A spendable currency balance used as the default unit for rewards, purchases, fees, and sinks.",
+  "design_notes": "Coins work best when every source and sink has a named purpose. A coin economy needs separate tracking for reward grants, purchase debits, sellback credits, refunds, and compensation so designers can detect inflation instead of only seeing the current wallet total.",
   "design_purpose": [
-    "Give the player a readable way to use coins as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect coins to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players an easy-to-understand measure of buying power.",
+    "Connect rewards, shops, repairs, upgrades, and resource conversion through one shared unit.",
+    "Create tunable sinks that keep repeated reward drops meaningful over long play sessions."
   ],
-  "player_fantasy": "The player feels they are making meaningful tradeoffs with scarce value.",
+  "player_fantasy": "The player feels that every run, fight, or sale adds visible purchasing power toward the next useful choice.",
   "required_systems": [
-    "inventory_system",
     "currency_wallet",
-    "transaction_rules",
-    "reward_tables"
+    "reward_grants",
+    "purchase_transactions",
+    "save_state",
+    "economy_telemetry"
   ],
   "parameters": [
     {
-      "name": "base_value",
-      "type": "integer",
-      "typical_range": "1-100000",
-      "description": "Default value before modifiers."
+      "name": "currency_id",
+      "type": "string",
+      "typical_range": "coin, gold, credits",
+      "description": "Canonical identifier for the balance so wallets, stores, drops, and saves reference the same currency."
     },
     {
-      "name": "scarcity_modifier",
-      "type": "float",
-      "typical_range": "0.1-10",
-      "description": "Multiplier that reflects rarity, supply, or demand."
+      "name": "wallet_capacity",
+      "type": "integer",
+      "typical_range": "999-999999999",
+      "description": "Maximum stored balance before overflow handling, banking, or reward rejection applies."
     },
     {
-      "name": "transaction_limit",
+      "name": "currency_source_id",
+      "type": "string",
+      "typical_range": "quest_reward, drop, sellback, idle_income",
+      "description": "Identifier written to grant logs so the team can audit where currency enters the economy."
+    },
+    {
+      "name": "currency_sink_id",
+      "type": "string",
+      "typical_range": "shop_purchase, repair, respec, upgrade",
+      "description": "Identifier written to spend logs so sinks can be tuned against sources."
+    },
+    {
+      "name": "minor_unit_scale",
       "type": "integer",
-      "typical_range": "1-999",
-      "description": "Maximum units exchanged in one operation or period."
+      "typical_range": "1, 10, 100",
+      "description": "Storage multiplier used to avoid floating point currency errors when fractional prices exist."
     }
   ],
   "common_variants": [
-    "coins_fixed_value",
-    "coins_dynamic_value",
-    "player_traded",
-    "scarcity_based"
+    "soft_currency",
+    "premium_currency",
+    "account_wallet",
+    "session_wallet",
+    "dropped_pickups"
   ],
   "edge_cases": [
-    "Coins is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Coins overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Coins runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A reward grant would exceed wallet_capacity and needs a cap, overflow bank, or explicit rejection message.",
+    "A purchase and reward arrive in the same frame or server tick and must resolve in a deterministic transaction order.",
+    "Refunds after a failed purchase must restore the exact debit amount and currency_id, not a recalculated current price.",
+    "Offline or cross-device saves can replay an already-claimed reward unless grant IDs are idempotent."
   ],
   "common_bugs": [
-    "Coins state does not reset correctly after interruption or reload.",
-    "Feedback for Coins plays even when the mechanic fails or is rejected.",
-    "Coins produces different results between frame rates, platforms, or network clients."
+    "Wallet UI increments optimistically but the server rejects the transaction, leaving the client balance wrong until reload.",
+    "Coin rewards use floats for display and storage, creating rounding drift after many small grants.",
+    "Sellback, repair, and upgrade systems each use different currency IDs for what players see as the same coin balance.",
+    "Duplicate reward messages apply the same transaction_id twice because grant logs are not checked before crediting."
   ],
   "balancing_notes": [
-    "Make Coins strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Track source and sink totals by currency_source_id and currency_sink_id; inflation is easier to fix when the dominant faucet is visible.",
+    "Early prices should teach the value of coins, while late sinks need enough capacity to absorb farming without making casual play feel stalled.",
+    "If coins drop from every action, add meaningful sinks or conversion routes before the wallet becomes decorative."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Coins becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show wallet changes as readable deltas with icons and text, not only tiny animated numbers.",
+    "Use grouping separators or compact notation options for large balances so players can distinguish 10000 from 100000 quickly."
   ],
   "implementation_notes": {
-    "unity": "Implement Coins with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Coins as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Coins with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Coins as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store currency_id balances in a wallet service, not per-shop MonoBehaviours. Apply rewards and purchases through transaction_id records, then update UI Toolkit or UGUI from committed wallet events.",
+    "godot": "Keep the wallet in an Autoload or saved Resource with grant_currency and spend_currency methods that require currency_source_id or currency_sink_id and reject duplicate transaction_id values.",
+    "unreal": "Use a replicated PlayerState or inventory component for wallet balances; server-authoritative purchase RPCs should debit currency, grant items, and persist the transaction atomically.",
+    "web": "Represent balances as integers in minor units, commit wallet mutations through a transaction reducer, and persist grant logs with the save so browser refreshes cannot duplicate rewards."
   },
   "related_mechanics": [
-    "economy.dynamic_pricing",
     "economy.shop",
-    "progression.upgrade_shop",
-    "ui_ux.inventory_grid"
+    "economy.loot_table",
+    "economy.dynamic_pricing",
+    "economy.repair_cost",
+    "economy.resource_conversion"
   ],
   "combines_well_with": [
-    "economy.loot_table",
-    "economy.resource_conversion",
     "progression.upgrade_shop",
+    "progression.respec",
+    "economy.idle_income",
     "ui_ux.inventory_grid"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Super Mario Bros.",
+      "note": "Uses coins as a visible collectible reward."
+    },
+    {
+      "title": "Stardew Valley",
+      "note": "Uses money as the main farming and upgrade currency."
+    }
+  ],
   "tags": [
     "coins",
     "economy",

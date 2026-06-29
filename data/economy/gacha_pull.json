@@ -2,9 +2,9 @@
   "id": "economy.gacha_pull",
   "name": "Gacha Pull",
   "aliases": [
-    "gacha pull mechanic",
-    "gacha pull system",
-    "gacha pull"
+    "random draw",
+    "banner pull",
+    "capsule draw"
   ],
   "category": "economy",
   "subcategory": "economy",
@@ -24,83 +24,110 @@
     "simulation",
     "strategy"
   ],
-  "description": "Gacha Pull is a value-exchange mechanic that governs currency, prices, scarcity, rewards, and transactions.",
-  "design_notes": "Gacha Pull should be designed around a clear player promise, a readable trigger, and a predictable result. For economy mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A paid or earned random reward draw from a published pool, often with rarity tiers and duplicate handling.",
+  "design_notes": "Gacha pulls are high-risk economy mechanics because cost, odds, duplicates, pity, and presentation affect player trust. The design should make eligibility, rarity, duplicate_rule, and pity_counter behavior explicit before a pull is committed.",
   "design_purpose": [
-    "Give the player a readable way to use gacha pull as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect gacha pull to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create anticipation around rare rewards while controlling long-term reward distribution.",
+    "Support collection goals through banners, pools, duplicate conversion, and pity rules.",
+    "Give designers a tunable reward sink for earned or premium currency without hiding the rules."
   ],
-  "player_fantasy": "The player feels they are making meaningful tradeoffs with scarce value.",
+  "player_fantasy": "The player feels the suspense of a draw while believing the reward rules are understandable and fair.",
   "required_systems": [
-    "inventory_system",
     "currency_wallet",
-    "transaction_rules",
-    "reward_tables"
+    "reward_pool",
+    "pity_counter",
+    "duplicate_conversion",
+    "transaction_log",
+    "inventory_system"
   ],
   "parameters": [
     {
-      "name": "base_value",
+      "name": "banner_id",
+      "type": "string",
+      "typical_range": "standard, limited_event, weapon_focus",
+      "description": "Identifier for the active reward pool, featured items, pity rules, and availability window."
+    },
+    {
+      "name": "pull_cost_minor_units",
       "type": "integer",
       "typical_range": "1-100000",
-      "description": "Default value before modifiers."
+      "description": "Currency cost for one draw, stored in minor units for exact debits."
     },
     {
-      "name": "scarcity_modifier",
-      "type": "float",
-      "typical_range": "0.1-10",
-      "description": "Multiplier that reflects rarity, supply, or demand."
+      "name": "rarity_tier_weights",
+      "type": "object",
+      "typical_range": "tier to weight map",
+      "description": "Relative odds for each rarity tier before pity or guarantee modifiers."
     },
     {
-      "name": "transaction_limit",
+      "name": "pity_counter_threshold",
       "type": "integer",
-      "typical_range": "1-999",
-      "description": "Maximum units exchanged in one operation or period."
+      "typical_range": "5-200 pulls",
+      "description": "Pull count after which a protected rarity or featured reward is guaranteed or boosted."
+    },
+    {
+      "name": "duplicate_rule",
+      "type": "string",
+      "typical_range": "convert_to_shards, reroll, allow_duplicate, upgrade_existing",
+      "description": "Rule applied when the selected reward is already owned or exceeds inventory limits."
     }
   ],
   "common_variants": [
-    "gacha_pull_fixed_value",
-    "gacha_pull_dynamic_value",
-    "player_traded",
-    "scarcity_based"
+    "single_pull",
+    "ten_pull",
+    "limited_banner",
+    "pity_banner",
+    "step_up_banner"
   ],
   "edge_cases": [
-    "Gacha Pull is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Gacha Pull overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Gacha Pull runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Currency is debited but reward grant fails because inventory is full or the item definition is missing.",
+    "A banner expires between preview and commit, so the server must reject or honor the request consistently.",
+    "A duplicate reward triggers conversion and pity progress in the same pull.",
+    "Cross-device play can submit the same pull transaction_id twice if the first response times out."
   ],
   "common_bugs": [
-    "Gacha Pull state does not reset correctly after interruption or reload.",
-    "Feedback for Gacha Pull plays even when the mechanic fails or is rejected.",
-    "Gacha Pull produces different results between frame rates, platforms, or network clients."
+    "Pity counters increment on preview or failed pulls instead of committed reward grants.",
+    "Client-side RNG selects the reward and can be manipulated or desynced from server logs.",
+    "Published odds differ from configured rarity_tier_weights after banner filters are applied.",
+    "Duplicate conversion grants shards but also leaves the duplicate item_instance_id in inventory."
   ],
   "balancing_notes": [
-    "Make Gacha Pull strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Simulate expected pulls to featured rewards, worst-case pity outcomes, and duplicate conversion value before pricing the banner.",
+    "If real money can influence pulls, transparency and regional compliance matter as much as reward tuning.",
+    "Duplicate_rule and pity_counter settings should reduce frustration without making the highest rarity feel routine."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Gacha Pull becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show odds, pity progress, duplicate conversion results, and spending confirmation in readable text.",
+    "Allow long animations to be skipped or reduced, especially for repeated multi-pulls."
   ],
   "implementation_notes": {
-    "unity": "Implement Gacha Pull with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Gacha Pull as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Gacha Pull with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Gacha Pull as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Treat a pull as a server-authoritative transaction_id: debit currency, roll banner_id with deterministic logged seed, apply duplicate_rule and pity_counter, grant item_instance_id, then animate the committed result.",
+    "godot": "Keep banner definitions in Resources or JSON and separate the reward commit from reveal animation; local-only games should still persist pity_counter and transaction history before showing rewards.",
+    "unreal": "Use an economy service or backend-backed subsystem for pull authority; replicated clients should receive committed reward payloads rather than rolling in UMG or Blueprints.",
+    "web": "For browser games, execute the roll in a transaction reducer or backend endpoint, store pull history and pity_counter, and render reveal UI from the committed reward list."
   },
   "related_mechanics": [
+    "economy.loot_table",
     "economy.coins",
-    "economy.shop",
-    "progression.upgrade_shop",
+    "progression.equipment_rarity",
     "ui_ux.inventory_grid"
   ],
   "combines_well_with": [
     "economy.dynamic_pricing",
-    "economy.resource_conversion",
-    "progression.upgrade_shop",
-    "ui_ux.inventory_grid"
+    "progression.meta_progression",
+    "progression.achievement_system",
+    "roguelike.random_powerups"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Genshin Impact",
+      "note": "Uses banners and guarantee-style rules for character and weapon draws."
+    },
+    {
+      "title": "Fire Emblem Heroes",
+      "note": "Uses character summoning pools with rarity outcomes."
+    }
+  ],
   "tags": [
     "economy",
     "gacha",

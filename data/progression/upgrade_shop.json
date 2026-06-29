@@ -2,9 +2,9 @@
   "id": "progression.upgrade_shop",
   "name": "Upgrade Shop",
   "aliases": [
-    "upgrade shop mechanic",
-    "upgrade shop system",
-    "upgrade shop"
+    "upgrade vendor",
+    "upgrade store",
+    "improvement shop"
   ],
   "category": "progression",
   "subcategory": "progression",
@@ -24,83 +24,111 @@
     "action",
     "roguelike"
   ],
-  "description": "Upgrade Shop is a long-term growth mechanic that changes player capability, goals, or account state.",
-  "design_notes": "Upgrade Shop should be designed around a clear player promise, a readable trigger, and a predictable result. For progression mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A shop-like progression interface where players spend currency or materials to improve stats, abilities, equipment, or account perks.",
+  "design_notes": "Upgrade shops combine economy transactions with permanent progression. They need upgrade_id, prerequisite requirements, cost curves, purchase limits, stat recalculation, and rollback rules so buying an upgrade feels reliable and cannot desync wallet and progression state.",
   "design_purpose": [
-    "Give the player a readable way to use upgrade shop as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect upgrade shop to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players a clear place to convert resources into durable power or utility.",
+    "Pace upgrades through costs, tiers, prerequisites, and stock or availability rules.",
+    "Create a predictable alternative to random reward acquisition."
   ],
-  "player_fantasy": "The player feels their effort is accumulating into lasting power or options.",
+  "player_fantasy": "The player feels they are investing earned resources into a stronger build or account.",
   "required_systems": [
-    "player_profile",
-    "reward_rules",
-    "unlock_system",
+    "upgrade_catalog",
+    "currency_wallet",
+    "material_inventory",
+    "purchase_transactions",
+    "stat_recalculation",
     "save_state"
   ],
   "parameters": [
     {
-      "name": "reward_amount",
-      "type": "integer",
-      "typical_range": "1-10000",
-      "description": "Progress awarded when the player completes the triggering action."
-    },
-    {
-      "name": "unlock_threshold",
-      "type": "integer",
-      "typical_range": "1-100",
-      "description": "Amount of progress required before the next reward unlocks."
-    },
-    {
-      "name": "scaling_curve",
+      "name": "upgrade_id",
       "type": "string",
-      "typical_range": "linear, exponential, tiered",
-      "description": "Curve used to increase cost, reward, or requirement."
+      "typical_range": "health_plus_1, dash_cooldown_2, forge_rank_3",
+      "description": "Stable identifier for the purchasable upgrade."
+    },
+    {
+      "name": "upgrade_cost_curve_id",
+      "type": "string",
+      "typical_range": "flat, tiered, exponential, material_mixed",
+      "description": "Formula or table used to calculate the current upgrade cost."
+    },
+    {
+      "name": "prerequisite_upgrade_ids",
+      "type": "array",
+      "typical_range": "0-8 ids",
+      "description": "Upgrades or milestones required before this upgrade can be purchased."
+    },
+    {
+      "name": "purchase_limit",
+      "type": "integer",
+      "typical_range": "1-999 purchases",
+      "description": "Maximum number of times this upgrade can be bought within its scope."
+    },
+    {
+      "name": "upgrade_effect_payload_id",
+      "type": "string",
+      "typical_range": "stat_bonus, unlock_ability, add_inventory_slot",
+      "description": "Data payload applied after the purchase transaction commits."
     }
   ],
   "common_variants": [
-    "upgrade_shop_linear_track",
-    "upgrade_shop_branching_track",
-    "class_restricted",
-    "respec_enabled"
+    "stat_upgrade_shop",
+    "ability_upgrade_shop",
+    "base_upgrade_shop",
+    "account_upgrade_shop",
+    "run_upgrade_vendor"
   ],
   "edge_cases": [
-    "Upgrade Shop is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Upgrade Shop overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Upgrade Shop runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A player can afford an upgrade when the panel opens but spends the resource elsewhere before confirmation.",
+    "An upgrade changes a stat that affects current health, stamina, inventory capacity, or active cooldowns.",
+    "Prerequisite upgrades are refunded or removed after dependent upgrades have already been purchased.",
+    "A content patch changes upgrade_cost_curve_id and must migrate already purchased tiers safely."
   ],
   "common_bugs": [
-    "Upgrade Shop state does not reset correctly after interruption or reload.",
-    "Feedback for Upgrade Shop plays even when the mechanic fails or is rejected.",
-    "Upgrade Shop produces different results between frame rates, platforms, or network clients."
+    "Wallet is debited but upgrade_effect_payload_id fails to apply, leaving the save in a half-purchased state.",
+    "Purchase buttons check prerequisites in UI but the commit path accepts invalid prerequisite_upgrade_ids.",
+    "Stackable upgrades exceed purchase_limit after save/load because count is stored in UI state.",
+    "Derived stats update twice when both the purchase event and save reload apply the same effect."
   ],
   "balancing_notes": [
-    "Make Upgrade Shop strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Upgrade costs should be tuned against actual currency and material source rates, not only desired tier order.",
+    "Permanent upgrades need escalating costs, prerequisites, or caps to avoid flattening challenge too early.",
+    "Offer parallel upgrade paths so the shop supports build choice rather than a single mandatory shopping list."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Upgrade Shop becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show current level, next effect, full cost, missing resources, and purchase limit in one readable view.",
+    "Provide confirmation or undo for expensive upgrades that permanently change a build."
   ],
   "implementation_notes": {
-    "unity": "Implement Upgrade Shop with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Upgrade Shop as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Upgrade Shop with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Upgrade Shop as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Commit upgrades through a transaction service that validates upgrade_id, prerequisites, purchase_limit, wallet/material costs, applies upgrade_effect_payload_id, recalculates stats, and saves once.",
+    "godot": "Keep upgrade catalog data separate from shop UI nodes; purchase_upgrade should run through a progression service and emit committed state changes for UI refresh.",
+    "unreal": "Use DataAssets/DataTables for upgrade definitions and an authoritative component or subsystem for purchase validation; replicate committed upgrade state and derived stat changes.",
+    "web": "Model upgrade purchase as a single reducer action with before/after resource and progression diffs; persist purchased upgrade IDs and counts rather than derived UI state."
   },
   "related_mechanics": [
     "economy.shop",
-    "progression.experience_points",
-    "progression.level_up",
-    "ui_ux.quest_marker"
+    "economy.coins",
+    "economy.dynamic_pricing",
+    "progression.skill_tree",
+    "progression.unlockable_abilities"
   ],
   "combines_well_with": [
-    "economy.shop",
-    "progression.skill_tree",
-    "progression.unlockable_abilities",
-    "ui_ux.quest_marker"
+    "economy.crafting_materials",
+    "economy.resource_conversion",
+    "progression.experience_points",
+    "progression.meta_progression"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Hades",
+      "note": "Uses upgrade interfaces to convert resources into persistent options."
+    },
+    {
+      "title": "Rogue Legacy",
+      "note": "Uses estate upgrades as long-term progression purchases."
+    }
+  ],
   "tags": [
     "progression",
     "rewards",

@@ -2,9 +2,9 @@
   "id": "progression.equipment_rarity",
   "name": "Equipment Rarity",
   "aliases": [
-    "equipment rarity mechanic",
-    "equipment rarity system",
-    "equipment rarity"
+    "item rarity",
+    "gear tiers",
+    "rarity system"
   ],
   "category": "progression",
   "subcategory": "progression",
@@ -24,83 +24,109 @@
     "action",
     "roguelike"
   ],
-  "description": "Equipment Rarity is a long-term growth mechanic that changes player capability, goals, or account state.",
-  "design_notes": "Equipment Rarity should be designed around a clear player promise, a readable trigger, and a predictable result. For progression mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A tiering system that groups equipment by scarcity, power budget, presentation, and upgrade potential.",
+  "design_notes": "Equipment rarity links reward excitement to balance math. A useful rarity system defines rarity_tier, stat budget, drop_weight, upgrade ceiling, duplicate handling, and presentation rules without letting color alone carry the meaning.",
   "design_purpose": [
-    "Give the player a readable way to use equipment rarity as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect equipment rarity to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Signal item scarcity and expected value quickly.",
+    "Control power budgets for loot, shops, crafting, and upgrade systems.",
+    "Create collection and build goals around rare item properties."
   ],
-  "player_fantasy": "The player feels their effort is accumulating into lasting power or options.",
+  "player_fantasy": "The player feels the excitement of finding gear that is meaningfully special, not just differently colored.",
   "required_systems": [
-    "player_profile",
-    "reward_rules",
-    "unlock_system",
-    "save_state"
+    "item_database",
+    "loot_tables",
+    "stat_budgeting",
+    "upgrade_rules",
+    "inventory_system"
   ],
   "parameters": [
     {
-      "name": "reward_amount",
-      "type": "integer",
-      "typical_range": "1-10000",
-      "description": "Progress awarded when the player completes the triggering action."
-    },
-    {
-      "name": "unlock_threshold",
-      "type": "integer",
-      "typical_range": "1-100",
-      "description": "Amount of progress required before the next reward unlocks."
-    },
-    {
-      "name": "scaling_curve",
+      "name": "rarity_tier",
       "type": "string",
-      "typical_range": "linear, exponential, tiered",
-      "description": "Curve used to increase cost, reward, or requirement."
+      "typical_range": "common, uncommon, rare, epic, legendary",
+      "description": "Canonical tier used for drop logic, UI, upgrade rules, and economy valuation."
+    },
+    {
+      "name": "stat_budget_multiplier",
+      "type": "float",
+      "typical_range": "0.8-3.0",
+      "description": "Multiplier applied to item stat budget or affix count for this tier."
+    },
+    {
+      "name": "drop_weight",
+      "type": "integer",
+      "typical_range": "1-100000",
+      "description": "Relative selection weight for this rarity in loot tables or vendors."
+    },
+    {
+      "name": "upgrade_level_cap",
+      "type": "integer",
+      "typical_range": "0-50 levels",
+      "description": "Maximum upgrade level allowed for equipment in this tier."
+    },
+    {
+      "name": "duplicate_rule",
+      "type": "string",
+      "typical_range": "allow, convert, reroll_affix, bind_on_pickup",
+      "description": "Handling for repeated or unneeded equipment of the same rarity and item family."
     }
   ],
   "common_variants": [
-    "equipment_rarity_linear_track",
-    "equipment_rarity_branching_track",
-    "class_restricted",
-    "respec_enabled"
+    "color_rarity",
+    "affix_rarity",
+    "unique_items",
+    "set_items",
+    "upgradeable_rarity"
   ],
   "edge_cases": [
-    "Equipment Rarity is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Equipment Rarity overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Equipment Rarity runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A low-level high-rarity item can be weaker than a later common item and confuse players if comparison is unclear.",
+    "Rarity tiers added in a patch need migration for old items and loot tables.",
+    "Duplicate unique items require a rule for ownership, conversion, or rerolling.",
+    "Crafting or upgrading can change rarity_tier and must preserve item_instance_id history or intentionally replace it."
   ],
   "common_bugs": [
-    "Equipment Rarity state does not reset correctly after interruption or reload.",
-    "Feedback for Equipment Rarity plays even when the mechanic fails or is rejected.",
-    "Equipment Rarity produces different results between frame rates, platforms, or network clients."
+    "Rarity color updates but stat_budget_multiplier does not, producing misleading items.",
+    "Loot tables filter by display rarity name instead of rarity_tier, breaking localization and balance tools.",
+    "Upgrade caps are checked in UI but not in the upgrade transaction.",
+    "Duplicate conversion grants currency but leaves the duplicate item in inventory."
   ],
   "balancing_notes": [
-    "Make Equipment Rarity strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Rarity should change expected value, not guarantee that every item invalidates lower tiers immediately.",
+    "The rarest tier needs enough drop scarcity and upgrade cost to stay exciting without making ordinary rewards worthless.",
+    "If rarity controls both power and appearance, include cosmetic-only paths so players are not forced into ugly best-in-slot gear."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Equipment Rarity becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Communicate rarity with text labels and icons in addition to color.",
+    "Make item comparison readable with explicit stat changes, not only rarity names or glow effects."
   ],
   "implementation_notes": {
-    "unity": "Implement Equipment Rarity with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Equipment Rarity as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Equipment Rarity with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Equipment Rarity as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Define rarity_tier rows in data and have loot, UI, and upgrade systems read the same stat_budget_multiplier and upgrade_level_cap rather than duplicating switch statements.",
+    "godot": "Store rarity definitions as Resources or JSON dictionaries keyed by rarity_tier; item instances should persist tier and generated affixes separately for migration.",
+    "unreal": "Use Primary Data Assets or DataTables for rarity tiers and validate upgrade transactions on the authoritative inventory component using item_instance_id and tier cap.",
+    "web": "Keep item definitions and item_instance_id state separate; rarity display, drop generation, duplicate_rule, and upgrade validation should all reference the same rarity_tier map."
   },
   "related_mechanics": [
-    "economy.shop",
-    "progression.experience_points",
-    "progression.level_up",
-    "ui_ux.quest_marker"
+    "economy.loot_table",
+    "economy.gacha_pull",
+    "progression.upgrade_shop",
+    "economy.repair_cost"
   ],
   "combines_well_with": [
-    "economy.shop",
-    "progression.skill_tree",
-    "progression.upgrade_shop",
-    "ui_ux.quest_marker"
+    "economy.crafting_materials",
+    "progression.unlockable_abilities",
+    "ui_ux.inventory_grid",
+    "roguelike.relic_synergy"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Diablo",
+      "note": "Uses item rarity tiers as a central loot signal."
+    },
+    {
+      "title": "Borderlands",
+      "note": "Uses rarity color and item generation as part of loot progression."
+    }
+  ],
   "tags": [
     "equipment",
     "progression",

@@ -2,9 +2,9 @@
   "id": "progression.unlockable_abilities",
   "name": "Unlockable Abilities",
   "aliases": [
-    "unlockable abilities mechanic",
-    "unlockable abilities system",
-    "unlockable abilities"
+    "ability unlocks",
+    "new moves",
+    "capability unlocks"
   ],
   "category": "progression",
   "subcategory": "progression",
@@ -24,83 +24,110 @@
     "action",
     "roguelike"
   ],
-  "description": "Unlockable Abilities is a long-term growth mechanic that changes player capability, goals, or account state.",
-  "design_notes": "Unlockable Abilities should be designed around a clear player promise, a readable trigger, and a predictable result. For progression mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A progression rule that grants new verbs, powers, passives, or interaction options after requirements are met.",
+  "design_notes": "Unlockable abilities change what the player can do, so they need stronger safeguards than simple stat rewards. Each ability should have ability_id, unlock_requirement_id, grant timing, tutorial readiness, save migration, and rollback rules if a prerequisite is removed.",
   "design_purpose": [
-    "Give the player a readable way to use unlockable abilities as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect unlockable abilities to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Introduce new verbs or strategic options at a pace the player can learn.",
+    "Reward milestones with meaningful capability changes rather than only larger numbers.",
+    "Gate traversal, combat, crafting, or social options behind clear progression requirements."
   ],
-  "player_fantasy": "The player feels their effort is accumulating into lasting power or options.",
+  "player_fantasy": "The player feels their character or account is learning new ways to act in the world.",
   "required_systems": [
-    "player_profile",
-    "reward_rules",
-    "unlock_system",
-    "save_state"
+    "ability_database",
+    "unlock_requirements",
+    "ability_grants",
+    "progression_state",
+    "tutorial_prompts",
+    "save_migration"
   ],
   "parameters": [
     {
-      "name": "reward_amount",
-      "type": "integer",
-      "typical_range": "1-10000",
-      "description": "Progress awarded when the player completes the triggering action."
-    },
-    {
-      "name": "unlock_threshold",
-      "type": "integer",
-      "typical_range": "1-100",
-      "description": "Amount of progress required before the next reward unlocks."
-    },
-    {
-      "name": "scaling_curve",
+      "name": "ability_id",
       "type": "string",
-      "typical_range": "linear, exponential, tiered",
-      "description": "Curve used to increase cost, reward, or requirement."
+      "typical_range": "double_jump, parry, lockpick, fireball",
+      "description": "Stable identifier for the ability granted to the player."
+    },
+    {
+      "name": "unlock_requirement_id",
+      "type": "string",
+      "typical_range": "level_5, quest_complete, skill_node, item_owned",
+      "description": "Requirement that must be satisfied before the ability is granted or purchasable."
+    },
+    {
+      "name": "grant_scope",
+      "type": "string",
+      "typical_range": "character, account, run, equipment",
+      "description": "Persistence scope that decides whether the ability survives resets, death, or gear changes."
+    },
+    {
+      "name": "tutorial_prompt_id",
+      "type": "string",
+      "typical_range": "none, first_use, unlock_popup",
+      "description": "Optional onboarding prompt associated with the new ability."
+    },
+    {
+      "name": "retroactive_unlock_flag",
+      "type": "boolean",
+      "typical_range": "true or false",
+      "description": "Whether existing saves that already meet the requirement receive the ability automatically."
     }
   ],
   "common_variants": [
-    "unlockable_abilities_linear_track",
-    "unlockable_abilities_branching_track",
-    "class_restricted",
-    "respec_enabled"
+    "level_gated_ability",
+    "quest_ability",
+    "skill_tree_ability",
+    "equipment_granted_ability",
+    "temporary_run_ability"
   ],
   "edge_cases": [
-    "Unlockable Abilities is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Unlockable Abilities overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Unlockable Abilities runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "An ability unlocks while the player is airborne, in combat, or in a menu and should not steal input unexpectedly.",
+    "A removed prerequisite must decide whether to keep, refund, or revoke already granted abilities.",
+    "Abilities used for traversal can soft-lock saves if revoked while the player is behind a gate.",
+    "Multiplayer games need to decide whether ability unlocks are predicted locally or confirmed by the server."
   ],
   "common_bugs": [
-    "Unlockable Abilities state does not reset correctly after interruption or reload.",
-    "Feedback for Unlockable Abilities plays even when the mechanic fails or is rejected.",
-    "Unlockable Abilities produces different results between frame rates, platforms, or network clients."
+    "Ability UI appears unlocked but the input binding or action map is not enabled.",
+    "Save data stores display names instead of ability_id, breaking migration and localization.",
+    "Retroactive unlocks grant the same ability multiple times because grant transaction IDs are not tracked.",
+    "Revoking an equipment-granted ability leaves cooldowns, summons, or passive modifiers active."
   ],
   "balancing_notes": [
-    "Make Unlockable Abilities strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "New verbs should arrive when the game has space to teach and test them, not only when the XP curve needs a reward.",
+    "Traversal abilities can invalidate old level layouts, so gating and backtracking should be planned together.",
+    "Account-wide ability unlocks need special care because they can shorten or trivialize early-game pacing."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Unlockable Abilities becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide input remapping and tutorial review for newly unlocked actions.",
+    "Avoid locking required accessibility assists behind progression; capability unlocks should not gate basic playability."
   ],
   "implementation_notes": {
-    "unity": "Implement Unlockable Abilities with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Unlockable Abilities as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Unlockable Abilities with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Unlockable Abilities as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Grant ability_id through a central ability service that updates action maps, cooldown state, tutorials, and save data after unlock_requirement_id validation succeeds.",
+    "godot": "Store ability definitions as Resources and keep owned ability IDs in progression_state; emit signals after grants so UI and input maps refresh from committed state.",
+    "unreal": "Use Gameplay Ability System or a progression component to grant abilities authoritatively; ability specs should be added or removed from committed unlock state, not UI previews.",
+    "web": "Keep ability definitions in JSON and owned ability IDs in saved state; use pure requirement checks for UI visibility and commit ability grants with transaction IDs."
   },
   "related_mechanics": [
-    "economy.shop",
-    "progression.experience_points",
+    "progression.skill_tree",
     "progression.level_up",
-    "ui_ux.quest_marker"
+    "progression.crafting_unlocks",
+    "narrative.reputation_gating"
   ],
   "combines_well_with": [
-    "economy.shop",
-    "progression.skill_tree",
-    "progression.upgrade_shop",
-    "ui_ux.quest_marker"
+    "movement.dash",
+    "platforming.double_jump",
+    "progression.respec",
+    "ui_ux.tutorial_prompt"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Metroid",
+      "note": "Uses ability unlocks to open new traversal and combat options."
+    },
+    {
+      "title": "Celeste",
+      "note": "Introduces and teaches new movement capabilities through progression and level design."
+    }
+  ],
   "tags": [
     "progression",
     "rewards",

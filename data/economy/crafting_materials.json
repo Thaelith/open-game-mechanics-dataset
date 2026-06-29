@@ -2,9 +2,9 @@
   "id": "economy.crafting_materials",
   "name": "Crafting Materials",
   "aliases": [
-    "crafting materials mechanic",
-    "crafting materials system",
-    "crafting materials"
+    "crafting resources",
+    "materials",
+    "component inventory"
   ],
   "category": "economy",
   "subcategory": "economy",
@@ -24,83 +24,110 @@
     "simulation",
     "strategy"
   ],
-  "description": "Crafting Materials is a value-exchange mechanic that governs currency, prices, scarcity, rewards, and transactions.",
-  "design_notes": "Crafting Materials should be designed around a clear player promise, a readable trigger, and a predictable result. For economy mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Collectible resources consumed by recipes, upgrades, repairs, or conversions instead of acting as direct currency.",
+  "design_notes": "Crafting materials create targeted scarcity. The useful design question is which activities feed each material and which recipes consume it; too many universal materials collapse into coins, while too many narrow materials become inventory clutter.",
   "design_purpose": [
-    "Give the player a readable way to use crafting materials as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect crafting materials to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give specific activities and biomes their own reward identity.",
+    "Gate recipes, upgrades, and repairs through resources that can be forecast and farmed.",
+    "Create tradeoffs between spending materials now and saving them for later recipes."
   ],
-  "player_fantasy": "The player feels they are making meaningful tradeoffs with scarce value.",
+  "player_fantasy": "The player feels resourceful, turning gathered parts into equipment, upgrades, and crafted solutions.",
   "required_systems": [
-    "inventory_system",
-    "currency_wallet",
-    "transaction_rules",
-    "reward_tables"
+    "material_inventory",
+    "recipe_database",
+    "loot_tables",
+    "crafting_transactions",
+    "stacking_rules"
   ],
   "parameters": [
     {
-      "name": "base_value",
-      "type": "integer",
-      "typical_range": "1-100000",
-      "description": "Default value before modifiers."
+      "name": "material_id",
+      "type": "string",
+      "typical_range": "iron_ore, rare_hide, circuit_board",
+      "description": "Canonical identifier used by loot tables, recipes, inventory stacks, and save data."
     },
     {
-      "name": "scarcity_modifier",
-      "type": "float",
-      "typical_range": "0.1-10",
-      "description": "Multiplier that reflects rarity, supply, or demand."
+      "name": "material_rarity_tier",
+      "type": "string",
+      "typical_range": "common, uncommon, rare, epic",
+      "description": "Tier used for drop rates, UI grouping, and recipe cost expectations."
     },
     {
-      "name": "transaction_limit",
+      "name": "stack_limit",
       "type": "integer",
-      "typical_range": "1-999",
-      "description": "Maximum units exchanged in one operation or period."
+      "typical_range": "1-9999 units",
+      "description": "Maximum amount in one inventory stack before overflow or a new stack is required."
+    },
+    {
+      "name": "recipe_consumption_count",
+      "type": "integer",
+      "typical_range": "1-200 units",
+      "description": "Quantity removed from inventory when a recipe transaction commits."
+    },
+    {
+      "name": "duplicate_rule",
+      "type": "string",
+      "typical_range": "stack, convert, discard, overflow_mail",
+      "description": "Handling for material grants that exceed stack or storage limits."
     }
   ],
   "common_variants": [
-    "crafting_materials_fixed_value",
-    "crafting_materials_dynamic_value",
-    "player_traded",
-    "scarcity_based"
+    "common_materials",
+    "rare_components",
+    "biome_materials",
+    "boss_materials",
+    "account_materials"
   ],
   "edge_cases": [
-    "Crafting Materials is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Crafting Materials overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Crafting Materials runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A recipe consumes several material_id values and one stack changes between preview and commit.",
+    "A material is removed from a live build but still exists in old saves, loot tables, or recipes.",
+    "Inventory is full when a drop grants a required material, so the game needs overflow, conversion, or protected pickup rules.",
+    "Shared materials across characters or runs must define whether spending from one profile affects another."
   ],
   "common_bugs": [
-    "Crafting Materials state does not reset correctly after interruption or reload.",
-    "Feedback for Crafting Materials plays even when the mechanic fails or is rejected.",
-    "Crafting Materials produces different results between frame rates, platforms, or network clients."
+    "Crafting preview subtracts materials locally and the committed transaction subtracts them again.",
+    "Recipe validation checks display names instead of material_id, breaking when localization changes.",
+    "Stack split and merge operations lose item_instance_id metadata for enhanced or bound materials.",
+    "Obsolete materials remain in loot tables and silently block recipe completion after a content patch."
   ],
   "balancing_notes": [
-    "Make Crafting Materials strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Pair each important material with at least one reliable source and one desirable sink so farming feels intentional.",
+    "Rare materials should not be required in large quantities for basic progression unless there is pity, conversion, or targeted acquisition.",
+    "Recipe costs should be tuned against simulated drop_weight and playtime, not only designer intuition."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Crafting Materials becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show material names, icons, and source hints together so players are not forced to memorize small icons.",
+    "Provide recipe pinning or tracking for players who need persistent reminders of required material counts."
   ],
   "implementation_notes": {
-    "unity": "Implement Crafting Materials with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Crafting Materials as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Crafting Materials with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Crafting Materials as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use material_id in ScriptableObject recipe definitions and inventory stacks; crafting should run as one transaction that validates stack counts, consumes materials, grants output item_instance_id, then saves.",
+    "godot": "Represent materials as Resources or JSON rows and keep stack mutation in a single inventory service so UI drag, pickup, and recipe systems share the same validation rules.",
+    "unreal": "Store material definitions in DataAssets or DataTables and execute crafting on the authoritative inventory component, rolling back consumption if output grant or persistence fails.",
+    "web": "Keep material inventory as normalized maps keyed by material_id; recipe commits should produce a before/after diff that can be persisted, undone, or synced."
   },
   "related_mechanics": [
-    "economy.coins",
-    "economy.shop",
+    "economy.loot_table",
+    "economy.resource_conversion",
+    "progression.crafting_unlocks",
     "progression.upgrade_shop",
     "ui_ux.inventory_grid"
   ],
   "combines_well_with": [
-    "economy.dynamic_pricing",
-    "economy.resource_conversion",
-    "progression.upgrade_shop",
-    "ui_ux.inventory_grid"
+    "economy.shop",
+    "progression.equipment_rarity",
+    "survival.durability",
+    "procedural_generation.loot_generation"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Monster Hunter",
+      "note": "Uses monster parts and gathered resources for equipment crafting."
+    },
+    {
+      "title": "Minecraft",
+      "note": "Uses mined and gathered materials as recipe inputs."
+    }
+  ],
   "tags": [
     "crafting",
     "economy",

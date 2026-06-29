@@ -25,8 +25,8 @@
     "strategy",
     "roguelike"
   ],
-  "description": "A system that lets players refund and reassign progression choices.",
-  "design_notes": "Respec rules define how experimental the progression system feels. Costs, location requirements, refund percentages, and locked choices all affect whether players treat builds as commitments or flexible loadouts.",
+  "description": "A system that lets players refund and reassign progression choices without rebuilding the entire save or character from scratch.",
+  "design_notes": "Respec rules define how experimental the progression system feels. Costs, location requirements, refund percentages, locked choices, and dependency cleanup all affect whether players treat builds as commitments or flexible loadouts.",
   "design_purpose": [
     "Let players recover from mistaken or outdated build choices.",
     "Encourage experimentation with abilities and gear.",
@@ -44,25 +44,31 @@
       "name": "respec_currency_cost",
       "type": "integer",
       "typical_range": "0-100000 currency",
-      "description": "Cost required to start a respec."
+      "description": "Currency or token cost required to start the respec transaction."
     },
     {
-      "name": "refund_ratio",
+      "name": "respec_refund_ratio",
       "type": "float",
       "typical_range": "0-1",
-      "description": "Share of spent resources returned."
+      "description": "Share of spent skill points, materials, or currency returned after refund rules are applied."
     },
     {
       "name": "respec_location_rule",
       "type": "string",
       "typical_range": "anywhere, hub, vendor, checkpoint",
-      "description": "Where the player can respec."
+      "description": "Where or when the player is allowed to respec."
     },
     {
       "name": "locked_node_policy",
       "type": "string",
-      "typical_range": "keep, refund, forbid",
-      "description": "Handling for quest, class, or story-locked choices."
+      "typical_range": "keep, refund, forbid, require_dependency",
+      "description": "Handling for quest, class, story, or item-granted choices that cannot freely change."
+    },
+    {
+      "name": "dependency_rebuild_mode",
+      "type": "string",
+      "typical_range": "remove_dependents, block_refund, rebuild_all",
+      "description": "Rule for dependent abilities, stats, and hotbar assignments after a refunded prerequisite."
     }
   ],
   "common_variants": [
@@ -72,14 +78,16 @@
     "partial_respec"
   ],
   "edge_cases": [
-    "Refunding a prerequisite must remove dependent abilities.",
-    "Removed abilities need cleanup for hotbars, passives, summons, and equipment requirements.",
-    "Balance patches may need free respec grants."
+    "Refunding a prerequisite must remove, disable, or block dependent abilities before the build can be saved.",
+    "Removed abilities need cleanup for hotbars, passives, summons, equipment requirements, and active cooldowns.",
+    "Balance patches may need free respec grants or forced rebuilds for invalid node IDs.",
+    "A player starts respec in a safe hub and reconnects in combat or another invalid location."
   ],
   "common_bugs": [
-    "Passive stat bonuses remain after the node is refunded.",
+    "Passive stat bonuses remain after the node is refunded because derived stats are patched instead of rebuilt.",
     "UI shows refunded points before validation and loses them on save reload.",
-    "Respec allows invalid builds that cannot be reloaded later."
+    "Respec allows invalid builds that cannot be reloaded later because prerequisite graph validation is skipped.",
+    "Refunding class or quest-granted nodes removes abilities that should be locked by locked_node_policy."
   ],
   "balancing_notes": [
     "Cheap respec supports experimentation; expensive respec reinforces identity and long-term planning.",
@@ -89,20 +97,22 @@
     "Provide confirmation, preview, and undo steps so players do not lose progress through accidental clicks."
   ],
   "implementation_notes": {
-    "unity": "Run respec as a transaction that removes granted abilities, validates dependency fallout, refunds points or currency, recomputes derived stats, and writes one save update.",
+    "unity": "Run respec as a transaction that removes granted abilities, validates dependency fallout, refunds points or currency, recomputes derived stats, validates hotbars, and writes one save update.",
     "godot": "Store selected build IDs separately from granted effects, then rebuild abilities and stats from scratch after each refund so stale passives cannot remain active.",
-    "unreal": "Centralize respec in a progression component or subsystem that validates dependent nodes, removes Gameplay Abilities, and reapplies remaining grants after confirmation.",
+    "unreal": "Centralize respec in a progression component or subsystem that validates dependent nodes, removes Gameplay Abilities, rebuilds attributes, and reapplies remaining grants after confirmation.",
     "web": "Keep build selections as immutable IDs, preview refund results in pure functions, then commit a single transaction that recomputes stats, hotbar validity, and save state."
   },
   "related_mechanics": [
     "progression.skill_tree",
     "progression.level_up",
+    "progression.unlockable_abilities",
     "economy.shop"
   ],
   "combines_well_with": [
-    "progression.unlockable_abilities",
+    "economy.coins",
     "ui_ux.dialogue_choice",
-    "narrative.reputation_gating"
+    "narrative.reputation_gating",
+    "progression.achievement_system"
   ],
   "example_games": [
     {

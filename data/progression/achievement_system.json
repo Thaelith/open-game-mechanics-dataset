@@ -2,9 +2,9 @@
   "id": "progression.achievement_system",
   "name": "Achievement System",
   "aliases": [
-    "achievement system mechanic",
-    "achievement system system",
-    "achievement system"
+    "achievements",
+    "trophies",
+    "milestone awards"
   ],
   "category": "progression",
   "subcategory": "progression",
@@ -24,83 +24,110 @@
     "action",
     "roguelike"
   ],
-  "description": "Achievement System is a long-term growth mechanic that changes player capability, goals, or account state.",
-  "design_notes": "Achievement System should be designed around a clear player promise, a readable trigger, and a predictable result. For progression mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A persistent milestone system that records notable actions, grants recognition, and may unlock rewards.",
+  "design_notes": "Achievement systems are progress records, not only popups. Useful achievements name the tracked event, completion threshold, reward policy, hidden status, and account_progression_state boundary so players can understand what counts and developers can avoid duplicate grants.",
   "design_purpose": [
-    "Give the player a readable way to use achievement system as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect achievement system to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Recognize optional mastery, exploration, collection, or challenge completion.",
+    "Expose long-term goals that sit alongside the main progression path.",
+    "Trigger cosmetic, currency, or meta-progression rewards from durable milestones."
   ],
-  "player_fantasy": "The player feels their effort is accumulating into lasting power or options.",
+  "player_fantasy": "The player feels that unusual accomplishments and long-term mastery are noticed by the game.",
   "required_systems": [
-    "player_profile",
-    "reward_rules",
-    "unlock_system",
-    "save_state"
+    "event_tracking",
+    "achievement_registry",
+    "account_progression_state",
+    "reward_grants",
+    "save_migration"
   ],
   "parameters": [
     {
-      "name": "reward_amount",
-      "type": "integer",
-      "typical_range": "1-10000",
-      "description": "Progress awarded when the player completes the triggering action."
-    },
-    {
-      "name": "unlock_threshold",
-      "type": "integer",
-      "typical_range": "1-100",
-      "description": "Amount of progress required before the next reward unlocks."
-    },
-    {
-      "name": "scaling_curve",
+      "name": "achievement_id",
       "type": "string",
-      "typical_range": "linear, exponential, tiered",
-      "description": "Curve used to increase cost, reward, or requirement."
+      "typical_range": "boss_no_damage, collect_100_cards",
+      "description": "Stable identifier used for tracking, saves, platform mapping, and reward grants."
+    },
+    {
+      "name": "tracked_event_id",
+      "type": "string",
+      "typical_range": "enemy_killed, item_collected, quest_completed",
+      "description": "Event source that increments or completes the achievement."
+    },
+    {
+      "name": "completion_threshold",
+      "type": "integer",
+      "typical_range": "1-100000",
+      "description": "Count or score required before the achievement becomes complete."
+    },
+    {
+      "name": "reward_grant_id",
+      "type": "string",
+      "typical_range": "none, title_reward, currency_bundle",
+      "description": "Optional reward transaction issued once when completion is committed."
+    },
+    {
+      "name": "retroactive_scan_rule",
+      "type": "string",
+      "typical_range": "never, on_login, migration_only",
+      "description": "Rule for awarding achievements from existing save data after content changes."
     }
   ],
   "common_variants": [
-    "achievement_system_linear_track",
-    "achievement_system_branching_track",
-    "class_restricted",
-    "respec_enabled"
+    "platform_achievement",
+    "in_game_badge",
+    "secret_achievement",
+    "progress_achievement",
+    "seasonal_achievement"
   ],
   "edge_cases": [
-    "Achievement System is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Achievement System overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Achievement System runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "An achievement is added after players already satisfied its requirement and needs retroactive unlock logic.",
+    "A tracked_event_id fires multiple times during replay, reconnect, or save migration.",
+    "Secret achievements need progress tracking without revealing hidden text prematurely.",
+    "Platform services can fail after the local achievement has already committed."
   ],
   "common_bugs": [
-    "Achievement System state does not reset correctly after interruption or reload.",
-    "Feedback for Achievement System plays even when the mechanic fails or is rejected.",
-    "Achievement System produces different results between frame rates, platforms, or network clients."
+    "Achievement completion is stored locally but the reward_grant_id runs every login.",
+    "Progress counters reset during save migration because achievement_id changed.",
+    "UI listens to predicted events and shows completion for actions later rejected by the server.",
+    "Platform achievement calls are treated as authoritative and overwrite the game's own account_progression_state."
   ],
   "balancing_notes": [
-    "Make Achievement System strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Achievement rewards should not force every player into obscure challenge behavior unless they are optional cosmetics or small bonuses.",
+    "Use a mix of short, medium, and long thresholds so the system has visible progress without becoming checklist noise.",
+    "Retroactive unlocks reduce frustration after patches but should still validate that old data is trustworthy."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Achievement System becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide text descriptions, progress counters, and a way to review missed notifications.",
+    "Avoid requiring precision-only or sensory-only challenges for mandatory progression rewards without alternate routes."
   ],
   "implementation_notes": {
-    "unity": "Implement Achievement System with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Achievement System as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Achievement System with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Achievement System as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Route gameplay events through an achievement service keyed by tracked_event_id; commit achievement_id completion and reward_grant_id once, then mirror to platform SDKs after local state is durable.",
+    "godot": "Keep achievement definitions in Resources or JSON and store account_progression_state separately from UI nodes; run retroactive_scan_rule during controlled save migration only.",
+    "unreal": "Use a subsystem or PlayerState component to aggregate tracked events, validate server-side completions for networked games, and call platform achievement APIs after internal persistence succeeds.",
+    "web": "Use an event reducer that updates achievement progress and completion transaction IDs; persist before showing unlock UI so refreshes cannot duplicate reward grants."
   },
   "related_mechanics": [
-    "economy.shop",
-    "progression.experience_points",
-    "progression.level_up",
-    "ui_ux.quest_marker"
+    "progression.meta_progression",
+    "progression.unlockable_abilities",
+    "ui_ux.quest_marker",
+    "ui_ux.checkpoint_notification",
+    "narrative.reputation_gating"
   ],
   "combines_well_with": [
-    "economy.shop",
-    "progression.skill_tree",
-    "progression.upgrade_shop",
-    "ui_ux.quest_marker"
+    "economy.coins",
+    "progression.experience_points",
+    "progression.crafting_unlocks",
+    "ui_ux.dialogue_choice"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Steam achievements",
+      "note": "Provide platform-level achievement records for many PC games."
+    },
+    {
+      "title": "Hades",
+      "note": "Uses in-game prophecies as structured long-term achievement-like goals."
+    }
+  ],
   "tags": [
     "achievement",
     "progression",

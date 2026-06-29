@@ -2,9 +2,9 @@
   "id": "economy.repair_cost",
   "name": "Repair Cost",
   "aliases": [
-    "repair cost mechanic",
-    "repair cost system",
-    "repair cost"
+    "repair fee",
+    "durability repair",
+    "maintenance cost"
   ],
   "category": "economy",
   "subcategory": "economy",
@@ -24,83 +24,110 @@
     "simulation",
     "strategy"
   ],
-  "description": "Repair Cost is a value-exchange mechanic that governs currency, prices, scarcity, rewards, and transactions.",
-  "design_notes": "Repair Cost should be designed around a clear player promise, a readable trigger, and a predictable result. For economy mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A resource or currency cost paid to restore item durability, vehicle condition, equipment charges, or base structures.",
+  "design_notes": "Repair costs are economy sinks tied to use, risk, and failure recovery. They work when players can predict what caused wear, what repair restores, and whether partial repair, replacement, or upgrade is the better choice.",
   "design_purpose": [
-    "Give the player a readable way to use repair cost as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect repair cost to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create a recurring sink that scales with equipment value and usage.",
+    "Make durability, damage, or maintenance matter without permanently deleting player investment.",
+    "Encourage planning before long expeditions, races, or combat encounters."
   ],
-  "player_fantasy": "The player feels they are making meaningful tradeoffs with scarce value.",
+  "player_fantasy": "The player feels they are maintaining valuable gear and deciding when restoration is worth the cost.",
   "required_systems": [
-    "inventory_system",
+    "durability_state",
     "currency_wallet",
-    "transaction_rules",
-    "reward_tables"
+    "repair_vendor",
+    "item_instances",
+    "transaction_validation"
   ],
   "parameters": [
     {
-      "name": "base_value",
-      "type": "integer",
-      "typical_range": "1-100000",
-      "description": "Default value before modifiers."
+      "name": "repair_cost_curve_id",
+      "type": "string",
+      "typical_range": "linear_damage, rarity_scaled, vendor_discounted",
+      "description": "Formula or table used to convert missing durability into price."
     },
     {
-      "name": "scarcity_modifier",
+      "name": "durability_restore_percent",
       "type": "float",
-      "typical_range": "0.1-10",
-      "description": "Multiplier that reflects rarity, supply, or demand."
+      "typical_range": "0.1-1.0",
+      "description": "Portion of max durability restored by one repair transaction."
     },
     {
-      "name": "transaction_limit",
+      "name": "rarity_cost_multiplier",
+      "type": "float",
+      "typical_range": "0.5-10.0",
+      "description": "Cost modifier applied by item rarity_tier or equipment class."
+    },
+    {
+      "name": "repair_floor_minor_units",
       "type": "integer",
-      "typical_range": "1-999",
-      "description": "Maximum units exchanged in one operation or period."
+      "typical_range": "0-10000",
+      "description": "Minimum cost charged so tiny damage does not create free durability restoration."
+    },
+    {
+      "name": "repair_vendor_id",
+      "type": "string",
+      "typical_range": "blacksmith, garage, field_kit",
+      "description": "Source of repair rules, discounts, stock requirements, or location restrictions."
     }
   ],
   "common_variants": [
-    "repair_cost_fixed_value",
-    "repair_cost_dynamic_value",
-    "player_traded",
-    "scarcity_based"
+    "full_repair",
+    "partial_repair",
+    "field_repair",
+    "vendor_repair",
+    "repair_kit"
   ],
   "edge_cases": [
-    "Repair Cost is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Repair Cost overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Repair Cost runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The item is equipped, traded, destroyed, or upgraded while a repair confirmation dialog is open.",
+    "Repairing above max durability due to buffs or temporary modifiers must define the cap clearly.",
+    "A repair kit uses materials while a vendor uses coins, so failure rollback must restore the correct resource type.",
+    "Server correction after combat damage can change the durability value that the client priced locally."
   ],
   "common_bugs": [
-    "Repair Cost state does not reset correctly after interruption or reload.",
-    "Feedback for Repair Cost plays even when the mechanic fails or is rejected.",
-    "Repair Cost produces different results between frame rates, platforms, or network clients."
+    "Repair cost is calculated from displayed durability percent instead of exact durability_state, causing rounding exploits.",
+    "Transaction debits currency before validating item_instance_id ownership and loses coins on rejected repair.",
+    "Partial repair updates the UI but does not persist the new durability value to save data.",
+    "Discounts apply to repair cost but not to affordability checks, so valid purchases are incorrectly disabled."
   ],
   "balancing_notes": [
-    "Make Repair Cost strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Repair should be noticeable enough to make damage meaningful but not so punishing that players avoid using interesting gear.",
+    "Rarity scaling needs a ceiling; otherwise high-tier equipment can become too expensive to use in ordinary content.",
+    "Repair sinks should be tuned alongside loot replacement rates and durability loss frequency."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Repair Cost becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show before/after durability, exact cost, and resource type before confirmation.",
+    "Warn clearly when a repair is partial or when repairing consumes rare materials instead of common currency."
   ],
   "implementation_notes": {
-    "unity": "Implement Repair Cost with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Repair Cost as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Repair Cost with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Repair Cost as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Run repair through an item_instance_id transaction: validate ownership and durability_state, quote repair_cost_curve_id, debit currency or materials, update durability, then emit UI refresh from the committed result.",
+    "godot": "Keep repair logic in an inventory service rather than vendor UI nodes; pass item_instance_id and repair_vendor_id to validate ownership, cost, and restore percent before saving.",
+    "unreal": "Use an authoritative inventory/equipment component for repair RPCs; the server should recompute cost from replicated durability and reject stale client quotes.",
+    "web": "Represent repair as a transaction object with before/after durability and resource diff so failed persistence can roll back wallet and item state together."
   },
   "related_mechanics": [
+    "survival.durability",
     "economy.coins",
     "economy.shop",
-    "progression.upgrade_shop",
-    "ui_ux.inventory_grid"
+    "economy.crafting_materials",
+    "economy.dynamic_pricing"
   ],
   "combines_well_with": [
-    "economy.dynamic_pricing",
-    "economy.resource_conversion",
-    "progression.upgrade_shop",
+    "progression.equipment_rarity",
+    "vehicles.vehicle_damage",
+    "survival.base_building",
     "ui_ux.inventory_grid"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Witcher 3",
+      "note": "Uses equipment durability and repair through vendors or kits."
+    },
+    {
+      "title": "World of Warcraft",
+      "note": "Uses vendor repair costs for damaged equipment."
+    }
+  ],
   "tags": [
     "economy",
     "repair",

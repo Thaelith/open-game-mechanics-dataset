@@ -25,8 +25,8 @@
     "roguelike",
     "strategy"
   ],
-  "description": "A graph or branching structure where players spend progression resources to unlock abilities or bonuses.",
-  "design_notes": "Skill trees are planning interfaces and balance structures. The graph shape, prerequisites, refund rules, node visibility, and upgrade costs all shape how players imagine builds. A good tree offers meaningful routes without burying required power in fake choices.",
+  "description": "A graph or branching structure where players spend progression resources to unlock abilities, passives, or build modifiers.",
+  "design_notes": "Skill trees are planning interfaces, prerequisite graphs, and spend transactions at the same time. The graph needs stable node IDs, prerequisite_node_ids, visible costs, respec rules, migration-safe save data, and soft-lock prevention when content changes.",
   "design_purpose": [
     "Let players plan character growth across sessions or runs.",
     "Create build identity through mutually reinforcing nodes and prerequisites.",
@@ -42,10 +42,10 @@
   ],
   "parameters": [
     {
-      "name": "node_count",
-      "type": "integer",
-      "typical_range": "5-1500 nodes",
-      "description": "Total unlockable nodes in the tree."
+      "name": "node_id",
+      "type": "string",
+      "typical_range": "dash_upgrade_1, fire_mastery, rank_05",
+      "description": "Stable identifier for a purchasable or granted node in the tree."
     },
     {
       "name": "prerequisite_node_ids",
@@ -54,22 +54,22 @@
       "description": "Node IDs required before a target node can unlock."
     },
     {
-      "name": "skill_point_cost_curve",
-      "type": "string",
-      "typical_range": "flat, tiered, escalating",
-      "description": "Cost progression used as the player moves through the graph."
+      "name": "skill_point_cost",
+      "type": "integer",
+      "typical_range": "1-20 points",
+      "description": "Spendable progression cost required to purchase the node."
     },
     {
       "name": "respec_refund_ratio",
       "type": "float",
       "typical_range": "0-1",
-      "description": "Share of spent points returned when the player respecs."
+      "description": "Share of spent resources returned when the node is refunded."
     },
     {
       "name": "branch_depth_limit",
       "type": "integer",
       "typical_range": "1-30 tiers",
-      "description": "Maximum path depth used to pace powerful unlocks."
+      "description": "Maximum path depth used to pace powerful unlocks and validate layout."
     }
   ],
   "common_variants": [
@@ -82,29 +82,32 @@
   ],
   "edge_cases": [
     "Removing a prerequisite node during respec must also remove or disable dependent nodes.",
-    "Content patches that move nodes need migration rules for existing saves.",
-    "UI navigation must handle large trees with keyboard, mouse, gamepad, and touch.",
-    "Mutually exclusive branches require clear warnings before irreversible choices."
+    "Content patches that move or rename node_id values need migration rules for existing saves.",
+    "UI navigation must handle large trees with keyboard, mouse, gamepad, touch, zoom, and search.",
+    "Mutually exclusive branches require clear warnings before irreversible choices.",
+    "A prerequisite cycle or disconnected root can soft-lock progression if graph validation does not run before release."
   ],
   "common_bugs": [
     "A node can be purchased without prerequisites because UI and backend validation differ.",
-    "Refunding a node leaves granted abilities or passive stats active.",
+    "Refunding a node leaves granted abilities, passive stats, or hotbar actions active.",
     "Circular prerequisites lock the tree or make validation recurse forever.",
-    "Localization changes node labels but not search, filters, or controller focus order."
+    "Localization changes node labels but not search, filters, or controller focus order.",
+    "Save data stores node array indexes instead of node_id and breaks after content reordering."
   ],
   "balancing_notes": [
     "Avoid mandatory tax nodes that every build must buy unless they serve a clear tutorial purpose.",
-    "Powerful synergies need opportunity cost, branch distance, class restriction, or diminishing returns."
+    "Powerful synergies need opportunity cost, branch distance, class restriction, or diminishing returns.",
+    "Validate that every build path has enough spendable points to reach at least one satisfying identity before the curve ends."
   ],
   "accessibility_notes": [
     "Support zoom, search, readable focus order, and text scaling for large trees.",
     "Use icons plus text labels so node meaning is not carried only by color or shape."
   ],
   "implementation_notes": {
-    "unity": "Store nodes as ScriptableObjects or JSON, validate graph connectivity in editor tests, and apply unlock effects through data-driven ability grants.",
-    "godot": "Represent nodes as Resources with prerequisite arrays and run validation before exporting; keep UI graph layout separate from unlock rules.",
-    "unreal": "Use Primary Data Assets or DataTables for nodes and centralize purchase validation in a component or subsystem that also handles save migration.",
-    "web": "Load graph data as JSON, compute unlock eligibility in pure functions, and keep visual layout metadata separate from progression state."
+    "unity": "Store nodes as ScriptableObjects or JSON keyed by node_id, validate prerequisite graph connectivity in editor tests, and commit purchases through a skill_point spend transaction before applying ability grants.",
+    "godot": "Represent nodes as Resources with prerequisite_node_ids and run validation before exporting; keep visual graph layout separate from unlock rules and saved purchased node IDs.",
+    "unreal": "Use Primary Data Assets or DataTables for nodes and centralize purchase validation in a component or subsystem that handles skill_point_cost, respec refunds, and save migration.",
+    "web": "Load graph data as JSON, compute unlock eligibility in pure functions, and keep layout metadata separate from progression state so URL tools and editors can inspect node_id graphs."
   },
   "related_mechanics": [
     "progression.respec",

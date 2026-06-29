@@ -2,9 +2,9 @@
   "id": "progression.meta_progression",
   "name": "Meta Progression",
   "aliases": [
-    "meta progression mechanic",
-    "meta progression system",
-    "meta progression"
+    "account progression",
+    "outside-run progression",
+    "persistent upgrades"
   ],
   "category": "progression",
   "subcategory": "progression",
@@ -24,83 +24,109 @@
     "action",
     "roguelike"
   ],
-  "description": "Meta Progression is a long-term growth mechanic that changes player capability, goals, or account state.",
-  "design_notes": "Meta Progression should be designed around a clear player promise, a readable trigger, and a predictable result. For progression mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Progress that persists beyond a single run, match, character life, or session and changes future attempts.",
+  "design_notes": "Meta progression changes the meaning of failure and repetition. It needs a clean boundary between run_progression_state and account_progression_state, plus migration-safe unlocks, currency sources, and caps so repeated attempts feel rewarding without invalidating mastery.",
   "design_purpose": [
-    "Give the player a readable way to use meta progression as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect meta progression to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give repeated runs or sessions durable meaning.",
+    "Unlock options, modifiers, cosmetics, or power that shape future play.",
+    "Provide a long-term structure for roguelikes, live games, idle games, and account-based progression."
   ],
-  "player_fantasy": "The player feels their effort is accumulating into lasting power or options.",
+  "player_fantasy": "The player feels that even failed attempts leave knowledge, resources, or account growth behind.",
   "required_systems": [
-    "player_profile",
-    "reward_rules",
+    "account_progression_state",
+    "run_progression_state",
+    "persistent_currency",
     "unlock_system",
-    "save_state"
+    "save_migration"
   ],
   "parameters": [
     {
-      "name": "reward_amount",
-      "type": "integer",
-      "typical_range": "1-10000",
-      "description": "Progress awarded when the player completes the triggering action."
-    },
-    {
-      "name": "unlock_threshold",
-      "type": "integer",
-      "typical_range": "1-100",
-      "description": "Amount of progress required before the next reward unlocks."
-    },
-    {
-      "name": "scaling_curve",
+      "name": "account_progression_state_id",
       "type": "string",
-      "typical_range": "linear, exponential, tiered",
-      "description": "Curve used to increase cost, reward, or requirement."
+      "typical_range": "profile, account, season_profile",
+      "description": "Persistence scope for unlocks and currencies that survive individual runs."
+    },
+    {
+      "name": "run_progression_state_id",
+      "type": "string",
+      "typical_range": "current_run, match, character_life",
+      "description": "Temporary state reset when the run, match, or character attempt ends."
+    },
+    {
+      "name": "permanent_unlock_flag",
+      "type": "boolean",
+      "typical_range": "true or false",
+      "description": "Whether a reward persists across resets or only affects the active run."
+    },
+    {
+      "name": "meta_currency_source_id",
+      "type": "string",
+      "typical_range": "boss_clear, achievement, run_end_reward",
+      "description": "Source identifier for currency or points added to account progression."
+    },
+    {
+      "name": "catchup_multiplier_cap",
+      "type": "float",
+      "typical_range": "1.0-5.0",
+      "description": "Limit for boosts used to help returning or behind players progress faster."
     }
   ],
   "common_variants": [
-    "meta_progression_linear_track",
-    "meta_progression_branching_track",
-    "class_restricted",
-    "respec_enabled"
+    "roguelike_meta_upgrades",
+    "account_level",
+    "season_pass",
+    "new_game_plus_unlocks",
+    "persistent_base"
   ],
   "edge_cases": [
-    "Meta Progression is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Meta Progression overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Meta Progression runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A run ends during a crash or disconnect and must decide which rewards leave run_progression_state.",
+    "A permanent unlock is removed or rebalanced in a patch and needs compensation or migration.",
+    "Players share a device but need separate account_progression_state records.",
+    "Meta upgrades can make early content too easy for new players if applied to tutorials or onboarding."
   ],
   "common_bugs": [
-    "Meta Progression state does not reset correctly after interruption or reload.",
-    "Feedback for Meta Progression plays even when the mechanic fails or is rejected.",
-    "Meta Progression produces different results between frame rates, platforms, or network clients."
+    "Run-only buffs leak into account_progression_state and become permanent.",
+    "Meta currency is granted on both run end and result screen reopen because reward transaction IDs are not stored.",
+    "Save migration resets permanent_unlock_flag values when unlock definitions move.",
+    "Client-side account progression is trusted in multiplayer and allows edited unlock state."
   ],
   "balancing_notes": [
-    "Make Meta Progression strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Meta progression should reduce frustration without making player skill irrelevant.",
+    "Permanent power needs caps, branching choices, or escalating costs to avoid flattening the difficulty curve.",
+    "Cosmetic and option unlocks can provide long-term goals without increasing balance pressure."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Meta Progression becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Make the difference between temporary run rewards and permanent account rewards explicit in UI text.",
+    "Offer progress summaries after a run so players can review gains at their own pace."
   ],
   "implementation_notes": {
-    "unity": "Implement Meta Progression with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Meta Progression as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Meta Progression with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Meta Progression as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Separate ScriptableObject definitions from saved account_progression_state; commit run-end rewards with transaction_id records before clearing run_progression_state.",
+    "godot": "Use separate Resources or dictionaries for run and account state; migration scripts should preserve permanent_unlock_flag values by stable unlock IDs.",
+    "unreal": "Store account-level unlocks in SaveGame or backend profile data, while run state lives in GameState or PlayerState; server authority is required for shared progression rewards.",
+    "web": "Use distinct persisted stores for account and run state, and make run-end reward commits idempotent so refreshes cannot grant meta currency twice."
   },
   "related_mechanics": [
-    "economy.shop",
-    "progression.experience_points",
-    "progression.level_up",
-    "ui_ux.quest_marker"
+    "progression.prestige_reset",
+    "progression.achievement_system",
+    "roguelike.run_based_progression",
+    "economy.idle_income"
   ],
   "combines_well_with": [
-    "economy.shop",
-    "progression.skill_tree",
+    "economy.gacha_pull",
+    "progression.unlockable_abilities",
     "progression.upgrade_shop",
-    "ui_ux.quest_marker"
+    "roguelike.permadeath"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Hades",
+      "note": "Uses persistent resources and unlocks between runs."
+    },
+    {
+      "title": "Dead Cells",
+      "note": "Uses unlocks and upgrades that persist across runs."
+    }
+  ],
   "tags": [
     "meta",
     "progression",

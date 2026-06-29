@@ -2,9 +2,9 @@
   "id": "economy.resource_conversion",
   "name": "Resource Conversion",
   "aliases": [
-    "resource conversion mechanic",
-    "resource conversion system",
-    "resource conversion"
+    "resource exchange",
+    "currency conversion",
+    "material transmutation"
   ],
   "category": "economy",
   "subcategory": "economy",
@@ -24,83 +24,109 @@
     "simulation",
     "strategy"
   ],
-  "description": "Resource Conversion is a value-exchange mechanic that governs currency, prices, scarcity, rewards, and transactions.",
-  "design_notes": "Resource Conversion should be designed around a clear player promise, a readable trigger, and a predictable result. For economy mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A controlled exchange that turns one resource, currency, or material set into another at a defined rate.",
+  "design_notes": "Resource conversion is a pressure valve for uneven drops and long-term economy balance. It needs explicit input_resource_id, output_resource_id, conversion ratios, fees, limits, and rollback behavior so it helps players without creating infinite value loops.",
   "design_purpose": [
-    "Give the player a readable way to use resource conversion as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect resource conversion to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players recover value from surplus resources or unlucky drops.",
+    "Connect separate economy loops without making every resource interchangeable.",
+    "Provide designers with a tunable sink, faucet, or catch-up route."
   ],
-  "player_fantasy": "The player feels they are making meaningful tradeoffs with scarce value.",
+  "player_fantasy": "The player feels clever for turning excess stock into the resource they actually need.",
   "required_systems": [
-    "inventory_system",
+    "resource_inventory",
+    "conversion_recipes",
     "currency_wallet",
-    "transaction_rules",
-    "reward_tables"
+    "transaction_validation",
+    "save_state"
   ],
   "parameters": [
     {
-      "name": "base_value",
-      "type": "integer",
-      "typical_range": "1-100000",
-      "description": "Default value before modifiers."
+      "name": "input_resource_id",
+      "type": "string",
+      "typical_range": "coin, shard, ore, token",
+      "description": "Resource consumed by the conversion transaction."
     },
     {
-      "name": "scarcity_modifier",
-      "type": "float",
-      "typical_range": "0.1-10",
-      "description": "Multiplier that reflects rarity, supply, or demand."
+      "name": "output_resource_id",
+      "type": "string",
+      "typical_range": "coin, dust, rare_material, upgrade_token",
+      "description": "Resource granted after conversion succeeds."
     },
     {
-      "name": "transaction_limit",
+      "name": "conversion_ratio_numerator",
       "type": "integer",
-      "typical_range": "1-999",
-      "description": "Maximum units exchanged in one operation or period."
+      "typical_range": "1-10000",
+      "description": "Output quantity component of the conversion rate."
+    },
+    {
+      "name": "conversion_ratio_denominator",
+      "type": "integer",
+      "typical_range": "1-10000",
+      "description": "Input quantity component of the conversion rate."
+    },
+    {
+      "name": "daily_conversion_limit",
+      "type": "integer",
+      "typical_range": "0-9999 transactions",
+      "description": "Optional cap used to prevent one route from dominating the economy."
     }
   ],
   "common_variants": [
-    "resource_conversion_fixed_value",
-    "resource_conversion_dynamic_value",
-    "player_traded",
-    "scarcity_based"
+    "vendor_exchange",
+    "crafting_transmutation",
+    "salvage_conversion",
+    "premium_to_soft_exchange",
+    "event_token_exchange"
   ],
   "edge_cases": [
-    "Resource Conversion is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Resource Conversion overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Resource Conversion runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A conversion produces fractional output and must define rounding, remainder banking, or rejection rules.",
+    "Input and output resources are both tradable, allowing circular conversion through another vendor.",
+    "Conversion limits reset by day, event, account, or save slot and need clear persistence boundaries.",
+    "A content patch retires an event token while players still hold input_resource_id balances."
   ],
   "common_bugs": [
-    "Resource Conversion state does not reset correctly after interruption or reload.",
-    "Feedback for Resource Conversion plays even when the mechanic fails or is rejected.",
-    "Resource Conversion produces different results between frame rates, platforms, or network clients."
+    "The UI preview uses rounded values while the transaction consumes exact values and grants a different amount.",
+    "Conversion consumes input before checking output inventory capacity, losing resources on failure.",
+    "Daily limits are stored client-side and reset by clock changes or reinstalling the game.",
+    "Recipes compare localized resource names rather than stable input_resource_id and output_resource_id."
   ],
   "balancing_notes": [
-    "Make Resource Conversion strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Conversion ratios should usually lose some value unless the goal is explicit catch-up or accessibility smoothing.",
+    "Cap or tax routes that convert common drops into rare progression resources, or rare sinks will collapse.",
+    "Monitor conversion volume by recipe_id to find resources that are too abundant or too hard to use."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Resource Conversion becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show input, output, fee, and remaining limit in the same confirmation view.",
+    "Offer max-convert and stepper controls that are keyboard/gamepad friendly and do not require repeated clicks."
   ],
   "implementation_notes": {
-    "unity": "Implement Resource Conversion with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Resource Conversion as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Resource Conversion with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Resource Conversion as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Model conversion recipes as data assets with input_resource_id and output_resource_id; commit through one inventory transaction that validates counts, capacity, limits, and rollback.",
+    "godot": "Keep conversion math in pure functions and use an Autoload inventory service to apply resource diffs after limit and capacity checks pass.",
+    "unreal": "Run conversion on the server-side economy component for multiplayer; replicate committed resource diffs and remaining daily_conversion_limit to UI.",
+    "web": "Represent conversion as an immutable transaction diff and store recipe_id usage counters with the save or account state to prevent limit resets."
   },
   "related_mechanics": [
     "economy.coins",
+    "economy.crafting_materials",
     "economy.shop",
-    "progression.upgrade_shop",
-    "ui_ux.inventory_grid"
+    "economy.dynamic_pricing"
   ],
   "combines_well_with": [
-    "economy.dynamic_pricing",
     "economy.loot_table",
     "progression.upgrade_shop",
-    "ui_ux.inventory_grid"
+    "progression.crafting_unlocks",
+    "survival.inventory_limit"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Warframe",
+      "note": "Uses multiple resources and crafting routes that convert gathered materials into equipment."
+    },
+    {
+      "title": "Stardew Valley",
+      "note": "Uses machines that transform raw goods into higher-value outputs."
+    }
+  ],
   "tags": [
     "economy",
     "resource",
