@@ -44,7 +44,10 @@ input {
 button:focus-visible,
 select:focus-visible,
 input:focus-visible,
-.result-card:focus-visible {
+.result-card:focus-visible,
+.detail-action:focus-visible,
+.related-button:focus-visible,
+.detail-panel:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
@@ -243,6 +246,11 @@ main {
   box-shadow: var(--shadow);
 }
 
+.detail-heading {
+  display: grid;
+  gap: 12px;
+}
+
 .detail-panel h2 {
   margin: 0 0 6px;
   font-size: 1.35rem;
@@ -256,6 +264,57 @@ main {
 
 .detail-panel p {
   margin: 8px 0;
+}
+
+.detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.detail-actions button,
+.detail-action {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-muted);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.detail-actions button:hover,
+.detail-action:hover {
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+
+.copy-feedback,
+.muted-text {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.copy-feedback:empty {
+  display: none;
+}
+
+.detail-section {
+  margin-top: 18px;
+}
+
+.detail-list {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+.detail-list li {
+  margin: 7px 0;
+  overflow-wrap: anywhere;
 }
 
 .detail-grid {
@@ -291,11 +350,81 @@ main {
   overflow-wrap: anywhere;
 }
 
+.parameter-grid,
+.implementation-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.parameter-card,
+.implementation-card {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-muted);
+}
+
+.parameter-card h4,
+.implementation-card h4 {
+  margin: 0 0 8px;
+  color: var(--accent-strong);
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.parameter-card h4 {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+
+.parameter-card p,
+.implementation-card p {
+  margin-bottom: 0;
+  overflow-wrap: anywhere;
+}
+
+.parameter-meta {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.parameter-meta div {
+  min-width: 0;
+}
+
+.parameter-meta dt {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.parameter-meta dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.implementation-card p {
+  line-height: 1.55;
+}
+
 .related-button {
   border: 1px solid var(--border);
   background: var(--surface-muted);
   color: var(--text);
   cursor: pointer;
+}
+
+.related-button:hover {
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+
+.muted-pill {
+  color: var(--muted);
+  opacity: 0.78;
 }
 
 .path-link {

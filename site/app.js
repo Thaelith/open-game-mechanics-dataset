@@ -34,6 +34,24 @@ function mechanicUrl(path) {
   return new URL(`../${path}`, window.location.href);
 }
 
+function mechanicHref(path) {
+  return `../${path}`;
+}
+
+function requestedMechanicId() {
+  return new URL(window.location.href).searchParams.get("id")?.trim() || "";
+}
+
+function updateSelectedUrl(id) {
+  const url = new URL(window.location.href);
+  if (id) {
+    url.searchParams.set("id", id);
+  } else {
+    url.searchParams.delete("id");
+  }
+  window.history.replaceState({ selectedId: id || null }, "", url);
+}
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -55,6 +73,14 @@ function titleCase(value) {
 
 function uniqueSorted(values) {
   return [...new Set(values.filter(Boolean))].sort((a, b) => String(a).localeCompare(String(b)));
+}
+
+function mechanicById(id) {
+  return state.mechanics.find((mechanic) => mechanic.id === id);
+}
+
+function mechanicExists(id) {
+  return Boolean(mechanicById(id));
 }
 
 function getDifficultyValues() {
@@ -164,6 +190,82 @@ function renderPills(values, className = "") {
     .join("");
 }
 
+function sectionMarkup(title, body, className = "") {
+  if (!body) {
+    return "";
+  }
+  return `
+    <section class="detail-section ${className}">
+      <h3>${escapeHtml(title)}</h3>
+      ${body}
+    </section>
+  `;
+}
+
+function listMarkup(values) {
+  const items = asArray(values).filter(Boolean);
+  if (!items.length) {
+    return "";
+  }
+  return `
+    <ul class="detail-list">
+      ${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+    </ul>
+  `;
+}
+
+function parameterMarkup(parameters) {
+  const items = asArray(parameters).filter((parameter) => parameter && parameter.name);
+  if (!items.length) {
+    return "";
+  }
+  return `
+    <div class="parameter-grid">
+      ${items
+        .map((parameter) => `
+          <article class="parameter-card">
+            <h4>${escapeHtml(parameter.name)}</h4>
+            <dl class="parameter-meta">
+              <div>
+                <dt>Type</dt>
+                <dd>${escapeHtml(parameter.type || "unspecified")}</dd>
+              </div>
+              <div>
+                <dt>Typical range</dt>
+                <dd>${escapeHtml(parameter.typical_range || "not documented")}</dd>
+              </div>
+            </dl>
+            <p>${escapeHtml(parameter.description || "No description available.")}</p>
+          </article>
+        `)
+        .join("")}
+    </div>
+  `;
+}
+
+function implementationMarkup(notes) {
+  const engines = [
+    ["unity", "Unity"],
+    ["godot", "Godot"],
+    ["unreal", "Unreal"],
+    ["web", "Web"]
+  ];
+  const cards = engines
+    .filter(([key]) => notes?.[key])
+    .map(([key, label]) => `
+      <article class="implementation-card">
+        <h4>${label}</h4>
+        <p>${escapeHtml(notes[key])}</p>
+      </article>
+    `);
+
+  if (!cards.length) {
+    return '<p class="muted-text">No implementation notes available.</p>';
+  }
+
+  return `<div class="implementation-grid">${cards.join("")}</div>`;
+}
+
 function renderResults() {
   if (!state.filtered.length) {
     elements.results.innerHTML = '<div class="empty-state">No mechanics match the current search and filters.</div>';
@@ -207,12 +309,17 @@ function difficultyMarkup(difficulty) {
 function relatedMarkup(values) {
   const items = asArray(values);
   if (!items.length) {
-    return "<p>None listed.</p>";
+    return "";
   }
   return `
     <div class="pill-list">
       ${items
-        .map((id) => `<button class="pill related-button" type="button" data-related-id="${escapeHtml(id)}">${escapeHtml(id)}</button>`)
+        .map((id) => {
+          if (!mechanicExists(id)) {
+            return `<span class="pill muted-pill" title="Not in the loaded dataset">${escapeHtml(id)}</span>`;
+          }
+          return `<button class="pill related-button" type="button" data-related-id="${escapeHtml(id)}">${escapeHtml(id)}</button>`;
+        })
         .join("")}
     </div>
   `;
@@ -222,36 +329,107 @@ function renderDetail(mechanic) {
   if (!mechanic) {
     elements.detailPanel.innerHTML = `
       <h2>Select a mechanic</h2>
-      <p>Choose a result to inspect difficulty, related mechanics, combinations, and the source JSON path.</p>
+      <p>Choose a result to inspect parameters, implementation notes, related mechanics, and the source JSON path.</p>
     `;
     return;
   }
 
-  const pathHref = mechanicUrl(mechanic.path).href;
+  const pathHref = mechanicHref(mechanic.path);
   elements.detailPanel.innerHTML = `
-    <h2>${escapeHtml(mechanic.name)}</h2>
-    <code class="id-line">${escapeHtml(mechanic.id)}</code>
+    <div class="detail-heading">
+      <div>
+        <h2>${escapeHtml(mechanic.name)}</h2>
+        <code class="id-line">${escapeHtml(mechanic.id)}</code>
+      </div>
+      <div class="detail-actions" aria-label="Mechanic actions">
+        <button type="button" data-copy-kind="id" data-copy-value="${escapeHtml(mechanic.id)}">Copy ID</button>
+        <button type="button" data-copy-kind="JSON path" data-copy-value="${escapeHtml(mechanic.path)}">Copy JSON path</button>
+        <a class="detail-action" href="${escapeHtml(pathHref)}" target="_blank" rel="noopener">Open JSON</a>
+      </div>
+    </div>
+    <p class="copy-feedback" aria-live="polite"></p>
     <p>${escapeHtml(mechanic.description || "Description loading from source JSON.")}</p>
 
-    <h3>Difficulty</h3>
-    ${difficultyMarkup(mechanic.difficulty)}
-
-    <h3>Related Mechanics</h3>
-    ${relatedMarkup(mechanic.related_mechanics)}
-
-    <h3>Combines Well With</h3>
-    ${relatedMarkup(mechanic.combines_well_with)}
-
-    <h3>JSON Path</h3>
-    <p><a class="path-link" href="${escapeHtml(pathHref)}">${escapeHtml(mechanic.path)}</a></p>
+    ${sectionMarkup("Difficulty", difficultyMarkup(mechanic.difficulty), "difficulty-section")}
+    ${sectionMarkup("Parameters", parameterMarkup(mechanic.parameters))}
+    ${sectionMarkup("Design Purpose", listMarkup(mechanic.design_purpose))}
+    ${sectionMarkup("Edge Cases", listMarkup(mechanic.edge_cases))}
+    ${sectionMarkup("Common Bugs", listMarkup(mechanic.common_bugs))}
+    ${sectionMarkup("Balancing Notes", listMarkup(mechanic.balancing_notes))}
+    ${sectionMarkup("Accessibility Notes", listMarkup(mechanic.accessibility_notes))}
+    ${sectionMarkup("Implementation Notes", implementationMarkup(mechanic.implementation_notes), "implementation-section")}
+    ${sectionMarkup("Related Mechanics", relatedMarkup(mechanic.related_mechanics))}
+    ${sectionMarkup("Combines Well With", relatedMarkup(mechanic.combines_well_with))}
+    ${sectionMarkup("JSON Path", `<p><a class="path-link" href="${escapeHtml(pathHref)}">${escapeHtml(mechanic.path)}</a></p>`)}
   `;
 }
 
-function selectMechanic(id) {
+function focusDetailPanel(scrollIntoView = false) {
+  if (scrollIntoView) {
+    elements.detailPanel.scrollIntoView({ block: "start", behavior: "smooth" });
+  }
+  elements.detailPanel.focus({ preventScroll: scrollIntoView });
+}
+
+function selectMechanic(id, options = {}) {
+  const mechanic = mechanicById(id);
+  if (!mechanic) {
+    return false;
+  }
   state.selectedId = id;
-  const mechanic = state.mechanics.find((item) => item.id === id);
+  if (options.updateUrl !== false) {
+    updateSelectedUrl(id);
+  }
   renderResults();
   renderDetail(mechanic);
+  if (options.focusDetail) {
+    focusDetailPanel(options.scrollDetail);
+  }
+  return true;
+}
+
+async function copyText(value) {
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(value);
+      return;
+    } catch (error) {
+      // Fall back to the older selection API below.
+    }
+  }
+
+  const textArea = document.createElement("textarea");
+  textArea.value = value;
+  textArea.setAttribute("readonly", "");
+  textArea.style.position = "fixed";
+  textArea.style.left = "-9999px";
+  document.body.appendChild(textArea);
+  textArea.select();
+  const copied = document.execCommand("copy");
+  textArea.remove();
+  if (!copied) {
+    throw new Error("Copy command was rejected.");
+  }
+}
+
+async function handleCopyButton(button) {
+  const value = button.dataset.copyValue || "";
+  const kind = button.dataset.copyKind || "value";
+  const feedback = elements.detailPanel.querySelector(".copy-feedback");
+  const originalText = button.textContent;
+
+  try {
+    await copyText(value);
+    button.textContent = "Copied";
+    feedback.textContent = `Copied ${kind}.`;
+  } catch (error) {
+    button.textContent = "Copy failed";
+    feedback.textContent = `Could not copy ${kind}.`;
+  }
+
+  window.setTimeout(() => {
+    button.textContent = originalText;
+  }, 1400);
 }
 
 async function mapWithConcurrency(items, limit, mapper, onProgress) {
@@ -299,6 +477,8 @@ async function hydrateMechanics(summaries) {
 }
 
 function attachEvents() {
+  elements.detailPanel.tabIndex = -1;
+
   const filterControls = [
     elements.searchInput,
     elements.categoryFilter,
@@ -336,21 +516,23 @@ function attachEvents() {
     const card = event.target.closest("[data-id]");
     if (card) {
       event.preventDefault();
-      selectMechanic(card.dataset.id);
+      selectMechanic(card.dataset.id, { focusDetail: true, scrollDetail: true });
     }
   });
 
-  elements.detailPanel.addEventListener("click", (event) => {
+  elements.detailPanel.addEventListener("click", async (event) => {
+    const copyButton = event.target.closest("[data-copy-value]");
+    if (copyButton) {
+      await handleCopyButton(copyButton);
+      return;
+    }
+
     const button = event.target.closest("[data-related-id]");
     if (!button) {
       return;
     }
     const relatedId = button.dataset.relatedId;
-    if (state.mechanics.some((mechanic) => mechanic.id === relatedId)) {
-      elements.searchInput.value = relatedId;
-      applyFilters();
-      selectMechanic(relatedId);
-    }
+    selectMechanic(relatedId, { focusDetail: true, scrollDetail: true });
   });
 }
 
@@ -358,11 +540,15 @@ async function init() {
   attachEvents();
 
   try {
+    const initialId = requestedMechanicId();
     state.index = await fetchJson(DATASET_URL);
     state.mechanics = state.index.mechanics.map((mechanic) => ({ ...mechanic }));
     state.filtered = [...state.mechanics];
     populateFilters();
     applyFilters();
+    if (initialId && mechanicExists(initialId)) {
+      selectMechanic(initialId, { updateUrl: false });
+    }
 
     state.mechanics = await hydrateMechanics(state.mechanics);
     state.hydrationDone = true;
@@ -370,7 +556,7 @@ async function init() {
     applyFilters();
 
     if (state.selectedId) {
-      renderDetail(state.mechanics.find((mechanic) => mechanic.id === state.selectedId));
+      selectMechanic(state.selectedId, { updateUrl: false });
     }
   } catch (error) {
     elements.statusText.textContent = "Dataset failed to load.";
