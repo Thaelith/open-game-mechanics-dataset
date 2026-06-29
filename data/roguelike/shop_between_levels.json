@@ -2,12 +2,12 @@
   "id": "roguelike.shop_between_levels",
   "name": "Shop Between Levels",
   "aliases": [
-    "shop between levels mechanic",
-    "shop between levels system",
-    "shop between levels"
+    "inter-floor shop",
+    "between-floor merchant",
+    "run shop"
   ],
   "category": "roguelike",
-  "subcategory": "roguelike",
+  "subcategory": "inter_floor_shop",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,96 +15,140 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
+    "design": "medium",
     "implementation": "medium",
-    "tuning": "expert"
+    "tuning": "hard"
   },
   "genres": [
     "roguelike",
-    "deckbuilder",
-    "action"
+    "rpg",
+    "action",
+    "deckbuilder"
   ],
-  "description": "Shop Between Levels is a run-structure mechanic that supports replayability through randomness, reset, risk, or synergy.",
-  "design_notes": "Shop Between Levels should be designed around a clear player promise, a readable trigger, and a predictable result. For roguelike mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A shop or rest stop placed between floors where players spend run currency on items, healing, removals, upgrades, rerolls, or information.",
+  "design_notes": "Between-level shops are pacing valves. They let players convert previous performance into future options while taking a breath between high-pressure floors. The shop should have deterministic inventory generation, atomic purchase transactions, duplicate prevention, reroll rules, and clear persistence if the player saves or exits inside the shop.",
   "design_purpose": [
-    "Give the player a readable way to use shop between levels as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect shop between levels to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players a controlled recovery and build-editing point between procedural challenges.",
+    "Create currency tension by making healing, upgrades, removals, and items compete.",
+    "Offer designers a predictable pacing beat for tutorials, narrative, or route decisions."
   ],
-  "player_fantasy": "The player feels each run is a fresh risk with potential for unexpected synergy.",
+  "player_fantasy": "The player feels they are preparing for the next floor by spending scarce resources wisely.",
   "required_systems": [
-    "run_state",
-    "random_number_generator",
-    "reward_rules",
-    "save_or_meta_state"
+    "shop_inventory",
+    "run_currency_wallet",
+    "reward_generation",
+    "transaction_system",
+    "save_system"
   ],
   "parameters": [
     {
-      "name": "run_length_target",
-      "type": "float",
-      "typical_range": "5-90 minutes",
-      "description": "Expected duration of one run segment using the mechanic."
+      "name": "shop_inventory_seed",
+      "type": "integer",
+      "typical_range": "derived from run_seed and floor_index",
+      "description": "Seed used to reproduce shop offers."
     },
     {
-      "name": "randomness_weight",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "How strongly random selection affects outcomes."
+      "name": "shop_offer_id",
+      "type": "string",
+      "typical_range": "offer_01, heal_offer, rare_relic_offer",
+      "description": "Persistent offer identifier used by purchase and sold-out state."
     },
     {
-      "name": "carryover_amount",
-      "type": "float",
-      "typical_range": "0-100%",
-      "description": "How much state persists between runs."
+      "name": "run_currency_id",
+      "type": "string",
+      "typical_range": "gold, shards, keys, blood",
+      "description": "Run-scoped wallet spent at the shop."
+    },
+    {
+      "name": "purchase_transaction_id",
+      "type": "string",
+      "typical_range": "unique per accepted purchase",
+      "description": "Idempotent purchase operation for currency and item grants."
+    },
+    {
+      "name": "reroll_price_curve_id",
+      "type": "string",
+      "typical_range": "none, fixed_gold, escalating_gold",
+      "description": "Pricing rule for refreshing shop offers."
+    },
+    {
+      "name": "sold_out_policy_id",
+      "type": "string",
+      "typical_range": "hide, show_sold, replace_with_basic",
+      "description": "Presentation and regeneration rule after purchase."
+    },
+    {
+      "name": "shop_exit_rule_id",
+      "type": "string",
+      "typical_range": "manual_exit, auto_after_purchase, floor_transition",
+      "description": "Rule controlling how the player leaves the shop state."
     }
   ],
   "common_variants": [
-    "shop_between_levels_hard_reset",
-    "shop_between_levels_partial_carryover",
-    "daily_seeded",
-    "challenge_modifier"
+    "merchant_room",
+    "rest_site_shop",
+    "rerollable_shop",
+    "healing_shop",
+    "deck_removal_shop"
   ],
   "edge_cases": [
-    "Shop Between Levels is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Shop Between Levels overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Shop Between Levels runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The player saves in a shop after buying an item but before the next floor is generated.",
+    "A reroll replaces an item that the player has selected but not confirmed.",
+    "A shop offer becomes invalid because an account unlock or curse changes eligible pools.",
+    "A purchase grants an item but the currency deduction fails or is rolled back.",
+    "Two networked players attempt to buy the same limited shop_offer_id."
   ],
   "common_bugs": [
-    "Shop Between Levels state does not reset correctly after interruption or reload.",
-    "Feedback for Shop Between Levels plays even when the mechanic fails or is rejected.",
-    "Shop Between Levels produces different results between frame rates, platforms, or network clients."
+    "Shop inventory regenerates on reload and lets players fish for better offers.",
+    "Sold-out state is stored visually but not in run data, so the item returns after reopening.",
+    "Reroll pricing reads account currency instead of run_currency_id.",
+    "Purchase confirmation does not lock the offer and accepts rapid double clicks.",
+    "Healing or removal offers bypass curse restrictions because they use a separate transaction path."
   ],
   "balancing_notes": [
-    "Make Shop Between Levels strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Shop prices should reflect the opportunity cost between healing, build power, and future flexibility.",
+    "Guaranteed shops reduce frustration, but too many can make floor rewards less exciting.",
+    "Rerolls are strongest when they solve specific bad luck, not when they guarantee ideal builds."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Shop Between Levels becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide clear comparison text for current resources, purchase results, and sold-out state.",
+    "Require confirmable purchase actions for expensive or irreversible offers.",
+    "Avoid forcing rapid shopping decisions unless the mode is explicitly built around pressure."
   ],
   "implementation_notes": {
-    "unity": "Implement Shop Between Levels with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Shop Between Levels as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Shop Between Levels with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Shop Between Levels as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Generate shop offers once from shop_inventory_seed and persist shop_offer_id records before rendering UI. Process purchases through purchase_transaction_id so currency deduction, item grant, and sold-out state commit or roll back together.",
+    "godot": "Use Resources for shop item definitions and store offer records in the run save. Disable buttons while a purchase transaction is pending, then update run_currency_id, inventory, and sold_out_policy_id from the committed result.",
+    "unreal": "Use Data Assets for shop pools and a replicated shop component for networked runs. The authority should validate run currency, offer availability, reroll rules, and item grants before multicasting the updated shop state.",
+    "web": "Persist generated offers in run storage instead of redrawing from the seed on every render. Use an atomic reducer for purchases and rerolls so refreshes, double clicks, and offline restores cannot duplicate items."
   },
   "related_mechanics": [
     "economy.shop",
-    "procedural_generation.seeded_generation",
-    "roguelike.permadeath",
-    "roguelike.run_based_progression"
+    "roguelike.run_based_progression",
+    "roguelike.random_powerups",
+    "economy.coins"
   ],
   "combines_well_with": [
-    "economy.shop",
-    "procedural_generation.seeded_generation",
-    "roguelike.random_powerups",
-    "roguelike.relic_synergy"
+    "roguelike.curse_modifier",
+    "roguelike.pick_one_upgrade_choice",
+    "progression.upgrade_shop",
+    "ui_ux.inventory_grid"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Slay the Spire",
+      "note": "Uses shops between encounters for cards, relics, removals, and potions."
+    },
+    {
+      "title": "Hades",
+      "note": "Includes shops and inter-room purchase opportunities during runs."
+    }
+  ],
   "tags": [
-    "roguelike",
-    "runs",
-    "shop"
+    "run_shop",
+    "shop_offer",
+    "purchase_transaction",
+    "run_currency",
+    "inventory_seed"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

@@ -2,12 +2,12 @@
   "id": "horror.light_resource",
   "name": "Light Resource",
   "aliases": [
-    "light resource mechanic",
-    "light resource system",
-    "light resource"
+    "flashlight battery",
+    "lantern fuel",
+    "limited light"
   ],
   "category": "horror",
-  "subcategory": "horror",
+  "subcategory": "illumination_resource",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,95 +15,134 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
+    "design": "medium",
     "implementation": "medium",
     "tuning": "hard"
   },
   "genres": [
     "horror",
     "survival",
-    "adventure"
+    "adventure",
+    "stealth"
   ],
-  "description": "Light Resource is a fear-building mechanic that shapes vulnerability, uncertainty, attention, and tension.",
-  "design_notes": "Light Resource should be designed around a clear player promise, a readable trigger, and a predictable result. For horror mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A limited-use light source that improves visibility, safety, or combat options while consuming battery, fuel, charge, or attention.",
+  "design_notes": "Light resources create horror tension by making safety temporary and visible. The design should define drain rules, refill transactions, monster interactions, UI warning bands, and whether darkness affects navigation, sanity, stealth, or combat. The implementation should keep illumination, detection, and inventory state synchronized.",
   "design_purpose": [
-    "Give the player a readable way to use light resource as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect light resource to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Make visibility and safety an active resource decision.",
+    "Connect exploration pacing to batteries, fuel, generators, flares, or environmental light.",
+    "Create tradeoffs between revealing threats and attracting or repelling them."
   ],
-  "player_fantasy": "The player feels vulnerable, alert, and uncertain about what happens next.",
+  "player_fantasy": "The player feels safer while the light holds, but increasingly exposed as the resource runs down.",
   "required_systems": [
-    "atmosphere_controller",
-    "ai_state_machine",
-    "resource_system",
-    "audio_visual_feedback"
+    "light_source_controller",
+    "resource_inventory",
+    "visibility_system",
+    "ai_perception",
+    "ui_warning"
   ],
   "parameters": [
     {
-      "name": "tension_level",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "Current pressure or fear intensity used to drive the mechanic."
+      "name": "light_source_id",
+      "type": "string",
+      "typical_range": "flashlight, lantern, flare, generator",
+      "description": "Light-emitting tool or fixture controlled by the player or level."
     },
     {
-      "name": "resource_drain",
-      "type": "float",
-      "typical_range": "0-10 units/minute",
-      "description": "Rate at which a safety or visibility resource is consumed."
+      "name": "light_fuel_remaining_ms",
+      "type": "integer",
+      "typical_range": "5000-300000 ms",
+      "description": "Remaining active-use window for the light source."
     },
     {
-      "name": "reveal_distance",
+      "name": "visibility_radius",
       "type": "float",
-      "typical_range": "1-30 world units",
-      "description": "Distance at which a threat or cue becomes clear."
+      "typical_range": "2-30 world units",
+      "description": "Readable radius created by the current light profile."
+    },
+    {
+      "name": "refill_item_id",
+      "type": "string",
+      "typical_range": "battery, oil_can, flare_pack",
+      "description": "Inventory item consumed to restore light fuel."
+    },
+    {
+      "name": "monster_detection_modifier_id",
+      "type": "string",
+      "typical_range": "attract, repel, ignore, reveal_weakness",
+      "description": "AI perception rule applied while the light is active."
+    },
+    {
+      "name": "warning_band_id",
+      "type": "string",
+      "typical_range": "full, low, critical, empty",
+      "description": "UI and audio state derived from remaining light fuel."
     }
   ],
   "common_variants": [
-    "light_resource_subtle_variant",
-    "light_resource_high_intensity_variant",
-    "resource_limited",
-    "ai_driven"
+    "flashlight_battery",
+    "lantern_fuel",
+    "single_use_flare",
+    "charging_station",
+    "light_as_weapon"
   ],
   "edge_cases": [
-    "Light Resource is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Light Resource overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Light Resource runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A refill item is used while the light source is active and draining.",
+    "The player swaps, drops, or loses the light while a monster perception modifier is active.",
+    "A checkpoint restores fuel but not the active light cone, warning band, or AI visibility state.",
+    "A scripted blackout overrides player light without clarifying whether fuel was consumed.",
+    "Dynamic shadows or post-processing make the scene unreadable even when visibility_radius is high."
   ],
   "common_bugs": [
-    "Light Resource state does not reset correctly after interruption or reload.",
-    "Feedback for Light Resource plays even when the mechanic fails or is rejected.",
-    "Light Resource produces different results between frame rates, platforms, or network clients."
+    "Fuel drains twice because both the item and equipped light update the same resource.",
+    "The monster AI reacts to the visual light mesh but not the authoritative light_source_id state.",
+    "Low-fuel warnings keep playing after refill because warning_band_id does not reset.",
+    "Refill transactions consume inventory before validating capacity or current source type.",
+    "Battery state is stored on the scene object and resets after loading a new area."
   ],
   "balancing_notes": [
-    "Make Light Resource strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Low fuel should create pressure before total darkness, not instantly make navigation impossible.",
+    "Refill placement controls exploration confidence; clustered refills reduce fear while sparse refills increase route planning.",
+    "If light repels threats, fuel becomes a defensive resource and needs stronger scarcity."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Light Resource becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer contrast, brightness, and reduced darkness settings without removing the resource loop.",
+    "Use text, icon shape, and audio alternatives for low-fuel warnings.",
+    "Avoid extreme flicker effects or provide a reduced-flicker option."
   ],
   "implementation_notes": {
-    "unity": "Implement Light Resource with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Light Resource as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Light Resource with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Light Resource as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Keep light_fuel_remaining_ms and warning_band_id in equipment state, then drive Light components, URP/HDRP effects, UI, and AI perception from committed state. Refill should be an inventory transaction that validates refill_item_id and source compatibility before consuming items.",
+    "godot": "Use a light controller node for PointLight2D, Light3D, or shader masks, but store fuel and refill state in a player inventory resource. Emit fuel band changes so UI, audio, and monster perception update together.",
+    "unreal": "Represent the light source as an Actor Component with replicated fuel state when needed. AI perception should read an explicit stimulus or Gameplay Tag from light_source_id rather than inferring from rendered components.",
+    "web": "For Canvas, Phaser, or Three.js, separate the light mask render from the resource reducer. Persist fuel, active source id, and warning band in save data, and use deterministic drain from gameplay clock rather than frame count."
   },
   "related_mechanics": [
     "horror.limited_visibility",
     "horror.sanity_meter",
-    "stealth.shadow_cover"
+    "horror.monster_patrol",
+    "survival.inventory_limit"
   ],
   "combines_well_with": [
-    "horror.hiding",
-    "horror.monster_patrol",
     "horror.sound_lure",
-    "stealth.shadow_cover"
+    "stealth.visibility_meter",
+    "ui_ux.cooldown_indicator",
+    "accessibility.adjustable_difficulty"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Alan Wake",
+      "note": "Uses light as a survival and combat-facing resource."
+    },
+    {
+      "title": "Amnesia: The Dark Descent",
+      "note": "Uses limited light sources to shape exploration tension."
+    }
+  ],
   "tags": [
-    "horror",
-    "light",
-    "tension"
+    "light_resource",
+    "visibility",
+    "fuel",
+    "monster_detection",
+    "low_light"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

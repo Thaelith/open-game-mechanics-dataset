@@ -2,12 +2,12 @@
   "id": "roguelike.run_based_progression",
   "name": "Run-Based Progression",
   "aliases": [
-    "run based progression mechanic",
-    "run based progression system",
-    "run-based progression"
+    "run progression",
+    "temporary progression",
+    "run state growth"
   ],
   "category": "roguelike",
-  "subcategory": "roguelike",
+  "subcategory": "run_state_progression",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,95 +16,139 @@
   ],
   "difficulty": {
     "design": "hard",
-    "implementation": "medium",
+    "implementation": "hard",
     "tuning": "expert"
   },
   "genres": [
     "roguelike",
-    "deckbuilder",
-    "action"
+    "action",
+    "rpg",
+    "deckbuilder"
   ],
-  "description": "Run-Based Progression is a run-structure mechanic that supports replayability through randomness, reset, risk, or synergy.",
-  "design_notes": "Run-Based Progression should be designed around a clear player promise, a readable trigger, and a predictable result. For roguelike mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A progression structure where power, resources, map state, and build choices accumulate inside a single run and reset or convert when the run ends.",
+  "design_notes": "Run-based progression depends on a strict boundary between temporary run state and persistent account state. Designers should know which currencies, unlock flags, relics, map reveals, and event outcomes are reset, converted, or archived. Technical systems should treat run events as an ordered log so summaries, replays, and bug reports can reconstruct the path.",
   "design_purpose": [
-    "Give the player a readable way to use run-based progression as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect run-based progression to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give each run a visible arc from weak start to specialized build.",
+    "Support procedural variety without requiring permanent character growth every session.",
+    "Define clean conversion points for post-run summaries, unlocks, and meta rewards."
   ],
-  "player_fantasy": "The player feels each run is a fresh risk with potential for unexpected synergy.",
+  "player_fantasy": "The player feels a fragile run develop into a unique build with its own history and stakes.",
   "required_systems": [
-    "run_state",
-    "random_number_generator",
-    "reward_rules",
-    "save_or_meta_state"
+    "run_state_manager",
+    "reward_generation",
+    "event_log",
+    "save_system",
+    "meta_progression"
   ],
   "parameters": [
     {
-      "name": "run_length_target",
-      "type": "float",
-      "typical_range": "5-90 minutes",
-      "description": "Expected duration of one run segment using the mechanic."
+      "name": "run_id",
+      "type": "string",
+      "typical_range": "unique per run",
+      "description": "Run identity shared by events, rewards, map state, and summary."
     },
     {
-      "name": "randomness_weight",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "How strongly random selection affects outcomes."
+      "name": "floor_index",
+      "type": "integer",
+      "typical_range": "0-20",
+      "description": "Current progression position used by rewards, enemies, and shops."
     },
     {
-      "name": "carryover_amount",
-      "type": "float",
-      "typical_range": "0-100%",
-      "description": "How much state persists between runs."
+      "name": "run_state_snapshot",
+      "type": "object",
+      "typical_range": "build, resources, map, modifiers, rng cursors",
+      "description": "Serializable state needed to restore or summarize the run."
+    },
+    {
+      "name": "run_event_log_id",
+      "type": "string",
+      "typical_range": "stable log id for ordered run events",
+      "description": "Event stream used for replay, debugging, and post-run review."
+    },
+    {
+      "name": "unlock_pool_id",
+      "type": "string",
+      "typical_range": "base_unlocks, character_unlocks, account_unlocks",
+      "description": "Persistent availability pool that feeds run rewards."
+    },
+    {
+      "name": "conversion_policy_id",
+      "type": "string",
+      "typical_range": "discard, grant_meta_currency, archive_summary",
+      "description": "Rule applied to run assets when the run ends."
+    },
+    {
+      "name": "difficulty_scaling_curve_id",
+      "type": "string",
+      "typical_range": "linear_floor, biome_steps, adaptive_director",
+      "description": "Curve used to increase pressure as the run advances."
     }
   ],
   "common_variants": [
-    "run_based_progression_hard_reset",
-    "run_based_progression_partial_carryover",
-    "daily_seeded",
-    "challenge_modifier"
+    "temporary_power_curve",
+    "deck_run_progression",
+    "room_reward_progression",
+    "run_currency_conversion",
+    "character_specific_runs"
   ],
   "edge_cases": [
-    "Run-Based Progression is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Run-Based Progression overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Run-Based Progression runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The player earns a permanent unlock while holding temporary run items with similar ids.",
+    "A save migrates after reward definitions change but before the run reaches its summary screen.",
+    "A reconnect restores account state but not the current run_state_snapshot.",
+    "A daily run must forbid some meta progression while still recording results.",
+    "A bugged run event is rolled back without corrupting account unlocks."
   ],
   "common_bugs": [
-    "Run-Based Progression state does not reset correctly after interruption or reload.",
-    "Feedback for Run-Based Progression plays even when the mechanic fails or is rejected.",
-    "Run-Based Progression produces different results between frame rates, platforms, or network clients."
+    "Temporary run currency is saved in the same wallet as account currency.",
+    "Unlocks are granted when a reward is previewed instead of when it is committed.",
+    "Difficulty scaling reads total account progress and unintentionally punishes experienced players in fresh runs.",
+    "Run event logs omit shop purchases or skipped rewards, making summaries misleading.",
+    "Save migration converts removed run items into permanent unlocks by matching display names."
   ],
   "balancing_notes": [
-    "Make Run-Based Progression strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Strong run growth is satisfying when early weakness remains short and readable.",
+    "Meta progression should widen future possibilities more than it invalidates current-run skill.",
+    "Difficulty curves need to account for optional rewards and skipped rooms, not only floor_index."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Run-Based Progression becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Let players review current run build, modifiers, and recent decisions in a readable summary.",
+    "Avoid hiding critical progression state inside tiny icons or transient notifications.",
+    "Offer suspend-and-resume support where possible so long runs are not inaccessible to players with limited session length."
   ],
   "implementation_notes": {
-    "unity": "Implement Run-Based Progression with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Run-Based Progression as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Run-Based Progression with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Run-Based Progression as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Keep RunState and AccountState in separate services or save files. Commit run events with run_id ordering, recompute derived build stats after each reward, and apply conversion_policy_id only once when run_end_reason is final.",
+    "godot": "Use an autoload run manager for current run state and a separate account profile resource for unlocks. Save floor_index, active rewards, modifiers, and RNG cursors together, then archive the run event log for summaries.",
+    "unreal": "Use GameInstance or subsystem ownership for run data and a separate SaveGame object for account progression. Networked runs should resolve reward commits and floor transitions on the authority before replicating snapshots.",
+    "web": "Store run records separately from account records in IndexedDB or server storage. Process run events through a reducer so refresh, replay, and debugging can reconstruct run_state_snapshot deterministically."
   },
   "related_mechanics": [
-    "economy.shop",
-    "procedural_generation.seeded_generation",
     "roguelike.permadeath",
-    "roguelike.random_powerups"
+    "progression.meta_progression",
+    "roguelike.random_powerups",
+    "procedural_generation.seeded_generation"
   ],
   "combines_well_with": [
-    "economy.shop",
-    "procedural_generation.seeded_generation",
-    "roguelike.procedural_floor",
-    "roguelike.relic_synergy"
+    "roguelike.shop_between_levels",
+    "roguelike.pick_one_upgrade_choice",
+    "progression.achievement_system",
+    "ui_ux.inventory_grid"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Hades",
+      "note": "Uses temporary run growth alongside persistent unlock systems."
+    },
+    {
+      "title": "Dead Cells",
+      "note": "Builds power during a run while some unlock progress persists outside it."
+    }
+  ],
   "tags": [
-    "roguelike",
-    "run",
-    "runs"
+    "run_progression",
+    "run_state",
+    "event_log",
+    "meta_boundary",
+    "temporary_power"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

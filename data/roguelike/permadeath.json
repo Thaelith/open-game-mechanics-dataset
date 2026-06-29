@@ -2,12 +2,12 @@
   "id": "roguelike.permadeath",
   "name": "Permadeath",
   "aliases": [
-    "permanent death",
-    "run loss",
-    "one-life run"
+    "run death",
+    "permanent run loss",
+    "hard run failure"
   ],
   "category": "roguelike",
-  "subcategory": "roguelike",
+  "subcategory": "failure_persistence",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -17,103 +17,138 @@
   "difficulty": {
     "design": "hard",
     "implementation": "medium",
-    "tuning": "expert"
+    "tuning": "hard"
   },
   "genres": [
     "roguelike",
-    "deckbuilder",
-    "action"
+    "survival",
+    "action",
+    "rpg"
   ],
-  "description": "Permadeath is a run-structure mechanic that supports replayability through randomness, reset, risk, or synergy.",
-  "design_notes": "Permadeath should be designed around a clear player promise, a readable trigger, and a predictable result. For roguelike mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A run failure rule where character defeat or another terminal condition ends the current run and discards most run-scoped progress.",
+  "design_notes": "Permadeath is less about punishment than about making run decisions matter. The design should separate account progression from run_state_snapshot data, define which rewards survive defeat, and make run_end_reason understandable. Strong implementations make death final for the run while still giving players useful learning, unlock progress, or post-run summary data.",
   "design_purpose": [
-    "Give the player a readable way to use permadeath as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect permadeath to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create high stakes for combat, routing, resource use, and unknown encounters.",
+    "Keep runs self-contained so procedural variation and build choices stay meaningful.",
+    "Provide a clean boundary for post-run rewards, analytics, replay review, and reset behavior."
   ],
-  "player_fantasy": "The player feels each run is a fresh risk with potential for unexpected synergy.",
+  "player_fantasy": "The player feels that every risky room, relic choice, and resource spend matters because the current run can truly end.",
   "required_systems": [
-    "run_state",
-    "random_number_generator",
-    "reward_rules",
-    "save_or_meta_state"
+    "run_state_manager",
+    "death_resolution",
+    "save_system",
+    "meta_progression",
+    "post_run_summary"
   ],
   "parameters": [
     {
-      "name": "run_length_target",
-      "type": "float",
-      "typical_range": "5-90 minutes",
-      "description": "Expected duration of one run segment using the mechanic."
+      "name": "run_id",
+      "type": "string",
+      "typical_range": "unique per run",
+      "description": "Identifier tying death, rewards, seed logs, and summaries to one run."
     },
     {
-      "name": "randomness_weight",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "How strongly random selection affects outcomes."
+      "name": "run_seed",
+      "type": "integer",
+      "typical_range": "32-bit or 64-bit seed",
+      "description": "Seed recorded so failed runs can be reproduced for debugging."
     },
     {
-      "name": "carryover_amount",
-      "type": "float",
-      "typical_range": "0-100%",
-      "description": "How much state persists between runs."
+      "name": "run_end_reason",
+      "type": "string",
+      "typical_range": "player_death, abandoned, victory, disconnect",
+      "description": "Terminal outcome that drives summary, rewards, and cleanup rules."
+    },
+    {
+      "name": "death_persistence_policy",
+      "type": "string",
+      "typical_range": "wipe_run, keep_meta, keep_unlock_flags",
+      "description": "Rule describing which state survives after defeat."
+    },
+    {
+      "name": "run_state_snapshot",
+      "type": "object",
+      "typical_range": "health, inventory, floor, modifiers, seed cursor",
+      "description": "Final run data captured before cleanup and reward processing."
+    },
+    {
+      "name": "meta_currency_id",
+      "type": "string",
+      "typical_range": "darkness, cells, shards, none",
+      "description": "Account-scoped reward currency granted after eligible outcomes."
+    },
+    {
+      "name": "save_scum_policy",
+      "type": "string",
+      "typical_range": "autosave_only, exit_save_delete, checkpointless",
+      "description": "Restore rule that prevents repeated retries from the same fatal state."
     }
   ],
   "common_variants": [
-    "permadeath_hard_reset",
-    "permadeath_partial_carryover",
-    "daily_seeded",
-    "challenge_modifier"
+    "pure_permadeath",
+    "meta_progression_permadeath",
+    "corpse_recovery",
+    "daily_run_lockout",
+    "ironman_save_slot"
   ],
   "edge_cases": [
-    "Permadeath is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Permadeath overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Permadeath runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The player disconnects or crashes after lethal damage but before post-run rewards are committed.",
+    "A revive, invulnerability frame, or delayed damage tick arrives during the death resolution sequence.",
+    "Victory and death conditions happen during the same simulation step.",
+    "A save file is restored from a platform cloud backup after the run has already ended.",
+    "Co-op runs need to decide whether one player death, full party defeat, or host exit ends the run."
   ],
   "common_bugs": [
-    "Permadeath state does not reset correctly after interruption or reload.",
-    "Feedback for Permadeath plays even when the mechanic fails or is rejected.",
-    "Permadeath produces different results between frame rates, platforms, or network clients."
+    "Run-scoped inventory leaks into account state because cleanup runs after reward grants.",
+    "Post-run rewards are granted twice when death resolution retries after a network timeout.",
+    "The game saves a fatal checkpoint and reloads into an unavoidable death loop.",
+    "Abandoned runs are misclassified as deaths and trigger achievements or penalty rules incorrectly.",
+    "Seed logs omit rng_stream_id positions, making a reported fatal generation bug impossible to reproduce."
   ],
   "balancing_notes": [
-    "Make Permadeath strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Permanent run loss is easier to accept when runs are short enough or post-run learning is obvious.",
+    "Meta rewards can soften failure, but too much account power can make early-run decisions irrelevant.",
+    "Death summaries should identify the chain of causes without making the game feel deterministic or unfair."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Permadeath becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide confirmation and readable consequences for abandoning or deleting a run.",
+    "Offer practice, assist, or non-competitive modes if the full run-loss rule blocks players from learning.",
+    "Keep post-death summaries readable without requiring players to parse fast combat logs."
   ],
   "implementation_notes": {
-    "unity": "Implement Permadeath with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Permadeath as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Permadeath with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Permadeath as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Resolve death through a RunStateManager transaction keyed by run_id. Capture run_state_snapshot, run_end_reason, run_seed, and rng stream cursors before clearing scene objects, then commit meta_currency_id rewards once with an idempotency token.",
+    "godot": "Keep run state in an autoload or saved Resource separate from account progression. When health reaches the fatal threshold, lock new input, emit a run_ended signal, write the death_persistence_policy result, and delete or archive the exit-save slot.",
+    "unreal": "Use a GameInstance or subsystem boundary between account data and run data. Server-authoritative runs should resolve death on the server, replicate the final run_end_reason, and guard reward grants against repeated RPCs or reconnect attempts.",
+    "web": "Represent death as an immutable run event in IndexedDB or local storage. Store run_id, run_seed, run_end_reason, and reward grant ids together so reloads can resume the summary screen without resurrecting invalid run state."
   },
   "related_mechanics": [
-    "economy.shop",
-    "procedural_generation.seeded_generation",
-    "roguelike.random_powerups",
-    "roguelike.run_based_progression"
+    "roguelike.run_based_progression",
+    "progression.meta_progression",
+    "survival.health",
+    "procedural_generation.seeded_generation"
   ],
   "combines_well_with": [
-    "economy.shop",
-    "procedural_generation.seeded_generation",
-    "roguelike.procedural_floor",
-    "roguelike.relic_synergy"
+    "roguelike.curse_modifier",
+    "roguelike.risk_reward_room",
+    "roguelike.pick_one_upgrade_choice",
+    "ui_ux.checkpoint_notification"
   ],
   "example_games": [
     {
-      "title": "Rogue",
-      "note": "Established run-ending death as a core structure."
+      "title": "Spelunky",
+      "note": "Ends a run on death and restarts from a fresh run state."
     },
     {
       "title": "The Binding of Isaac",
-      "note": "Uses permadeath within short randomized runs."
+      "note": "Uses run death as a reset boundary while account unlocks can persist."
     }
   ],
   "tags": [
     "permadeath",
-    "roguelike",
-    "runs"
+    "run_state",
+    "death_resolution",
+    "persistence",
+    "seed_logging"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

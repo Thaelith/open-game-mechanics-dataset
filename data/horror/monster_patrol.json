@@ -2,12 +2,12 @@
   "id": "horror.monster_patrol",
   "name": "Monster Patrol",
   "aliases": [
-    "monster patrol mechanic",
-    "monster patrol system",
-    "monster patrol"
+    "horror patrol",
+    "stalking monster",
+    "patrolling threat"
   ],
   "category": "horror",
-  "subcategory": "horror",
+  "subcategory": "monster_ai",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,95 +16,139 @@
   ],
   "difficulty": {
     "design": "hard",
-    "implementation": "medium",
-    "tuning": "hard"
+    "implementation": "hard",
+    "tuning": "expert"
   },
   "genres": [
     "horror",
+    "stealth",
     "survival",
     "adventure"
   ],
-  "description": "Monster Patrol is a fear-building mechanic that shapes vulnerability, uncertainty, attention, and tension.",
-  "design_notes": "Monster Patrol should be designed around a clear player promise, a readable trigger, and a predictable result. For horror mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A roaming threat behavior where a monster follows routes, reacts to perception events, investigates suspicious locations, and escalates into search or chase states.",
+  "design_notes": "Monster patrols build dread when players can learn patterns but never feel fully safe. The system should expose route ids, alert state, last known player position, perception events, search timeout, path failures, and debug reason traces. Designers need tools to see why the monster moved, heard, searched, or gave up.",
   "design_purpose": [
-    "Give the player a readable way to use monster patrol as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect monster patrol to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create persistent threat pressure across rooms and corridors.",
+    "Connect noise, visibility, hiding, safe rooms, and chase behavior into one AI loop.",
+    "Give level designers predictable patrol tools with controlled uncertainty."
   ],
-  "player_fantasy": "The player feels vulnerable, alert, and uncertain about what happens next.",
+  "player_fantasy": "The player feels hunted by something that patrols the space, reacts to mistakes, and may return when they least want it.",
   "required_systems": [
-    "atmosphere_controller",
     "ai_state_machine",
-    "resource_system",
-    "audio_visual_feedback"
+    "perception_system",
+    "navigation_mesh",
+    "behavior_debugging",
+    "audio_system"
   ],
   "parameters": [
     {
-      "name": "tension_level",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "Current pressure or fear intensity used to drive the mechanic."
+      "name": "monster_id",
+      "type": "string",
+      "typical_range": "stalker_01, brute, ghost_child",
+      "description": "Threat instance or archetype running patrol behavior."
     },
     {
-      "name": "resource_drain",
-      "type": "float",
-      "typical_range": "0-10 units/minute",
-      "description": "Rate at which a safety or visibility resource is consumed."
+      "name": "monster_patrol_route_id",
+      "type": "string",
+      "typical_range": "basement_loop, hall_sweep, random_nodes_a",
+      "description": "Route definition used while the monster is not fully alerted."
     },
     {
-      "name": "reveal_distance",
-      "type": "float",
-      "typical_range": "1-30 world units",
-      "description": "Distance at which a threat or cue becomes clear."
+      "name": "monster_alert_state",
+      "type": "string",
+      "typical_range": "patrol, suspicious, searching, chasing, returning",
+      "description": "Current AI state used by animation, audio, and decisions."
+    },
+    {
+      "name": "last_known_player_position",
+      "type": "vector3",
+      "typical_range": "world position",
+      "description": "Most recent suspected player location from sight, sound, or script."
+    },
+    {
+      "name": "perception_event_id",
+      "type": "string",
+      "typical_range": "saw_player, heard_noise, found_hiding_spot",
+      "description": "Stimulus that caused the latest state transition."
+    },
+    {
+      "name": "search_timeout_ms",
+      "type": "integer",
+      "typical_range": "3000-45000 ms",
+      "description": "Search window before returning to patrol or escalating elsewhere."
+    },
+    {
+      "name": "debug_reason_trace",
+      "type": "array",
+      "typical_range": "state changes and perception reasons",
+      "description": "Designer-readable AI decision history for tuning and bug reports."
     }
   ],
   "common_variants": [
-    "monster_patrol_subtle_variant",
-    "monster_patrol_high_intensity_variant",
-    "resource_limited",
-    "ai_driven"
+    "fixed_route_patrol",
+    "adaptive_stalker",
+    "audio_reactive_patrol",
+    "safe_room_boundary_patrol",
+    "scripted_patrol_break"
   ],
   "edge_cases": [
-    "Monster Patrol is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Monster Patrol overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Monster Patrol runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The player enters a safe room while the monster is already chasing at the boundary.",
+    "A noise lure and line-of-sight event arrive during the same AI decision step.",
+    "Navmesh updates or locked doors invalidate the current patrol route.",
+    "The monster loses sight of the player while they enter a hiding spot.",
+    "Checkpoint restore spawns the monster with stale last_known_player_position near the player."
   ],
   "common_bugs": [
-    "Monster Patrol state does not reset correctly after interruption or reload.",
-    "Feedback for Monster Patrol plays even when the mechanic fails or is rejected.",
-    "Monster Patrol produces different results between frame rates, platforms, or network clients."
+    "Patrol state changes are driven by animation not AI authority, causing desync between movement and decisions.",
+    "Search timeout resets every frame because suspicion never decays below the transition threshold.",
+    "The monster pathfinds to the exact player position after hearing a lure instead of the noise source.",
+    "Safe-room exclusion blocks movement but not attack traces or audio stingers.",
+    "Debug logs show the chosen route but not the perception event that caused the switch."
   ],
   "balancing_notes": [
-    "Make Monster Patrol strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Predictable patrols support planning; occasional route variation supports fear when it has readable rules.",
+    "Search behavior should punish noisy mistakes without turning every small sound into a guaranteed chase.",
+    "Safe-room boundary behavior defines trust; inconsistent exceptions make players stop learning the system."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Monster Patrol becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide subtitle, caption, or visual alternatives for monster audio cues.",
+    "Offer difficulty or assist settings that adjust search persistence and chase recovery without disabling threat identity.",
+    "Avoid requiring players to distinguish extremely subtle audio direction under high stress."
   ],
   "implementation_notes": {
-    "unity": "Implement Monster Patrol with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Monster Patrol as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Monster Patrol with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Monster Patrol as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use NavMeshAgent or a custom controller with an explicit monster_alert_state and perception_event_id queue. Store last_known_player_position, route index, and debug_reason_trace so designers can inspect why patrol, search, or chase transitions occurred.",
+    "godot": "Use NavigationAgent2D or NavigationAgent3D with a state machine for patrol, suspicion, search, chase, and return. Route perception signals through one decision method so noise, sight, and safe-room boundaries resolve in deterministic priority order.",
+    "unreal": "Behavior Trees and Blackboard keys can store monster_patrol_route_id, last_known_player_position, and alert state. Use decorators or services for line-of-sight and noise, and log abort reasons so designers can debug unexpected search loops.",
+    "web": "Represent patrols as data graphs and update AI on fixed decision intervals. Phaser or custom pathfinding should store route node, alert state, and last known position in save or replay state so reports are reproducible."
   },
   "related_mechanics": [
-    "horror.light_resource",
-    "horror.limited_visibility",
-    "horror.sanity_meter",
-    "stealth.shadow_cover"
+    "ai.patrol",
+    "ai.investigate_noise",
+    "ai.line_of_sight_detection",
+    "horror.hiding"
   ],
   "combines_well_with": [
-    "horror.hiding",
-    "horror.light_resource",
     "horror.sound_lure",
-    "stealth.shadow_cover"
+    "horror.safe_room",
+    "stealth.last_known_position_search",
+    "horror.limited_visibility"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Alien: Isolation",
+      "note": "Uses a roaming alien threat that searches and reacts to player behavior."
+    },
+    {
+      "title": "Amnesia: The Bunker",
+      "note": "Uses a persistent monster threat connected to sound and exploration pressure."
+    }
+  ],
   "tags": [
-    "horror",
-    "monster",
-    "tension"
+    "monster_ai",
+    "patrol",
+    "perception",
+    "last_known_position",
+    "search_state"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

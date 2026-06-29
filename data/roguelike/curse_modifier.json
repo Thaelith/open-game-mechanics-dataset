@@ -2,12 +2,12 @@
   "id": "roguelike.curse_modifier",
   "name": "Curse Modifier",
   "aliases": [
-    "curse modifier mechanic",
-    "curse modifier system",
-    "curse modifier"
+    "run curse",
+    "negative modifier",
+    "curse effect"
   ],
   "category": "roguelike",
-  "subcategory": "roguelike",
+  "subcategory": "run_modifier",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -21,90 +21,128 @@
   },
   "genres": [
     "roguelike",
-    "deckbuilder",
-    "action"
+    "rpg",
+    "action",
+    "survival"
   ],
-  "description": "Curse Modifier is a run-structure mechanic that supports replayability through randomness, reset, risk, or synergy.",
-  "design_notes": "Curse Modifier should be designed around a clear player promise, a readable trigger, and a predictable result. For roguelike mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A harmful or complicating run modifier that changes rules, rewards, enemies, resources, or player options until removed or the run ends.",
+  "design_notes": "Curses are most useful when they create new decisions instead of only reducing numbers. A curse should name its trigger, stack rule, removal condition, UI explanation, and interactions with relics, rooms, shops, and death policy. Designers should be able to audit which curses can combine before shipping a pool.",
   "design_purpose": [
-    "Give the player a readable way to use curse modifier as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect curse modifier to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Add risk to powerful rewards, shortcuts, shrines, events, or difficulty escalation.",
+    "Create temporary or persistent pressure that changes route and build choices.",
+    "Give advanced players optional adversity with higher reward potential."
   ],
-  "player_fantasy": "The player feels each run is a fresh risk with potential for unexpected synergy.",
+  "player_fantasy": "The player feels tempted by power while carrying a dangerous consequence that reshapes the run.",
   "required_systems": [
-    "run_state",
-    "random_number_generator",
-    "reward_rules",
-    "save_or_meta_state"
+    "run_modifier_system",
+    "status_effects",
+    "reward_generation",
+    "ui_explanation",
+    "save_system"
   ],
   "parameters": [
     {
-      "name": "run_length_target",
-      "type": "float",
-      "typical_range": "5-90 minutes",
-      "description": "Expected duration of one run segment using the mechanic."
+      "name": "curse_modifier_id",
+      "type": "string",
+      "typical_range": "fragile_soul, blood_price, cursed_gold",
+      "description": "Stable curse identifier used by rules, UI, and save data."
     },
     {
-      "name": "randomness_weight",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "How strongly random selection affects outcomes."
+      "name": "modifier_stack_rule",
+      "type": "string",
+      "typical_range": "unique, stack_magnitude, refresh, replace_weaker",
+      "description": "Rule for applying a curse when a matching modifier already exists."
     },
     {
-      "name": "carryover_amount",
+      "name": "removal_condition_id",
+      "type": "string",
+      "typical_range": "clear_rooms, pay_shop, defeat_boss, never",
+      "description": "Condition that clears or transforms the active curse."
+    },
+    {
+      "name": "tension_budget_delta",
       "type": "float",
-      "typical_range": "0-100%",
-      "description": "How much state persists between runs."
+      "typical_range": "-1.0 to 3.0",
+      "description": "Pacing adjustment used by directors after the curse is active."
+    },
+    {
+      "name": "reward_multiplier_profile_id",
+      "type": "string",
+      "typical_range": "none, gold_bonus, rarity_boost",
+      "description": "Optional reward profile granted for accepting the curse."
+    },
+    {
+      "name": "curse_visibility_policy_id",
+      "type": "string",
+      "typical_range": "fully_revealed, partial_hint, hidden_until_triggered",
+      "description": "How much curse behavior is disclosed before acceptance."
     }
   ],
   "common_variants": [
-    "curse_modifier_hard_reset",
-    "curse_modifier_partial_carryover",
-    "daily_seeded",
-    "challenge_modifier"
+    "temporary_curse",
+    "stacking_curse",
+    "hidden_curse",
+    "rewarded_curse",
+    "account_unlock_curse"
   ],
   "edge_cases": [
-    "Curse Modifier is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Curse Modifier overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Curse Modifier runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A curse removes the only action, resource, or item needed to complete the current floor.",
+    "Two curses modify the same reward_pool_id and produce impossible or empty reward choices.",
+    "A curse is accepted in a shop or event and then the run is saved before UI state closes.",
+    "A removal condition fires during the same step that the curse applies its penalty.",
+    "A content update renames curse_modifier_id while old saves still contain the previous id."
   ],
   "common_bugs": [
-    "Curse Modifier state does not reset correctly after interruption or reload.",
-    "Feedback for Curse Modifier plays even when the mechanic fails or is rejected.",
-    "Curse Modifier produces different results between frame rates, platforms, or network clients."
+    "Stacking curses multiply each other because modifiers are applied repeatedly during stat recompute.",
+    "Hidden curses trigger without any readable cause and feel like a random bug to the player.",
+    "Removal clears the visual icon but leaves the gameplay modifier in the run_state_snapshot.",
+    "Reward boosts remain active after the curse is removed or after the run ends.",
+    "Curse descriptions are generated from stale parameters and misstate the active penalty."
   ],
   "balancing_notes": [
-    "Make Curse Modifier strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "A curse paired with a reward should change play style, not simply tax the player after the reward is already taken.",
+    "Stacking rules need caps or compatibility tags so curses do not combine into unwinnable states.",
+    "Hidden curses are more tense when they are foreshadowed by event text or environment cues."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Curse Modifier becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show curse effects in plain language with persistent access from the run HUD or pause screen.",
+    "Use icon, text, and audio cues for curse activation rather than color alone.",
+    "Offer reduced randomness or preview modes if hidden curses make learning inaccessible."
   ],
   "implementation_notes": {
-    "unity": "Implement Curse Modifier with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Curse Modifier as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Curse Modifier with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Curse Modifier as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Represent curses as data assets with curse_modifier_id, stack rule, stat hooks, and removal conditions. Apply them through a deterministic modifier pipeline that records active modifiers in run_state_snapshot and exposes debug output for final stat values.",
+    "godot": "Store active curses in a run-state Resource keyed by curse_modifier_id. Emit modifier_added, modifier_changed, and modifier_removed signals so UI, encounter generation, and reward generation update from the same committed state.",
+    "unreal": "Gameplay Effects or Gameplay Tags can model curse modifiers, but the run subsystem should own stack validation, removal_condition_id checks, and replicated active curse state. Keep designer-facing debug traces for why each modifier applied.",
+    "web": "Use versioned JSON definitions and a pure reducer for active curse lists. Persist curse ids, stack counts, and removal progress in the run save so refreshes do not reapply rewards or lose penalties."
   },
   "related_mechanics": [
-    "economy.shop",
-    "procedural_generation.seeded_generation",
+    "roguelike.risk_reward_room",
+    "roguelike.pick_one_upgrade_choice",
     "roguelike.permadeath",
-    "roguelike.run_based_progression"
+    "combat.damage_over_time"
   ],
   "combines_well_with": [
-    "economy.shop",
-    "procedural_generation.seeded_generation",
-    "roguelike.random_powerups",
-    "roguelike.relic_synergy"
+    "roguelike.shop_between_levels",
+    "roguelike.relic_synergy",
+    "horror.sanity_meter",
+    "progression.achievement_system"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Slay the Spire",
+      "note": "Uses curses as deck penalties tied to events, rewards, and risk choices."
+    },
+    {
+      "title": "Darkest Dungeon",
+      "note": "Uses negative traits and afflictions that shape party decisions."
+    }
+  ],
   "tags": [
     "curse",
-    "roguelike",
-    "runs"
+    "run_modifier",
+    "stack_rule",
+    "risk_reward",
+    "persistence"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

@@ -1,13 +1,13 @@
 {
   "id": "roguelike.risk_reward_room",
-  "name": "Risk/Reward Room",
+  "name": "Risk Reward Room",
   "aliases": [
-    "risk reward room mechanic",
-    "risk reward room system",
-    "risk/reward room"
+    "challenge room",
+    "temptation room",
+    "high-risk reward room"
   ],
   "category": "roguelike",
-  "subcategory": "roguelike",
+  "subcategory": "room_risk_choice",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -21,90 +21,134 @@
   },
   "genres": [
     "roguelike",
-    "deckbuilder",
-    "action"
+    "action",
+    "rpg",
+    "survival"
   ],
-  "description": "Risk/Reward Room is a run-structure mechanic that supports replayability through randomness, reset, risk, or synergy.",
-  "design_notes": "Risk/Reward Room should be designed around a clear player promise, a readable trigger, and a predictable result. For roguelike mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "An optional room or encounter that offers stronger rewards in exchange for extra danger, resource loss, curses, elite enemies, or route commitment.",
+  "design_notes": "Risk-reward rooms need honest previews and enforceable outcomes. The player should know the type of danger they are accepting, but not necessarily every hidden detail. The implementation should connect room_node_id, encounter_id, reward_pool_id, curse_modifier_id, and completion state so the room cannot be farmed, skipped after taking rewards, or saved in a contradictory state.",
   "design_purpose": [
-    "Give the player a readable way to use risk/reward room as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect risk/reward room to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players voluntarily increase run pressure for better rewards.",
+    "Create meaningful route decisions on generated floors.",
+    "Give advanced players a way to convert skill, confidence, or resources into build power."
   ],
-  "player_fantasy": "The player feels each run is a fresh risk with potential for unexpected synergy.",
+  "player_fantasy": "The player feels tempted to bet the run on a dangerous room because the payoff could define the build.",
   "required_systems": [
-    "run_state",
-    "random_number_generator",
-    "reward_rules",
-    "save_or_meta_state"
+    "room_graph_generator",
+    "encounter_director",
+    "reward_generation",
+    "run_state_manager",
+    "ui_risk_preview"
   ],
   "parameters": [
     {
-      "name": "run_length_target",
-      "type": "float",
-      "typical_range": "5-90 minutes",
-      "description": "Expected duration of one run segment using the mechanic."
+      "name": "room_node_id",
+      "type": "string",
+      "typical_range": "challenge_01, cursed_treasure, elite_gate",
+      "description": "Generated room node that owns accepted and completed state."
     },
     {
-      "name": "randomness_weight",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "How strongly random selection affects outcomes."
+      "name": "encounter_id",
+      "type": "string",
+      "typical_range": "elite_pack, trap_gauntlet, miniboss",
+      "description": "Encounter selected after the risk is accepted."
     },
     {
-      "name": "carryover_amount",
-      "type": "float",
-      "typical_range": "0-100%",
-      "description": "How much state persists between runs."
+      "name": "reward_pool_id",
+      "type": "string",
+      "typical_range": "elite_rewards, cursed_treasure, rare_relics",
+      "description": "Reward pool granted after completion or partial success."
+    },
+    {
+      "name": "risk_preview_id",
+      "type": "string",
+      "typical_range": "elite_warning, health_payment, curse_offer",
+      "description": "Player-facing summary of what is at stake."
+    },
+    {
+      "name": "elite_modifier_id",
+      "type": "string",
+      "typical_range": "armored, hasted, exploding, none",
+      "description": "Optional modifier applied to enemies or room hazards."
+    },
+    {
+      "name": "entry_commitment_policy_id",
+      "type": "string",
+      "typical_range": "lock_in, allow_retreat, reward_after_clear",
+      "description": "Rule that controls leaving, reward access, and failure state."
+    },
+    {
+      "name": "completion_state_id",
+      "type": "string",
+      "typical_range": "unseen, previewed, accepted, cleared, failed",
+      "description": "Persisted room state used by map, rewards, and saves."
     }
   ],
   "common_variants": [
-    "risk_reward_room_hard_reset",
-    "risk_reward_room_partial_carryover",
-    "daily_seeded",
-    "challenge_modifier"
+    "elite_combat_room",
+    "cursed_treasure_room",
+    "health_payment_room",
+    "timed_challenge_room",
+    "trap_reward_room"
   ],
   "edge_cases": [
-    "Risk/Reward Room is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Risk/Reward Room overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Risk/Reward Room runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The player accepts the risk, leaves the room, and reloads before completion or failure is resolved.",
+    "Reward pickup becomes reachable before the encounter actually clears.",
+    "A curse or payment is applied, but the room generation fails and no encounter starts.",
+    "A daily run needs the same risk preview and reward result for every player.",
+    "The room appears on a route where low-health players cannot reasonably avoid it."
   ],
   "common_bugs": [
-    "Risk/Reward Room state does not reset correctly after interruption or reload.",
-    "Feedback for Risk/Reward Room plays even when the mechanic fails or is rejected.",
-    "Risk/Reward Room produces different results between frame rates, platforms, or network clients."
+    "Room state resets on reload and lets players retry the risk after seeing the encounter.",
+    "Rewards are generated from a fresh seed after completion and differ from the preview or replay.",
+    "Exit doors unlock from enemy despawn instead of authoritative encounter clear state.",
+    "Elite modifiers stack with floor modifiers in an undocumented order and create unfair combinations.",
+    "Failure state removes the reward but leaves the curse or payment unapplied."
   ],
   "balancing_notes": [
-    "Make Risk/Reward Room strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "The best risk rooms offer a real refusal path; mandatory risk feels like baseline difficulty rather than a choice.",
+    "Rewards should match the danger type: resource payment can grant build power, while combat risk can grant rare items or route advantage.",
+    "Preview clarity changes fairness; hidden details work better when the category of risk is still readable."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Risk/Reward Room becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Make the accepted risk readable in text before the player commits.",
+    "Provide enough contrast, audio alternatives, and map labels for optional high-danger rooms.",
+    "Consider anti-frustration grace rules if accidental entry would otherwise ruin long runs."
   ],
   "implementation_notes": {
-    "unity": "Implement Risk/Reward Room with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Risk/Reward Room as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Risk/Reward Room with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Risk/Reward Room as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store room_node_id, completion_state_id, encounter_id, and reward seed in run state before opening the room. Commit payment or curse acceptance and lock doors through one transaction, then grant reward_pool_id only after the encounter director reports a clear result.",
+    "godot": "Use room metadata Resources for risk previews and encounter bindings. Persist accepted state before scene transitions, and route enemy deaths, trap completion, and reward spawning through a single room state node.",
+    "unreal": "Implement risk rooms as level instances with a replicated RoomStateComponent for networked runs. Server authority should validate entry commitment, encounter clear, reward grants, and exit unlocks to prevent reward farming.",
+    "web": "Generate risk offers from deterministic room graph data and persist completion_state_id in the run record. Phaser or custom maps should render the warning from risk_preview_id and never derive reward eligibility from visual chest state alone."
   },
   "related_mechanics": [
-    "economy.shop",
-    "procedural_generation.seeded_generation",
-    "roguelike.permadeath",
-    "roguelike.run_based_progression"
+    "roguelike.procedural_floor",
+    "roguelike.curse_modifier",
+    "roguelike.random_powerups",
+    "time.timed_challenge"
   ],
   "combines_well_with": [
-    "economy.shop",
-    "procedural_generation.seeded_generation",
-    "roguelike.random_powerups",
-    "roguelike.relic_synergy"
+    "combat.area_of_effect_attack",
+    "ai.enemy_spawn_director",
+    "economy.loot_table",
+    "ui_ux.quest_marker"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Slay the Spire",
+      "note": "Uses elite fights and events that trade danger for stronger rewards."
+    },
+    {
+      "title": "Hades",
+      "note": "Uses optional doors and challenge encounters that can improve run rewards."
+    }
+  ],
   "tags": [
-    "risk",
-    "roguelike",
-    "runs"
+    "risk_reward",
+    "challenge_room",
+    "room_state",
+    "elite_modifier",
+    "reward_pool"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

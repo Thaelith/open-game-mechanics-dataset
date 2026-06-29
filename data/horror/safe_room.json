@@ -2,12 +2,12 @@
   "id": "horror.safe_room",
   "name": "Safe Room",
   "aliases": [
-    "safe room mechanic",
-    "safe room system",
-    "safe room"
+    "save room",
+    "sanctuary room",
+    "monster-free room"
   ],
   "category": "horror",
-  "subcategory": "horror",
+  "subcategory": "sanctuary_space",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,7 +15,7 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
+    "design": "medium",
     "implementation": "medium",
     "tuning": "hard"
   },
@@ -24,87 +24,124 @@
     "survival",
     "adventure"
   ],
-  "description": "Safe Room is a fear-building mechanic that shapes vulnerability, uncertainty, attention, and tension.",
-  "design_notes": "Safe Room should be designed around a clear player promise, a readable trigger, and a predictable result. For horror mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A protected location where monsters, decay pressure, or pursuit rules are reduced so players can save, recover, manage inventory, or plan.",
+  "design_notes": "Safe rooms are tension punctuation, not only utility rooms. They need a clear boundary, consistent monster exclusion, save or checkpoint rules, resource access, and abuse prevention. The room's audio, lighting, and UI language should tell players they are safe without breaking the fiction.",
   "design_purpose": [
-    "Give the player a readable way to use safe room as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect safe room to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players relief and planning space after high-pressure horror sequences.",
+    "Provide a readable boundary for saving, checkpointing, inventory management, or recovery.",
+    "Let level designers control pacing between danger, respite, and renewed exposure."
   ],
-  "player_fantasy": "The player feels vulnerable, alert, and uncertain about what happens next.",
+  "player_fantasy": "The player feels a rare moment of safety before stepping back into danger.",
   "required_systems": [
-    "atmosphere_controller",
-    "ai_state_machine",
-    "resource_system",
-    "audio_visual_feedback"
+    "level_zones",
+    "ai_boundary_rules",
+    "save_checkpoint",
+    "resource_station",
+    "audio_lighting_state"
   ],
   "parameters": [
     {
-      "name": "tension_level",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "Current pressure or fear intensity used to drive the mechanic."
+      "name": "safe_room_id",
+      "type": "string",
+      "typical_range": "typewriter_room_a, bunker_save_02",
+      "description": "Stable zone id used for save, AI, and pacing rules."
     },
     {
-      "name": "resource_drain",
-      "type": "float",
-      "typical_range": "0-10 units/minute",
-      "description": "Rate at which a safety or visibility resource is consumed."
+      "name": "safe_room_boundary",
+      "type": "string",
+      "typical_range": "trigger_volume, door_threshold, authored_zone",
+      "description": "Boundary definition that enters and exits sanctuary state."
     },
     {
-      "name": "reveal_distance",
-      "type": "float",
-      "typical_range": "1-30 world units",
-      "description": "Distance at which a threat or cue becomes clear."
+      "name": "monster_exclusion_rule_id",
+      "type": "string",
+      "typical_range": "block_entry, lose_interest, scripted_exception",
+      "description": "Rule controlling how threats react to the safe boundary."
+    },
+    {
+      "name": "checkpoint_restore_state",
+      "type": "string",
+      "typical_range": "save_exact, restore_resources, position_only",
+      "description": "State restored when the player reloads from the room."
+    },
+    {
+      "name": "recovery_source_id",
+      "type": "string",
+      "typical_range": "storage_box, save_desk, lamp, medicine_cabinet",
+      "description": "Optional room service that restores or manages resources."
+    },
+    {
+      "name": "abuse_prevention_rule_id",
+      "type": "string",
+      "typical_range": "monster_waits_outside, no_enemy_reset, limited_recovery",
+      "description": "Rule preventing repeated boundary crossing from erasing danger."
     }
   ],
   "common_variants": [
-    "safe_room_subtle_variant",
-    "safe_room_high_intensity_variant",
-    "resource_limited",
-    "ai_driven"
+    "save_room",
+    "inventory_safe_room",
+    "temporary_shelter",
+    "mobile_safe_zone",
+    "unsafe_safe_room_twist"
   ],
   "edge_cases": [
-    "Safe Room is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Safe Room overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Safe Room runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The monster reaches the doorway exactly as the player crosses the safe_room_boundary.",
+    "A scripted event temporarily disables safety and must communicate the exception clearly.",
+    "The player saves after spending resources but before storage or recovery state commits.",
+    "A safe room borders a chase arena and allows repeated boundary abuse.",
+    "A checkpoint restore places the player in the room while monsters still remember last_known_player_position."
   ],
   "common_bugs": [
-    "Safe Room state does not reset correctly after interruption or reload.",
-    "Feedback for Safe Room plays even when the mechanic fails or is rejected.",
-    "Safe Room produces different results between frame rates, platforms, or network clients."
+    "AI pathing targets a player inside the safe room and gets stuck at the boundary.",
+    "Safe room music starts but monster exclusion does not, creating contradictory cues.",
+    "Storage inventory commits independently from checkpoint data and duplicates or loses items.",
+    "Threat state resets every time the player touches the boundary.",
+    "Recovery sources restore on every reload instead of using persisted room service state."
   ],
   "balancing_notes": [
-    "Make Safe Room strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Safe rooms should be close enough to reduce frustration but spaced to preserve route planning.",
+    "Unlimited recovery lowers fear; limited recovery or storage tradeoffs keep resource decisions meaningful.",
+    "Breaking safe-room rules can be powerful once, but repeated exceptions teach players not to trust the system."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Safe Room becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use clear audio, lighting, map labels, and text cues to identify safe-room state.",
+    "Make save and storage interactions confirmable and readable under stress.",
+    "Avoid using safe-room music stingers or flicker effects that conflict with reduced-intensity settings."
   ],
   "implementation_notes": {
-    "unity": "Implement Safe Room with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Safe Room as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Safe Room with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Safe Room as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Define safe_room_id zones with trigger volumes and an explicit SafeRoomState component. On entry, update AI target rules, audio snapshots, checkpoint eligibility, and resource station availability from the committed boundary state.",
+    "godot": "Use Area nodes for safe_room_boundary and an autoload zone manager for current sanctuary state. Store checkpoint_restore_state and recovery source usage in save data so reloads do not refresh one-use services.",
+    "unreal": "Use volumes or level streaming zones with Gameplay Tags for safe-room state. AI controllers should query monster_exclusion_rule_id before path requests, and save systems should commit storage, player state, and room service state atomically.",
+    "web": "For Phaser or custom engines, mark safe rooms in map data and process entry/exit through a zone reducer. Keep monster exclusion, checkpoint state, and recovery usage in gameplay state rather than only in scene scripts."
   },
   "related_mechanics": [
-    "horror.light_resource",
-    "horror.limited_visibility",
     "horror.sanity_meter",
-    "stealth.shadow_cover"
+    "horror.monster_patrol",
+    "survival.inventory_limit",
+    "ui_ux.checkpoint_notification"
   ],
   "combines_well_with": [
-    "horror.hiding",
     "horror.light_resource",
-    "horror.sound_lure",
-    "stealth.shadow_cover"
+    "horror.limited_visibility",
+    "survival.health",
+    "narrative.environmental_storytelling"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Resident Evil 2",
+      "note": "Uses safe rooms for saving, storage, and relief from pursuit."
+    },
+    {
+      "title": "The Evil Within",
+      "note": "Uses sanctuary-like spaces as pacing breaks and upgrade locations."
+    }
+  ],
   "tags": [
-    "horror",
-    "safe",
-    "tension"
+    "safe_room",
+    "checkpoint",
+    "monster_boundary",
+    "recovery",
+    "pacing"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

@@ -2,12 +2,12 @@
   "id": "roguelike.procedural_floor",
   "name": "Procedural Floor",
   "aliases": [
-    "procedural floor mechanic",
-    "procedural floor system",
-    "procedural floor"
+    "generated floor",
+    "roguelike dungeon floor",
+    "floor layout generation"
   ],
   "category": "roguelike",
-  "subcategory": "roguelike",
+  "subcategory": "floor_generation",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,95 +16,139 @@
   ],
   "difficulty": {
     "design": "hard",
-    "implementation": "medium",
+    "implementation": "hard",
     "tuning": "expert"
   },
   "genres": [
     "roguelike",
-    "deckbuilder",
-    "action"
+    "dungeon_crawler",
+    "action",
+    "rpg"
   ],
-  "description": "Procedural Floor is a run-structure mechanic that supports replayability through randomness, reset, risk, or synergy.",
-  "design_notes": "Procedural Floor should be designed around a clear player promise, a readable trigger, and a predictable result. For roguelike mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A generated floor layout made from rooms, corridors, encounters, rewards, and exits selected for the current run and floor position.",
+  "design_notes": "A roguelike floor needs more than random rooms. It should provide a viable critical path, optional risk branches, encounter pacing, reward placement, and a reliable exit while preserving enough uncertainty for repeated runs. The floor generator should log seed, content version, room graph, and validation failures so designers can reproduce bad layouts.",
   "design_purpose": [
-    "Give the player a readable way to use procedural floor as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect procedural floor to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create replayable layouts with authored pacing constraints.",
+    "Control the mix of combat, shops, events, treasure, exits, and recovery nodes per floor.",
+    "Prevent soft-locks by validating connectivity, keys, exits, and required traversal abilities."
   ],
-  "player_fantasy": "The player feels each run is a fresh risk with potential for unexpected synergy.",
+  "player_fantasy": "The player feels they are exploring an unknown floor that still seems intentionally paced and beatable.",
   "required_systems": [
-    "run_state",
-    "random_number_generator",
-    "reward_rules",
-    "save_or_meta_state"
+    "seeded_generation",
+    "room_graph_generator",
+    "encounter_tables",
+    "layout_validation",
+    "debug_seed_logging"
   ],
   "parameters": [
     {
-      "name": "run_length_target",
-      "type": "float",
-      "typical_range": "5-90 minutes",
-      "description": "Expected duration of one run segment using the mechanic."
+      "name": "run_seed",
+      "type": "integer",
+      "typical_range": "32-bit or 64-bit seed",
+      "description": "Run seed used to reproduce the generated floor."
     },
     {
-      "name": "randomness_weight",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "How strongly random selection affects outcomes."
+      "name": "floor_index",
+      "type": "integer",
+      "typical_range": "0-20",
+      "description": "Run position used to select difficulty, biome, and room pools."
     },
     {
-      "name": "carryover_amount",
+      "name": "rng_stream_id",
+      "type": "string",
+      "typical_range": "layout, encounters, rewards, decor",
+      "description": "Separated random stream so one content change does not disturb every roll."
+    },
+    {
+      "name": "room_node_id",
+      "type": "string",
+      "typical_range": "start, combat_03, shop_01, exit",
+      "description": "Graph node identifier used by validation and save data."
+    },
+    {
+      "name": "critical_path_node_count",
+      "type": "integer",
+      "typical_range": "4-14 nodes",
+      "description": "Required route length from entrance to exit."
+    },
+    {
+      "name": "branch_probability",
       "type": "float",
-      "typical_range": "0-100%",
-      "description": "How much state persists between runs."
+      "typical_range": "0.0-0.8",
+      "description": "Weighted likelihood of optional graph branches during layout build."
+    },
+    {
+      "name": "validation_retries",
+      "type": "integer",
+      "typical_range": "1-50 attempts",
+      "description": "Fallback attempts before using a known safe floor template."
     }
   ],
   "common_variants": [
-    "procedural_floor_hard_reset",
-    "procedural_floor_partial_carryover",
-    "daily_seeded",
-    "challenge_modifier"
+    "room_graph_floor",
+    "grid_maze_floor",
+    "node_map_floor",
+    "biome_floor_set",
+    "daily_seed_floor"
   ],
   "edge_cases": [
-    "Procedural Floor is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Procedural Floor overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Procedural Floor runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A locked room appears before the key or traversal ability needed to reach its reward.",
+    "The only exit is generated behind an encounter that can despawn or become unreachable.",
+    "A shop, rest room, or boss node occupies a layout socket too small for required actors.",
+    "Content version changes make an old run save point to a removed room_template_id.",
+    "An optional branch creates a loop that bypasses intended floor_index pacing or boss requirements."
   ],
   "common_bugs": [
-    "Procedural Floor state does not reset correctly after interruption or reload.",
-    "Feedback for Procedural Floor plays even when the mechanic fails or is rejected.",
-    "Procedural Floor produces different results between frame rates, platforms, or network clients."
+    "Layout RNG and reward RNG share a stream, so adding a decoration changes combat rewards.",
+    "Validation checks connectivity but not collision, navmesh, or camera framing inside room templates.",
+    "Room graph ids are regenerated on load, breaking map reveal and visited-room persistence.",
+    "Fallback generation uses the same invalid constraints and repeats the same failure.",
+    "Debug logs record the run_seed but not floor_index, content_version, or rng_stream_id cursor."
   ],
   "balancing_notes": [
-    "Make Procedural Floor strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Longer critical paths increase commitment and resource attrition; optional branches should compensate with meaningful rewards or information.",
+    "Too many safe rooms, shops, or recovery nodes can flatten tension even when combat rooms are difficult.",
+    "Daily or seeded runs benefit from deterministic layouts, but live balance changes need content_version handling."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Procedural Floor becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide map readability for generated layouts, including visited state, exits, and branch types.",
+    "Avoid requiring players to memorize long procedural routes without landmarks or map support.",
+    "Keep fallback layouts available for modes that reduce disorientation or maze complexity."
   ],
   "implementation_notes": {
-    "unity": "Implement Procedural Floor with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Procedural Floor as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Procedural Floor with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Procedural Floor as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Build a floor graph from ScriptableObject room templates using separate RNG streams for layout, encounters, and rewards. Validate doorway sockets, navmesh bake, required keys, and exit reachability before instantiating, then persist room_node_id mappings for save/load.",
+    "godot": "Represent room templates as PackedScenes with doorway metadata and graph tags. Generate the room graph from run_seed and floor_index, run connectivity and collision validation, and store node ids in the run save so map reveal survives reloads.",
+    "unreal": "Use Data Assets or level instances for rooms and a server-authoritative floor generation subsystem for networked runs. Log run_seed, content_version, floor_index, and selected room_template_id values to make bad floors reproducible.",
+    "web": "Generate graph data first, then render Phaser tilemaps or Three.js room chunks from the validated graph. Keep sorted template ids and deterministic RNG streams so browser, server, and replay tools produce matching floors."
   },
   "related_mechanics": [
-    "economy.shop",
+    "procedural_generation.room_connection_graph",
     "procedural_generation.seeded_generation",
-    "roguelike.permadeath",
-    "roguelike.run_based_progression"
+    "roguelike.risk_reward_room",
+    "roguelike.shop_between_levels"
   ],
   "combines_well_with": [
-    "economy.shop",
-    "procedural_generation.seeded_generation",
-    "roguelike.random_powerups",
-    "roguelike.relic_synergy"
+    "procedural_generation.random_encounters",
+    "economy.loot_table",
+    "ai.enemy_spawn_director",
+    "ui_ux.minimap"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Enter the Gungeon",
+      "note": "Uses generated floor layouts with rooms, shops, bosses, and rewards."
+    },
+    {
+      "title": "Dead Cells",
+      "note": "Uses generated level layouts inside biome and progression constraints."
+    }
+  ],
   "tags": [
-    "procedural",
-    "roguelike",
-    "runs"
+    "procedural_floor",
+    "room_graph",
+    "run_seed",
+    "layout_validation",
+    "soft_lock_prevention"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

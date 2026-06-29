@@ -1,13 +1,13 @@
 {
   "id": "horror.jump_scare_trigger",
-  "name": "Jump-Scare Trigger",
+  "name": "Jump Scare Trigger",
   "aliases": [
-    "jump scare trigger mechanic",
-    "jump scare trigger system",
-    "jump-scare trigger"
+    "scripted scare",
+    "startle trigger",
+    "sudden scare"
   ],
   "category": "horror",
-  "subcategory": "horror",
+  "subcategory": "scare_trigger",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,96 +15,139 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
+    "design": "medium",
     "implementation": "medium",
     "tuning": "hard"
   },
   "genres": [
     "horror",
-    "survival",
-    "adventure"
+    "adventure",
+    "survival"
   ],
-  "description": "Jump-Scare Trigger is a fear-building mechanic that shapes vulnerability, uncertainty, attention, and tension.",
-  "design_notes": "Jump-Scare Trigger should be designed around a clear player promise, a readable trigger, and a predictable result. For horror mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A scripted or reactive scare event that uses timing, framing, audio, animation, and player state to create a sudden startle.",
+  "design_notes": "Jump scares are strongest when they support pacing rather than replace tension. The trigger should define who can fire it, what state suppresses it, how often it can repeat, which camera and audio cues play, and how reduced-intensity settings alter the result. False positives and repeated scares quickly damage trust.",
   "design_purpose": [
-    "Give the player a readable way to use jump-scare trigger as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect jump-scare trigger to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create a sharp tension spike at a designed reveal, mistake, or scripted beat.",
+    "Teach players that certain spaces, sounds, or behaviors are dangerous.",
+    "Support pacing directors by punctuating long quiet stretches."
   ],
-  "player_fantasy": "The player feels vulnerable, alert, and uncertain about what happens next.",
+  "player_fantasy": "The player feels shocked by a sudden reveal while still believing the scare belonged to the space and situation.",
   "required_systems": [
-    "atmosphere_controller",
-    "ai_state_machine",
-    "resource_system",
-    "audio_visual_feedback"
+    "trigger_volumes",
+    "scripted_event_system",
+    "camera_controller",
+    "audio_system",
+    "accessibility_settings"
   ],
   "parameters": [
     {
-      "name": "tension_level",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "Current pressure or fear intensity used to drive the mechanic."
+      "name": "jump_scare_trigger_id",
+      "type": "string",
+      "typical_range": "window_scare_01, locker_hit, hallway_reveal",
+      "description": "Stable scare trigger identifier used by persistence and analytics."
     },
     {
-      "name": "resource_drain",
-      "type": "float",
-      "typical_range": "0-10 units/minute",
-      "description": "Rate at which a safety or visibility resource is consumed."
+      "name": "trigger_volume_id",
+      "type": "string",
+      "typical_range": "doorway_volume, look_target, item_pickup_zone",
+      "description": "Spatial or interaction trigger that arms the scare."
     },
     {
-      "name": "reveal_distance",
-      "type": "float",
-      "typical_range": "1-30 world units",
-      "description": "Distance at which a threat or cue becomes clear."
+      "name": "scare_rearm_delay_ms",
+      "type": "integer",
+      "typical_range": "0-600000 ms",
+      "description": "Lockout window before the scare can fire again, if repeatable."
+    },
+    {
+      "name": "intensity_tier_id",
+      "type": "string",
+      "typical_range": "low, medium, high, disabled",
+      "description": "Accessibility-aware scare presentation tier."
+    },
+    {
+      "name": "scripted_event_id",
+      "type": "string",
+      "typical_range": "enemy_lunge, object_drop, audio_stinger",
+      "description": "Authored event played after trigger validation."
+    },
+    {
+      "name": "one_shot_state_id",
+      "type": "string",
+      "typical_range": "unseen, armed, fired, suppressed",
+      "description": "Persistence state for one-shot or conditional scares."
+    },
+    {
+      "name": "camera_cue_id",
+      "type": "string",
+      "typical_range": "snap_zoom, shake_small, force_look, none",
+      "description": "Camera presentation cue chosen for the scare."
     }
   ],
   "common_variants": [
-    "jump_scare_trigger_subtle_variant",
-    "jump_scare_trigger_high_intensity_variant",
-    "resource_limited",
-    "ai_driven"
+    "one_shot_scripted_scare",
+    "look_at_triggered_scare",
+    "pickup_scare",
+    "false_alarm_scare",
+    "adaptive_director_scare"
   ],
   "edge_cases": [
-    "Jump-Scare Trigger is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Jump-Scare Trigger overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Jump-Scare Trigger runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The player enters the trigger while already in a cutscene, menu, hiding animation, or death state.",
+    "Reduced scare mode disables audio spikes but the camera cue still snaps violently.",
+    "A scare trigger fires repeatedly because one-shot state was not persisted after reload.",
+    "The player looks away from the intended reveal and sees only the camera movement or audio cue.",
+    "Multiple scare triggers overlap in a hallway and play competing stingers."
   ],
   "common_bugs": [
-    "Jump-Scare Trigger state does not reset correctly after interruption or reload.",
-    "Feedback for Jump-Scare Trigger plays even when the mechanic fails or is rejected.",
-    "Jump-Scare Trigger produces different results between frame rates, platforms, or network clients."
+    "The scare plays after the threat has been removed or the scripted actor is pooled elsewhere.",
+    "Trigger validation uses camera position instead of player state and fires through walls.",
+    "Audio and animation are not synchronized, making the scare feel broken instead of intentional.",
+    "One-shot state is saved after the scare animation, so quitting early allows repeated farming.",
+    "Accessibility intensity changes apply to UI but not to existing loaded scare events."
   ],
   "balancing_notes": [
-    "Make Jump-Scare Trigger strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Repeated jump scares lose impact quickly; pacing should leave space for anticipation and recovery.",
+    "Low-threat false alarms can teach location language, but too many make real threats feel arbitrary.",
+    "Scares should rarely punish careful play without prior telegraphing."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Jump-Scare Trigger becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide reduced jump scare mode that lowers audio spikes, camera snaps, flash intensity, or sudden motion.",
+    "Avoid mandatory rapid input immediately after a scare unless alternate settings exist.",
+    "Respect photosensitivity settings for flashes and high-contrast cuts."
   ],
   "implementation_notes": {
-    "unity": "Implement Jump-Scare Trigger with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Jump-Scare Trigger as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Jump-Scare Trigger with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Jump-Scare Trigger as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use trigger_volume_id plus explicit player state checks before firing scripted_event_id. Persist one_shot_state_id before starting animation, route camera_cue_id and audio through accessibility intensity settings, and guard against pooled actor references.",
+    "godot": "Use Area2D or Area3D nodes to arm triggers and a central scare director to check state, rearm delay, and intensity tier. Save fired state immediately so reloads do not repeat one-shot scares.",
+    "unreal": "Blueprint triggers can call a scare component, but validation should check player state, difficulty, intensity settings, and one-shot persistence first. Sequencer, camera shake, and audio cues should branch based on reduced-scare policy.",
+    "web": "In Phaser or custom JavaScript, store trigger state in level save data and schedule audio, camera, and sprite events from one scare record. Avoid relying on CSS or rendering callbacks to mark the scare as fired."
   },
   "related_mechanics": [
-    "horror.light_resource",
+    "horror.monster_patrol",
     "horror.limited_visibility",
-    "horror.sanity_meter",
-    "stealth.shadow_cover"
+    "camera.screen_shake",
+    "time.cooldown_time"
   ],
   "combines_well_with": [
-    "horror.hiding",
-    "horror.light_resource",
     "horror.sound_lure",
-    "stealth.shadow_cover"
+    "narrative.environmental_storytelling",
+    "ui_ux.tutorial_prompt",
+    "accessibility.adjustable_difficulty"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Five Nights at Freddy's",
+      "note": "Uses sudden scare events as a major failure and tension beat."
+    },
+    {
+      "title": "Resident Evil 7: Biohazard",
+      "note": "Uses scripted scares and sudden reveals in authored horror sequences."
+    }
+  ],
   "tags": [
-    "horror",
-    "jump",
-    "tension"
+    "jump_scare",
+    "scripted_event",
+    "trigger_volume",
+    "intensity_setting",
+    "pacing_spike"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

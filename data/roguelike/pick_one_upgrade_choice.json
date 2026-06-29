@@ -22,91 +22,121 @@
   "genres": [
     "roguelike",
     "deckbuilder",
-    "action"
+    "action",
+    "rpg"
   ],
-  "description": "A reward screen where the player chooses one upgrade from a small generated set.",
-  "design_notes": "Pick-one upgrade choices turn randomness into agency. The set should be varied enough to create decisions, filtered enough to avoid unusable options, and transparent enough for players to predict build consequences.",
+  "description": "A run reward screen where the player chooses one upgrade from a small generated set and commits it to the current build.",
+  "design_notes": "Pick-one choices convert randomness into agency. The reward generator should know the current run state, eligible pools, duplicate rules, rarity weights, reroll policy, and preview text before showing choices. The player should understand why each option matters without seeing hidden formulas.",
   "design_purpose": [
-    "Give players agency over random run rewards.",
-    "Create build direction through repeated small choices.",
-    "Support synergies without guaranteeing perfect combinations."
+    "Give players agency over random rewards without eliminating adaptation.",
+    "Create build direction through repeated small commitments.",
+    "Support synergies, pivots, and scarcity by controlling reward pool eligibility."
   ],
-  "player_fantasy": "The player feels they are drafting a run-defining build from tempting options.",
+  "player_fantasy": "The player feels they are drafting a run-defining build from several tempting but mutually exclusive options.",
   "required_systems": [
     "reward_generation",
     "upgrade_database",
-    "run_state",
-    "ui_selection"
+    "run_state_manager",
+    "ui_selection",
+    "seeded_rng"
   ],
   "parameters": [
+    {
+      "name": "reward_choice_id",
+      "type": "string",
+      "typical_range": "unique per offered reward screen",
+      "description": "Persistent id for the generated choice set."
+    },
+    {
+      "name": "reward_pool_id",
+      "type": "string",
+      "typical_range": "combat_rewards, boss_rewards, event_rewards",
+      "description": "Source pool filtered before options are drawn."
+    },
     {
       "name": "choice_slot_count",
       "type": "integer",
       "typical_range": "2-5 options",
-      "description": "Number of upgrade options shown at once."
+      "description": "Number of visible options in the choice set."
     },
     {
-      "name": "rarity_weight_profile_id",
+      "name": "item_rarity_tier",
       "type": "string",
-      "typical_range": "profile id",
-      "description": "Weight profile used to pick option rarity."
+      "typical_range": "common, uncommon, rare, legendary",
+      "description": "Rarity tier assigned before or after eligibility filtering."
     },
     {
-      "name": "synergy_bias_ratio",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "How strongly current build tags influence offered options."
+      "name": "duplicate_reward_rule_id",
+      "type": "string",
+      "typical_range": "allow_stack, ban_owned, upgrade_existing",
+      "description": "Rule for options that overlap with owned upgrades."
     },
     {
-      "name": "reroll_cost_sequence",
-      "type": "array",
-      "typical_range": "0-10 costs",
-      "description": "Costs for rerolling the offered choices."
+      "name": "reroll_price_curve_id",
+      "type": "string",
+      "typical_range": "free_once, escalating_gold, no_reroll",
+      "description": "Price rule used if the player asks for new options."
+    },
+    {
+      "name": "synergy_bias_profile_id",
+      "type": "string",
+      "typical_range": "neutral, build_tag_soft, archetype_push",
+      "description": "Weight profile that reacts to current build tags."
     }
   ],
   "common_variants": [
     "three_choice_upgrade",
     "draft_pack_choice",
     "rerollable_choice",
-    "skip_for_currency"
+    "skip_for_currency",
+    "banish_option"
   ],
   "edge_cases": [
-    "All generated options can be invalid for the current build and need fallback rules.",
-    "Duplicate options in one choice set usually feel wasteful unless intentional.",
-    "Skipping, rerolling, or saving choices for later must be explicit."
+    "All generated options become invalid after another system changes inventory or build tags.",
+    "A reroll uses the same reward_choice_id and redraws identical options from the same RNG cursor.",
+    "Two options are technically different but share the same visible effect and feel duplicated.",
+    "The player closes the reward screen during a networked run before committing or skipping.",
+    "An option references an unlock_pool_id that is not available for the current account state."
   ],
   "common_bugs": [
-    "Synergy bias guarantees the same build every run.",
-    "Reroll consumes currency but rebuilds the same choice set from the same seed.",
-    "Upgrade preview stats use old values after previous selections."
+    "Selection commits on button down and again on confirm, granting two upgrades.",
+    "Preview text uses post-selection state and shows inflated synergy effects.",
+    "Reroll price is charged even if reward generation fails and falls back to the old set.",
+    "Owned relic filters run after rarity weighting, creating empty rare slots.",
+    "Reward choice data is regenerated on reload instead of restoring the persisted offer ids."
   ],
   "balancing_notes": [
-    "Too much synergy bias removes adaptation; too little makes choices feel random and disconnected.",
-    "Option count changes decision difficulty and average build power."
+    "Too much synergy bias makes runs solve themselves; too little makes builds feel disconnected.",
+    "Choice slot count changes both decision difficulty and average build power.",
+    "Skip rewards should be useful enough to reduce frustration but not so efficient that upgrades are commonly ignored."
   ],
   "accessibility_notes": [
-    "Show full text, icons, and comparison hints without requiring rapid reading or memory of hidden upgrade names."
+    "Show full option text, comparison hints, and keyword explanations without requiring fast reading.",
+    "Support controller, keyboard, and screen-reader ordering that matches the visual option order.",
+    "Avoid color-only rarity presentation; include labels or shapes for item_rarity_tier."
   ],
   "implementation_notes": {
-    "unity": "Generate choice slots from upgrade ScriptableObjects using eligibility filters, rarity weights, and run tags, then commit the selected upgrade through a run-state transaction.",
-    "godot": "Use Resource definitions for upgrades and build the offered set from current run tags before displaying a Control-based choice UI with reroll or skip actions.",
-    "unreal": "Use Data Assets for upgrades and a reward subsystem that applies rarity weights, synergy bias, and server-authoritative selection for networked runs.",
-    "web": "Generate choices from JSON upgrade data with a seeded RNG, persist the offered option IDs, and record the selected option as an immutable run event."
+    "unity": "Generate reward_choice_id from the run_id and reward event, then draw ScriptableObject upgrade ids through eligibility filters, rarity weights, and duplicate_reward_rule_id. Commit the selected option through one run-state transaction so UI double clicks cannot grant extras.",
+    "godot": "Store upgrade definitions as Resources and offered ids in the run save. A Control screen should display restored offers, call a single selection method, and update run tags only after the chosen reward is committed.",
+    "unreal": "Use Data Assets for upgrades and a reward subsystem that can log the RNG stream, selected reward_pool_id, and score breakdown for designers. Networked runs should let the server commit reward_choice_id and replicate the chosen upgrade to clients.",
+    "web": "Generate choices from versioned JSON using deterministic RNG streams and persist the offered option ids. Phaser or custom UIs should render from the persisted offer record rather than redrawing on refresh."
   },
   "related_mechanics": [
     "roguelike.random_powerups",
     "roguelike.relic_synergy",
-    "economy.loot_table"
+    "economy.loot_table",
+    "procedural_generation.seeded_generation"
   ],
   "combines_well_with": [
     "progression.skill_tree",
     "progression.respec",
-    "procedural_generation.seeded_generation"
+    "roguelike.curse_modifier",
+    "ui_ux.dialogue_choice"
   ],
   "example_games": [
     {
       "title": "Hades",
-      "note": "Offers small sets of boon choices that shape each run."
+      "note": "Offers small sets of run upgrades that shape the current build."
     },
     {
       "title": "Slay the Spire",
@@ -114,11 +144,11 @@
     }
   ],
   "tags": [
-    "roguelike",
-    "choice",
-    "upgrades",
-    "run_progression",
-    "randomness"
+    "reward_choice",
+    "upgrade_draft",
+    "run_build",
+    "rarity_weights",
+    "rng_stream"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

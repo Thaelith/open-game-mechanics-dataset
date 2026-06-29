@@ -2,12 +2,12 @@
   "id": "horror.sanity_meter",
   "name": "Sanity Meter",
   "aliases": [
-    "sanity meter mechanic",
-    "sanity meter system",
-    "sanity meter"
+    "fear meter",
+    "mental stability",
+    "sanity system"
   ],
   "category": "horror",
-  "subcategory": "horror",
+  "subcategory": "sanity_pressure",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,87 +24,124 @@
     "survival",
     "adventure"
   ],
-  "description": "Sanity Meter is a fear-building mechanic that shapes vulnerability, uncertainty, attention, and tension.",
-  "design_notes": "Sanity Meter should be designed around a clear player promise, a readable trigger, and a predictable result. For horror mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A psychological pressure resource that changes as the player experiences darkness, threats, isolation, scripted events, or recovery sources.",
+  "design_notes": "A sanity meter works best when it communicates vulnerability without becoming a hidden punishment bar. Designers should define decay sources, recovery sources, thresholds, hallucination triggers, save behavior, and how much of the meter is visible. The system should support tension pacing while keeping cause and recovery legible.",
   "design_purpose": [
-    "Give the player a readable way to use sanity meter as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect sanity meter to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Add a long-form fear pressure that survives beyond a single chase or scare.",
+    "Tie darkness, monsters, safe rooms, and resource decisions into one readable survival loop.",
+    "Trigger hallucinations, audio changes, UI distortions, or encounter pressure at authored thresholds."
   ],
-  "player_fantasy": "The player feels vulnerable, alert, and uncertain about what happens next.",
+  "player_fantasy": "The player feels their character fraying under pressure and looks for light, shelter, or progress before control slips further.",
   "required_systems": [
-    "atmosphere_controller",
-    "ai_state_machine",
-    "resource_system",
-    "audio_visual_feedback"
+    "fear_state_manager",
+    "environmental_triggers",
+    "ui_status_display",
+    "audio_visual_effects",
+    "save_system"
   ],
   "parameters": [
     {
-      "name": "tension_level",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "Current pressure or fear intensity used to drive the mechanic."
+      "name": "fear_state_id",
+      "type": "string",
+      "typical_range": "calm, uneasy, panicked, broken",
+      "description": "Named state derived from current sanity thresholds."
     },
     {
-      "name": "resource_drain",
+      "name": "sanity_points",
       "type": "float",
-      "typical_range": "0-10 units/minute",
-      "description": "Rate at which a safety or visibility resource is consumed."
+      "typical_range": "0-100 points",
+      "description": "Current psychological stability measured for thresholds and effects."
     },
     {
-      "name": "reveal_distance",
+      "name": "sanity_decay_rate",
       "type": "float",
-      "typical_range": "1-30 world units",
-      "description": "Distance at which a threat or cue becomes clear."
+      "typical_range": "0-20 points per minute",
+      "description": "Drain profile applied by darkness, pursuit, isolation, or scripted pressure."
+    },
+    {
+      "name": "sanity_recovery_source_id",
+      "type": "string",
+      "typical_range": "safe_room, light_source, medicine, companion",
+      "description": "Recovery source that restores or stabilizes sanity."
+    },
+    {
+      "name": "threshold_effect_id",
+      "type": "string",
+      "typical_range": "audio_whispers, vision_warp, false_enemy, controls_shake",
+      "description": "Effect triggered when sanity crosses a defined band."
+    },
+    {
+      "name": "checkpoint_restore_state",
+      "type": "string",
+      "typical_range": "restore_exact, clamp_to_safe_band, reset_to_checkpoint",
+      "description": "Restore rule applied after reload or checkpoint restart."
     }
   ],
   "common_variants": [
-    "sanity_meter_subtle_variant",
-    "sanity_meter_high_intensity_variant",
-    "resource_limited",
-    "ai_driven"
+    "visible_sanity_meter",
+    "hidden_fear_state",
+    "threshold_hallucinations",
+    "sanity_as_resource",
+    "sanity_director"
   ],
   "edge_cases": [
-    "Sanity Meter is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Sanity Meter overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Sanity Meter runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Sanity drops below a critical threshold during a cutscene, menu, or non-interactive scare.",
+    "A recovery source and decay source overlap inside a safe room doorway or light boundary.",
+    "A hallucination spawns during combat and is mistaken for a real damage source.",
+    "Save/load restores sanity but not the currently active threshold effect.",
+    "Accessibility intensity settings disable some effects while the underlying sanity state still changes."
   ],
   "common_bugs": [
-    "Sanity Meter state does not reset correctly after interruption or reload.",
-    "Feedback for Sanity Meter plays even when the mechanic fails or is rejected.",
-    "Sanity Meter produces different results between frame rates, platforms, or network clients."
+    "Sanity decay continues while paused because it reads the wrong clock.",
+    "Threshold effects retrigger every frame when sanity hovers near a boundary.",
+    "Recovery applies client-side and desyncs the authoritative run or checkpoint state.",
+    "Visual distortion remains active after fear_state_id returns to a calmer band.",
+    "The UI shows rounded sanity values that disagree with threshold behavior."
   ],
   "balancing_notes": [
-    "Make Sanity Meter strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Sanity pressure should give players enough warning to react before severe effects begin.",
+    "Recovery sources need scarcity, placement, and readable tradeoffs so safe rooms do not erase all tension.",
+    "Hidden sanity can increase fear, but invisible cause-and-effect can feel arbitrary."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Sanity Meter becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer reduced distortion, reduced camera movement, and lower-intensity hallucination settings.",
+    "Provide subtitle or text alternatives for audio-only sanity cues.",
+    "Let players choose whether the sanity state is numeric, banded, hidden, or simplified."
   ],
   "implementation_notes": {
-    "unity": "Implement Sanity Meter with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Sanity Meter as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Sanity Meter with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Sanity Meter as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Track sanity_points, equivalent to a sanity_value field in some codebases, and fear_state_id in a gameplay state component. Drive post-processing, audio snapshots, and UI from threshold changes rather than per-frame polling, then persist checkpoint_restore_state and active threshold_effect_id so reloads clear or restore effects intentionally.",
+    "godot": "Use an autoload fear state manager or Resource to own sanity bands, decay sources, and recovery sources. Emit state_changed signals for Control UI, audio buses, and shader effects, and debounce threshold crossings with hysteresis.",
+    "unreal": "A component or Gameplay Attribute can hold sanity_value while Gameplay Tags represent fear_state_id. Authority should resolve recovery and decay events, then replicate band changes and cue ids to clients for camera, sound, and UI presentation.",
+    "web": "Keep sanity changes in a fixed-step gameplay reducer and render effects from derived fear_state_id. Persist sanity, threshold effect ids, and accessibility intensity settings together so browser refreshes do not leave visual effects stuck."
   },
   "related_mechanics": [
-    "horror.light_resource",
     "horror.limited_visibility",
-    "horror.sound_lure",
-    "stealth.shadow_cover"
+    "horror.light_resource",
+    "horror.safe_room",
+    "time.cooldown_time"
   ],
   "combines_well_with": [
-    "horror.hiding",
-    "horror.light_resource",
     "horror.monster_patrol",
-    "stealth.shadow_cover"
+    "horror.sound_lure",
+    "camera.screen_shake",
+    "accessibility.adjustable_difficulty"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Amnesia: The Dark Descent",
+      "note": "Uses mental-state pressure connected to darkness and frightening events."
+    },
+    {
+      "title": "Eternal Darkness: Sanity's Requiem",
+      "note": "Uses sanity effects as part of its horror presentation."
+    }
+  ],
   "tags": [
-    "horror",
     "sanity",
-    "tension"
+    "fear_state",
+    "threshold_effects",
+    "horror_pressure",
+    "accessibility_intensity"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

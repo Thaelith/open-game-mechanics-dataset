@@ -2,12 +2,12 @@
   "id": "roguelike.random_powerups",
   "name": "Random Powerups",
   "aliases": [
-    "random powerups mechanic",
-    "random powerups system",
-    "random powerups"
+    "random upgrades",
+    "powerup drops",
+    "run power rewards"
   ],
   "category": "roguelike",
-  "subcategory": "roguelike",
+  "subcategory": "reward_generation",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -21,90 +21,128 @@
   },
   "genres": [
     "roguelike",
-    "deckbuilder",
-    "action"
+    "action",
+    "rpg",
+    "deckbuilder"
   ],
-  "description": "Random Powerups is a run-structure mechanic that supports replayability through randomness, reset, risk, or synergy.",
-  "design_notes": "Random Powerups should be designed around a clear player promise, a readable trigger, and a predictable result. For roguelike mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A generated reward mechanic that grants run-scoped powerups from weighted pools after rooms, events, shops, bosses, or pickups.",
+  "design_notes": "Random powerups should feel surprising without becoming arbitrary. The generator needs reward pools, rarity weights, unlock filters, duplicate handling, seed logging, and player-facing previews. Designers should separate permanent unlock availability from current run eligibility so the pool can grow safely over the lifetime of the game.",
   "design_purpose": [
-    "Give the player a readable way to use random powerups as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect random powerups to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create variety between runs by changing tools, stats, actions, or synergies.",
+    "Reward combat, exploration, risk rooms, shops, and events with build-shaping options.",
+    "Let designers tune build archetypes through tags, rarity, and pool membership."
   ],
-  "player_fantasy": "The player feels each run is a fresh risk with potential for unexpected synergy.",
+  "player_fantasy": "The player feels each reward could open a new build path or transform how the current run plays.",
   "required_systems": [
-    "run_state",
-    "random_number_generator",
-    "reward_rules",
-    "save_or_meta_state"
+    "reward_generation",
+    "powerup_database",
+    "seeded_rng",
+    "run_state_manager",
+    "ui_reward_preview"
   ],
   "parameters": [
     {
-      "name": "run_length_target",
-      "type": "float",
-      "typical_range": "5-90 minutes",
-      "description": "Expected duration of one run segment using the mechanic."
+      "name": "reward_pool_id",
+      "type": "string",
+      "typical_range": "minor_powerups, boss_rewards, shop_pool",
+      "description": "Candidate pool selected by room, event, or reward source."
     },
     {
-      "name": "randomness_weight",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "How strongly random selection affects outcomes."
+      "name": "rng_stream_id",
+      "type": "string",
+      "typical_range": "reward, shop, event, boss",
+      "description": "Random stream used to draw reward candidates."
     },
     {
-      "name": "carryover_amount",
-      "type": "float",
-      "typical_range": "0-100%",
-      "description": "How much state persists between runs."
+      "name": "item_rarity_tier",
+      "type": "string",
+      "typical_range": "common, uncommon, rare, legendary",
+      "description": "Rarity class selected from the reward weighting profile."
+    },
+    {
+      "name": "unlock_pool_id",
+      "type": "string",
+      "typical_range": "base_pool, character_pool, account_unlocks",
+      "description": "Account or character unlock set allowed for this run."
+    },
+    {
+      "name": "duplicate_reward_rule_id",
+      "type": "string",
+      "typical_range": "allow_stack, convert_to_currency, ban_owned",
+      "description": "Rule for owned or recently offered powerups."
+    },
+    {
+      "name": "powerup_instance_id",
+      "type": "string",
+      "typical_range": "unique per granted powerup",
+      "description": "Run-scoped instance used for stacking and removal."
     }
   ],
   "common_variants": [
-    "random_powerups_hard_reset",
-    "random_powerups_partial_carryover",
-    "daily_seeded",
-    "challenge_modifier"
+    "room_clear_drop",
+    "boss_powerup",
+    "shop_powerup",
+    "event_powerup",
+    "temporary_powerup"
   ],
   "edge_cases": [
-    "Random Powerups is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Random Powerups overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Random Powerups runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The reward pool is empty after unlock filters, duplicate rules, and character restrictions apply.",
+    "A granted powerup changes eligibility for other options in the same reward screen.",
+    "A save reload happens after the drop appears but before the player collects it.",
+    "Two rewards with different ids share the same stacking slot and conflict silently.",
+    "A content update removes a powerup definition used by an active run save."
   ],
   "common_bugs": [
-    "Random Powerups state does not reset correctly after interruption or reload.",
-    "Feedback for Random Powerups plays even when the mechanic fails or is rejected.",
-    "Random Powerups produces different results between frame rates, platforms, or network clients."
+    "Reward draws are not deterministic because pool iteration follows unordered dictionary keys.",
+    "Duplicate prevention checks display names instead of stable powerup ids.",
+    "Temporary powerups persist after floor transition because cleanup does not inspect powerup_instance_id.",
+    "Rarity weights are applied before eligibility filters and skew the intended distribution.",
+    "Powerup previews read base stats instead of current run modifiers and mislead the player."
   ],
   "balancing_notes": [
-    "Make Random Powerups strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Reward weighting should support both build discovery and comeback potential without guaranteeing ideal synergies.",
+    "Permanent unlocks increase pool size, so older content may need weighting or tags to stay visible.",
+    "Converting invalid duplicates to currency can reduce frustration, but too much conversion makes rewards feel interchangeable."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Random Powerups becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide clear text for powerup effects, stack behavior, and whether the effect is temporary.",
+    "Let players review collected powerups outside fast reward moments.",
+    "Use readable icons and labels so rarity and build tags are not communicated by color alone."
   ],
   "implementation_notes": {
-    "unity": "Implement Random Powerups with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Random Powerups as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Random Powerups with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Random Powerups as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use ScriptableObject powerup definitions but draw rewards through a service that takes run_id, reward_pool_id, rng_stream_id, unlock_pool_id, and duplicate rules. Persist offered or dropped powerup ids before showing pickups to prevent redraws after reload.",
+    "godot": "Store powerup Resources in versioned registries and perform eligibility filtering before weighted selection. Commit powerup_instance_id into run state, then emit signals for stat recompute, UI list updates, and pickup presentation.",
+    "unreal": "Data Assets can define powerup tags, rarity tiers, and stacking policies. Server-authoritative runs should draw rewards on the server, replicate offered ids, and apply granted instances through a deterministic modifier component.",
+    "web": "Keep reward pools as sorted JSON arrays and use seeded RNG for candidate draws. Store offer records and granted powerup_instance_id values in local or server run state so browser refreshes do not reroll rewards."
   },
   "related_mechanics": [
-    "economy.shop",
-    "procedural_generation.seeded_generation",
-    "roguelike.permadeath",
-    "roguelike.run_based_progression"
+    "roguelike.pick_one_upgrade_choice",
+    "roguelike.relic_synergy",
+    "economy.loot_table",
+    "progression.unlockable_abilities"
   ],
   "combines_well_with": [
-    "economy.shop",
-    "procedural_generation.seeded_generation",
     "roguelike.procedural_floor",
-    "roguelike.relic_synergy"
+    "roguelike.risk_reward_room",
+    "procedural_generation.loot_generation",
+    "ui_ux.cooldown_indicator"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Binding of Isaac",
+      "note": "Uses random items to create different run builds."
+    },
+    {
+      "title": "Risk of Rain 2",
+      "note": "Uses item drops and stacking effects as core run growth."
+    }
+  ],
   "tags": [
-    "random",
-    "roguelike",
-    "runs"
+    "random_powerups",
+    "reward_pool",
+    "rarity",
+    "unlock_pool",
+    "run_build"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

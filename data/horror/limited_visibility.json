@@ -2,12 +2,12 @@
   "id": "horror.limited_visibility",
   "name": "Limited Visibility",
   "aliases": [
-    "limited visibility mechanic",
-    "limited visibility system",
-    "limited visibility"
+    "darkness visibility",
+    "restricted sight",
+    "low-visibility play"
   ],
   "category": "horror",
-  "subcategory": "horror",
+  "subcategory": "visibility_pressure",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -22,98 +22,127 @@
   "genres": [
     "horror",
     "survival",
-    "adventure"
+    "adventure",
+    "stealth"
   ],
-  "description": "Limited Visibility is a fear-building mechanic that shapes vulnerability, uncertainty, attention, and tension.",
-  "design_notes": "Limited Visibility should be designed around a clear player promise, a readable trigger, and a predictable result. For horror mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A horror visibility constraint that limits what the player can see through darkness, fog, camera framing, occlusion, blindness, or unreliable light.",
+  "design_notes": "Limited visibility should shape uncertainty without hiding required information unfairly. Designers need to separate navigation readability, threat telegraphing, puzzle readability, and aesthetic darkness. The system should define how visibility interacts with light resources, monster detection, accessibility brightness, and checkpoint restore state.",
   "design_purpose": [
-    "Give the player a readable way to use limited visibility as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect limited visibility to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create vulnerability by narrowing what the player can confidently inspect.",
+    "Make light, sound, map knowledge, and route planning matter.",
+    "Control reveal timing for threats, clues, exits, and environmental storytelling."
   ],
-  "player_fantasy": "The player feels vulnerable, alert, and uncertain about what happens next.",
+  "player_fantasy": "The player feels they are pushing into darkness where danger may be close but not fully knowable.",
   "required_systems": [
-    "atmosphere_controller",
-    "ai_state_machine",
-    "resource_system",
-    "audio_visual_feedback"
+    "visibility_controller",
+    "lighting_system",
+    "camera_controller",
+    "ai_perception",
+    "accessibility_settings"
   ],
   "parameters": [
     {
-      "name": "tension_level",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "Current pressure or fear intensity used to drive the mechanic."
-    },
-    {
-      "name": "resource_drain",
-      "type": "float",
-      "typical_range": "0-10 units/minute",
-      "description": "Rate at which a safety or visibility resource is consumed."
-    },
-    {
-      "name": "reveal_distance",
+      "name": "visibility_radius",
       "type": "float",
       "typical_range": "1-30 world units",
-      "description": "Distance at which a threat or cue becomes clear."
+      "description": "Playable sight radius before darkness or fog obscures details."
+    },
+    {
+      "name": "darkness_band_id",
+      "type": "string",
+      "typical_range": "dim, dark, blackout, supernatural",
+      "description": "Lighting band that drives readability and fear-state effects."
+    },
+    {
+      "name": "occlusion_profile_id",
+      "type": "string",
+      "typical_range": "fog, cone_light, vignette, camera_blindspot",
+      "description": "Visual constraint profile applied to the current area."
+    },
+    {
+      "name": "threat_reveal_rule_id",
+      "type": "string",
+      "typical_range": "silhouette_first, audio_first, sudden_reveal",
+      "description": "Rule controlling how threats become readable."
+    },
+    {
+      "name": "accessibility_brightness_floor",
+      "type": "float",
+      "typical_range": "0.0-0.5 normalized luminance",
+      "description": "Minimum allowed scene luminance for readable play."
+    },
+    {
+      "name": "checkpoint_restore_state",
+      "type": "string",
+      "typical_range": "restore_area_band, reset_to_safe_band, scripted_blackout",
+      "description": "Visibility state restored after checkpoint or save load."
     }
   ],
   "common_variants": [
-    "limited_visibility_subtle_variant",
-    "limited_visibility_high_intensity_variant",
-    "resource_limited",
-    "ai_driven"
+    "darkness_vignette",
+    "flashlight_cone_visibility",
+    "fog_limited_visibility",
+    "camera_blindspot",
+    "temporary_blindness"
   ],
   "edge_cases": [
-    "Limited Visibility is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Limited Visibility overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Limited Visibility runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A required pickup, exit, or puzzle symbol is outside the readable visibility area.",
+    "A monster attacks from darkness before any audio or silhouette telegraph can play.",
+    "Accessibility brightness settings reveal hidden navigation blockers or stealth cues.",
+    "A checkpoint restores the player into blackout while the nearest light source is empty.",
+    "Multiplayer spectators or split-screen cameras reveal areas the active player should not see."
   ],
   "common_bugs": [
-    "Limited Visibility state does not reset correctly after interruption or reload.",
-    "Feedback for Limited Visibility plays even when the mechanic fails or is rejected.",
-    "Limited Visibility produces different results between frame rates, platforms, or network clients."
+    "Post-processing darkness hides UI prompts, subtitles, or accessibility indicators.",
+    "AI perception uses full scene visibility while the player cannot see the same threat.",
+    "Fog and darkness settings stack multiplicatively and make the scene unreadable on some displays.",
+    "Threat reveal state resets on camera cuts and repeats the same reveal cue.",
+    "Brightness sliders affect menus and gameplay together, making either UI or darkness hard to read."
   ],
   "balancing_notes": [
-    "Make Limited Visibility strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Darkness is more effective when the player still has enough information to choose movement, hiding, or retreat.",
+    "Visibility constraints should vary by area and pacing beat so players do not become numb to constant darkness.",
+    "Revealing silhouettes before detail can preserve fear while reducing unfair surprise attacks."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Limited Visibility becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide brightness, contrast, reduced vignette, and reduced blur settings.",
+    "Keep subtitles, interaction prompts, and critical UI outside heavy darkness filters.",
+    "Offer non-visual threat cues for players who cannot rely on subtle silhouettes."
   ],
   "implementation_notes": {
-    "unity": "Implement Limited Visibility with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Limited Visibility as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Limited Visibility with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Limited Visibility as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Drive visibility through a controller that owns visibility_radius, darkness_band_id, and occlusion_profile_id. Apply post-processing, light masks, and camera settings from that state, and keep UI canvases outside gameplay darkness unless intentionally filtered.",
+    "godot": "Use CanvasModulate, Light2D, Environment settings, fog, or shader masks while storing darkness state in an area controller. Emit changes to AI perception and accessibility settings so detection and player readability stay aligned.",
+    "unreal": "Use Post Process Volumes, lighting channels, fog, and camera settings with explicit Gameplay Tags for darkness bands. AI perception should query the same area state when deciding whether the player or monster can be perceived.",
+    "web": "For Canvas or Phaser, render visibility masks separately from gameplay collision and UI layers. In Three.js, keep fog and postprocessing parameters tied to serialized area state so reloads restore the intended visibility band."
   },
   "related_mechanics": [
     "horror.light_resource",
     "horror.sanity_meter",
-    "horror.sound_lure",
+    "horror.monster_patrol",
     "stealth.shadow_cover"
   ],
   "combines_well_with": [
     "horror.hiding",
-    "horror.light_resource",
-    "horror.monster_patrol",
-    "stealth.shadow_cover"
+    "horror.sound_lure",
+    "camera.first_person_camera",
+    "accessibility.adjustable_difficulty"
   ],
   "example_games": [
     {
       "title": "Amnesia: The Dark Descent",
-      "note": "Uses darkness and visibility limits to increase vulnerability."
+      "note": "Uses darkness and limited visibility to increase vulnerability."
     },
     {
       "title": "Outlast",
-      "note": "Uses limited visual tools to create risk."
+      "note": "Uses limited visual tools and darkness during exploration and pursuit."
     }
   ],
   "tags": [
-    "horror",
-    "limited",
-    "tension"
+    "limited_visibility",
+    "darkness",
+    "threat_reveal",
+    "readability",
+    "accessibility_brightness"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

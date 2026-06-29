@@ -2,12 +2,12 @@
   "id": "horror.hiding",
   "name": "Hiding",
   "aliases": [
-    "hiding mechanic",
-    "hiding system",
-    "hiding"
+    "hide spot",
+    "hiding place",
+    "stealth hiding"
   ],
   "category": "horror",
-  "subcategory": "horror",
+  "subcategory": "hiding_state",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -21,90 +21,128 @@
   },
   "genres": [
     "horror",
+    "stealth",
     "survival",
     "adventure"
   ],
-  "description": "Hiding is a fear-building mechanic that shapes vulnerability, uncertainty, attention, and tension.",
-  "design_notes": "Hiding should be designed around a clear player promise, a readable trigger, and a predictable result. For horror mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A defensive state where the player enters a hiding spot or concealed posture to avoid detection, searches, or chase pressure.",
+  "design_notes": "Hiding should preserve fear while keeping player agency. A good hiding spot has enter and exit rules, readable monster search behavior, detection risks, animation lock boundaries, and reasons to leave. If hiding is always safe, tension stalls; if it is opaque, players feel cheated.",
   "design_purpose": [
-    "Give the player a readable way to use hiding as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect hiding to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players a non-combat survival option against stronger threats.",
+    "Create close-range suspense through line of sight, noise, and monster search patterns.",
+    "Support level design that alternates exposure, pursuit, concealment, and escape."
   ],
-  "player_fantasy": "The player feels vulnerable, alert, and uncertain about what happens next.",
+  "player_fantasy": "The player feels barely concealed while a threat searches nearby and every sound could give them away.",
   "required_systems": [
-    "atmosphere_controller",
-    "ai_state_machine",
-    "resource_system",
-    "audio_visual_feedback"
+    "interaction_system",
+    "ai_perception",
+    "animation_state",
+    "stealth_state",
+    "camera_controller"
   ],
   "parameters": [
     {
-      "name": "tension_level",
+      "name": "hiding_spot_id",
+      "type": "string",
+      "typical_range": "locker_03, bed_shadow, closet_a",
+      "description": "Interactable concealment point used for state and AI search."
+    },
+    {
+      "name": "hiding_state",
+      "type": "string",
+      "typical_range": "entering, hidden, peeking, exiting, exposed",
+      "description": "Current player concealment state and animation gate."
+    },
+    {
+      "name": "enter_exit_window_ms",
+      "type": "integer",
+      "typical_range": "250-1600 ms",
+      "description": "Animation lock window for entering or leaving the spot."
+    },
+    {
+      "name": "line_of_sight_grace_ms",
+      "type": "integer",
+      "typical_range": "0-800 ms",
+      "description": "Brief allowance before a monster confirms the hiding transition."
+    },
+    {
+      "name": "search_suspicion_threshold",
       "type": "float",
       "typical_range": "0-1",
-      "description": "Current pressure or fear intensity used to drive the mechanic."
+      "description": "AI suspicion band that causes the monster to inspect the spot."
     },
     {
-      "name": "resource_drain",
-      "type": "float",
-      "typical_range": "0-10 units/minute",
-      "description": "Rate at which a safety or visibility resource is consumed."
-    },
-    {
-      "name": "reveal_distance",
-      "type": "float",
-      "typical_range": "1-30 world units",
-      "description": "Distance at which a threat or cue becomes clear."
+      "name": "exit_position_rule_id",
+      "type": "string",
+      "typical_range": "front_only, nearest_clear, authored_socket",
+      "description": "Placement rule used when the player leaves hiding."
     }
   ],
   "common_variants": [
-    "hiding_subtle_variant",
-    "hiding_high_intensity_variant",
-    "resource_limited",
-    "ai_driven"
+    "locker_hiding",
+    "under_bed_hiding",
+    "shadow_hiding",
+    "hold_breath_hiding",
+    "peek_from_hiding"
   ],
   "edge_cases": [
-    "Hiding is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Hiding overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Hiding runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The monster sees the player during the enter animation and must decide whether hiding succeeds.",
+    "The exit socket is blocked by the monster, another player, or a moved physics object.",
+    "A scripted scare or checkpoint restore occurs while the player is inside a hiding spot.",
+    "Multiple players or companions try to use the same hiding_spot_id.",
+    "The player makes noise while hidden and the monster should inspect without instantly knowing the exact location."
   ],
   "common_bugs": [
-    "Hiding state does not reset correctly after interruption or reload.",
-    "Feedback for Hiding plays even when the mechanic fails or is rejected.",
-    "Hiding produces different results between frame rates, platforms, or network clients."
+    "AI line-of-sight ignores hiding_state and detects the player through the hiding mesh.",
+    "The camera clips outside lockers or under beds during enter and peek transitions.",
+    "Exit placement pushes the player into a wall or directly into monster collision.",
+    "Hiding spots never release occupancy after interrupted animations or reload.",
+    "Search suspicion resets too quickly and lets players exploit the same spot repeatedly."
   ],
   "balancing_notes": [
-    "Make Hiding strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Safe hiding spots create relief; searchable hiding spots preserve tension but need readable telegraphs.",
+    "Long entry animations increase commitment and fear, but excessive lockout can feel unfair during chase sequences.",
+    "Repeated use should become riskier through monster memory, noise, or search patterns rather than arbitrary failure."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Hiding becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Support toggle or hold options for breathing, peeking, or staying hidden interactions.",
+    "Use subtitles or directional indicators for monster proximity cues that affect hiding decisions.",
+    "Avoid pitch-black hiding views without alternate readability settings."
   ],
   "implementation_notes": {
-    "unity": "Implement Hiding with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Hiding as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Hiding with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Hiding as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Represent hiding_spot_id as an interactable with occupancy and exit sockets. On enter, set hiding_state, disable or remap movement, notify AI perception with the last visible position, and only mark hidden after line_of_sight_grace_ms and animation confirmation.",
+    "godot": "Use an Area2D or Area3D for the hiding spot and a player state machine for entering, hidden, peeking, and exiting. Store occupancy and exit_position_rule_id so reloads and interrupted animations can clear or restore the spot safely.",
+    "unreal": "Implement hiding spots as Actors with interaction components, camera targets, and replicated occupancy if needed. AI should transition from chase to search using last_known_player_position and inspect hiding_spot_id based on suspicion rather than raw visibility alone.",
+    "web": "In Phaser or custom engines, separate the hide interaction transaction from the rendered sprite or camera mask. Keep hiding_state, occupancy, and exit socket validation in gameplay state so animation skips cannot bypass detection rules."
   },
   "related_mechanics": [
-    "horror.light_resource",
-    "horror.limited_visibility",
-    "horror.sanity_meter",
-    "stealth.shadow_cover"
-  ],
-  "combines_well_with": [
-    "horror.light_resource",
+    "stealth.shadow_cover",
     "horror.monster_patrol",
     "horror.sound_lure",
-    "stealth.shadow_cover"
+    "stealth.last_known_position_search"
   ],
-  "example_games": [],
+  "combines_well_with": [
+    "horror.limited_visibility",
+    "horror.safe_room",
+    "ai.investigate_noise",
+    "accessibility.toggle_hold_option"
+  ],
+  "example_games": [
+    {
+      "title": "Alien: Isolation",
+      "note": "Uses hiding places as part of monster avoidance."
+    },
+    {
+      "title": "Outlast",
+      "note": "Uses lockers and beds as hiding options during pursuit."
+    }
+  ],
   "tags": [
     "hiding",
-    "horror",
-    "tension"
+    "stealth_state",
+    "monster_search",
+    "line_of_sight",
+    "escape"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

@@ -2,12 +2,12 @@
   "id": "roguelike.relic_synergy",
   "name": "Relic Synergy",
   "aliases": [
-    "relic synergy mechanic",
-    "relic synergy system",
-    "relic synergy"
+    "item synergy",
+    "relic combo",
+    "build synergy"
   ],
   "category": "roguelike",
-  "subcategory": "roguelike",
+  "subcategory": "relic_interaction",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,96 +15,134 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
-    "implementation": "medium",
+    "design": "expert",
+    "implementation": "hard",
     "tuning": "expert"
   },
   "genres": [
     "roguelike",
     "deckbuilder",
+    "rpg",
     "action"
   ],
-  "description": "Relic Synergy is a run-structure mechanic that supports replayability through randomness, reset, risk, or synergy.",
-  "design_notes": "Relic Synergy should be designed around a clear player promise, a readable trigger, and a predictable result. For roguelike mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "An interaction pattern where two or more run items, relics, cards, or modifiers produce stronger, altered, or newly enabled behavior together.",
+  "design_notes": "Relic synergy is a buildcraft promise: players learn item rules, spot combinations, and feel clever when effects reinforce each other. The implementation should avoid hidden order dependence by defining trigger events, stack limits, priority, and debug traces for each synergy calculation.",
   "design_purpose": [
-    "Give the player a readable way to use relic synergy as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect relic synergy to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Encourage players to draft around themes, tags, and payoff effects.",
+    "Make repeated runs feel different through emergent combinations.",
+    "Reward knowledge without requiring every synergy to be explicitly scripted."
   ],
-  "player_fantasy": "The player feels each run is a fresh risk with potential for unexpected synergy.",
+  "player_fantasy": "The player feels their collected relics have become a coherent engine rather than isolated bonuses.",
   "required_systems": [
-    "run_state",
-    "random_number_generator",
-    "reward_rules",
-    "save_or_meta_state"
+    "relic_database",
+    "modifier_pipeline",
+    "event_bus",
+    "run_state_manager",
+    "ui_relic_tooltips"
   ],
   "parameters": [
     {
-      "name": "run_length_target",
-      "type": "float",
-      "typical_range": "5-90 minutes",
-      "description": "Expected duration of one run segment using the mechanic."
+      "name": "relic_instance_id",
+      "type": "string",
+      "typical_range": "unique per run relic",
+      "description": "Run-scoped relic instance participating in synergy checks."
     },
     {
-      "name": "randomness_weight",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "How strongly random selection affects outcomes."
+      "name": "synergy_tag_id",
+      "type": "string",
+      "typical_range": "burn, shield, summon, draw",
+      "description": "Shared tag that links relics, triggers, and payoff effects."
     },
     {
-      "name": "carryover_amount",
-      "type": "float",
-      "typical_range": "0-100%",
-      "description": "How much state persists between runs."
+      "name": "trigger_event_id",
+      "type": "string",
+      "typical_range": "on_room_start, on_hit, on_card_play, on_kill",
+      "description": "Event that evaluates or activates the synergy."
+    },
+    {
+      "name": "effect_priority_order",
+      "type": "array",
+      "typical_range": "ordered effect ids",
+      "description": "Deterministic ordering for simultaneous relic effects."
+    },
+    {
+      "name": "synergy_cap_rule_id",
+      "type": "string",
+      "typical_range": "no_cap, per_room_cap, stack_limit_5",
+      "description": "Limiter that prevents runaway loops or unreadable scaling."
+    },
+    {
+      "name": "debug_reason_trace",
+      "type": "array",
+      "typical_range": "effect id and contributing relic ids",
+      "description": "Designer-readable explanation of why a synergy fired."
     }
   ],
   "common_variants": [
-    "relic_synergy_hard_reset",
-    "relic_synergy_partial_carryover",
-    "daily_seeded",
-    "challenge_modifier"
+    "tag_based_synergy",
+    "explicit_pair_synergy",
+    "stacking_relic_engine",
+    "conditional_payoff_relic",
+    "anti_synergy_tradeoff"
   ],
   "edge_cases": [
-    "Relic Synergy is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Relic Synergy overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Relic Synergy runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Two relics trigger each other recursively and create an infinite event loop.",
+    "A relic is removed or transformed while another relic is iterating over active instances.",
+    "Synergy tags change after an upgrade and invalidate cached tooltip text.",
+    "Networked or replayed runs resolve simultaneous relic events in different orders.",
+    "A curse or modifier suppresses one relic but the synergy UI still lists it as active."
   ],
   "common_bugs": [
-    "Relic Synergy state does not reset correctly after interruption or reload.",
-    "Feedback for Relic Synergy plays even when the mechanic fails or is rejected.",
-    "Relic Synergy produces different results between frame rates, platforms, or network clients."
+    "Effect order follows collection order and changes after save/load sorting.",
+    "Stack caps apply per relic definition instead of per relic_instance_id, breaking duplicate behavior.",
+    "Tooltips advertise a synergy from tags that are not eligible in the current room or mode.",
+    "Recursive triggers are blocked globally and accidentally prevent legitimate chained effects.",
+    "Debug output only reports final stats, not the contributing relics or trigger_event_id."
   ],
   "balancing_notes": [
-    "Make Relic Synergy strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Strong synergies are memorable, but every build archetype needs enough counterweights and dead-end prevention.",
+    "Explicit pair synergies are easier to tune; tag-based synergies scale better but need caps and telemetry.",
+    "Some anti-synergy is healthy when it creates draft tension, but invisible anti-synergy feels like a bug."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Relic Synergy becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Expose synergy previews and active combo explanations in tooltips or a run log.",
+    "Avoid relying on players remembering item names from earlier rooms; show current contributing relics.",
+    "Use text and icons for synergy tags so color-coded archetypes remain readable."
   ],
   "implementation_notes": {
-    "unity": "Implement Relic Synergy with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Relic Synergy as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Relic Synergy with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Relic Synergy as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Model relic definitions as data assets and relic_instance_id values as run state. Route trigger_event_id through a deterministic event bus, sort effects by effect_priority_order, and record debug_reason_trace for tooltips and bug reports.",
+    "godot": "Keep relic instances in an ordered run-state collection and use signals for trigger events. Guard recursive emissions with synergy_cap_rule_id and recompute UI tooltip text after relic transforms or curse suppression.",
+    "unreal": "Use Gameplay Tags for synergy_tag_id and a replicated component for active relic instances. Resolve simultaneous triggers on the authority side, then replicate resulting effects and debug tags for client presentation.",
+    "web": "Implement synergy resolution as a pure reducer over ordered relic instances and event records. Store effect priority, stack counts, and cap counters in run state so refreshes and replays produce the same chain."
   },
   "related_mechanics": [
-    "economy.shop",
-    "procedural_generation.seeded_generation",
-    "roguelike.permadeath",
-    "roguelike.run_based_progression"
+    "roguelike.random_powerups",
+    "roguelike.pick_one_upgrade_choice",
+    "roguelike.curse_modifier",
+    "progression.equipment_rarity"
   ],
   "combines_well_with": [
-    "economy.shop",
-    "procedural_generation.seeded_generation",
-    "roguelike.procedural_floor",
-    "roguelike.random_powerups"
+    "combat.critical_hit",
+    "combat.damage_over_time",
+    "ui_ux.damage_numbers",
+    "progression.skill_tree"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Slay the Spire",
+      "note": "Uses relic and card interactions as a major buildcraft layer."
+    },
+    {
+      "title": "The Binding of Isaac",
+      "note": "Uses item combinations that can transform run behavior."
+    }
+  ],
   "tags": [
-    "relic",
-    "roguelike",
-    "runs"
+    "relic_synergy",
+    "buildcraft",
+    "event_trigger",
+    "modifier_pipeline",
+    "debug_trace"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

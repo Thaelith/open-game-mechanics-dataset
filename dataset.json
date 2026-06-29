@@ -4,7 +4,7 @@
   "license": "CC0-1.0",
   "tool_license": "MIT",
   "total_mechanics": 223,
-  "last_generated": "2026-06-29T14:27:00+00:00",
+  "last_generated": "2026-06-29T14:46:14+00:00",
   "mechanics": [
     {
       "id": "accessibility.adjustable_difficulty",
@@ -1450,7 +1450,7 @@
       "id": "horror.hiding",
       "name": "Hiding",
       "category": "horror",
-      "subcategory": "horror",
+      "subcategory": "hiding_state",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1459,21 +1459,24 @@
       ],
       "genres": [
         "horror",
+        "stealth",
         "survival",
         "adventure"
       ],
       "tags": [
         "hiding",
-        "horror",
-        "tension"
+        "stealth_state",
+        "monster_search",
+        "line_of_sight",
+        "escape"
       ],
       "path": "data/horror/hiding.json"
     },
     {
       "id": "horror.jump_scare_trigger",
-      "name": "Jump-Scare Trigger",
+      "name": "Jump Scare Trigger",
       "category": "horror",
-      "subcategory": "horror",
+      "subcategory": "scare_trigger",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1482,13 +1485,15 @@
       ],
       "genres": [
         "horror",
-        "survival",
-        "adventure"
+        "adventure",
+        "survival"
       ],
       "tags": [
-        "horror",
-        "jump",
-        "tension"
+        "jump_scare",
+        "scripted_event",
+        "trigger_volume",
+        "intensity_setting",
+        "pacing_spike"
       ],
       "path": "data/horror/jump_scare_trigger.json"
     },
@@ -1496,7 +1501,7 @@
       "id": "horror.light_resource",
       "name": "Light Resource",
       "category": "horror",
-      "subcategory": "horror",
+      "subcategory": "illumination_resource",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1506,12 +1511,15 @@
       "genres": [
         "horror",
         "survival",
-        "adventure"
+        "adventure",
+        "stealth"
       ],
       "tags": [
-        "horror",
-        "light",
-        "tension"
+        "light_resource",
+        "visibility",
+        "fuel",
+        "monster_detection",
+        "low_light"
       ],
       "path": "data/horror/light_resource.json"
     },
@@ -1519,7 +1527,7 @@
       "id": "horror.limited_visibility",
       "name": "Limited Visibility",
       "category": "horror",
-      "subcategory": "horror",
+      "subcategory": "visibility_pressure",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1529,12 +1537,15 @@
       "genres": [
         "horror",
         "survival",
-        "adventure"
+        "adventure",
+        "stealth"
       ],
       "tags": [
-        "horror",
-        "limited",
-        "tension"
+        "limited_visibility",
+        "darkness",
+        "threat_reveal",
+        "readability",
+        "accessibility_brightness"
       ],
       "path": "data/horror/limited_visibility.json"
     },
@@ -1542,7 +1553,7 @@
       "id": "horror.monster_patrol",
       "name": "Monster Patrol",
       "category": "horror",
-      "subcategory": "horror",
+      "subcategory": "monster_ai",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1551,13 +1562,16 @@
       ],
       "genres": [
         "horror",
+        "stealth",
         "survival",
         "adventure"
       ],
       "tags": [
-        "horror",
-        "monster",
-        "tension"
+        "monster_ai",
+        "patrol",
+        "perception",
+        "last_known_position",
+        "search_state"
       ],
       "path": "data/horror/monster_patrol.json"
     },
@@ -1565,7 +1579,7 @@
       "id": "horror.safe_room",
       "name": "Safe Room",
       "category": "horror",
-      "subcategory": "horror",
+      "subcategory": "sanctuary_space",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1578,9 +1592,11 @@
         "adventure"
       ],
       "tags": [
-        "horror",
-        "safe",
-        "tension"
+        "safe_room",
+        "checkpoint",
+        "monster_boundary",
+        "recovery",
+        "pacing"
       ],
       "path": "data/horror/safe_room.json"
     },
@@ -1588,7 +1604,7 @@
       "id": "horror.sanity_meter",
       "name": "Sanity Meter",
       "category": "horror",
-      "subcategory": "horror",
+      "subcategory": "sanity_pressure",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1601,9 +1617,11 @@
         "adventure"
       ],
       "tags": [
-        "horror",
         "sanity",
-        "tension"
+        "fear_state",
+        "threshold_effects",
+        "horror_pressure",
+        "accessibility_intensity"
       ],
       "path": "data/horror/sanity_meter.json"
     },
@@ -1611,7 +1629,7 @@
       "id": "horror.sound_lure",
       "name": "Sound Lure",
       "category": "horror",
-      "subcategory": "horror",
+      "subcategory": "audio_lure",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1620,13 +1638,16 @@
       ],
       "genres": [
         "horror",
+        "stealth",
         "survival",
         "adventure"
       ],
       "tags": [
-        "horror",
-        "sound",
-        "tension"
+        "sound_lure",
+        "noise_event",
+        "ai_perception",
+        "occlusion",
+        "monster_reaction"
       ],
       "path": "data/horror/sound_lure.json"
     },
@@ -3725,7 +3746,7 @@
       "id": "roguelike.curse_modifier",
       "name": "Curse Modifier",
       "category": "roguelike",
-      "subcategory": "roguelike",
+      "subcategory": "run_modifier",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3734,13 +3755,16 @@
       ],
       "genres": [
         "roguelike",
-        "deckbuilder",
-        "action"
+        "rpg",
+        "action",
+        "survival"
       ],
       "tags": [
         "curse",
-        "roguelike",
-        "runs"
+        "run_modifier",
+        "stack_rule",
+        "risk_reward",
+        "persistence"
       ],
       "path": "data/roguelike/curse_modifier.json"
     },
@@ -3748,7 +3772,7 @@
       "id": "roguelike.permadeath",
       "name": "Permadeath",
       "category": "roguelike",
-      "subcategory": "roguelike",
+      "subcategory": "failure_persistence",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3757,13 +3781,16 @@
       ],
       "genres": [
         "roguelike",
-        "deckbuilder",
-        "action"
+        "survival",
+        "action",
+        "rpg"
       ],
       "tags": [
         "permadeath",
-        "roguelike",
-        "runs"
+        "run_state",
+        "death_resolution",
+        "persistence",
+        "seed_logging"
       ],
       "path": "data/roguelike/permadeath.json"
     },
@@ -3781,14 +3808,15 @@
       "genres": [
         "roguelike",
         "deckbuilder",
-        "action"
+        "action",
+        "rpg"
       ],
       "tags": [
-        "roguelike",
-        "choice",
-        "upgrades",
-        "run_progression",
-        "randomness"
+        "reward_choice",
+        "upgrade_draft",
+        "run_build",
+        "rarity_weights",
+        "rng_stream"
       ],
       "path": "data/roguelike/pick_one_upgrade_choice.json"
     },
@@ -3796,7 +3824,7 @@
       "id": "roguelike.procedural_floor",
       "name": "Procedural Floor",
       "category": "roguelike",
-      "subcategory": "roguelike",
+      "subcategory": "floor_generation",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3805,13 +3833,16 @@
       ],
       "genres": [
         "roguelike",
-        "deckbuilder",
-        "action"
+        "dungeon_crawler",
+        "action",
+        "rpg"
       ],
       "tags": [
-        "procedural",
-        "roguelike",
-        "runs"
+        "procedural_floor",
+        "room_graph",
+        "run_seed",
+        "layout_validation",
+        "soft_lock_prevention"
       ],
       "path": "data/roguelike/procedural_floor.json"
     },
@@ -3819,7 +3850,7 @@
       "id": "roguelike.random_powerups",
       "name": "Random Powerups",
       "category": "roguelike",
-      "subcategory": "roguelike",
+      "subcategory": "reward_generation",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3828,13 +3859,16 @@
       ],
       "genres": [
         "roguelike",
-        "deckbuilder",
-        "action"
+        "action",
+        "rpg",
+        "deckbuilder"
       ],
       "tags": [
-        "random",
-        "roguelike",
-        "runs"
+        "random_powerups",
+        "reward_pool",
+        "rarity",
+        "unlock_pool",
+        "run_build"
       ],
       "path": "data/roguelike/random_powerups.json"
     },
@@ -3842,7 +3876,7 @@
       "id": "roguelike.relic_synergy",
       "name": "Relic Synergy",
       "category": "roguelike",
-      "subcategory": "roguelike",
+      "subcategory": "relic_interaction",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3852,20 +3886,23 @@
       "genres": [
         "roguelike",
         "deckbuilder",
+        "rpg",
         "action"
       ],
       "tags": [
-        "relic",
-        "roguelike",
-        "runs"
+        "relic_synergy",
+        "buildcraft",
+        "event_trigger",
+        "modifier_pipeline",
+        "debug_trace"
       ],
       "path": "data/roguelike/relic_synergy.json"
     },
     {
       "id": "roguelike.risk_reward_room",
-      "name": "Risk/Reward Room",
+      "name": "Risk Reward Room",
       "category": "roguelike",
-      "subcategory": "roguelike",
+      "subcategory": "room_risk_choice",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3874,13 +3911,16 @@
       ],
       "genres": [
         "roguelike",
-        "deckbuilder",
-        "action"
+        "action",
+        "rpg",
+        "survival"
       ],
       "tags": [
-        "risk",
-        "roguelike",
-        "runs"
+        "risk_reward",
+        "challenge_room",
+        "room_state",
+        "elite_modifier",
+        "reward_pool"
       ],
       "path": "data/roguelike/risk_reward_room.json"
     },
@@ -3888,7 +3928,7 @@
       "id": "roguelike.run_based_progression",
       "name": "Run-Based Progression",
       "category": "roguelike",
-      "subcategory": "roguelike",
+      "subcategory": "run_state_progression",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3897,13 +3937,16 @@
       ],
       "genres": [
         "roguelike",
-        "deckbuilder",
-        "action"
+        "action",
+        "rpg",
+        "deckbuilder"
       ],
       "tags": [
-        "roguelike",
-        "run",
-        "runs"
+        "run_progression",
+        "run_state",
+        "event_log",
+        "meta_boundary",
+        "temporary_power"
       ],
       "path": "data/roguelike/run_based_progression.json"
     },
@@ -3911,7 +3954,7 @@
       "id": "roguelike.shop_between_levels",
       "name": "Shop Between Levels",
       "category": "roguelike",
-      "subcategory": "roguelike",
+      "subcategory": "inter_floor_shop",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3920,13 +3963,16 @@
       ],
       "genres": [
         "roguelike",
-        "deckbuilder",
-        "action"
+        "rpg",
+        "action",
+        "deckbuilder"
       ],
       "tags": [
-        "roguelike",
-        "runs",
-        "shop"
+        "run_shop",
+        "shop_offer",
+        "purchase_transaction",
+        "run_currency",
+        "inventory_seed"
       ],
       "path": "data/roguelike/shop_between_levels.json"
     },
@@ -6441,6 +6487,7 @@
           "ui_ux.interaction_prompt"
         ],
         "expert": [
+          "roguelike.relic_synergy",
           "time.time_rewind"
         ],
         "hard": [
@@ -6468,13 +6515,9 @@
           "economy.shop",
           "economy.trading",
           "horror.hiding",
-          "horror.jump_scare_trigger",
-          "horror.light_resource",
           "horror.limited_visibility",
           "horror.monster_patrol",
-          "horror.safe_room",
           "horror.sanity_meter",
-          "horror.sound_lure",
           "multiplayer.asymmetric_roles",
           "multiplayer.matchmaking_lobby",
           "multiplayer.online_coop",
@@ -6510,10 +6553,8 @@
           "roguelike.pick_one_upgrade_choice",
           "roguelike.procedural_floor",
           "roguelike.random_powerups",
-          "roguelike.relic_synergy",
           "roguelike.risk_reward_room",
           "roguelike.run_based_progression",
-          "roguelike.shop_between_levels",
           "simulation.needs_simulation",
           "simulation.population_model",
           "simulation.systemic_weather",
@@ -6570,6 +6611,10 @@
           "crafting.crafting_queue",
           "crafting.recipe_crafting",
           "crafting.workbench",
+          "horror.jump_scare_trigger",
+          "horror.light_resource",
+          "horror.safe_room",
+          "horror.sound_lure",
           "meta.collection_log",
           "meta.daily_challenge",
           "meta.new_game_plus",
@@ -6608,6 +6653,7 @@
           "rhythm.combo_multiplier",
           "rhythm.note_lane",
           "rhythm.sync_window",
+          "roguelike.shop_between_levels",
           "stealth.visibility_meter",
           "survival.day_night_cycle",
           "survival.durability",
@@ -6685,6 +6731,7 @@
           "ai.utility_scoring",
           "combat.lock_on_targeting",
           "crafting.crafting_queue",
+          "horror.monster_patrol",
           "multiplayer.asymmetric_roles",
           "multiplayer.friendly_fire",
           "multiplayer.local_coop",
@@ -6712,6 +6759,9 @@
           "rhythm.combo_multiplier",
           "rhythm.note_lane",
           "rhythm.sync_window",
+          "roguelike.procedural_floor",
+          "roguelike.relic_synergy",
+          "roguelike.run_based_progression",
           "simulation.needs_simulation",
           "simulation.population_model",
           "simulation.systemic_weather",
@@ -6798,7 +6848,6 @@
           "horror.jump_scare_trigger",
           "horror.light_resource",
           "horror.limited_visibility",
-          "horror.monster_patrol",
           "horror.safe_room",
           "horror.sanity_meter",
           "horror.sound_lure",
@@ -6849,11 +6898,8 @@
           "roguelike.curse_modifier",
           "roguelike.permadeath",
           "roguelike.pick_one_upgrade_choice",
-          "roguelike.procedural_floor",
           "roguelike.random_powerups",
-          "roguelike.relic_synergy",
           "roguelike.risk_reward_room",
-          "roguelike.run_based_progression",
           "roguelike.shop_between_levels",
           "stealth.visibility_meter",
           "survival.day_night_cycle",
@@ -6901,6 +6947,7 @@
           "economy.resource_conversion",
           "economy.shop",
           "economy.trading",
+          "horror.monster_patrol",
           "multiplayer.asymmetric_roles",
           "physics.destructible_environment",
           "procedural_generation.biome_generation",
@@ -6927,14 +6974,12 @@
           "rhythm.note_lane",
           "rhythm.sync_window",
           "roguelike.curse_modifier",
-          "roguelike.permadeath",
           "roguelike.pick_one_upgrade_choice",
           "roguelike.procedural_floor",
           "roguelike.random_powerups",
           "roguelike.relic_synergy",
           "roguelike.risk_reward_room",
           "roguelike.run_based_progression",
-          "roguelike.shop_between_levels",
           "simulation.needs_simulation",
           "simulation.population_model",
           "simulation.systemic_weather",
@@ -6984,7 +7029,6 @@
           "horror.jump_scare_trigger",
           "horror.light_resource",
           "horror.limited_visibility",
-          "horror.monster_patrol",
           "horror.safe_room",
           "horror.sanity_meter",
           "horror.sound_lure",
@@ -7026,6 +7070,8 @@
           "puzzle.portal_pair",
           "puzzle.sliding_block",
           "puzzle.timed_door",
+          "roguelike.permadeath",
+          "roguelike.shop_between_levels",
           "stealth.alert_state",
           "stealth.distraction_throw",
           "stealth.last_known_position_search",
@@ -7359,18 +7405,15 @@
         "multiplayer.team_objective"
       ],
       "deckbuilder": [
-        "roguelike.curse_modifier",
-        "roguelike.permadeath",
         "roguelike.pick_one_upgrade_choice",
-        "roguelike.procedural_floor",
         "roguelike.random_powerups",
         "roguelike.relic_synergy",
-        "roguelike.risk_reward_room",
         "roguelike.run_based_progression",
         "roguelike.shop_between_levels"
       ],
       "dungeon_crawler": [
-        "procedural_generation.room_connection_graph"
+        "procedural_generation.room_connection_graph",
+        "roguelike.procedural_floor"
       ],
       "educational": [
         "accessibility.adjustable_difficulty",
@@ -7707,6 +7750,15 @@
         "progression.skill_tree",
         "progression.unlockable_abilities",
         "progression.upgrade_shop",
+        "roguelike.curse_modifier",
+        "roguelike.permadeath",
+        "roguelike.pick_one_upgrade_choice",
+        "roguelike.procedural_floor",
+        "roguelike.random_powerups",
+        "roguelike.relic_synergy",
+        "roguelike.risk_reward_room",
+        "roguelike.run_based_progression",
+        "roguelike.shop_between_levels",
         "survival.durability",
         "survival.health",
         "survival.hunger",
@@ -7845,6 +7897,11 @@
       "stealth": [
         "ai.patrol",
         "combat.stealth_kill",
+        "horror.hiding",
+        "horror.light_resource",
+        "horror.limited_visibility",
+        "horror.monster_patrol",
+        "horror.sound_lure",
         "movement.crouch",
         "stealth.alert_state",
         "stealth.distraction_throw",
@@ -7934,6 +7991,9 @@
         "procedural_generation.random_encounters",
         "procedural_generation.seeded_generation",
         "procedural_generation.wave_generation",
+        "roguelike.curse_modifier",
+        "roguelike.permadeath",
+        "roguelike.risk_reward_room",
         "survival.base_building",
         "survival.day_night_cycle",
         "survival.durability",
@@ -8221,6 +8281,12 @@
         "ui_ux.radial_menu",
         "ui_ux.tutorial_prompt"
       ],
+      "accessibility_brightness": [
+        "horror.limited_visibility"
+      ],
+      "accessibility_intensity": [
+        "horror.sanity_meter"
+      ],
       "achievement": [
         "progression.achievement_system"
       ],
@@ -8257,6 +8323,9 @@
       ],
       "ai_awareness": [
         "combat.stealth_kill"
+      ],
+      "ai_perception": [
+        "horror.sound_lure"
       ],
       "aiming": [
         "combat.aim_down_sights",
@@ -8340,6 +8409,7 @@
       "buildcraft": [
         "progression.respec",
         "progression.skill_tree",
+        "roguelike.relic_synergy",
         "vehicles.upgradeable_vehicle"
       ],
       "buoyancy": [
@@ -8374,6 +8444,9 @@
       "capacity": [
         "survival.inventory_limit"
       ],
+      "challenge_room": [
+        "roguelike.risk_reward_room"
+      ],
       "charge": [
         "combat.charged_attack"
       ],
@@ -8381,6 +8454,7 @@
         "ai.chase"
       ],
       "checkpoint": [
+        "horror.safe_room",
         "puzzle.timed_door",
         "time.timed_challenge",
         "ui_ux.checkpoint_notification"
@@ -8390,7 +8464,6 @@
         "narrative.codex_journal",
         "narrative.environmental_storytelling",
         "narrative.reputation_choice",
-        "roguelike.pick_one_upgrade_choice",
         "ui_ux.dialogue_choice"
       ],
       "choices": [
@@ -8577,6 +8650,9 @@
       "damage_rules": [
         "multiplayer.friendly_fire"
       ],
+      "darkness": [
+        "horror.limited_visibility"
+      ],
       "dash": [
         "movement.air_dash"
       ],
@@ -8587,9 +8663,15 @@
       "deadline": [
         "time.timed_challenge"
       ],
+      "death_resolution": [
+        "roguelike.permadeath"
+      ],
       "debris": [
         "physics.breakable_object",
         "physics.destructible_environment"
+      ],
+      "debug_trace": [
+        "roguelike.relic_synergy"
       ],
       "debug_visualization": [
         "puzzle.mirror_light_reflection"
@@ -8673,6 +8755,9 @@
         "economy.shop",
         "economy.trading"
       ],
+      "elite_modifier": [
+        "roguelike.risk_reward_room"
+      ],
       "encumbrance": [
         "survival.inventory_limit"
       ],
@@ -8693,6 +8778,15 @@
         "progression.equipment_rarity",
         "survival.durability"
       ],
+      "escape": [
+        "horror.hiding"
+      ],
+      "event_log": [
+        "roguelike.run_based_progression"
+      ],
+      "event_trigger": [
+        "roguelike.relic_synergy"
+      ],
       "exertion": [
         "survival.stamina"
       ],
@@ -8707,6 +8801,9 @@
       ],
       "falling": [
         "physics.gravity"
+      ],
+      "fear_state": [
+        "horror.sanity_meter"
       ],
       "feedback": [
         "camera.screen_shake",
@@ -8745,6 +8842,7 @@
         "multiplayer.friendly_fire"
       ],
       "fuel": [
+        "horror.light_resource",
         "vehicles.fuel"
       ],
       "gacha": [
@@ -8813,15 +8911,8 @@
       "hitbox": [
         "combat.melee_attack"
       ],
-      "horror": [
-        "horror.hiding",
-        "horror.jump_scare_trigger",
-        "horror.light_resource",
-        "horror.limited_visibility",
-        "horror.monster_patrol",
-        "horror.safe_room",
-        "horror.sanity_meter",
-        "horror.sound_lure"
+      "horror_pressure": [
+        "horror.sanity_meter"
       ],
       "hunger": [
         "survival.hunger"
@@ -8866,6 +8957,9 @@
       "input_timing": [
         "platforming.coyote_time"
       ],
+      "intensity_setting": [
+        "horror.jump_scare_trigger"
+      ],
       "interaction": [
         "multiplayer.revive_teammate",
         "puzzle.key_and_lock",
@@ -8883,6 +8977,9 @@
       ],
       "inventory_limit": [
         "survival.inventory_limit"
+      ],
+      "inventory_seed": [
+        "roguelike.shop_between_levels"
       ],
       "inventory_transaction": [
         "vehicles.upgradeable_vehicle"
@@ -8912,12 +9009,12 @@
       "judgment_window": [
         "time.rhythm_timing"
       ],
-      "jump": [
-        "horror.jump_scare_trigger"
-      ],
       "jump_assist": [
         "platforming.coyote_time",
         "platforming.jump_buffering"
+      ],
+      "jump_scare": [
+        "horror.jump_scare_trigger"
       ],
       "key_lock": [
         "puzzle.key_and_lock"
@@ -8934,11 +9031,17 @@
       "ladder": [
         "traversal.ladder_climb"
       ],
+      "last_known_position": [
+        "horror.monster_patrol"
+      ],
       "late_join": [
         "multiplayer.team_objective"
       ],
       "latency": [
         "time.rhythm_timing"
+      ],
+      "layout_validation": [
+        "roguelike.procedural_floor"
       ],
       "ledge": [
         "platforming.ledge_climb",
@@ -8953,17 +9056,20 @@
       "lever": [
         "puzzle.lever_switch"
       ],
-      "light": [
-        "horror.light_resource"
-      ],
       "light_reflection": [
         "puzzle.mirror_light_reflection"
       ],
-      "limited": [
+      "light_resource": [
+        "horror.light_resource"
+      ],
+      "limited_visibility": [
         "horror.limited_visibility"
       ],
       "line": [
         "ai.line_of_sight_detection"
+      ],
+      "line_of_sight": [
+        "horror.hiding"
       ],
       "linked_targets": [
         "puzzle.lever_switch"
@@ -9003,6 +9109,9 @@
       "low_gravity": [
         "physics.low_gravity_zone"
       ],
+      "low_light": [
+        "horror.light_resource"
+      ],
       "mantling": [
         "traversal.mantling"
       ],
@@ -9035,6 +9144,9 @@
         "meta.player_profile_stats",
         "progression.meta_progression"
       ],
+      "meta_boundary": [
+        "roguelike.run_based_progression"
+      ],
       "meter": [
         "vehicles.vehicle_boost"
       ],
@@ -9066,12 +9178,27 @@
         "traversal.vehicle_mount",
         "traversal.zipline"
       ],
+      "modifier_pipeline": [
+        "roguelike.relic_synergy"
+      ],
       "momentum": [
         "physics.pendulum_swing",
         "traversal.wall_run"
       ],
-      "monster": [
+      "monster_ai": [
         "horror.monster_patrol"
+      ],
+      "monster_boundary": [
+        "horror.safe_room"
+      ],
+      "monster_detection": [
+        "horror.light_resource"
+      ],
+      "monster_reaction": [
+        "horror.sound_lure"
+      ],
+      "monster_search": [
+        "horror.hiding"
       ],
       "movement": [
         "movement.air_dash",
@@ -9129,6 +9256,9 @@
         "movement.sprint",
         "stealth.noise_meter"
       ],
+      "noise_event": [
+        "horror.sound_lure"
+      ],
       "note": [
         "rhythm.note_lane"
       ],
@@ -9144,6 +9274,9 @@
       ],
       "objective": [
         "time.timed_challenge"
+      ],
+      "occlusion": [
+        "horror.sound_lure"
       ],
       "offline_progress": [
         "crafting.crafting_queue"
@@ -9167,6 +9300,12 @@
       "pace": [
         "movement.sprint"
       ],
+      "pacing": [
+        "horror.safe_room"
+      ],
+      "pacing_spike": [
+        "horror.jump_scare_trigger"
+      ],
       "parkour": [
         "traversal.parkour_vault",
         "traversal.wall_run"
@@ -9181,13 +9320,15 @@
         "physics.moving_platform"
       ],
       "patrol": [
-        "ai.patrol"
+        "ai.patrol",
+        "horror.monster_patrol"
       ],
       "pendulum": [
         "physics.pendulum_swing"
       ],
       "perception": [
         "ai.patrol",
+        "horror.monster_patrol",
         "stealth.last_known_position_search",
         "stealth.visibility_meter"
       ],
@@ -9202,6 +9343,8 @@
       "persistence": [
         "physics.destructible_environment",
         "puzzle.key_and_lock",
+        "roguelike.curse_modifier",
+        "roguelike.permadeath",
         "survival.base_building",
         "vehicles.fuel"
       ],
@@ -9285,7 +9428,9 @@
         "procedural_generation.random_encounters",
         "procedural_generation.room_connection_graph",
         "procedural_generation.seeded_generation",
-        "procedural_generation.wave_generation",
+        "procedural_generation.wave_generation"
+      ],
+      "procedural_floor": [
         "roguelike.procedural_floor"
       ],
       "production": [
@@ -9324,6 +9469,9 @@
       "prop": [
         "physics.breakable_object"
       ],
+      "purchase_transaction": [
+        "roguelike.shop_between_levels"
+      ],
       "push_pull": [
         "physics.physics_push_pull"
       ],
@@ -9346,13 +9494,14 @@
         "physics.ragdoll"
       ],
       "random": [
-        "procedural_generation.random_encounters",
+        "procedural_generation.random_encounters"
+      ],
+      "random_powerups": [
         "roguelike.random_powerups"
       ],
       "randomness": [
         "combat.critical_hit",
-        "economy.loot_table",
-        "roguelike.pick_one_upgrade_choice"
+        "economy.loot_table"
       ],
       "ranged": [
         "combat.aim_down_sights",
@@ -9360,7 +9509,11 @@
         "combat.reload"
       ],
       "rarity": [
-        "economy.loot_table"
+        "economy.loot_table",
+        "roguelike.random_powerups"
+      ],
+      "rarity_weights": [
+        "roguelike.pick_one_upgrade_choice"
       ],
       "rate_limit": [
         "multiplayer.ping_system"
@@ -9378,6 +9531,7 @@
         "camera.split_screen",
         "camera.third_person_camera",
         "camera.top_down_camera",
+        "horror.limited_visibility",
         "time.slow_motion",
         "ui_ux.cooldown_indicator"
       ],
@@ -9401,6 +9555,7 @@
         "multiplayer.online_coop"
       ],
       "recovery": [
+        "horror.safe_room",
         "survival.health"
       ],
       "refill": [
@@ -9415,7 +9570,7 @@
       "regen_delay": [
         "survival.stamina"
       ],
-      "relic": [
+      "relic_synergy": [
         "roguelike.relic_synergy"
       ],
       "reload": [
@@ -9463,6 +9618,13 @@
       "revive": [
         "multiplayer.revive_teammate"
       ],
+      "reward_choice": [
+        "roguelike.pick_one_upgrade_choice"
+      ],
+      "reward_pool": [
+        "roguelike.random_powerups",
+        "roguelike.risk_reward_room"
+      ],
       "rewards": [
         "economy.coins",
         "economy.crafting_materials",
@@ -9495,19 +9657,12 @@
         "rhythm.sync_window",
         "time.rhythm_timing"
       ],
-      "risk": [
+      "risk_reward": [
+        "roguelike.curse_modifier",
         "roguelike.risk_reward_room"
       ],
-      "roguelike": [
-        "roguelike.curse_modifier",
-        "roguelike.permadeath",
-        "roguelike.pick_one_upgrade_choice",
-        "roguelike.procedural_floor",
-        "roguelike.random_powerups",
-        "roguelike.relic_synergy",
-        "roguelike.risk_reward_room",
-        "roguelike.run_based_progression",
-        "roguelike.shop_between_levels"
+      "rng_stream": [
+        "roguelike.pick_one_upgrade_choice"
       ],
       "role_id": [
         "multiplayer.asymmetric_roles"
@@ -9521,6 +9676,12 @@
       "rollback": [
         "time.time_rewind"
       ],
+      "room_graph": [
+        "roguelike.procedural_floor"
+      ],
+      "room_state": [
+        "roguelike.risk_reward_room"
+      ],
       "rooms": [
         "procedural_generation.room_connection_graph"
       ],
@@ -9529,23 +9690,32 @@
         "traversal.rope_swing"
       ],
       "run": [
-        "movement.run",
-        "roguelike.run_based_progression"
+        "movement.run"
       ],
-      "run_progression": [
-        "roguelike.pick_one_upgrade_choice"
+      "run_build": [
+        "roguelike.pick_one_upgrade_choice",
+        "roguelike.random_powerups"
       ],
-      "runs": [
-        "roguelike.curse_modifier",
-        "roguelike.permadeath",
-        "roguelike.procedural_floor",
-        "roguelike.random_powerups",
-        "roguelike.relic_synergy",
-        "roguelike.risk_reward_room",
-        "roguelike.run_based_progression",
+      "run_currency": [
         "roguelike.shop_between_levels"
       ],
-      "safe": [
+      "run_modifier": [
+        "roguelike.curse_modifier"
+      ],
+      "run_progression": [
+        "roguelike.run_based_progression"
+      ],
+      "run_seed": [
+        "roguelike.procedural_floor"
+      ],
+      "run_shop": [
+        "roguelike.shop_between_levels"
+      ],
+      "run_state": [
+        "roguelike.permadeath",
+        "roguelike.run_based_progression"
+      ],
+      "safe_room": [
         "horror.safe_room"
       ],
       "safe_zone": [
@@ -9557,8 +9727,17 @@
       "schedule": [
         "time.day_night_schedule"
       ],
+      "scripted_event": [
+        "horror.jump_scare_trigger"
+      ],
       "search": [
         "stealth.last_known_position_search"
+      ],
+      "search_state": [
+        "horror.monster_patrol"
+      ],
+      "seed_logging": [
+        "roguelike.permadeath"
       ],
       "seeded": [
         "procedural_generation.procedural_terrain",
@@ -9601,7 +9780,9 @@
         "combat.shield"
       ],
       "shop": [
-        "economy.shop",
+        "economy.shop"
+      ],
+      "shop_offer": [
         "roguelike.shop_between_levels"
       ],
       "simulation": [
@@ -9640,13 +9821,16 @@
       "soft_lock": [
         "puzzle.sliding_block"
       ],
+      "soft_lock_prevention": [
+        "roguelike.procedural_floor"
+      ],
       "solution_hash": [
         "puzzle.color_matching"
       ],
       "solvability": [
         "puzzle.sliding_block"
       ],
-      "sound": [
+      "sound_lure": [
         "horror.sound_lure"
       ],
       "space_control": [
@@ -9661,6 +9845,9 @@
       ],
       "split": [
         "camera.split_screen"
+      ],
+      "stack_rule": [
+        "roguelike.curse_modifier"
       ],
       "stagger": [
         "combat.guard_break",
@@ -9704,6 +9891,9 @@
         "stealth.noise_meter",
         "stealth.shadow_cover",
         "stealth.visibility_meter"
+      ],
+      "stealth_state": [
+        "horror.hiding"
       ],
       "storage": [
         "survival.inventory_limit"
@@ -9792,15 +9982,8 @@
       "temperature": [
         "survival.temperature"
       ],
-      "tension": [
-        "horror.hiding",
-        "horror.jump_scare_trigger",
-        "horror.light_resource",
-        "horror.limited_visibility",
-        "horror.monster_patrol",
-        "horror.safe_room",
-        "horror.sanity_meter",
-        "horror.sound_lure"
+      "temporary_power": [
+        "roguelike.run_based_progression"
       ],
       "terrain": [
         "procedural_generation.procedural_terrain"
@@ -9816,6 +9999,12 @@
       ],
       "thirst": [
         "survival.thirst"
+      ],
+      "threat_reveal": [
+        "horror.limited_visibility"
+      ],
+      "threshold_effects": [
+        "horror.sanity_meter"
       ],
       "throttle": [
         "vehicles.vehicle_acceleration"
@@ -9875,6 +10064,7 @@
         "traversal.wall_run"
       ],
       "trigger_volume": [
+        "horror.jump_scare_trigger",
         "physics.low_gravity_zone",
         "puzzle.pressure_plate"
       ],
@@ -9911,6 +10101,9 @@
       "unlock": [
         "progression.skill_tree"
       ],
+      "unlock_pool": [
+        "roguelike.random_powerups"
+      ],
       "unlockable": [
         "progression.unlockable_abilities"
       ],
@@ -9918,7 +10111,7 @@
         "platforming.double_jump",
         "progression.upgrade_shop"
       ],
-      "upgrades": [
+      "upgrade_draft": [
         "roguelike.pick_one_upgrade_choice"
       ],
       "utility": [
@@ -9984,6 +10177,7 @@
         "camera.top_down_camera"
       ],
       "visibility": [
+        "horror.light_resource",
         "stealth.visibility_meter"
       ],
       "vitality": [
