@@ -24,69 +24,85 @@
     "adventure",
     "simulation"
   ],
-  "description": "Third-Person Camera is a viewpoint behavior that frames action and communicates spatial information to the player.",
-  "design_notes": "Third-Person Camera should be designed around a clear player promise, a readable trigger, and a predictable result. For camera mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A camera viewpoint that follows behind, above, or beside the player avatar while keeping the character visible.",
+  "design_notes": "Third-person cameras are a negotiation between avatar readability, environment visibility, aiming, and collision. Good tuning defines distance, shoulder side, recentering, occlusion handling, and how much control the player retains during combat or traversal.",
   "design_purpose": [
-    "Give the player a readable way to use third-person camera as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect third-person camera to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Show the avatar and nearby threats while supporting movement and spatial awareness.",
+    "Frame melee combat, traversal, or exploration without requiring constant manual camera correction.",
+    "Give players a readable sense of character posture, animation, and surroundings."
   ],
-  "player_fantasy": "The player feels oriented and confident because the game frames what matters.",
+  "player_fantasy": "The player feels connected to an on-screen character while still seeing enough of the world to plan movement.",
   "required_systems": [
-    "camera_controller",
+    "camera_rig",
     "target_tracking",
-    "smoothing",
-    "screen_bounds"
+    "occlusion_probe",
+    "input_settings",
+    "camera_profile_stack"
   ],
   "parameters": [
     {
-      "name": "follow_lag",
+      "name": "follow_distance",
       "type": "float",
-      "typical_range": "0-0.5 seconds",
-      "description": "How far behind the target the camera is allowed to feel."
+      "typical_range": "2-12 world units",
+      "description": "Preferred camera distance from the avatar pivot."
     },
     {
-      "name": "framing_offset",
+      "name": "shoulder_offset",
       "type": "vector",
-      "typical_range": "0-40% of screen",
-      "description": "Offset used to keep the important subject away from dead center."
+      "typical_range": "0-2 world units lateral",
+      "description": "Horizontal and vertical offset used for over-the-shoulder framing."
     },
     {
-      "name": "transition_speed",
+      "name": "occlusion_probe_radius",
       "type": "float",
-      "typical_range": "0.1-5.0 seconds",
-      "description": "How quickly the camera blends to the new behavior."
+      "typical_range": "0.05-0.6 world units",
+      "description": "Radius used to keep the camera out of geometry."
+    },
+    {
+      "name": "recenter_delay_ms",
+      "type": "integer",
+      "typical_range": "250-2500 ms",
+      "description": "Delay after player camera input before automatic recentering resumes."
+    },
+    {
+      "name": "orbit_degrees_per_second",
+      "type": "float",
+      "typical_range": "60-540 degrees/second",
+      "description": "Maximum camera orbit rate from player input or auto-follow."
     }
   ],
   "common_variants": [
-    "third_person_camera_fixed_mode",
-    "third_person_camera_player_controlled_mode",
-    "context_sensitive_mode",
-    "cinematic_mode"
+    "over_the_shoulder_camera",
+    "chase_camera",
+    "fixed_distance_orbit",
+    "combat_camera",
+    "exploration_camera"
   ],
   "edge_cases": [
-    "Third-Person Camera is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Third-Person Camera overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Third-Person Camera runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Tight corridors should shorten camera distance without hiding the avatar or rapidly popping.",
+    "Aiming, lock-on, climbing, swimming, and vehicles can all request different third-person profiles.",
+    "Camera collision should ignore small foliage but respect walls, ceilings, and large moving objects.",
+    "Switching shoulder side must account for cover, walls, reticles, and input expectations."
   ],
   "common_bugs": [
-    "Third-Person Camera state does not reset correctly after interruption or reload.",
-    "Feedback for Third-Person Camera plays even when the mechanic fails or is rejected.",
-    "Third-Person Camera produces different results between frame rates, platforms, or network clients."
+    "Camera snaps when occlusion clears because the desired distance is restored instantly.",
+    "Avatar blocks the reticle or interact prompt at common shoulder offsets.",
+    "Recenter fights player input because manual-control cooldown is too short.",
+    "Collision probes use a ray instead of a volume and let the near plane clip through corners."
   ],
   "balancing_notes": [
-    "Make Third-Person Camera strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Closer cameras increase tension and character presence; farther cameras improve awareness and traversal planning.",
+    "Combat cameras should preserve threat visibility without automatically solving positioning for the player."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Third-Person Camera becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Expose orbit sensitivity, inversion, recenter strength, shoulder side, and camera distance where possible.",
+    "Offer reduced camera acceleration and motion options for players sensitive to rapid orbiting."
   ],
   "implementation_notes": {
-    "unity": "Implement Third-Person Camera with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Third-Person Camera as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Third-Person Camera with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Third-Person Camera as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use a camera rig or Cinemachine virtual camera with separate aim, follow, and collision stages; apply occlusion before final damping to avoid pops.",
+    "godot": "Use a SpringArm3D or custom boom with collision checks, then rotate an orbit pivot from input while blending profile offsets for combat and traversal.",
+    "unreal": "Use SpringArmComponent camera collision and PlayerCameraManager profiles; separate control rotation from character facing when strafing or lock-on is active.",
+    "web": "Store orbit yaw, pitch, desired distance, and actual collision-limited distance in camera state, then interpolate the actual camera position each frame."
   },
   "related_mechanics": [
     "camera.first_person_camera",
@@ -100,7 +116,16 @@
     "combat.lock_on_targeting",
     "movement.run"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "God of War (2018)",
+      "note": "Uses a close third-person camera for combat and character presence."
+    },
+    {
+      "title": "Fortnite",
+      "note": "Uses third-person camera framing for movement, aiming, and building awareness."
+    }
+  ],
   "tags": [
     "camera",
     "readability",

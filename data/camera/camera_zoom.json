@@ -24,69 +24,85 @@
     "adventure",
     "simulation"
   ],
-  "description": "Camera Zoom is a viewpoint behavior that frames action and communicates spatial information to the player.",
-  "design_notes": "Camera Zoom should be designed around a clear player promise, a readable trigger, and a predictable result. For camera mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A camera behavior that changes field of view or orthographic scale to show more detail or more surrounding space.",
+  "design_notes": "Camera zoom should have a clear owner: player input, context, targeting, inspection, or cinematic framing. The important design choice is whether zoom changes decision-making or only presentation. Fast zoom can help urgency but can also cause motion discomfort, while slow zoom can hide threats if it lags behind gameplay state.",
   "design_purpose": [
-    "Give the player a readable way to use camera zoom as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect camera zoom to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players inspect distant details or widen context without moving the avatar.",
+    "Frame aiming, map reading, building, or tactical planning at the right information scale.",
+    "Support cinematic emphasis while preserving orientation and UI readability."
   ],
-  "player_fantasy": "The player feels oriented and confident because the game frames what matters.",
+  "player_fantasy": "The player feels able to pull the view closer for precision or back out to understand the surrounding space.",
   "required_systems": [
     "camera_controller",
-    "target_tracking",
-    "smoothing",
-    "screen_bounds"
+    "zoom_state",
+    "input_settings",
+    "camera_collision",
+    "accessibility_settings"
   ],
   "parameters": [
     {
-      "name": "follow_lag",
+      "name": "min_zoom_scale",
       "type": "float",
-      "typical_range": "0-0.5 seconds",
-      "description": "How far behind the target the camera is allowed to feel."
+      "typical_range": "0.25-1.0",
+      "description": "Closest allowed zoom for orthographic scale or equivalent camera distance."
     },
     {
-      "name": "framing_offset",
-      "type": "vector",
-      "typical_range": "0-40% of screen",
-      "description": "Offset used to keep the important subject away from dead center."
+      "name": "max_zoom_scale",
+      "type": "float",
+      "typical_range": "1.0-8.0",
+      "description": "Farthest allowed zoom for orthographic scale or equivalent camera distance."
     },
     {
-      "name": "transition_speed",
+      "name": "zoom_blend_ms",
+      "type": "integer",
+      "typical_range": "80-800 ms",
+      "description": "Blend duration used when changing zoom targets."
+    },
+    {
+      "name": "zoom_step_ratio",
       "type": "float",
-      "typical_range": "0.1-5.0 seconds",
-      "description": "How quickly the camera blends to the new behavior."
+      "typical_range": "1.05-1.5",
+      "description": "Multiplier applied per scroll wheel, trigger, or button step."
+    },
+    {
+      "name": "zoom_collision_padding",
+      "type": "float",
+      "typical_range": "0.05-1.0 world units",
+      "description": "Clearance used to keep zoomed cameras from clipping into geometry."
     }
   ],
   "common_variants": [
-    "camera_zoom_fixed_mode",
-    "camera_zoom_player_controlled_mode",
-    "context_sensitive_mode",
-    "cinematic_mode"
+    "manual_scroll_zoom",
+    "aim_zoom",
+    "inspection_zoom",
+    "map_zoom",
+    "cinematic_push_in"
   ],
   "edge_cases": [
-    "Camera Zoom is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Camera Zoom overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Camera Zoom runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Zooming into walls or ceilings should shorten distance without pushing the camera through collision.",
+    "UI scale and reticle placement must remain readable at both minimum and maximum zoom.",
+    "Cutscenes, lock-on, photo mode, and dialogue can all request zoom; priority and restore rules must be explicit.",
+    "Changing aspect ratio or split-screen layout should recompute zoom bounds instead of reusing unsafe values."
   ],
   "common_bugs": [
-    "Camera Zoom state does not reset correctly after interruption or reload.",
-    "Feedback for Camera Zoom plays even when the mechanic fails or is rejected.",
-    "Camera Zoom produces different results between frame rates, platforms, or network clients."
+    "Zoom target is applied to FOV and camera distance at the same time, doubling the perceived effect.",
+    "Camera collision runs before zoom interpolation and causes popping in tight spaces.",
+    "Manual zoom is lost after respawn because default camera state overwrites player preference.",
+    "Mouse-wheel zoom steps vary by platform and make tuning inconsistent."
   ],
   "balancing_notes": [
-    "Make Camera Zoom strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Wide zoom improves awareness but can reduce tension, surprise, or precision reading of nearby hazards.",
+    "Aim or inspection zoom should usually trade awareness, movement, or input commitment for the extra detail it grants."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Camera Zoom becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide zoom speed controls or instant-step options for players sensitive to animated camera scaling.",
+    "Avoid using zoom alone as critical feedback; pair it with stable UI, sound, or object highlighting."
   ],
   "implementation_notes": {
-    "unity": "Implement Camera Zoom with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Camera Zoom as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Camera Zoom with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Camera Zoom as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "With Cinemachine, drive Lens.FieldOfView or OrthographicSize from a zoom target and apply camera collision after interpolation; with a custom rig, separate zoom distance from framing offset.",
+    "godot": "For Camera2D, interpolate the zoom vector; for Camera3D, interpolate fov or boom distance and run collision checks before committing the final transform.",
+    "unreal": "Use PlayerCameraManager, SpringArm TargetArmLength, or camera component FOV interpolation, and clamp zoom requests through a shared camera mode stack.",
+    "web": "For Canvas or Phaser, update camera scale around a stable focus point; for Three.js, interpolate FOV or camera distance and update projection matrices after changes."
   },
   "related_mechanics": [
     "camera.first_person_camera",
@@ -100,7 +116,16 @@
     "combat.lock_on_targeting",
     "movement.run"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Factorio",
+      "note": "Uses player-controlled zoom to inspect factory detail or view broader layouts."
+    },
+    {
+      "title": "The Sims 4",
+      "note": "Uses camera zoom as a core navigation and inspection control."
+    }
+  ],
   "tags": [
     "camera",
     "readability",

@@ -25,14 +25,14 @@
     "platformer",
     "arcade"
   ],
-  "description": "A temporary camera offset or rotation effect used to emphasize impact, danger, or scale.",
-  "design_notes": "Screen shake is presentation, not a substitute for clear game-state feedback. It should be authored with intensity caps, decay behavior, priority, and user controls. The best shake supports readability by emphasizing events while avoiding motion that hides hazards, reticles, UI, or player position.",
+  "description": "A short camera offset, rotation, or impulse profile used to emphasize impact while preserving play readability.",
+  "design_notes": "Screen shake is a feedback layer and should never be the only way to communicate damage, danger, or success. Treat shake as authored profiles with caps, priority, per-axis scaling, and reduced-motion controls. Strong profiles should be rare enough to keep their meaning.",
   "design_purpose": [
-    "Sell impact and weight for attacks, explosions, landings, and world events.",
-    "Communicate danger or scale without changing simulation rules.",
-    "Differentiate small, medium, and major impacts through authored response profiles."
+    "Sell weight for impacts, explosions, landings, and heavy world events.",
+    "Differentiate impact categories through authored camera response profiles.",
+    "Reinforce feedback without changing simulation, hit detection, or player control."
   ],
-  "player_fantasy": "The player feels the force of an event through the camera while still retaining control and orientation.",
+  "player_fantasy": "The player feels impact and scale through the camera while still retaining control and orientation.",
   "required_systems": [
     "camera_controller",
     "event_bus",
@@ -66,44 +66,50 @@
       "description": "Maximum roll, yaw, or pitch perturbation."
     },
     {
-      "name": "shake_frequency_hz",
+      "name": "reduced_motion_intensity_scale",
       "type": "float",
-      "typical_range": "6-35 Hz",
-      "description": "Noise sampling rate or oscillation frequency for the shake profile."
+      "typical_range": "0-1",
+      "description": "Player setting multiplier applied to shake offsets and rotations."
+    },
+    {
+      "name": "shake_seed_mode",
+      "type": "string",
+      "typical_range": "random, deterministic, event_id",
+      "description": "Noise seed policy used for replay or multiplayer consistency."
     }
   ],
   "common_variants": [
     "impact_shake",
     "explosion_shake",
     "landing_shake",
-    "low_health_tremor",
-    "directional_shake"
+    "directional_shake",
+    "low_health_tremor"
   ],
   "edge_cases": [
     "Repeated rapid events should accumulate through a cap rather than stacking into unreadable camera motion.",
-    "Cutscenes, menus, split screen, photo mode, and dialogue cameras need opt-in or suppression rules.",
-    "Shake must not move UI reticles or hit markers unless the game intentionally wants diegetic instability.",
-    "Large world coordinates should not introduce floating-point jitter into shake offsets."
+    "Reticles, health bars, subtitles, and interaction prompts should not inherit shake unless the UI is intentionally diegetic.",
+    "Pausing during a shake should define whether decay freezes, completes instantly, or resumes from remaining trauma.",
+    "Cinematic cameras, split-screen, spectating, and photo mode need opt-in shake routing."
   ],
   "common_bugs": [
     "Shake is applied before camera collision and pushes the camera through walls.",
-    "Multiple systems write camera offsets and one cancels the other each frame.",
-    "Pause stops decay but not event accumulation, causing a burst when unpaused.",
-    "The accessibility intensity slider scales visuals but not controller vibration or audio rumble."
+    "Multiple systems write offsets independently and fight or double the final displacement.",
+    "Reduced-motion settings scale visual shake but not vibration, audio rumble, or FOV pulses.",
+    "Deterministic replays diverge because shake consumes the same random stream as gameplay."
   ],
   "balancing_notes": [
-    "Use small profiles frequently and reserve large profiles for rare events so shake keeps meaning.",
-    "Camera motion should never be required to understand damage, direction, or timing."
+    "Use small shake profiles frequently and reserve large profiles for events that deserve momentary attention.",
+    "Camera motion should never be required to understand damage direction, hit confirmation, or timing."
   ],
   "accessibility_notes": [
-    "Expose intensity and disable options, and pair impacts with non-motion cues such as hit flash, sound, or haptics.",
-    "Avoid high-frequency shake patterns that can cause discomfort or obscure precision tasks."
+    "Expose intensity and disable options, and pair impacts with non-motion cues such as hit flash, sound, haptics, or UI markers.",
+    "Avoid high-frequency or sustained shake patterns that can cause discomfort or obscure precision tasks."
   ],
   "implementation_notes": {
-    "unity": "Apply shake as a late camera offset after follow smoothing but before final composition; with Cinemachine, use impulse profiles and scale them through accessibility settings.",
-    "godot": "Keep a shake accumulator on the Camera2D or Camera3D rig and sample deterministic noise in _process after the target position is resolved.",
-    "unreal": "Use Camera Shake Sources or PlayerCameraManager modifiers with authored profiles and expose user scaling through settings.",
-    "web": "Apply shake to the render camera transform or canvas view matrix after simulation; keep UI layers separate when reticles must stay stable."
+    "unity": "Apply shake as a late camera offset after target follow and before final composition; with Cinemachine, use impulse profiles scaled by reduced-motion settings.",
+    "godot": "Keep a shake accumulator on the Camera2D or Camera3D rig, sample noise after the target position is resolved, and keep UI CanvasLayer elements stable unless opted in.",
+    "unreal": "Use Camera Shake Sources, Camera Modifiers, or PlayerCameraManager profiles with per-player intensity scaling and separate haptic routing.",
+    "web": "Apply shake to the render camera or canvas view matrix after simulation, keep UI layers separate, and use deterministic seeds when replay consistency matters."
   },
   "related_mechanics": [
     "combat.melee_attack",

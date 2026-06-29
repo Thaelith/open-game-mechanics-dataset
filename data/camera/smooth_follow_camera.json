@@ -24,69 +24,85 @@
     "adventure",
     "simulation"
   ],
-  "description": "Smooth Follow Camera is a viewpoint behavior that frames action and communicates spatial information to the player.",
-  "design_notes": "Smooth Follow Camera should be designed around a clear player promise, a readable trigger, and a predictable result. For camera mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A camera behavior that follows a target with damping, lookahead, dead zones, or catch-up rules instead of hard snapping.",
+  "design_notes": "Smooth follow improves readability when tuned around the game's movement speed, screen size, and hazards. The camera should feel calm without lagging behind important threats. Teleports, respawns, room transitions, and fast traversal need explicit snap or catch-up rules.",
   "design_purpose": [
-    "Give the player a readable way to use smooth follow camera as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect smooth follow camera to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Keep the player and nearby threats framed without abrupt camera jumps.",
+    "Use lookahead or dead zones to show more space in the direction of intent.",
+    "Reduce visual noise while preserving control responsiveness."
   ],
-  "player_fantasy": "The player feels oriented and confident because the game frames what matters.",
+  "player_fantasy": "The player feels the camera is a steady partner that anticipates movement without fighting input.",
   "required_systems": [
     "camera_controller",
     "target_tracking",
-    "smoothing",
-    "screen_bounds"
+    "damping_model",
+    "level_bounds",
+    "teleport_detection"
   ],
   "parameters": [
     {
-      "name": "follow_lag",
-      "type": "float",
-      "typical_range": "0-0.5 seconds",
-      "description": "How far behind the target the camera is allowed to feel."
+      "name": "follow_half_life_ms",
+      "type": "integer",
+      "typical_range": "80-600 ms",
+      "description": "Damping half-life used when closing distance to the target."
     },
     {
-      "name": "framing_offset",
-      "type": "vector",
-      "typical_range": "0-40% of screen",
-      "description": "Offset used to keep the important subject away from dead center."
+      "name": "lookahead_distance",
+      "type": "float",
+      "typical_range": "0-8 world units",
+      "description": "Additional framing offset in movement or aim direction."
     },
     {
-      "name": "transition_speed",
+      "name": "dead_zone_width_percent",
       "type": "float",
-      "typical_range": "0.1-5.0 seconds",
-      "description": "How quickly the camera blends to the new behavior."
+      "typical_range": "0-60% screen width",
+      "description": "Horizontal area the target can move within before camera follows."
+    },
+    {
+      "name": "dead_zone_height_percent",
+      "type": "float",
+      "typical_range": "0-60% screen height",
+      "description": "Vertical area the target can move within before camera follows."
+    },
+    {
+      "name": "teleport_snap_distance",
+      "type": "float",
+      "typical_range": "3-30 world units",
+      "description": "Target displacement that snaps the camera instead of smoothing."
     }
   ],
   "common_variants": [
-    "smooth_follow_camera_fixed_mode",
-    "smooth_follow_camera_player_controlled_mode",
-    "context_sensitive_mode",
-    "cinematic_mode"
+    "damped_follow",
+    "dead_zone_follow",
+    "lookahead_follow",
+    "room_based_follow",
+    "combat_focus_follow"
   ],
   "edge_cases": [
-    "Smooth Follow Camera is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Smooth Follow Camera overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Smooth Follow Camera runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Respawn, fast travel, teleport blink, or room transitions should snap or blend from a known state.",
+    "Camera bounds can conflict with lookahead near level edges and reveal empty space or hide hazards.",
+    "Moving platforms and elevators need vertical follow tuning that avoids seasick lag.",
+    "Split-screen cameras need independent smoothing so one player does not inherit another player's velocity."
   ],
   "common_bugs": [
-    "Smooth Follow Camera state does not reset correctly after interruption or reload.",
-    "Feedback for Smooth Follow Camera plays even when the mechanic fails or is rejected.",
-    "Smooth Follow Camera produces different results between frame rates, platforms, or network clients."
+    "Damping uses frame-based interpolation and feels different at 30 FPS and 144 FPS.",
+    "Lookahead changes direction instantly on input reversal and causes camera wobble.",
+    "Camera remains outside level bounds after a teleport because bounds are applied before snapping.",
+    "Dead zone math uses pixels in one place and normalized screen units in another."
   ],
   "balancing_notes": [
-    "Make Smooth Follow Camera strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "More smoothing feels cinematic but can hide sudden hazards in fast platformers.",
+    "Lookahead should support intended movement direction without showing offscreen secrets too early."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Smooth Follow Camera becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Expose camera smoothing and lookahead intensity options when camera lag can affect comfort or precision.",
+    "Avoid oscillating follow behavior; stable camera motion helps players with motion sensitivity and spatial tracking needs."
   ],
   "implementation_notes": {
-    "unity": "Implement Smooth Follow Camera with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Smooth Follow Camera as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Smooth Follow Camera with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Smooth Follow Camera as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use Cinemachine damping/dead-zone settings or a custom exponential smoothing model with delta-time independent half-life values.",
+    "godot": "For Camera2D, combine smoothing with drag margins or custom dead-zone logic; for 3D rigs, smooth the pivot target before collision checks.",
+    "unreal": "Use SpringArm lag or PlayerCameraManager smoothing, but snap on teleports and reset interpolation state when camera modes change.",
+    "web": "Implement smoothing with exponential decay using delta time, apply dead-zone correction in world units, and clamp the result to level bounds last."
   },
   "related_mechanics": [
     "camera.first_person_camera",
@@ -100,7 +116,16 @@
     "combat.lock_on_targeting",
     "movement.run"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Celeste",
+      "note": "Uses controlled camera following to support precision platforming readability."
+    },
+    {
+      "title": "Hollow Knight",
+      "note": "Uses smooth camera movement and room framing to support exploration and combat."
+    }
+  ],
   "tags": [
     "camera",
     "readability",

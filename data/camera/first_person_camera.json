@@ -24,69 +24,85 @@
     "adventure",
     "simulation"
   ],
-  "description": "First-Person Camera is a viewpoint behavior that frames action and communicates spatial information to the player.",
-  "design_notes": "First-Person Camera should be designed around a clear player promise, a readable trigger, and a predictable result. For camera mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A camera viewpoint placed at or near the avatar's eyes to make the player see from the character's perspective.",
+  "design_notes": "First-person cameras make aiming and embodiment immediate, but they put heavy responsibility on collision, head motion, weapon presentation, and comfort. The camera should not blindly follow every animation bone; stable control and readable motion usually matter more than physical literalness.",
   "design_purpose": [
-    "Give the player a readable way to use first-person camera as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect first-person camera to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players precise forward-facing control and strong avatar embodiment.",
+    "Support aiming, inspection, horror, simulation, or immersive navigation from the character's viewpoint.",
+    "Make spatial scale and object interaction feel direct."
   ],
-  "player_fantasy": "The player feels oriented and confident because the game frames what matters.",
+  "player_fantasy": "The player feels physically present in the world, looking and acting through the character's eyes.",
   "required_systems": [
     "camera_controller",
-    "target_tracking",
-    "smoothing",
-    "screen_bounds"
+    "input_settings",
+    "collision_prevention",
+    "viewmodel_layer",
+    "accessibility_settings"
   ],
   "parameters": [
     {
-      "name": "follow_lag",
+      "name": "eye_height_offset",
       "type": "float",
-      "typical_range": "0-0.5 seconds",
-      "description": "How far behind the target the camera is allowed to feel."
+      "typical_range": "1.2-1.9 world units",
+      "description": "Camera height above the actor origin while standing."
     },
     {
-      "name": "framing_offset",
-      "type": "vector",
-      "typical_range": "0-40% of screen",
-      "description": "Offset used to keep the important subject away from dead center."
+      "name": "pitch_min_degrees",
+      "type": "float",
+      "typical_range": "-89 to -30 degrees",
+      "description": "Lowest allowed vertical look angle."
     },
     {
-      "name": "transition_speed",
+      "name": "pitch_max_degrees",
       "type": "float",
-      "typical_range": "0.1-5.0 seconds",
-      "description": "How quickly the camera blends to the new behavior."
+      "typical_range": "30-89 degrees",
+      "description": "Highest allowed vertical look angle."
+    },
+    {
+      "name": "headbob_amplitude",
+      "type": "float",
+      "typical_range": "0-0.08 world units",
+      "description": "Motion added to simulate walking or running head movement."
+    },
+    {
+      "name": "near_clip_distance",
+      "type": "float",
+      "typical_range": "0.01-0.2 world units",
+      "description": "Near clipping plane used to prevent viewmodel and wall artifacts."
     }
   ],
   "common_variants": [
-    "first_person_camera_fixed_mode",
-    "first_person_camera_player_controlled_mode",
-    "context_sensitive_mode",
-    "cinematic_mode"
+    "bodyless_first_person",
+    "full_body_first_person",
+    "vehicle_cockpit_camera",
+    "weapon_viewmodel_camera",
+    "lean_camera"
   ],
   "edge_cases": [
-    "First-Person Camera is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "First-Person Camera overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "First-Person Camera runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Crouch, prone, swimming, ladders, vehicles, and cutscenes all need explicit eye-height transition rules.",
+    "Camera placement near walls should avoid seeing through geometry without pushing the player body backward.",
+    "Viewmodel weapon motion should not change projectile origin unless the design intentionally models muzzle position.",
+    "VR or high-FOV modes need different comfort assumptions than flat-screen first-person cameras."
   ],
   "common_bugs": [
-    "First-Person Camera state does not reset correctly after interruption or reload.",
-    "Feedback for First-Person Camera plays even when the mechanic fails or is rejected.",
-    "First-Person Camera produces different results between frame rates, platforms, or network clients."
+    "The camera inherits animation head jitter and causes nausea or aiming instability.",
+    "Near clipping lets the player see through doors or walls by standing close to them.",
+    "Projectile traces originate from the weapon model while the reticle uses camera center, causing visible misses.",
+    "Mouse sensitivity changes with frame rate because raw input and smoothing are mixed incorrectly."
   ],
   "balancing_notes": [
-    "Make First-Person Camera strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "First-person viewpoints increase precision and tension but reduce peripheral awareness compared with third-person cameras.",
+    "Headbob, weapon sway, and recoil should support feel without obscuring required information."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when First-Person Camera becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Expose FOV, headbob, weapon sway, camera shake, and sensitivity settings independently.",
+    "Provide reticle and subtitle options because first-person presentation often uses small center-screen cues."
   ],
   "implementation_notes": {
-    "unity": "Implement First-Person Camera with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model First-Person Camera as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement First-Person Camera with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement First-Person Camera as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Keep the gameplay camera on a stable pivot rather than directly on the animated head bone; render viewmodels on a separate layer or camera when needed.",
+    "godot": "Attach Camera3D to a look pivot with clamped pitch and apply stance height changes through smooth offsets instead of inheriting noisy skeleton motion.",
+    "unreal": "Use a camera component or PlayerCameraManager with control rotation, separate first-person mesh handling, and collision checks for near-wall interactions.",
+    "web": "For Three.js or custom engines, store yaw and pitch as camera state, clamp pitch explicitly, and keep viewmodel transforms separate from world collision."
   },
   "related_mechanics": [
     "camera.smooth_follow_camera",
@@ -100,7 +116,16 @@
     "combat.lock_on_targeting",
     "movement.run"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Half-Life 2",
+      "note": "Uses a first-person camera for traversal, combat, and environmental interaction."
+    },
+    {
+      "title": "Minecraft",
+      "note": "Uses first-person view as a primary play perspective."
+    }
+  ],
   "tags": [
     "camera",
     "first",

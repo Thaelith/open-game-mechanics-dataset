@@ -24,75 +24,85 @@
     "shooter",
     "parkour"
   ],
-  "description": "A traversal state where the player runs along a wall for a limited distance or window.",
-  "design_notes": "Wall run requires strict surface eligibility, camera support, gravity modification, and exit rules. It should feel like controlled momentum, not an animation glued to a wall.",
+  "description": "A traversal state where the player temporarily runs along a valid wall while gravity and steering are modified.",
+  "design_notes": "Wall run requires surface eligibility, momentum thresholds, camera behavior, and exit rules to agree. It should feel like the player is converting speed into wall traversal, not being glued to any vertical surface. State reset after detach, damage, and landing is critical.",
   "design_purpose": [
-    "Turn walls into traversal routes.",
-    "Create high-mobility paths through combat or platform spaces.",
-    "Reward approach angle, momentum, and route planning."
+    "Turn selected walls into high-mobility traversal routes.",
+    "Reward approach angle, momentum, and planned exit direction.",
+    "Create combat and platform routes that use vertical surfaces without becoming free climbing."
   ],
   "player_fantasy": "The player feels athletic and cinematic, using vertical surfaces as temporary ground.",
   "required_systems": [
     "wall_detection",
     "movement_state",
-    "camera_controller",
     "surface_tagging",
-    "jump_exit"
+    "camera_controller",
+    "prediction_or_reconciliation"
   ],
   "parameters": [
     {
       "name": "wall_run_min_entry_velocity",
       "type": "float",
       "typical_range": "3-12 world units/second",
-      "description": "Minimum incoming movement needed to attach to a wall run."
+      "description": "Minimum velocity required before attachment is allowed."
+    },
+    {
+      "name": "wall_run_attach_angle_degrees",
+      "type": "float",
+      "typical_range": "15-70 degrees",
+      "description": "Allowed approach angle between movement direction and wall tangent."
+    },
+    {
+      "name": "wall_normal_smoothing_ms",
+      "type": "integer",
+      "typical_range": "30-180 ms",
+      "description": "Smoothing window for uneven wall normals."
     },
     {
       "name": "wall_run_gravity_scale",
       "type": "float",
       "typical_range": "0-0.8",
-      "description": "Gravity multiplier while attached to the wall."
-    },
-    {
-      "name": "wall_run_max_distance",
-      "type": "float",
-      "typical_range": "2-30 world units",
-      "description": "Maximum distance before forced exit."
+      "description": "Gravity multiplier while attached."
     },
     {
       "name": "wall_run_exit_impulse",
       "type": "float",
       "typical_range": "2-15 world units/second",
-      "description": "Launch impulse applied when jumping away from the wall."
+      "description": "Impulse applied when jumping or detaching from the wall."
     }
   ],
   "common_variants": [
     "horizontal_wall_run",
     "vertical_wall_run",
     "timed_wall_run",
-    "stamina_wall_run"
+    "stamina_wall_run",
+    "chain_wall_run"
   ],
   "edge_cases": [
-    "Curved or uneven walls can rapidly change normals and eject the player.",
-    "Wall run into corners should choose transition, stop, or jump behavior.",
-    "Camera roll and FOV effects should clear on forced exit or damage."
+    "Curved or uneven walls can rapidly change normals and should use smoothing or segmented eligibility.",
+    "Inside corners need explicit behavior: transfer, stop, jump, or detach.",
+    "Damage, stun, landing, water entry, and cutscenes must clear reduced gravity and camera roll.",
+    "Networked wall runs should predict attachment but reconcile wall normal, distance traveled, and exit impulse."
   ],
   "common_bugs": [
-    "The player sticks to any wall because surface tags are not checked.",
-    "Gravity suppression remains active after leaving the wall.",
-    "Exit jump uses camera direction instead of wall normal and launches unpredictably."
+    "The player sticks to decorative walls because surface tags are not checked.",
+    "Gravity suppression remains active after the state exits.",
+    "Exit jump uses camera forward instead of wall normal and launches unpredictably.",
+    "Wall-run camera roll stacks every attach and never returns exactly to zero."
   ],
   "balancing_notes": [
-    "Long wall runs can replace level routes unless surfaces and stamina are constrained.",
-    "Entry velocity requirements make wall run a momentum skill instead of a universal climb."
+    "Long wall runs can replace intended routes unless surface tags, stamina, or distance caps constrain them.",
+    "Entry velocity requirements make wall run a momentum skill rather than a universal climb."
   ],
   "accessibility_notes": [
-    "Provide an option to reduce camera roll and use strong surface readability for runnable walls."
+    "Provide reduced camera roll and FOV options, plus consistent visual language for runnable walls.",
+    "Avoid requiring exact approach angles without forgiving attach windows or route alternatives."
   ],
   "implementation_notes": {
-    "unity": "Detect runnable wall normals with capsule casts, project velocity along the wall tangent, apply wall_run_gravity_scale while attached, and exit when distance, angle, or input rules fail.",
-    "godot": "Use raycasts or shape casts from CharacterBody3D to cache the wall normal, then move along the tangent in _physics_process while reducing gravity and tracking max distance.",
-    "unreal": "Use a custom CharacterMovement mode for wall running so gravity, braking, camera roll, and jump-off impulse are owned by movement code instead of animation montages.",
-    "web": "Represent wall-run attachment as an actor state with wall_normal, entry_velocity, and distance_traveled, then project motion along the surface before resolving collisions."
+    "unity": "Detect runnable surfaces with capsule casts, cache wall normal and surface tag, project velocity along the tangent, and clear gravity overrides in every exit path.",
+    "godot": "Use shape casts from CharacterBody3D to find tagged wall surfaces, smooth the normal, and apply tangent motion plus reduced gravity in _physics_process.",
+    "unreal": "Use a custom CharacterMovement mode so gravity, braking, prediction, camera roll, and exit impulse are handled by movement code rather than animation-only state.",
+    "web": "Store wall_run_state with wall_normal, attach_time, distance_traveled, and entry_velocity, then project movement along the tangent before collision resolution."
   },
   "related_mechanics": [
     "platforming.wall_jump",

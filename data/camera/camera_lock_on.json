@@ -24,69 +24,85 @@
     "adventure",
     "simulation"
   ],
-  "description": "Camera Lock-on is a viewpoint behavior that frames action and communicates spatial information to the player.",
-  "design_notes": "Camera Lock-on should be designed around a clear player promise, a readable trigger, and a predictable result. For camera mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A camera mode that frames a selected target while preserving enough control for movement and combat.",
+  "design_notes": "Camera lock-on must coordinate target selection, camera framing, player orientation, and loss conditions. The system should feel stable without becoming sticky: players need to know which target is locked, why lock breaks, and how switching targets will behave in crowds.",
   "design_purpose": [
-    "Give the player a readable way to use camera lock-on as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect camera lock-on to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Keep a chosen enemy or object visible during close-range action.",
+    "Support strafing, blocking, parrying, or orbiting around a selected target.",
+    "Reduce camera management load while preserving target-selection decisions."
   ],
-  "player_fantasy": "The player feels oriented and confident because the game frames what matters.",
+  "player_fantasy": "The player feels focused on one threat while still able to move and react around it.",
   "required_systems": [
     "camera_controller",
-    "target_tracking",
-    "smoothing",
-    "screen_bounds"
+    "target_query",
+    "line_of_sight_detection",
+    "input_settings",
+    "target_ui"
   ],
   "parameters": [
     {
-      "name": "follow_lag",
+      "name": "lock_max_distance",
       "type": "float",
-      "typical_range": "0-0.5 seconds",
-      "description": "How far behind the target the camera is allowed to feel."
+      "typical_range": "5-45 world units",
+      "description": "Maximum distance at which a target can be acquired or retained."
     },
     {
-      "name": "framing_offset",
+      "name": "lock_screen_center_weight",
+      "type": "float",
+      "typical_range": "0-1",
+      "description": "How strongly screen-space center position affects target priority."
+    },
+    {
+      "name": "line_of_sight_grace_ms",
+      "type": "integer",
+      "typical_range": "150-1200 ms",
+      "description": "Occlusion grace before lock is broken."
+    },
+    {
+      "name": "target_switch_cooldown_ms",
+      "type": "integer",
+      "typical_range": "100-500 ms",
+      "description": "Minimum delay between target switches."
+    },
+    {
+      "name": "orbit_framing_offset",
       "type": "vector",
-      "typical_range": "0-40% of screen",
-      "description": "Offset used to keep the important subject away from dead center."
-    },
-    {
-      "name": "transition_speed",
-      "type": "float",
-      "typical_range": "0.1-5.0 seconds",
-      "description": "How quickly the camera blends to the new behavior."
+      "typical_range": "0-30% screen offset",
+      "description": "Screen-space offset used while orbiting the locked target."
     }
   ],
   "common_variants": [
-    "camera_lock_on_fixed_mode",
-    "camera_lock_on_player_controlled_mode",
-    "context_sensitive_mode",
-    "cinematic_mode"
+    "hard_lock_camera",
+    "soft_lock_camera",
+    "boss_anchor_lock",
+    "manual_target_cycle",
+    "aim_assist_lock"
   ],
   "edge_cases": [
-    "Camera Lock-on is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Camera Lock-on overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Camera Lock-on runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Large bosses may need multiple lock anchors rather than a single root transform.",
+    "Targets dying, teleporting, becoming invisible, or entering cutscenes should clear or retarget predictably.",
+    "Line-of-sight grace must handle pillars and brief occlusion without keeping lock through entire walls.",
+    "Split-screen and co-op cameras need per-player target ownership and UI markers."
   ],
   "common_bugs": [
-    "Camera Lock-on state does not reset correctly after interruption or reload.",
-    "Feedback for Camera Lock-on plays even when the mechanic fails or is rejected.",
-    "Camera Lock-on produces different results between frame rates, platforms, or network clients."
+    "Camera locks to a target pivot inside the mesh and clips into large enemies.",
+    "Stick drift repeatedly cycles targets because target switching lacks deadzone and cooldown.",
+    "Lock-on rotates the character but not attack traces, causing attacks to miss the locked target.",
+    "Occlusion checks hit the player or weapon and break lock incorrectly."
   ],
   "balancing_notes": [
-    "Make Camera Lock-on strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Strong lock-on improves readability in duels but can reduce threat from flanking enemies.",
+    "Target switching should be predictable enough for crowded fights without automatically selecting the safest option."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Camera Lock-on becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide clear target indicators, reticle size options, and camera sensitivity controls for lock-on mode.",
+    "Offer reduced camera auto-rotation or slower orbit speeds for players sensitive to rapid camera movement."
   ],
   "implementation_notes": {
-    "unity": "Implement Camera Lock-on with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Camera Lock-on as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Camera Lock-on with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Camera Lock-on as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use a target candidate query plus Cinemachine target groups or a custom rig; track lock owner, anchor transform, occlusion grace, and switch cooldown in camera state.",
+    "godot": "Maintain a locked target NodePath and anchor offset, then blend Camera2D or Camera3D orientation toward the anchor while movement input still controls the player.",
+    "unreal": "Use PlayerCameraManager or a camera mode with Blackboard-like target state, and keep target switching, line traces, and UI markers authoritative per player.",
+    "web": "Store locked_target_id and target_anchor in camera state, score candidates in screen space, and interpolate camera heading while clamping player input authority."
   },
   "related_mechanics": [
     "camera.first_person_camera",
@@ -100,7 +116,16 @@
     "combat.lock_on_targeting",
     "movement.run"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Legend of Zelda: Ocarina of Time",
+      "note": "Uses Z-targeting to keep a selected enemy or object framed."
+    },
+    {
+      "title": "Dark Souls",
+      "note": "Uses lock-on targeting for duels and melee positioning."
+    }
+  ],
   "tags": [
     "camera",
     "readability",

@@ -24,69 +24,85 @@
     "platformer",
     "open_world"
   ],
-  "description": "Zipline is a locomotion tool that helps the player cross space, reach anchors, or move through level structures.",
-  "design_notes": "Zipline should be designed around a clear player promise, a readable trigger, and a predictable result. For traversal mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A traversal route where the player attaches to a cable or rail and moves along a predefined line between endpoints.",
+  "design_notes": "Zipline traversal is constrained movement, so the player judges it by attach clarity, endpoint safety, detach control, and camera framing. It needs rules for direction, speed, collision, and what happens if the destination becomes unsafe.",
   "design_purpose": [
-    "Give the player a readable way to use zipline as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect zipline to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Move players quickly along authored routes across gaps, arenas, or vertical spaces.",
+    "Create one-way or bidirectional traversal links that designers can reason about.",
+    "Offer a readable high-speed route with controlled risk and detach choices."
   ],
-  "player_fantasy": "The player feels capable of crossing spaces that first appeared unreachable.",
+  "player_fantasy": "The player feels carried along a fast route while choosing when to commit, ride, or detach.",
   "required_systems": [
-    "character_controller",
-    "targeting_or_anchor_system",
-    "collision_detection",
-    "state_machine"
+    "route_spline",
+    "attachment_state",
+    "input_handling",
+    "camera_controller",
+    "collision_detection"
   ],
   "parameters": [
     {
-      "name": "travel_speed",
+      "name": "zipline_attach_radius",
       "type": "float",
-      "typical_range": "6-30 world units/second",
-      "description": "Movement speed while using the traversal mechanic."
+      "typical_range": "0.3-3 world units",
+      "description": "Distance from handle or cable where attachment is allowed."
     },
     {
-      "name": "activation_range",
+      "name": "zipline_acceleration",
       "type": "float",
-      "typical_range": "3-50 world units",
-      "description": "Maximum distance to a valid anchor, target, or route."
+      "typical_range": "1-40 world units/second^2",
+      "description": "Acceleration along the cable after attachment."
     },
     {
-      "name": "cancel_window",
+      "name": "zipline_max_velocity",
       "type": "float",
-      "typical_range": "0-1.0 seconds",
-      "description": "Time during which the player can safely cancel or redirect the action."
+      "typical_range": "5-45 world units/second",
+      "description": "Maximum velocity along the route."
+    },
+    {
+      "name": "zipline_detach_impulse",
+      "type": "float",
+      "typical_range": "0-12 world units/second",
+      "description": "Impulse applied when the player jumps or drops off."
+    },
+    {
+      "name": "endpoint_auto_detach_ms",
+      "type": "integer",
+      "typical_range": "0-1000 ms",
+      "description": "Delay before automatic detach after reaching the end."
     }
   ],
   "common_variants": [
-    "zipline_manual_targeting",
-    "zipline_auto_targeting",
-    "limited_use",
-    "upgrade_extended"
+    "one_way_zipline",
+    "bidirectional_zipline",
+    "manual_detach_zipline",
+    "combat_zipline",
+    "powered_rail"
   ],
   "edge_cases": [
-    "Zipline is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Zipline overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Zipline runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Endpoint landing space can become blocked by enemies, moving platforms, or other players.",
+    "Detaching mid-route should preserve route velocity in a predictable direction.",
+    "Multiple players on the same zipline need spacing, collision, or overlap rules.",
+    "Saving or streaming a level while attached must restore route progress and detach state safely."
   ],
   "common_bugs": [
-    "Zipline state does not reset correctly after interruption or reload.",
-    "Feedback for Zipline plays even when the mechanic fails or is rejected.",
-    "Zipline produces different results between frame rates, platforms, or network clients."
+    "The player remains parented to the zipline after detach and cannot move normally.",
+    "Cable progress overshoots the endpoint and reverses or jitters.",
+    "Camera faces the route direction but input still uses world movement axes.",
+    "Networked riders desync because clients simulate spline progress independently without correction."
   ],
   "balancing_notes": [
-    "Make Zipline strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Fast ziplines compress travel time but can bypass encounter space unless endpoints are controlled.",
+    "Manual detach adds expression but can create unintended shortcuts if landing areas are not tested."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Zipline becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use clear attach prompts and endpoint visibility so players know where the ride leads before committing.",
+    "Avoid strong camera banking on ziplines unless reduced-motion settings can disable it."
   ],
   "implementation_notes": {
-    "unity": "Implement Zipline with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Zipline as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Zipline with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Zipline as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Represent the route as a spline or endpoints with progress t, attach the actor to route motion state, and detach by converting route velocity back to character velocity.",
+    "godot": "Use Path3D or explicit endpoints, update progress in _physics_process, and keep the player's collision shape active for endpoint clearance checks.",
+    "unreal": "Use spline components for the cable path and a custom movement mode or attach state that replicates route progress and detach events.",
+    "web": "Store zipline_id, route_t, and route_velocity on the actor, advance progress in the simulation, and validate endpoint clearance before auto-detach."
   },
   "related_mechanics": [
     "camera.dynamic_fov",
@@ -100,7 +116,16 @@
     "traversal.gliding",
     "traversal.teleport_blink"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Apex Legends",
+      "note": "Uses ziplines as fast traversal routes between positions."
+    },
+    {
+      "title": "Far Cry 3",
+      "note": "Uses ziplines for quick downhill traversal and outpost movement."
+    }
+  ],
   "tags": [
     "locomotion",
     "mobility",

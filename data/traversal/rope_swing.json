@@ -24,69 +24,85 @@
     "platformer",
     "open_world"
   ],
-  "description": "Rope Swing is a locomotion tool that helps the player cross space, reach anchors, or move through level structures.",
-  "design_notes": "Rope Swing should be designed around a clear player promise, a readable trigger, and a predictable result. For traversal mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A traversal state where the player is attached to a rope or pivot and moves along an arc under gravity and input.",
+  "design_notes": "Rope swing is about controlled momentum. Players need to understand the pivot, rope length, release direction, and whether input pumps the swing. The mechanic becomes frustrating if collision, wrapping, or release timing behaves inconsistently.",
   "design_purpose": [
-    "Give the player a readable way to use rope swing as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect rope swing to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players cross gaps through pendulum motion and timed release.",
+    "Create traversal challenges based on momentum, arc reading, and landing choice.",
+    "Support expressive movement that can combine with jump, grapple, or glide systems."
   ],
-  "player_fantasy": "The player feels capable of crossing spaces that first appeared unreachable.",
+  "player_fantasy": "The player feels like they are using momentum and timing to launch across space.",
   "required_systems": [
-    "character_controller",
-    "targeting_or_anchor_system",
+    "attachment_state",
+    "physics_constraint",
+    "input_handling",
     "collision_detection",
-    "state_machine"
+    "release_state"
   ],
   "parameters": [
     {
-      "name": "travel_speed",
+      "name": "rope_length",
       "type": "float",
-      "typical_range": "6-30 world units/second",
-      "description": "Movement speed while using the traversal mechanic."
+      "typical_range": "2-25 world units",
+      "description": "Distance between pivot and player while attached."
     },
     {
-      "name": "activation_range",
+      "name": "swing_input_acceleration",
       "type": "float",
-      "typical_range": "3-50 world units",
-      "description": "Maximum distance to a valid anchor, target, or route."
+      "typical_range": "0-20 world units/second^2",
+      "description": "Tangential acceleration added from player input."
     },
     {
-      "name": "cancel_window",
+      "name": "swing_damping_ratio",
       "type": "float",
-      "typical_range": "0-1.0 seconds",
-      "description": "Time during which the player can safely cancel or redirect the action."
+      "typical_range": "0-0.4",
+      "description": "Energy lost per second while swinging."
+    },
+    {
+      "name": "release_impulse_scale",
+      "type": "float",
+      "typical_range": "0.5-1.5",
+      "description": "Multiplier applied to current tangential velocity on release."
+    },
+    {
+      "name": "reattach_lockout_ms",
+      "type": "integer",
+      "typical_range": "100-800 ms",
+      "description": "Delay before the same rope can be grabbed again after release."
     }
   ],
   "common_variants": [
-    "rope_swing_manual_targeting",
-    "rope_swing_auto_targeting",
-    "limited_use",
-    "upgrade_extended"
+    "fixed_rope_swing",
+    "grapple_rope_swing",
+    "tarzan_rope",
+    "swing_bar",
+    "physics_rope"
   ],
   "edge_cases": [
-    "Rope Swing is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Rope Swing overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Rope Swing runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Rope collision can wrap around corners, clip through geometry, or force detachment; choose one behavior.",
+    "Release during pause, hit stop, or slow motion should use one authoritative velocity sample.",
+    "The player hitting a ceiling or wall mid-swing needs clear bounce, slide, or detach behavior.",
+    "Moving pivots must decide whether rope length and angular velocity are preserved."
   ],
   "common_bugs": [
-    "Rope Swing state does not reset correctly after interruption or reload.",
-    "Feedback for Rope Swing plays even when the mechanic fails or is rejected.",
-    "Rope Swing produces different results between frame rates, platforms, or network clients."
+    "Swing input adds world-horizontal force instead of tangential force and breaks the arc.",
+    "Rope length drifts over time because constraints are corrected after integration without projection.",
+    "Release velocity is sampled after collision correction and launches in the wrong direction.",
+    "Reattaching on the next frame traps the player in the same rope."
   ],
   "balancing_notes": [
-    "Make Rope Swing strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Higher damping makes swings forgiving but less expressive; low damping rewards timing and route planning.",
+    "Large release impulse increases spectacle but can invalidate nearby platform spacing."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Rope Swing becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide clear release direction cues and consider wider landing areas when swing timing is mandatory.",
+    "Avoid camera swings that track the arc too aggressively; motion-sensitive players need stable horizon options."
   ],
   "implementation_notes": {
-    "unity": "Implement Rope Swing with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Rope Swing as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Rope Swing with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Rope Swing as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use a joint or custom pendulum constraint from FixedUpdate, add input as tangential acceleration, and sample release velocity before destroying the constraint.",
+    "godot": "Represent the rope as pivot position plus constrained radius, project the character back to rope_length each physics tick, and apply tangential input separately.",
+    "unreal": "Use a Physics Constraint or custom CharacterMovement mode for swing state, with the pivot replicated and release velocity applied authoritatively.",
+    "web": "Integrate angular velocity or constrained Cartesian motion in the simulation loop, project to rope_length after collision, and store release velocity before detach."
   },
   "related_mechanics": [
     "camera.dynamic_fov",
@@ -100,7 +116,16 @@
     "traversal.gliding",
     "traversal.teleport_blink"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Donkey Kong Country 2",
+      "note": "Uses rope swinging as a recurring platforming traversal challenge."
+    },
+    {
+      "title": "Spelunky",
+      "note": "Uses ropes as traversal tools for vertical spaces."
+    }
+  ],
   "tags": [
     "locomotion",
     "mobility",

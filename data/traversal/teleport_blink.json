@@ -24,69 +24,85 @@
     "platformer",
     "open_world"
   ],
-  "description": "Teleport Blink is a locomotion tool that helps the player cross space, reach anchors, or move through level structures.",
-  "design_notes": "Teleport Blink should be designed around a clear player promise, a readable trigger, and a predictable result. For traversal mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A short-range teleport that instantly relocates the player to a validated destination.",
+  "design_notes": "Teleport blink removes travel time, so validation and communication matter more than acceleration. The player must understand range, blocked destinations, line of sight, recovery, and whether blink preserves momentum or resets it. A blink that lands inside geometry destroys trust immediately.",
   "design_purpose": [
-    "Give the player a readable way to use teleport blink as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect teleport blink to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players a precise burst relocation option that bypasses ordinary pathing.",
+    "Create combat and traversal decisions around destination choice, cooldown, and recovery.",
+    "Support fantasy of slipping through danger without requiring physical travel across the intervening space."
   ],
-  "player_fantasy": "The player feels capable of crossing spaces that first appeared unreachable.",
+  "player_fantasy": "The player feels able to vanish from one spot and reappear exactly where they intended.",
   "required_systems": [
-    "character_controller",
-    "targeting_or_anchor_system",
+    "target_validation",
     "collision_detection",
-    "state_machine"
+    "cooldown_system",
+    "teleport_state",
+    "prediction_or_reconciliation"
   ],
   "parameters": [
     {
-      "name": "travel_speed",
+      "name": "blink_max_distance",
       "type": "float",
-      "typical_range": "6-30 world units/second",
-      "description": "Movement speed while using the traversal mechanic."
+      "typical_range": "3-25 world units",
+      "description": "Maximum distance from origin to destination."
     },
     {
-      "name": "activation_range",
+      "name": "blink_cast_radius",
       "type": "float",
-      "typical_range": "3-50 world units",
-      "description": "Maximum distance to a valid anchor, target, or route."
+      "typical_range": "0.1-1.0 world units",
+      "description": "Collision radius used when validating the teleport path or destination."
     },
     {
-      "name": "cancel_window",
+      "name": "destination_clearance_height",
       "type": "float",
-      "typical_range": "0-1.0 seconds",
-      "description": "Time during which the player can safely cancel or redirect the action."
+      "typical_range": "1-3 world units",
+      "description": "Vertical clearance required at the arrival point."
+    },
+    {
+      "name": "ledge_snap_distance",
+      "type": "float",
+      "typical_range": "0-1.5 world units",
+      "description": "Optional snap allowance to safe ledges or floor positions."
+    },
+    {
+      "name": "post_blink_recovery_ms",
+      "type": "integer",
+      "typical_range": "0-600 ms",
+      "description": "Control or attack recovery after arrival."
     }
   ],
   "common_variants": [
-    "teleport_blink_manual_targeting",
-    "teleport_blink_auto_targeting",
-    "limited_use",
-    "upgrade_extended"
+    "line_of_sight_blink",
+    "cursor_target_blink",
+    "dash_blink",
+    "combat_blink",
+    "shadow_step"
   ],
   "edge_cases": [
-    "Teleport Blink is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Teleport Blink overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Teleport Blink runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Destination validation must reject walls, thin ceilings, moving hazards, occupied spaces, and out-of-bounds voids.",
+    "Blinking across navmesh gaps should decide whether enemies can follow or retain targeting.",
+    "Momentum, projectiles, grapples, and status effects need rules for whether they persist through blink.",
+    "Networked blink should predict visual response but let the server validate final destination."
   ],
   "common_bugs": [
-    "Teleport Blink state does not reset correctly after interruption or reload.",
-    "Feedback for Teleport Blink plays even when the mechanic fails or is rejected.",
-    "Teleport Blink produces different results between frame rates, platforms, or network clients."
+    "The destination marker is valid in the preview but invalid when the player confirms due to stale collision data.",
+    "Blink preserves downward velocity and instantly kills the player after arrival.",
+    "Arrival effects spawn at the origin because teleport state clears before presentation events read it.",
+    "Server correction rubber-bands the player back after a locally accepted blink."
   ],
   "balancing_notes": [
-    "Make Teleport Blink strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Long-range blink bypasses level geometry and enemy zoning; cooldown and destination validation become major balance levers.",
+    "If blink grants invulnerability or attack canceling, tune it as both traversal and defense."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Teleport Blink becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show a clear valid/invalid destination indicator using more than color, and allow confirm-to-blink for precision modes.",
+    "Avoid disorienting camera snaps; preserve facing or offer a predictable recenter option after teleport."
   ],
   "implementation_notes": {
-    "unity": "Implement Teleport Blink with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Teleport Blink as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Teleport Blink with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Teleport Blink as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Preview with spherecasts or capsule checks, validate floor and head clearance, then move the CharacterController or Rigidbody through a teleport function that resets transient movement state.",
+    "godot": "Use physics direct space queries to test destination clearance, then set global_position only after clearing velocity, floor state, and collision recovery rules.",
+    "unreal": "Use capsule sweeps and navigation projection for destination validation, then call teleport or server-authoritative movement correction with replicated effects.",
+    "web": "Validate blink with swept collision or grid occupancy queries, commit origin and destination in one simulation event, and keep presentation trails separate from state."
   },
   "related_mechanics": [
     "camera.dynamic_fov",
@@ -100,7 +116,16 @@
     "traversal.gliding",
     "traversal.zipline"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Dishonored",
+      "note": "Uses Blink as a short-range teleport for stealth and traversal."
+    },
+    {
+      "title": "Overwatch",
+      "note": "Uses Tracer's Blink for rapid combat repositioning."
+    }
+  ],
   "tags": [
     "locomotion",
     "mobility",

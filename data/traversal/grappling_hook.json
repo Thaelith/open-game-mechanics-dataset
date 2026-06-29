@@ -24,69 +24,85 @@
     "platformer",
     "open_world"
   ],
-  "description": "Grappling Hook is a locomotion tool that helps the player cross space, reach anchors, or move through level structures.",
-  "design_notes": "Grappling Hook should be designed around a clear player promise, a readable trigger, and a predictable result. For traversal mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A traversal tool that attaches to a valid anchor and pulls, reels, or swings the player toward it.",
+  "design_notes": "Grappling hook design hinges on anchor readability and commitment. Decide whether the tool is a point-to-point pull, a physics rope, a combat repositioning move, or an aim-skill challenge. Collision, release rules, and moving anchors must be solved before level design can trust it.",
   "design_purpose": [
-    "Give the player a readable way to use grappling hook as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect grappling hook to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players cross gaps, gain height, or rapidly reposition using authored anchors.",
+    "Turn level geometry into traversal opportunities through aiming and timing.",
+    "Create expressive movement routes that combine attachment, swing, release, and landing."
   ],
-  "player_fantasy": "The player feels capable of crossing spaces that first appeared unreachable.",
+  "player_fantasy": "The player feels like they can seize distant space and turn it into momentum.",
   "required_systems": [
-    "character_controller",
-    "targeting_or_anchor_system",
+    "anchor_query",
+    "aiming_system",
+    "attachment_state",
     "collision_detection",
-    "state_machine"
+    "prediction_or_reconciliation"
   ],
   "parameters": [
     {
-      "name": "travel_speed",
+      "name": "max_grapple_distance",
       "type": "float",
-      "typical_range": "6-30 world units/second",
-      "description": "Movement speed while using the traversal mechanic."
+      "typical_range": "6-60 world units",
+      "description": "Maximum distance from player to valid anchor."
     },
     {
-      "name": "activation_range",
+      "name": "anchor_snap_radius",
       "type": "float",
-      "typical_range": "3-50 world units",
-      "description": "Maximum distance to a valid anchor, target, or route."
+      "typical_range": "0.1-3 world units",
+      "description": "Aim-assist radius around valid anchors."
     },
     {
-      "name": "cancel_window",
+      "name": "reel_velocity",
       "type": "float",
-      "typical_range": "0-1.0 seconds",
-      "description": "Time during which the player can safely cancel or redirect the action."
+      "typical_range": "5-35 world units/second",
+      "description": "Pull or reel speed toward the anchor."
+    },
+    {
+      "name": "rope_length_min",
+      "type": "float",
+      "typical_range": "1-10 world units",
+      "description": "Minimum rope length allowed before detaching or stopping pull."
+    },
+    {
+      "name": "detach_input_buffer_ms",
+      "type": "integer",
+      "typical_range": "50-250 ms",
+      "description": "Buffered release window used during attach, pull, or swing states."
     }
   ],
   "common_variants": [
-    "grappling_hook_manual_targeting",
-    "grappling_hook_auto_targeting",
-    "limited_use",
-    "upgrade_extended"
+    "point_pull_grapple",
+    "physics_rope_grapple",
+    "swing_grapple",
+    "combat_grapple",
+    "auto_anchor_grapple"
   ],
   "edge_cases": [
-    "Grappling Hook is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Grappling Hook overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Grappling Hook runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Moving anchors must define whether the player inherits anchor velocity and what happens if the anchor is destroyed.",
+    "Rope paths around corners need wrapping, collision shortening, or detachment rules.",
+    "A grapple that ends inside geometry needs a safe landing or rollback point.",
+    "Networked grapples need prediction for aim confirmation and reconciliation for attachment position."
   ],
   "common_bugs": [
-    "Grappling Hook state does not reset correctly after interruption or reload.",
-    "Feedback for Grappling Hook plays even when the mechanic fails or is rejected.",
-    "Grappling Hook produces different results between frame rates, platforms, or network clients."
+    "Anchor validation uses camera ray hits but movement pulls toward a different physics point.",
+    "Rope length goes negative near the anchor and launches the player.",
+    "Canceling during attach leaves gravity, input lock, or collision masks in grapple state.",
+    "Moving anchors desync because the client stores a world point while the server stores an anchor entity."
   ],
   "balancing_notes": [
-    "Make Grappling Hook strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Long range and strong aim assist make grapple a navigation default; limited anchors make it a route puzzle.",
+    "Pull speed, detach freedom, and fall recovery determine whether grapple is traversal, combat escape, or both."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Grappling Hook becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use strong anchor highlighting and optional snap assist so players can identify valid targets quickly.",
+    "Provide input buffering for release and avoid requiring tiny moving-target aim unless alternate controls exist."
   ],
   "implementation_notes": {
-    "unity": "Implement Grappling Hook with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Grappling Hook as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Grappling Hook with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Grappling Hook as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Raycast or spherecast for anchor candidates, store anchor entity plus local offset, then drive pull or rope simulation from FixedUpdate with swept collision.",
+    "godot": "Use direct space-state queries for anchor selection, store attachment state on the character, and update reel or swing velocity in _physics_process.",
+    "unreal": "Use trace channels or Gameplay Tags for anchors, replicate the chosen anchor and local offset, and run pull movement through CharacterMovement or a custom movement mode.",
+    "web": "Store grapple_state with anchor_id, anchor_local_point, rope_length, and phase, then resolve pull velocity and collision in the fixed simulation step."
   },
   "related_mechanics": [
     "camera.dynamic_fov",

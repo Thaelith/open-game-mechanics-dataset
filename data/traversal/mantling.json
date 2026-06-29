@@ -24,69 +24,85 @@
     "platformer",
     "open_world"
   ],
-  "description": "Mantling is a locomotion tool that helps the player cross space, reach anchors, or move through level structures.",
-  "design_notes": "Mantling should be designed around a clear player promise, a readable trigger, and a predictable result. For traversal mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A traversal action where the player climbs or vaults onto a ledge after detecting a reachable surface.",
+  "design_notes": "Mantling is a contract between collision probes, animation, and player intent. It must identify a valid ledge, reserve a safe target position, and restore control cleanly. If probes are too permissive, players mantle through geometry; if too strict, obvious ledges feel broken.",
   "design_purpose": [
-    "Give the player a readable way to use mantling as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect mantling to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players recover onto ledges or low obstacles without requiring a full jump arc.",
+    "Support parkour routes, cover traversal, and forgiving vertical movement.",
+    "Make level geometry feel tactile and climbable where designers intend it."
   ],
-  "player_fantasy": "The player feels capable of crossing spaces that first appeared unreachable.",
+  "player_fantasy": "The player feels capable of catching and climbing over reachable edges with physical intent.",
   "required_systems": [
-    "character_controller",
-    "targeting_or_anchor_system",
+    "ledge_detection",
     "collision_detection",
-    "state_machine"
+    "animation_state_machine",
+    "root_motion_or_warping",
+    "state_reset_rules"
   ],
   "parameters": [
     {
-      "name": "travel_speed",
+      "name": "mantle_probe_height",
       "type": "float",
-      "typical_range": "6-30 world units/second",
-      "description": "Movement speed while using the traversal mechanic."
+      "typical_range": "0.4-2.5 world units",
+      "description": "Vertical search band for detecting reachable ledges."
     },
     {
-      "name": "activation_range",
+      "name": "mantle_forward_probe_distance",
       "type": "float",
-      "typical_range": "3-50 world units",
-      "description": "Maximum distance to a valid anchor, target, or route."
+      "typical_range": "0.3-2.0 world units",
+      "description": "Forward distance used to find ledge fronts."
     },
     {
-      "name": "cancel_window",
+      "name": "mantle_target_clearance_height",
       "type": "float",
-      "typical_range": "0-1.0 seconds",
-      "description": "Time during which the player can safely cancel or redirect the action."
+      "typical_range": "1-2.5 world units",
+      "description": "Clear space required at the final standing position."
+    },
+    {
+      "name": "mantle_duration_ms",
+      "type": "integer",
+      "typical_range": "180-900 ms",
+      "description": "Time spent in the mantle animation or movement warp."
+    },
+    {
+      "name": "mantle_cancel_after_ms",
+      "type": "integer",
+      "typical_range": "0-500 ms",
+      "description": "Earliest point where damage, jump, or drop can cancel the action."
     }
   ],
   "common_variants": [
-    "mantling_manual_targeting",
-    "mantling_auto_targeting",
-    "limited_use",
-    "upgrade_extended"
+    "ledge_mantle",
+    "vault_mantle",
+    "combat_mantle",
+    "assisted_mantle",
+    "parkour_mantle"
   ],
   "edge_cases": [
-    "Mantling is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Mantling overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Mantling runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Moving ledges, elevators, and vehicles need target positions relative to the moving surface.",
+    "Crouch-height spaces above the ledge should choose crouched finish, reject, or crawl transition.",
+    "Mantle probes should reject thin railings, decorative trim, hazards, and one-way collision unless tagged.",
+    "Multiplayer mantling needs reservation or overlap handling at the landing position."
   ],
   "common_bugs": [
-    "Mantling state does not reset correctly after interruption or reload.",
-    "Feedback for Mantling plays even when the mechanic fails or is rejected.",
-    "Mantling produces different results between frame rates, platforms, or network clients."
+    "The final target point is valid during detection but occupied by another actor before the animation finishes.",
+    "Root motion moves the character through walls because collision is disabled for the whole animation.",
+    "Mantle state is interrupted by damage and never restores input, gravity, or collision masks.",
+    "Probe order picks a high ledge behind a low ledge and causes a teleport-like climb."
   ],
   "balancing_notes": [
-    "Make Mantling strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Fast mantles support flow and parkour; slow mantles create commitment in combat or stealth spaces.",
+    "Generous mantle detection can make routes forgiving but may invalidate jump skill and level gates."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Mantling becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use clear ledge affordances and input buffering so players do not need exact jump-and-grab timing.",
+    "Avoid camera snaps during mantle animation, or provide reduced camera motion during automated traversal."
   ],
   "implementation_notes": {
-    "unity": "Implement Mantling with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Mantling as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Mantling with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Mantling as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use staged probes for wall, top surface, and final clearance, reserve the target point, then move with root motion or scripted interpolation while still checking collision.",
+    "godot": "Run ray or shape casts for ledge front and top clearance, store the mantle target relative to moving bodies, and blend movement in _physics_process.",
+    "unreal": "Use motion warping or root motion with ledge traces, target reservation, and a custom movement state that restores collision and input on every exit path.",
+    "web": "Perform ledge detection with collision queries, store target_position and target_surface_id, and interpolate through a mantle state while validating final clearance."
   },
   "related_mechanics": [
     "camera.dynamic_fov",
@@ -100,7 +116,16 @@
     "traversal.teleport_blink",
     "traversal.zipline"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Uncharted 4: A Thief's End",
+      "note": "Uses ledge mantling as a core traversal action."
+    },
+    {
+      "title": "Assassin's Creed II",
+      "note": "Uses climb and mantle interactions across authored architecture."
+    }
+  ],
   "tags": [
     "mantling",
     "mobility",
