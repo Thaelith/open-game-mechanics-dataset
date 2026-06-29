@@ -2,12 +2,12 @@
   "id": "puzzle.pressure_plate",
   "name": "Pressure Plate",
   "aliases": [
-    "pressure plate mechanic",
-    "pressure plate system",
-    "pressure plate"
+    "floor switch",
+    "weight plate",
+    "pressure switch"
   ],
   "category": "puzzle",
-  "subcategory": "state_puzzle",
+  "subcategory": "physical_trigger",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,97 +15,115 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
+    "design": "easy",
     "implementation": "medium",
-    "tuning": "hard"
+    "tuning": "medium"
   },
   "genres": [
     "puzzle",
     "adventure",
-    "escape_room"
+    "platformer",
+    "immersive_sim"
   ],
-  "description": "Pressure Plate is a rule-based challenge that asks the player to observe, reason, manipulate state, or sequence actions.",
-  "design_notes": "Pressure Plate should be designed around a clear player promise, a readable trigger, and a predictable result. For puzzle mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A trigger surface that changes state when a qualifying actor or object applies pressure.",
+  "design_notes": "Pressure plates are readable puzzle inputs when their activation rules are explicit. The mechanic should define what counts as weight, whether activation is binary or analog, how long the state persists, and what output it controls. Good plates teach cause and effect before asking for timing or multi-object reasoning.",
   "design_purpose": [
-    "Give the player a readable way to use pressure plate as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect pressure plate to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players activate world state through body position, objects, or weight.",
+    "Create puzzles around placement, timing, cooperation, and object transport.",
+    "Make cause-and-effect relationships visible in the environment."
   ],
-  "player_fantasy": "The player feels clever when they infer the rule and manipulate the system correctly.",
+  "player_fantasy": "The player feels they are manipulating a physical space where weight and position matter.",
   "required_systems": [
-    "interaction_system",
-    "state_tracking",
+    "trigger_volume",
+    "object_tagging",
+    "puzzle_state",
     "feedback_system",
     "save_state"
   ],
   "parameters": [
     {
-      "name": "activation_condition",
-      "type": "string",
-      "typical_range": "single, all, ordered, timed",
-      "description": "Rule that determines when the puzzle element changes state."
-    },
-    {
-      "name": "reset_time",
+      "name": "activation_mass_threshold",
       "type": "float",
-      "typical_range": "0-30 seconds",
-      "description": "Delay before the puzzle returns to its default state."
+      "typical_range": "0.1-500 mass units",
+      "description": "Combined qualifying mass required to activate the plate."
     },
     {
-      "name": "feedback_intensity",
+      "name": "plate_depress_depth",
+      "type": "float",
+      "typical_range": "0.01-0.3 world units",
+      "description": "Visual movement used when the plate activates."
+    },
+    {
+      "name": "release_linger_ms",
       "type": "integer",
-      "typical_range": "1-5",
-      "description": "How strongly the game communicates success, failure, or partial progress."
+      "typical_range": "0-3000 ms",
+      "description": "Delay before deactivation after pressure is removed."
+    },
+    {
+      "name": "accepted_actor_tags",
+      "type": "array",
+      "typical_range": "1-20 tags",
+      "description": "Tags allowed to contribute pressure."
+    },
+    {
+      "name": "output_channel_id",
+      "type": "string",
+      "typical_range": "local puzzle channel",
+      "description": "Puzzle signal or channel controlled by the plate."
     }
   ],
   "common_variants": [
-    "pressure_plate_single_step",
-    "pressure_plate_multi_step",
-    "timed_variant",
-    "resetting_variant"
+    "binary_plate",
+    "weighted_plate",
+    "timed_plate",
+    "multi_plate_sequence",
+    "player_only_plate"
   ],
   "edge_cases": [
-    "Pressure Plate is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Pressure Plate overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Pressure Plate runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Stacked objects should specify whether mass adds, only top object counts, or each collider counts separately.",
+    "Objects resting partly on the plate need stable contribution rules to avoid flicker.",
+    "Physics sleep should not prevent a resting object from keeping the plate active.",
+    "Save/load must restore both depressed visual state and linked puzzle output."
   ],
   "common_bugs": [
-    "Pressure Plate state does not reset correctly after interruption or reload.",
-    "Feedback for Pressure Plate plays even when the mechanic fails or is rejected.",
-    "Pressure Plate produces different results between frame rates, platforms, or network clients."
+    "Multiple colliders on one object count as multiple objects and over-activate the plate.",
+    "The output toggles every frame instead of changing only on state transitions.",
+    "A destroyed object never sends exit, leaving the plate permanently active.",
+    "Networked co-op clients disagree about activation because physics authority is not centralized."
   ],
   "balancing_notes": [
-    "Make Pressure Plate strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Visible wiring, sound, or camera framing should show what the plate controls before puzzles become complex.",
+    "Release delays can make timing puzzles more forgiving without changing the visible rule."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Pressure Plate becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use shape, motion, sound, and color together to show plate activation.",
+    "Avoid puzzles that require holding a plate and reading distant results without camera or UI support."
   ],
   "implementation_notes": {
-    "unity": "Implement Pressure Plate with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Pressure Plate as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Pressure Plate with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Pressure Plate as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use trigger colliders with a tracked set of qualifying rigidbodies or actors; aggregate mass by object identity rather than collider count.",
+    "godot": "Use Area2D or Area3D enter/exit signals, store qualifying bodies in a set, and emit puzzle-state changes only when activation changes.",
+    "unreal": "Use overlap volumes with Gameplay Tags or interfaces for qualifying actors; replicate activation state rather than raw overlap events in multiplayer.",
+    "web": "Use collision overlap queries against tagged entities and keep plate state as data that emits events only on threshold crossings."
   },
   "related_mechanics": [
-    "puzzle.key_and_lock",
-    "puzzle.lever_switch",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "puzzle.timed_door",
+    "puzzle.physics_weight_puzzle",
+    "physics.one_way_platform",
+    "puzzle.lever_switch"
   ],
   "combines_well_with": [
-    "puzzle.mirror_light_reflection",
-    "puzzle.sliding_block",
-    "time.timed_challenge",
-    "ui_ux.quest_marker"
+    "physics.moving_platform",
+    "puzzle.key_and_lock",
+    "multiplayer.local_coop",
+    "ui_ux.checkpoint_notification"
   ],
   "example_games": [],
   "tags": [
-    "pressure",
     "puzzle",
+    "trigger",
+    "weight",
     "state",
-    "state_puzzle"
+    "physics"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

@@ -2,12 +2,12 @@
   "id": "platforming.wall_slide",
   "name": "Wall Slide",
   "aliases": [
-    "wall slide mechanic",
-    "wall slide system",
-    "wall slide"
+    "wall cling",
+    "wall friction",
+    "wall descent"
   ],
   "category": "platforming",
-  "subcategory": "vertical_mobility",
+  "subcategory": "wall_interaction",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -17,95 +17,103 @@
   "difficulty": {
     "design": "medium",
     "implementation": "medium",
-    "tuning": "hard"
+    "tuning": "medium"
   },
   "genres": [
     "platformer",
     "metroidvania",
-    "precision_platformer"
+    "action"
   ],
-  "description": "Wall Slide is a precision movement mechanic used to negotiate platforms, walls, gaps, and hazards.",
-  "design_notes": "Wall Slide should be designed around a clear player promise, a readable trigger, and a predictable result. For platforming mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A controlled descent state that slows the character while touching a wall.",
+  "design_notes": "Wall slide gives the player time to read vertical spaces and prepares wall jumps or ledge grabs. It should have a visible pose and predictable entry rules so players know when they are sliding rather than simply falling next to a wall.",
   "design_purpose": [
-    "Give the player a readable way to use wall slide as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect wall slide to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Make wall contact readable and useful before the player commits to a wall jump.",
+    "Slow vertical failure enough to support recovery without eliminating hazards.",
+    "Create a state where level designers can place spikes, gaps, or timing challenges along walls."
   ],
-  "player_fantasy": "The player feels precise, agile, and responsible for overcoming spatial challenges.",
+  "player_fantasy": "The player feels in control while clinging to a dangerous vertical surface.",
   "required_systems": [
-    "character_controller",
-    "jump_state",
-    "collision_detection",
-    "coyote_time_or_buffering"
+    "wall_detection",
+    "fall_state",
+    "surface_tagging",
+    "friction_override",
+    "animation_state_machine"
   ],
   "parameters": [
     {
-      "name": "activation_window",
+      "name": "slide_descent_cap",
       "type": "float",
-      "typical_range": "0.05-0.25 seconds",
-      "description": "Timing window in which the platforming action can start."
+      "typical_range": "1-8 world units/second",
+      "description": "Maximum downward velocity while the slide is active."
     },
     {
-      "name": "vertical_velocity",
+      "name": "wall_attach_angle_degrees",
       "type": "float",
-      "typical_range": "4-20 world units/second",
-      "description": "Initial or sustained vertical movement contribution."
+      "typical_range": "70-110 degrees",
+      "description": "Surface-normal range considered valid for sliding."
     },
     {
-      "name": "control_lockout",
+      "name": "slide_entry_delay_ms",
+      "type": "integer",
+      "typical_range": "0-180 ms",
+      "description": "Delay before falling contact becomes a slide state."
+    },
+    {
+      "name": "wall_stamina_drain_per_second",
       "type": "float",
-      "typical_range": "0-0.25 seconds",
-      "description": "Short period where player input is limited to preserve readability."
+      "typical_range": "0-20 units",
+      "description": "Optional resource drain while maintaining contact."
     }
   ],
   "common_variants": [
-    "wall_slide_assisted_version",
-    "wall_slide_precision_version",
-    "upgrade_unlocked_version",
-    "hazard_sensitive_version"
+    "passive_wall_slide",
+    "button_held_wall_cling",
+    "stamina_limited_slide",
+    "hazard_sensitive_slide"
   ],
   "edge_cases": [
-    "Wall Slide is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Wall Slide overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Wall Slide runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A player pressing into a wall at the top of a ledge should not get trapped between ledge grab and slide.",
+    "Wall slide on moving platforms must decide whether lateral movement is inherited.",
+    "Contact with decorative or one-way surfaces needs explicit slide eligibility.",
+    "Transition from wall slide to ground landing should clear wall-only friction immediately."
   ],
   "common_bugs": [
-    "Wall Slide state does not reset correctly after interruption or reload.",
-    "Feedback for Wall Slide plays even when the mechanic fails or is rejected.",
-    "Wall Slide produces different results between frame rates, platforms, or network clients."
+    "The slide state flickers because wall contact is lost for one frame on tile seams.",
+    "Downward velocity cap is applied after gravity and creates frame-rate dependent descent.",
+    "Players can slide upward when pushed by moving walls because the cap only handles falling.",
+    "Wall slide animation remains active after leaving the wall due to delayed collision callbacks."
   ],
   "balancing_notes": [
-    "Make Wall Slide strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Lower descent caps make vertical routes safer; higher caps keep wall slide as a brief recovery affordance.",
+    "If wall slide feeds wall jump, tune both together so the slide does not trivialize timing."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Wall Slide becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Consider a hold-to-cling option for players who need more time to plan wall jumps.",
+    "Show valid slide surfaces through material language or consistent character pose."
   ],
   "implementation_notes": {
-    "unity": "Implement Wall Slide with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Wall Slide as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Wall Slide with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Wall Slide as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use an explicit movement-state enum and feed the final desired velocity into CharacterController.Move or Rigidbody movement from FixedUpdate; keep dash and jump assists outside animation callbacks. For Wall Slide, validate this path with parameters such as slide_descent_cap and wall_attach_angle_degrees.",
+    "godot": "Keep the mechanic state on CharacterBody2D or CharacterBody3D, update velocity in _physics_process, and separate input buffering from collision response. For Wall Slide, validate this path with parameters such as slide_descent_cap and wall_attach_angle_degrees.",
+    "unreal": "Use CharacterMovement with a custom movement state or Gameplay Ability; gate activation through prediction-safe input and reconcile movement corrections cleanly in networked play. For Wall Slide, validate this path with parameters such as slide_descent_cap and wall_attach_angle_degrees.",
+    "web": "Represent the mechanic as deterministic state in the simulation loop, then apply resolved displacement before rendering through Canvas, Phaser, Three.js, or a custom engine. For Wall Slide, validate this path with parameters such as slide_descent_cap and wall_attach_angle_degrees."
   },
   "related_mechanics": [
-    "camera.smooth_follow_camera",
-    "movement.dash",
-    "platforming.double_jump",
-    "platforming.variable_jump_height"
+    "platforming.wall_jump",
+    "platforming.ledge_grab",
+    "traversal.wall_run"
   ],
   "combines_well_with": [
-    "camera.smooth_follow_camera",
-    "movement.dash",
-    "platforming.ledge_grab",
-    "platforming.wall_jump"
+    "platforming.coyote_time",
+    "platforming.jump_buffering",
+    "traversal.mantling",
+    "camera.smooth_follow_camera"
   ],
   "example_games": [],
   "tags": [
-    "mobility",
-    "precision",
-    "vertical_mobility",
-    "wall"
+    "platforming",
+    "wall_interaction",
+    "fall_control",
+    "precision"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

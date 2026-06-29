@@ -2,12 +2,12 @@
   "id": "combat.ranged_attack",
   "name": "Ranged Attack",
   "aliases": [
-    "ranged attack mechanic",
-    "ranged attack system",
-    "ranged attack"
+    "projectile attack",
+    "shooting",
+    "ranged weapon"
   ],
   "category": "combat",
-  "subcategory": "offense",
+  "subcategory": "ranged_offense",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -20,92 +20,111 @@
     "tuning": "hard"
   },
   "genres": [
+    "shooter",
     "action",
     "rpg",
-    "fighting"
+    "platformer"
   ],
-  "description": "Ranged Attack is an interaction that creates threat, defense, damage, timing, or tactical pressure during conflict.",
-  "design_notes": "Ranged Attack should be designed around a clear player promise, a readable trigger, and a predictable result. For combat mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "An attack that applies damage or effects from a distance through projectiles, traces, or targeting rules.",
+  "design_notes": "Ranged attacks need rules for aiming, ammunition, projectile behavior, line of sight, hit confirmation, and cover. Decide whether the attack is hitscan, simulated projectile, lock-on, arced, or area-targeted; each choice changes readability and balance.",
   "design_purpose": [
-    "Give the player a readable way to use ranged attack as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect ranged attack to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players project threat beyond melee reach and interact with distant targets.",
+    "Create spatial decisions around cover, reloads, aim commitment, and projectile travel.",
+    "Support different weapon identities through spread, recoil, charge, ammo, and impact effects."
   ],
-  "player_fantasy": "The player feels powerful, skillful, and able to read danger under pressure.",
+  "player_fantasy": "The player feels capable of controlling space and landing precise attacks at range.",
   "required_systems": [
-    "combat_state_machine",
+    "aiming_system",
+    "projectile_or_trace_system",
+    "ammo_system",
     "hit_detection",
-    "damage_model",
-    "animation_events"
+    "damage_model"
   ],
   "parameters": [
     {
-      "name": "damage_value",
+      "name": "projectile_spawn_offset",
+      "type": "vector",
+      "typical_range": "weapon muzzle or actor center",
+      "description": "Spawn position relative to the firing actor."
+    },
+    {
+      "name": "projectile_travel_units_per_second",
+      "type": "float",
+      "typical_range": "5-200 world units/second",
+      "description": "Travel pace for simulated projectiles."
+    },
+    {
+      "name": "aim_spread_degrees",
+      "type": "float",
+      "typical_range": "0-20 degrees",
+      "description": "Angular dispersion applied to each shot."
+    },
+    {
+      "name": "ammo_per_shot",
       "type": "integer",
-      "typical_range": "1-250",
-      "description": "Base amount of damage or threat applied by the mechanic."
+      "typical_range": "1-10",
+      "description": "Ammunition consumed by one activation."
     },
     {
-      "name": "startup_time",
+      "name": "damage_falloff_start_distance",
       "type": "float",
-      "typical_range": "0.05-1.2 seconds",
-      "description": "Delay before the active effect begins."
-    },
-    {
-      "name": "recovery_time",
-      "type": "float",
-      "typical_range": "0.05-1.5 seconds",
-      "description": "Delay after use before the actor can fully act again."
+      "typical_range": "0-100 world units",
+      "description": "Distance where damage reduction begins if falloff is used."
     }
   ],
   "common_variants": [
-    "ranged_attack_light_version",
-    "ranged_attack_heavy_version",
-    "timed_version",
-    "resource_limited_version"
+    "hitscan_shot",
+    "slow_projectile",
+    "lobbed_projectile",
+    "spread_shot",
+    "charged_shot",
+    "homing_projectile"
   ],
   "edge_cases": [
-    "Ranged Attack is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Ranged Attack overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Ranged Attack runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Firing from inside walls or near cover should not spawn projectiles behind collision.",
+    "Very fast projectiles need continuous collision or ray steps to avoid tunneling.",
+    "Projectile ownership must handle reflection, friendly fire, despawn, and save/load boundaries.",
+    "Aim assist, lock-on, and manual aim should not fight over target selection."
   ],
   "common_bugs": [
-    "Ranged Attack state does not reset correctly after interruption or reload.",
-    "Feedback for Ranged Attack plays even when the mechanic fails or is rejected.",
-    "Ranged Attack produces different results between frame rates, platforms, or network clients."
+    "Projectile visuals and damage traces use different origins, causing visible misses to hit.",
+    "Ammo is consumed before server rejection and not refunded after prediction correction.",
+    "Spread uses frame-random state and breaks deterministic replays or seeded runs.",
+    "Projectiles continue after scene unload because lifetime cleanup is tied to renderer visibility."
   ],
   "balancing_notes": [
-    "Make Ranged Attack strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Long reach needs counter-pressure such as reload, ammo, spread, travel, cover, or enemy mobility.",
+    "Projectile travel gives defenders readable counterplay; hitscan needs stronger aim or exposure constraints."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Ranged Attack becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer reticle scaling, color options, and aim assist settings where precision aiming is central.",
+    "Use hit markers or impact effects so players can distinguish misses, armor hits, and blocked shots."
   ],
   "implementation_notes": {
-    "unity": "Implement Ranged Attack with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Ranged Attack as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Ranged Attack with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Ranged Attack as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Model startup, active, recovery, and cancel windows as data, then drive hitboxes, animation events, and damage application from one combat state source. For Ranged Attack, validate this path with parameters such as projectile_spawn_offset and projectile_travel_units_per_second.",
+    "godot": "Use Area2D or Area3D hit volumes with frame-window state on the actor; avoid placing damage authority inside animation-only callbacks. For Ranged Attack, validate this path with parameters such as projectile_spawn_offset and projectile_travel_units_per_second.",
+    "unreal": "Implement the action as a Gameplay Ability or Actor Component with montage notifies for windows and authoritative damage on the server when networked. For Ranged Attack, validate this path with parameters such as projectile_spawn_offset and projectile_travel_units_per_second.",
+    "web": "Update combat windows in the fixed simulation step, evaluate hurtbox overlap from cached transforms, and emit presentation events separately from damage state. For Ranged Attack, validate this path with parameters such as projectile_spawn_offset and projectile_travel_units_per_second."
   },
   "related_mechanics": [
-    "camera.screen_shake",
-    "combat.charged_attack",
-    "combat.melee_attack",
-    "ui_ux.damage_numbers"
+    "combat.reload",
+    "combat.aim_down_sights",
+    "combat.projectile_reflection",
+    "ui_ux.hit_marker"
   ],
   "combines_well_with": [
+    "camera.camera_zoom",
     "camera.screen_shake",
-    "combat.combo_chain",
-    "combat.parry",
-    "ui_ux.damage_numbers"
+    "combat.damage_over_time",
+    "economy.loot_table"
   ],
   "example_games": [],
   "tags": [
     "combat",
-    "offense",
-    "ranged",
-    "timing"
+    "projectile",
+    "aiming",
+    "ammo",
+    "ranged"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

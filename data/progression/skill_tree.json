@@ -7,7 +7,7 @@
     "upgrade tree"
   ],
   "category": "progression",
-  "subcategory": "progression",
+  "subcategory": "ability_graph",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -22,88 +22,106 @@
   "genres": [
     "rpg",
     "action",
-    "roguelike"
+    "roguelike",
+    "strategy"
   ],
-  "description": "A branching upgrade structure that lets players plan long-term ability growth.",
-  "design_notes": "Skill Tree should be designed around a clear player promise, a readable trigger, and a predictable result. For progression mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A graph or branching structure where players spend progression resources to unlock abilities or bonuses.",
+  "design_notes": "Skill trees are planning interfaces and balance structures. The graph shape, prerequisites, refund rules, node visibility, and upgrade costs all shape how players imagine builds. A good tree offers meaningful routes without burying required power in fake choices.",
   "design_purpose": [
-    "Give the player a readable way to use skill tree as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect skill tree to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players plan character growth across sessions or runs.",
+    "Create build identity through mutually reinforcing nodes and prerequisites.",
+    "Pace ability unlocks so new verbs and passive bonuses arrive at understandable intervals."
   ],
-  "player_fantasy": "The player feels their effort is accumulating into lasting power or options.",
+  "player_fantasy": "The player feels they are shaping a build through intentional long-term choices.",
   "required_systems": [
-    "player_profile",
-    "reward_rules",
-    "unlock_system",
-    "save_state"
+    "progression_wallet",
+    "ability_database",
+    "graph_validation",
+    "save_state",
+    "ui_navigation"
   ],
   "parameters": [
     {
-      "name": "reward_amount",
+      "name": "node_count",
       "type": "integer",
-      "typical_range": "1-10000",
-      "description": "Progress awarded when the player completes the triggering action."
+      "typical_range": "5-1500 nodes",
+      "description": "Total unlockable nodes in the tree."
     },
     {
-      "name": "unlock_threshold",
-      "type": "integer",
-      "typical_range": "1-100",
-      "description": "Amount of progress required before the next reward unlocks."
+      "name": "prerequisite_node_ids",
+      "type": "array",
+      "typical_range": "0-8 ids per node",
+      "description": "Node IDs required before a target node can unlock."
     },
     {
-      "name": "scaling_curve",
+      "name": "skill_point_cost_curve",
       "type": "string",
-      "typical_range": "linear, exponential, tiered",
-      "description": "Curve used to increase cost, reward, or requirement."
+      "typical_range": "flat, tiered, escalating",
+      "description": "Cost progression used as the player moves through the graph."
+    },
+    {
+      "name": "respec_refund_ratio",
+      "type": "float",
+      "typical_range": "0-1",
+      "description": "Share of spent points returned when the player respecs."
+    },
+    {
+      "name": "branch_depth_limit",
+      "type": "integer",
+      "typical_range": "1-30 tiers",
+      "description": "Maximum path depth used to pace powerful unlocks."
     }
   ],
   "common_variants": [
-    "skill_tree_linear_track",
-    "skill_tree_branching_track",
-    "class_restricted",
-    "respec_enabled"
+    "linear_skill_track",
+    "branching_tree",
+    "web_tree",
+    "class_tree",
+    "temporary_run_tree",
+    "shared_account_tree"
   ],
   "edge_cases": [
-    "Skill Tree is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Skill Tree overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Skill Tree runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Removing a prerequisite node during respec must also remove or disable dependent nodes.",
+    "Content patches that move nodes need migration rules for existing saves.",
+    "UI navigation must handle large trees with keyboard, mouse, gamepad, and touch.",
+    "Mutually exclusive branches require clear warnings before irreversible choices."
   ],
   "common_bugs": [
-    "Skill Tree state does not reset correctly after interruption or reload.",
-    "Feedback for Skill Tree plays even when the mechanic fails or is rejected.",
-    "Skill Tree produces different results between frame rates, platforms, or network clients."
+    "A node can be purchased without prerequisites because UI and backend validation differ.",
+    "Refunding a node leaves granted abilities or passive stats active.",
+    "Circular prerequisites lock the tree or make validation recurse forever.",
+    "Localization changes node labels but not search, filters, or controller focus order."
   ],
   "balancing_notes": [
-    "Make Skill Tree strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Avoid mandatory tax nodes that every build must buy unless they serve a clear tutorial purpose.",
+    "Powerful synergies need opportunity cost, branch distance, class restriction, or diminishing returns."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Skill Tree becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Support zoom, search, readable focus order, and text scaling for large trees.",
+    "Use icons plus text labels so node meaning is not carried only by color or shape."
   ],
   "implementation_notes": {
-    "unity": "Implement Skill Tree with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Skill Tree as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Skill Tree with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Skill Tree as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store nodes as ScriptableObjects or JSON, validate graph connectivity in editor tests, and apply unlock effects through data-driven ability grants.",
+    "godot": "Represent nodes as Resources with prerequisite arrays and run validation before exporting; keep UI graph layout separate from unlock rules.",
+    "unreal": "Use Primary Data Assets or DataTables for nodes and centralize purchase validation in a component or subsystem that also handles save migration.",
+    "web": "Load graph data as JSON, compute unlock eligibility in pure functions, and keep visual layout metadata separate from progression state."
   },
   "related_mechanics": [
-    "economy.shop",
-    "progression.experience_points",
+    "progression.respec",
     "progression.level_up",
-    "ui_ux.quest_marker"
+    "progression.unlockable_abilities",
+    "progression.upgrade_shop"
   ],
   "combines_well_with": [
-    "economy.shop",
-    "progression.unlockable_abilities",
-    "progression.upgrade_shop",
-    "ui_ux.quest_marker"
+    "economy.loot_table",
+    "progression.experience_points",
+    "roguelike.pick_one_upgrade_choice",
+    "ui_ux.cooldown_indicator"
   ],
   "example_games": [
     {
       "title": "Path of Exile",
-      "note": "Uses a large passive skill tree for build planning."
+      "note": "Uses a large passive tree for build planning."
     },
     {
       "title": "Diablo II",
@@ -112,8 +130,10 @@
   ],
   "tags": [
     "progression",
-    "rewards",
-    "skill"
+    "buildcraft",
+    "graph",
+    "unlock",
+    "respec"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

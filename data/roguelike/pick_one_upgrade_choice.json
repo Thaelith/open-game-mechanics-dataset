@@ -1,0 +1,116 @@
+{
+  "id": "roguelike.pick_one_upgrade_choice",
+  "name": "Pick-One Upgrade Choice",
+  "aliases": [
+    "choose one reward",
+    "upgrade draft",
+    "three-choice reward"
+  ],
+  "category": "roguelike",
+  "subcategory": "run_reward_choice",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "hard",
+    "implementation": "medium",
+    "tuning": "expert"
+  },
+  "genres": [
+    "roguelike",
+    "deckbuilder",
+    "action"
+  ],
+  "description": "A reward screen where the player chooses one upgrade from a small generated set.",
+  "design_notes": "Pick-one upgrade choices turn randomness into agency. The set should be varied enough to create decisions, filtered enough to avoid unusable options, and transparent enough for players to predict build consequences.",
+  "design_purpose": [
+    "Give players agency over random run rewards.",
+    "Create build direction through repeated small choices.",
+    "Support synergies without guaranteeing perfect combinations."
+  ],
+  "player_fantasy": "The player feels they are drafting a run-defining build from tempting options.",
+  "required_systems": [
+    "reward_generation",
+    "upgrade_database",
+    "run_state",
+    "ui_selection"
+  ],
+  "parameters": [
+    {
+      "name": "choice_slot_count",
+      "type": "integer",
+      "typical_range": "2-5 options",
+      "description": "Number of upgrade options shown at once."
+    },
+    {
+      "name": "rarity_weight_profile_id",
+      "type": "string",
+      "typical_range": "profile id",
+      "description": "Weight profile used to pick option rarity."
+    },
+    {
+      "name": "synergy_bias_ratio",
+      "type": "float",
+      "typical_range": "0-1",
+      "description": "How strongly current build tags influence offered options."
+    },
+    {
+      "name": "reroll_cost_sequence",
+      "type": "array",
+      "typical_range": "0-10 costs",
+      "description": "Costs for rerolling the offered choices."
+    }
+  ],
+  "common_variants": [
+    "three_choice_upgrade",
+    "draft_pack_choice",
+    "rerollable_choice",
+    "skip_for_currency"
+  ],
+  "edge_cases": [
+    "All generated options can be invalid for the current build and need fallback rules.",
+    "Duplicate options in one choice set usually feel wasteful unless intentional.",
+    "Skipping, rerolling, or saving choices for later must be explicit."
+  ],
+  "common_bugs": [
+    "Synergy bias guarantees the same build every run.",
+    "Reroll consumes currency but rebuilds the same choice set from the same seed.",
+    "Upgrade preview stats use old values after previous selections."
+  ],
+  "balancing_notes": [
+    "Too much synergy bias removes adaptation; too little makes choices feel random and disconnected.",
+    "Option count changes decision difficulty and average build power."
+  ],
+  "accessibility_notes": [
+    "Show full text, icons, and comparison hints without requiring rapid reading or memory of hidden upgrade names."
+  ],
+  "implementation_notes": {
+    "unity": "Generate choices from data assets using filters, tags, and seeded RNG; commit the selected upgrade through run-state transactions.",
+    "godot": "Use Resource definitions for upgrades and generate choice arrays from run tags before showing a Control-based selection UI.",
+    "unreal": "Use Data Assets for upgrades and a subsystem that applies filters, rarity weights, and replicated reward selection where needed.",
+    "web": "Generate choices from JSON upgrade data with a seeded RNG and keep the selected option as an immutable run event."
+  },
+  "related_mechanics": [
+    "roguelike.random_powerups",
+    "roguelike.relic_synergy",
+    "economy.loot_table"
+  ],
+  "combines_well_with": [
+    "progression.skill_tree",
+    "progression.respec",
+    "procedural_generation.seeded_generation"
+  ],
+  "example_games": [],
+  "tags": [
+    "roguelike",
+    "choice",
+    "upgrades",
+    "run_progression",
+    "randomness"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

@@ -1,0 +1,117 @@
+{
+  "id": "combat.damage_over_time",
+  "name": "Damage Over Time",
+  "aliases": [
+    "DoT",
+    "periodic damage",
+    "status damage"
+  ],
+  "category": "combat",
+  "subcategory": "status_effect",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "medium",
+    "implementation": "medium",
+    "tuning": "hard"
+  },
+  "genres": [
+    "rpg",
+    "action",
+    "survival",
+    "strategy"
+  ],
+  "description": "A status effect that applies damage across multiple ticks after application.",
+  "design_notes": "Damage over time shifts combat from instant outcomes to pressure management. It should define stacking, refresh, resistance, cleansing, source attribution, and tick timing.",
+  "design_purpose": [
+    "Create lingering threat after an attack lands.",
+    "Support poison, burn, bleed, curse, or hazard identities.",
+    "Reward sustained pressure and resource management."
+  ],
+  "player_fantasy": "The player feels that a successful application continues to matter after the initial hit.",
+  "required_systems": [
+    "status_effects",
+    "damage_model",
+    "timer_scheduler",
+    "ui_feedback"
+  ],
+  "parameters": [
+    {
+      "name": "dot_tick_interval_ms",
+      "type": "integer",
+      "typical_range": "250-3000 ms",
+      "description": "Interval between damage ticks."
+    },
+    {
+      "name": "dot_total_ticks",
+      "type": "integer",
+      "typical_range": "1-60 ticks",
+      "description": "Number of ticks before the effect expires."
+    },
+    {
+      "name": "dot_damage_per_tick",
+      "type": "float",
+      "typical_range": "1-500 health units",
+      "description": "Damage applied by each tick before mitigation."
+    },
+    {
+      "name": "stacking_rule",
+      "type": "string",
+      "typical_range": "refresh, stack, replace, strongest",
+      "description": "Rule used when the effect is applied again."
+    }
+  ],
+  "common_variants": [
+    "poison_dot",
+    "burn_dot",
+    "bleed_dot",
+    "area_hazard_dot",
+    "stacking_dot"
+  ],
+  "edge_cases": [
+    "Applying the same DoT from multiple sources needs ownership and stacking rules.",
+    "Damage ticks during pause, invulnerability, or death state should be explicit.",
+    "Cleansing at the same moment as a tick needs deterministic ordering."
+  ],
+  "common_bugs": [
+    "Tick timers drift and deal extra damage over long fights.",
+    "Refreshing duration also doubles stack count unintentionally.",
+    "Kill credit is lost because the source entity despawned before the final tick."
+  ],
+  "balancing_notes": [
+    "High total damage needs counterplay through cleanse, resistance, or avoidance.",
+    "Short tick intervals feel responsive but can create UI noise and performance load."
+  ],
+  "accessibility_notes": [
+    "Use icons, timers, color-safe overlays, and audio cues to show active harmful statuses."
+  ],
+  "implementation_notes": {
+    "unity": "Model startup, active, recovery, and cancel windows as data, then drive hitboxes, animation events, and damage application from one combat state source. For Damage Over Time, validate this path with parameters such as dot_tick_interval_ms and dot_total_ticks.",
+    "godot": "Use Area2D or Area3D hit volumes with frame-window state on the actor; avoid placing damage authority inside animation-only callbacks. For Damage Over Time, validate this path with parameters such as dot_tick_interval_ms and dot_total_ticks.",
+    "unreal": "Implement the action as a Gameplay Ability or Actor Component with montage notifies for windows and authoritative damage on the server when networked. For Damage Over Time, validate this path with parameters such as dot_tick_interval_ms and dot_total_ticks.",
+    "web": "Update combat windows in the fixed simulation step, evaluate hurtbox overlap from cached transforms, and emit presentation events separately from damage state. For Damage Over Time, validate this path with parameters such as dot_tick_interval_ms and dot_total_ticks."
+  },
+  "related_mechanics": [
+    "survival.health",
+    "combat.ranged_attack",
+    "combat.hit_stun"
+  ],
+  "combines_well_with": [
+    "economy.loot_table",
+    "progression.skill_tree",
+    "ui_ux.damage_numbers"
+  ],
+  "example_games": [],
+  "tags": [
+    "combat",
+    "status_effect",
+    "damage",
+    "timer"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

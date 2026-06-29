@@ -7,7 +7,7 @@
     "midair jump"
   ],
   "category": "platforming",
-  "subcategory": "vertical_mobility",
+  "subcategory": "air_control",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -22,99 +22,110 @@
   "genres": [
     "platformer",
     "metroidvania",
-    "precision_platformer"
+    "action"
   ],
-  "description": "A second jump performed while airborne to extend control and reachable space.",
-  "design_notes": "Double Jump should be designed around a clear player promise, a readable trigger, and a predictable result. For platforming mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "An additional jump that can be triggered after leaving the ground.",
+  "design_notes": "Double jump extends the player's correction window and changes how levels are authored. It can be a forgiving safety tool, a required traversal upgrade, or a combat air-control option. Tuning should define whether it resets vertical momentum, adds to existing momentum, or uses a fixed launch profile.",
   "design_purpose": [
-    "Give the player a readable way to use double jump as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect double jump to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players recover from small jump mistakes without removing the need for platform judgment.",
+    "Gate routes and collectibles behind a readable movement upgrade.",
+    "Increase air-control expression in combat or hazard navigation."
   ],
-  "player_fantasy": "The player feels precise, agile, and responsible for overcoming spatial challenges.",
+  "player_fantasy": "The player feels acrobatic and capable of turning a failed jump into a controlled recovery.",
   "required_systems": [
-    "character_controller",
     "jump_state",
-    "collision_detection",
-    "coyote_time_or_buffering"
+    "ground_detection",
+    "input_buffer",
+    "air_action_counter",
+    "animation_state_machine"
   ],
   "parameters": [
     {
-      "name": "activation_window",
-      "type": "float",
-      "typical_range": "0.05-0.25 seconds",
-      "description": "Timing window in which the platforming action can start."
+      "name": "extra_jump_count",
+      "type": "integer",
+      "typical_range": "1-3",
+      "description": "Number of additional jumps granted before a reset condition."
     },
     {
-      "name": "vertical_velocity",
+      "name": "air_jump_vertical_impulse",
       "type": "float",
-      "typical_range": "4-20 world units/second",
-      "description": "Initial or sustained vertical movement contribution."
+      "typical_range": "4-16 world units/second",
+      "description": "Vertical launch applied by the extra jump."
     },
     {
-      "name": "control_lockout",
+      "name": "momentum_reset_ratio",
       "type": "float",
-      "typical_range": "0-0.25 seconds",
-      "description": "Short period where player input is limited to preserve readability."
+      "typical_range": "0-1",
+      "description": "Share of downward velocity removed before applying the air jump."
+    },
+    {
+      "name": "air_jump_buffer_ms",
+      "type": "integer",
+      "typical_range": "40-160 ms",
+      "description": "Buffered input accepted before an extra jump becomes available."
     }
   ],
   "common_variants": [
-    "double_jump_assisted_version",
-    "double_jump_precision_version",
-    "upgrade_unlocked_version",
-    "hazard_sensitive_version"
+    "single_double_jump",
+    "triple_jump",
+    "upgrade_unlocked_air_jump",
+    "combat_air_jump",
+    "wing_flap_jump"
   ],
   "edge_cases": [
-    "Double Jump is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Double Jump overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Double Jump runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Walking off a ledge after a grounded jump must not accidentally consume the extra jump unless the design wants it.",
+    "Landing on moving platforms, enemies, water, or one-way platforms must reset jump counters consistently.",
+    "Buffered jump input during knockback or ledge grab should not spend an air jump after control returns.",
+    "Variable jump height and double jump must agree on whether release cuts the second jump short."
   ],
   "common_bugs": [
-    "Double Jump state does not reset correctly after interruption or reload.",
-    "Feedback for Double Jump plays even when the mechanic fails or is rejected.",
-    "Double Jump produces different results between frame rates, platforms, or network clients."
+    "Extra jump resets every frame while touching wall collision because wall contact is treated as ground.",
+    "The second jump stacks with downward velocity and feels too weak after falling for a long distance.",
+    "Animation state reports grounded early and grants an unintended third jump.",
+    "Networked clients disagree about jump count after prediction correction."
   ],
   "balancing_notes": [
-    "Make Double Jump strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "High vertical impulse turns double jump into a route unlock; low impulse makes it mainly a correction tool.",
+    "Resetting downward momentum is more forgiving than additive impulse and should be considered in hazard spacing."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Double Jump becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Combine with jump buffering and coyote time when the game expects frequent precise air jumps.",
+    "Use a distinct sound or animation for the spent air jump so players can track remaining jumps without reading UI."
   ],
   "implementation_notes": {
-    "unity": "Implement Double Jump with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Double Jump as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Double Jump with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Double Jump as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use an explicit movement-state enum and feed the final desired velocity into CharacterController.Move or Rigidbody movement from FixedUpdate; keep dash and jump assists outside animation callbacks. For Double Jump, validate this path with parameters such as extra_jump_count and air_jump_vertical_impulse.",
+    "godot": "Keep the mechanic state on CharacterBody2D or CharacterBody3D, update velocity in _physics_process, and separate input buffering from collision response. For Double Jump, validate this path with parameters such as extra_jump_count and air_jump_vertical_impulse.",
+    "unreal": "Use CharacterMovement with a custom movement state or Gameplay Ability; gate activation through prediction-safe input and reconcile movement corrections cleanly in networked play. For Double Jump, validate this path with parameters such as extra_jump_count and air_jump_vertical_impulse.",
+    "web": "Represent the mechanic as deterministic state in the simulation loop, then apply resolved displacement before rendering through Canvas, Phaser, Three.js, or a custom engine. For Double Jump, validate this path with parameters such as extra_jump_count and air_jump_vertical_impulse."
   },
   "related_mechanics": [
-    "camera.smooth_follow_camera",
-    "movement.dash",
+    "platforming.coyote_time",
+    "platforming.jump_buffering",
     "platforming.variable_jump_height",
-    "platforming.wall_jump"
+    "movement.air_dash"
   ],
   "combines_well_with": [
-    "camera.smooth_follow_camera",
     "movement.dash",
-    "platforming.ledge_grab",
-    "platforming.wall_slide"
+    "platforming.wall_jump",
+    "traversal.gliding",
+    "progression.unlockable_abilities"
   ],
   "example_games": [
     {
       "title": "Super Metroid",
-      "note": "Uses new movement abilities to expand reachable spaces."
+      "note": "Uses movement upgrades to expand reachable spaces."
     },
     {
       "title": "Hollow Knight",
-      "note": "Uses air mobility as a traversal upgrade."
+      "note": "Uses an air-mobility upgrade to change traversal options."
     }
   ],
   "tags": [
-    "double",
+    "platforming",
+    "air_control",
     "mobility",
-    "precision",
-    "vertical_mobility"
+    "forgiveness",
+    "upgrade"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

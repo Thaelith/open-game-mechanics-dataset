@@ -1,0 +1,116 @@
+{
+  "id": "combat.reload",
+  "name": "Reload",
+  "aliases": [
+    "magazine reload",
+    "weapon reload",
+    "ammo refill"
+  ],
+  "category": "combat",
+  "subcategory": "ranged_resource",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "medium",
+    "implementation": "medium",
+    "tuning": "medium"
+  },
+  "genres": [
+    "shooter",
+    "action",
+    "survival"
+  ],
+  "description": "A committed action that transfers ammunition into a weapon before it can fire again.",
+  "design_notes": "Reload turns ranged pressure into a pacing loop. It should define partial magazines, interruption, tactical reloads, animation sync, and what happens when inventory ammo is low.",
+  "design_purpose": [
+    "Create downtime and vulnerability for ranged attacks.",
+    "Make ammunition management readable.",
+    "Support weapon identity through magazine and reload behavior."
+  ],
+  "player_fantasy": "The player feels the tension of preparing a weapon while danger continues around them.",
+  "required_systems": [
+    "ammo_system",
+    "weapon_state",
+    "animation_events",
+    "input_buffer"
+  ],
+  "parameters": [
+    {
+      "name": "magazine_capacity",
+      "type": "integer",
+      "typical_range": "1-200 rounds",
+      "description": "Rounds held by the active weapon magazine."
+    },
+    {
+      "name": "reload_commit_frame",
+      "type": "integer",
+      "typical_range": "1-120 frames",
+      "description": "Frame where ammunition is actually transferred."
+    },
+    {
+      "name": "rounds_loaded_per_insert",
+      "type": "integer",
+      "typical_range": "1-50 rounds",
+      "description": "Rounds restored per shell, clip, or magazine insert step."
+    },
+    {
+      "name": "reload_cancel_refund_rule",
+      "type": "string",
+      "typical_range": "none, before_commit, per_round",
+      "description": "How canceling reload affects ammo state."
+    }
+  ],
+  "common_variants": [
+    "full_magazine_reload",
+    "per_shell_reload",
+    "active_reload",
+    "tactical_reload"
+  ],
+  "edge_cases": [
+    "Reload interrupted by sprint, damage, weapon swap, or cutscene needs ammo transfer rules.",
+    "Client prediction must not duplicate ammo on cancel.",
+    "Auto-reload at zero ammo can conflict with manual reload input."
+  ],
+  "common_bugs": [
+    "Ammo is added at animation start and duplicated after cancel.",
+    "Reload finishes visually but weapon state remains unable to fire.",
+    "Inventory reserve can go negative after rapid weapon switching."
+  ],
+  "balancing_notes": [
+    "Long reload windows create tactical exposure; short reloads make ammo mostly cosmetic.",
+    "Per-round reloads are more flexible and should cost less total vulnerability per partial refill."
+  ],
+  "accessibility_notes": [
+    "Use clear magazine and reserve indicators and avoid relying only on click sounds for empty weapons."
+  ],
+  "implementation_notes": {
+    "unity": "Model startup, active, recovery, and cancel windows as data, then drive hitboxes, animation events, and damage application from one combat state source. For Reload, validate this path with parameters such as magazine_capacity and reload_commit_frame.",
+    "godot": "Use Area2D or Area3D hit volumes with frame-window state on the actor; avoid placing damage authority inside animation-only callbacks. For Reload, validate this path with parameters such as magazine_capacity and reload_commit_frame.",
+    "unreal": "Implement the action as a Gameplay Ability or Actor Component with montage notifies for windows and authoritative damage on the server when networked. For Reload, validate this path with parameters such as magazine_capacity and reload_commit_frame.",
+    "web": "Update combat windows in the fixed simulation step, evaluate hurtbox overlap from cached transforms, and emit presentation events separately from damage state. For Reload, validate this path with parameters such as magazine_capacity and reload_commit_frame."
+  },
+  "related_mechanics": [
+    "combat.ranged_attack",
+    "combat.aim_down_sights",
+    "ui_ux.cooldown_indicator"
+  ],
+  "combines_well_with": [
+    "movement.sprint",
+    "combat.damage_over_time",
+    "ui_ux.hit_marker"
+  ],
+  "example_games": [],
+  "tags": [
+    "combat",
+    "ammo",
+    "ranged",
+    "reload",
+    "resource"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

@@ -7,7 +7,7 @@
     "wall leap"
   ],
   "category": "platforming",
-  "subcategory": "vertical_mobility",
+  "subcategory": "wall_interaction",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -22,99 +22,110 @@
   "genres": [
     "platformer",
     "metroidvania",
-    "precision_platformer"
+    "action"
   ],
-  "description": "Wall Jump is a precision movement mechanic used to negotiate platforms, walls, gaps, and hazards.",
-  "design_notes": "Wall Jump should be designed around a clear player promise, a readable trigger, and a predictable result. For platforming mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A jump launched from contact with a wall or steep vertical surface.",
+  "design_notes": "Wall jump is part movement verb and part level-design contract. The player must be able to identify valid wall surfaces, understand the launch direction, and recover from missed timing. Decide whether the mechanic requires directional input away from the wall, permits neutral jumps, or uses an automatic rebound.",
   "design_purpose": [
-    "Give the player a readable way to use wall jump as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect wall jump to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create vertical routes and recovery options using level geometry.",
+    "Reward players who read walls as interactive surfaces instead of static barriers.",
+    "Support mastery through alternating wall contacts, jump timing, and air steering."
   ],
-  "player_fantasy": "The player feels precise, agile, and responsible for overcoming spatial challenges.",
+  "player_fantasy": "The player feels nimble and resourceful, turning walls into launch points instead of obstacles.",
   "required_systems": [
-    "character_controller",
+    "wall_detection",
     "jump_state",
-    "collision_detection",
-    "coyote_time_or_buffering"
+    "surface_tagging",
+    "input_buffer",
+    "collision_resolution"
   ],
   "parameters": [
     {
-      "name": "activation_window",
+      "name": "wall_jump_horizontal_impulse",
       "type": "float",
-      "typical_range": "0.05-0.25 seconds",
-      "description": "Timing window in which the platforming action can start."
+      "typical_range": "3-14 world units/second",
+      "description": "Launch push away from the contacted wall."
     },
     {
-      "name": "vertical_velocity",
+      "name": "wall_jump_vertical_impulse",
       "type": "float",
-      "typical_range": "4-20 world units/second",
-      "description": "Initial or sustained vertical movement contribution."
+      "typical_range": "5-18 world units/second",
+      "description": "Upward launch component applied from wall contact."
     },
     {
-      "name": "control_lockout",
-      "type": "float",
-      "typical_range": "0-0.25 seconds",
-      "description": "Short period where player input is limited to preserve readability."
+      "name": "wall_contact_grace_ms",
+      "type": "integer",
+      "typical_range": "40-160 ms",
+      "description": "Window after leaving a wall where the jump can still activate."
+    },
+    {
+      "name": "same_wall_lockout_ms",
+      "type": "integer",
+      "typical_range": "0-300 ms",
+      "description": "Delay before the same wall can be used again."
     }
   ],
   "common_variants": [
-    "wall_jump_assisted_version",
-    "wall_jump_precision_version",
-    "upgrade_unlocked_version",
-    "hazard_sensitive_version"
+    "alternating_wall_jump",
+    "single_wall_climb",
+    "neutral_wall_jump",
+    "directional_wall_kick",
+    "upgrade_unlocked_wall_jump"
   ],
   "edge_cases": [
-    "Wall Jump is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Wall Jump overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Wall Jump runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Inside corners can report two wall normals; choose the jump normal deterministically.",
+    "Moving, rotating, or crumbling walls must specify whether momentum is inherited.",
+    "Buffered jump after wall slide must not also trigger ground jump when the player lands during the buffer.",
+    "Wall jump near a ceiling needs head collision handling that does not destroy horizontal launch unfairly."
   ],
   "common_bugs": [
-    "Wall Jump state does not reset correctly after interruption or reload.",
-    "Feedback for Wall Jump plays even when the mechanic fails or is rejected.",
-    "Wall Jump produces different results between frame rates, platforms, or network clients."
+    "The wall normal is taken from the wrong contact point, launching the player into the wall.",
+    "Wall contact remains true for one extra physics step and grants jumps in open air.",
+    "Same-wall lockout prevents valid jumps on closely spaced opposite walls because contact IDs are reused.",
+    "Animation root motion fights the physics launch and shortens the jump."
   ],
   "balancing_notes": [
-    "Make Wall Jump strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "High horizontal impulse favors fast rebounds; low impulse favors controlled climbing and precision.",
+    "Generous contact grace makes wall jump approachable, but too much grace lets players jump from walls they no longer perceive."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Wall Jump becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use surface marking, character pose, or controller vibration to show when a wall jump is available.",
+    "Avoid requiring simultaneous opposite-direction and jump inputs unless alternate input options exist."
   ],
   "implementation_notes": {
-    "unity": "Implement Wall Jump with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Wall Jump as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Wall Jump with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Wall Jump as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use an explicit movement-state enum and feed the final desired velocity into CharacterController.Move or Rigidbody movement from FixedUpdate; keep dash and jump assists outside animation callbacks. For Wall Jump, validate this path with parameters such as wall_jump_horizontal_impulse and wall_jump_vertical_impulse.",
+    "godot": "Keep the mechanic state on CharacterBody2D or CharacterBody3D, update velocity in _physics_process, and separate input buffering from collision response. For Wall Jump, validate this path with parameters such as wall_jump_horizontal_impulse and wall_jump_vertical_impulse.",
+    "unreal": "Use CharacterMovement with a custom movement state or Gameplay Ability; gate activation through prediction-safe input and reconcile movement corrections cleanly in networked play. For Wall Jump, validate this path with parameters such as wall_jump_horizontal_impulse and wall_jump_vertical_impulse.",
+    "web": "Represent the mechanic as deterministic state in the simulation loop, then apply resolved displacement before rendering through Canvas, Phaser, Three.js, or a custom engine. For Wall Jump, validate this path with parameters such as wall_jump_horizontal_impulse and wall_jump_vertical_impulse."
   },
   "related_mechanics": [
-    "camera.smooth_follow_camera",
-    "movement.dash",
+    "platforming.wall_slide",
+    "platforming.coyote_time",
     "platforming.double_jump",
-    "platforming.variable_jump_height"
+    "traversal.wall_run"
   ],
   "combines_well_with": [
-    "camera.smooth_follow_camera",
     "movement.dash",
     "platforming.ledge_grab",
-    "platforming.wall_slide"
+    "traversal.mantling",
+    "camera.smooth_follow_camera"
   ],
   "example_games": [
     {
       "title": "Super Meat Boy",
-      "note": "Uses wall jumps for fast precision traversal."
+      "note": "Uses wall jumping for fast precision traversal."
     },
     {
       "title": "Hollow Knight",
-      "note": "Uses wall interaction to gate and expand traversal."
+      "note": "Uses wall interaction to expand traversal after an upgrade."
     }
   ],
   "tags": [
+    "platforming",
+    "wall_interaction",
     "mobility",
-    "precision",
-    "vertical_mobility",
-    "wall"
+    "verticality",
+    "precision"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

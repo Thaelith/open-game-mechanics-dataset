@@ -1,0 +1,115 @@
+{
+  "id": "combat.guard_break",
+  "name": "Guard Break",
+  "aliases": [
+    "guard crush",
+    "block break",
+    "stagger guard"
+  ],
+  "category": "combat",
+  "subcategory": "defense_counter",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "medium",
+    "implementation": "medium",
+    "tuning": "hard"
+  },
+  "genres": [
+    "action",
+    "fighting",
+    "rpg"
+  ],
+  "description": "An attack or pressure state that defeats blocking and leaves the defender vulnerable.",
+  "design_notes": "Guard break prevents blocking from becoming a complete answer. It needs clear buildup, readable break cues, and fair recovery rules so the defender understands why guard failed.",
+  "design_purpose": [
+    "Counter sustained blocking.",
+    "Create offense-defense rhythm around stamina and pressure.",
+    "Open punish windows after predictable defensive play."
+  ],
+  "player_fantasy": "The attacker feels able to crack a stubborn defense through commitment or pressure.",
+  "required_systems": [
+    "guard_state",
+    "stamina_system",
+    "hit_reaction",
+    "attack_metadata"
+  ],
+  "parameters": [
+    {
+      "name": "guard_damage_per_hit",
+      "type": "float",
+      "typical_range": "1-100 units",
+      "description": "Pressure applied to guard durability or stamina."
+    },
+    {
+      "name": "guard_break_threshold",
+      "type": "float",
+      "typical_range": "10-300 units",
+      "description": "Accumulated guard pressure required to break defense."
+    },
+    {
+      "name": "break_stagger_frames",
+      "type": "integer",
+      "typical_range": "20-150 frames",
+      "description": "Vulnerability window after guard breaks."
+    },
+    {
+      "name": "guard_recovery_delay_ms",
+      "type": "integer",
+      "typical_range": "200-3000 ms",
+      "description": "Delay before guard resources begin recovering."
+    }
+  ],
+  "common_variants": [
+    "stamina_guard_break",
+    "heavy_attack_break",
+    "perfect_guard_prevents_break",
+    "shield_durability_break"
+  ],
+  "edge_cases": [
+    "Guard break and health damage landing on the same frame need deterministic ordering.",
+    "Bosses may need partial stagger rather than full vulnerability.",
+    "Multiple attackers can stack pressure too quickly without caps."
+  ],
+  "common_bugs": [
+    "Guard meter goes negative and never recovers.",
+    "Break stun can be canceled by holding block again.",
+    "UI guard meter updates after the break and appears unfair."
+  ],
+  "balancing_notes": [
+    "Guard break should punish passive defense without making block useless.",
+    "Recovery windows should account for enemy combo length and multiplayer focus fire."
+  ],
+  "accessibility_notes": [
+    "Use strong audio/visual warnings as guard nears break, not only a small meter."
+  ],
+  "implementation_notes": {
+    "unity": "Model startup, active, recovery, and cancel windows as data, then drive hitboxes, animation events, and damage application from one combat state source. For Guard Break, validate this path with parameters such as guard_damage_per_hit and guard_break_threshold.",
+    "godot": "Use Area2D or Area3D hit volumes with frame-window state on the actor; avoid placing damage authority inside animation-only callbacks. For Guard Break, validate this path with parameters such as guard_damage_per_hit and guard_break_threshold.",
+    "unreal": "Implement the action as a Gameplay Ability or Actor Component with montage notifies for windows and authoritative damage on the server when networked. For Guard Break, validate this path with parameters such as guard_damage_per_hit and guard_break_threshold.",
+    "web": "Update combat windows in the fixed simulation step, evaluate hurtbox overlap from cached transforms, and emit presentation events separately from damage state. For Guard Break, validate this path with parameters such as guard_damage_per_hit and guard_break_threshold."
+  },
+  "related_mechanics": [
+    "combat.block",
+    "combat.parry",
+    "combat.shield"
+  ],
+  "combines_well_with": [
+    "combat.melee_attack",
+    "combat.combo_chain",
+    "ui_ux.damage_numbers"
+  ],
+  "example_games": [],
+  "tags": [
+    "combat",
+    "guard",
+    "stagger",
+    "defense_counter"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

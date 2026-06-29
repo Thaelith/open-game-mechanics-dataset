@@ -1,0 +1,117 @@
+{
+  "id": "ui_ux.interaction_prompt",
+  "name": "Interaction Prompt",
+  "aliases": [
+    "use prompt",
+    "context prompt",
+    "interact indicator"
+  ],
+  "category": "ui_ux",
+  "subcategory": "contextual_prompt",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "easy",
+    "implementation": "medium",
+    "tuning": "medium"
+  },
+  "genres": [
+    "adventure",
+    "rpg",
+    "action",
+    "simulation"
+  ],
+  "description": "A contextual UI cue that tells the player an object, character, or action can be used.",
+  "design_notes": "Interaction prompts connect world affordances to input. They should prioritize nearby candidates, show the correct binding, and avoid flickering when multiple objects overlap.",
+  "design_purpose": [
+    "Reveal available interactions at the right moment.",
+    "Reduce confusion around interactable objects.",
+    "Support keyboard, gamepad, touch, and remapped controls."
+  ],
+  "player_fantasy": "The player feels the world is readable and responsive to their intent.",
+  "required_systems": [
+    "interaction_query",
+    "input_glyphs",
+    "ui_framework",
+    "localization_support"
+  ],
+  "parameters": [
+    {
+      "name": "prompt_activation_distance",
+      "type": "float",
+      "typical_range": "0.5-5 world units",
+      "description": "Distance where a candidate can show a prompt."
+    },
+    {
+      "name": "candidate_priority_rule",
+      "type": "string",
+      "typical_range": "distance, facing, quest, recency",
+      "description": "Rule used to choose among overlapping interactions."
+    },
+    {
+      "name": "prompt_fade_ms",
+      "type": "integer",
+      "typical_range": "50-400 ms",
+      "description": "Fade window for prompt appearance and disappearance."
+    },
+    {
+      "name": "hold_confirm_ms",
+      "type": "integer",
+      "typical_range": "0-1500 ms",
+      "description": "Optional hold requirement for risky interactions."
+    }
+  ],
+  "common_variants": [
+    "button_prompt",
+    "hold_prompt",
+    "radial_interaction_prompt",
+    "diegetic_prompt"
+  ],
+  "edge_cases": [
+    "Multiple interactables in one area need stable selection and cycling.",
+    "Prompts must update after control remapping or device change.",
+    "Dangerous interactions may need confirmation while normal pickups do not."
+  ],
+  "common_bugs": [
+    "Prompt displays one binding while input system expects another.",
+    "Prompt flickers at distance boundary without hysteresis.",
+    "Interact target changes after button press but before action resolves."
+  ],
+  "balancing_notes": [
+    "Too many prompts create UI noise; too few make affordances invisible.",
+    "Hold prompts should be reserved for actions that need confirmation."
+  ],
+  "accessibility_notes": [
+    "Support text scaling, input glyph alternatives, and optional hold-to-toggle behavior for long interactions."
+  ],
+  "implementation_notes": {
+    "unity": "Query interactable components each frame or fixed cadence, choose one candidate, and bind prompt glyphs through the active input scheme.",
+    "godot": "Use Area nodes or raycasts to collect candidates and update a Control node with localized action labels.",
+    "unreal": "Use interfaces or gameplay tags for interactables and CommonUI or UMG widgets for platform-specific input glyphs.",
+    "web": "Maintain interactable candidates in game state and render prompts from current input mapping and focus target."
+  },
+  "related_mechanics": [
+    "accessibility.toggle_hold_option",
+    "ui_ux.tutorial_prompt",
+    "combat.stealth_kill"
+  ],
+  "combines_well_with": [
+    "puzzle.lever_switch",
+    "narrative.branching_dialogue",
+    "survival.base_building"
+  ],
+  "example_games": [],
+  "tags": [
+    "ui",
+    "interaction",
+    "prompt",
+    "input",
+    "accessibility"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

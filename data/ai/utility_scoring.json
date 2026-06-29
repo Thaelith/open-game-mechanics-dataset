@@ -1,0 +1,118 @@
+{
+  "id": "ai.utility_scoring",
+  "name": "Utility Scoring",
+  "aliases": [
+    "utility AI",
+    "score-based decision",
+    "desire scoring"
+  ],
+  "category": "ai",
+  "subcategory": "decision_model",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "hard",
+    "implementation": "hard",
+    "tuning": "expert"
+  },
+  "genres": [
+    "simulation",
+    "strategy",
+    "action",
+    "immersive_sim"
+  ],
+  "description": "An AI decision model that scores possible actions and selects one based on weighted context.",
+  "design_notes": "Utility scoring works best when designers can inspect why an action won. Each score should represent a clear desire or pressure, and the system should include clamps, hysteresis, or commitment rules to avoid flicker.",
+  "design_purpose": [
+    "Let AI choose between competing goals using context.",
+    "Support emergent behavior without hard-coding every branch.",
+    "Expose tunable decision weights for designers."
+  ],
+  "player_fantasy": "The player feels that agents respond flexibly to changing world state.",
+  "required_systems": [
+    "ai_blackboard",
+    "decision_scheduler",
+    "score_curves",
+    "debug_inspection"
+  ],
+  "parameters": [
+    {
+      "name": "candidate_action_count",
+      "type": "integer",
+      "typical_range": "2-50 actions",
+      "description": "Number of actions considered by a decision pass."
+    },
+    {
+      "name": "decision_interval_ms",
+      "type": "integer",
+      "typical_range": "100-2000 ms",
+      "description": "Cadence for rescoring actions."
+    },
+    {
+      "name": "commitment_min_ms",
+      "type": "integer",
+      "typical_range": "0-5000 ms",
+      "description": "Minimum window before changing away from the selected action."
+    },
+    {
+      "name": "score_hysteresis_margin",
+      "type": "float",
+      "typical_range": "0-1",
+      "description": "Margin required for a new action to replace the current action."
+    }
+  ],
+  "common_variants": [
+    "weighted_sum_utility",
+    "curve_based_utility",
+    "consideration_utility",
+    "utility_with_behavior_tree"
+  ],
+  "edge_cases": [
+    "Equal scores need deterministic tie-breaking or intentional randomness.",
+    "Missing blackboard values should not collapse scores to misleading defaults.",
+    "Frequent rescoring can interrupt animations and navigation constantly."
+  ],
+  "common_bugs": [
+    "Scores are not normalized and one consideration dominates every decision.",
+    "AI switches actions every tick because no commitment window exists.",
+    "Debug output shows final scores but not the considerations that caused them."
+  ],
+  "balancing_notes": [
+    "Utility AI needs designer-facing visualization or tuning becomes guesswork.",
+    "Commitment and hysteresis are as important as raw scores for believable behavior."
+  ],
+  "accessibility_notes": [
+    "When utility drives opponents, keep player-readable tells so behavior feels reactive rather than random."
+  ],
+  "implementation_notes": {
+    "unity": "Represent actions and considerations as data assets or plain objects and add debug views for per-consideration scores.",
+    "godot": "Use Resources for score curves and a blackboard dictionary, then select actions on a fixed decision cadence.",
+    "unreal": "Combine Utility AI plugins or custom score evaluators with Behavior Tree/StateTree tasks for execution.",
+    "web": "Compute utility scores in pure functions over AI state so decisions can be logged, replayed, and tested."
+  },
+  "related_mechanics": [
+    "ai.patrol",
+    "ai.chase",
+    "ai.flee",
+    "ai.enemy_spawn_director"
+  ],
+  "combines_well_with": [
+    "simulation.needs_simulation",
+    "strategy.fog_of_war",
+    "stealth.last_known_position_search"
+  ],
+  "example_games": [],
+  "tags": [
+    "ai",
+    "decision_model",
+    "utility",
+    "simulation",
+    "debugging"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

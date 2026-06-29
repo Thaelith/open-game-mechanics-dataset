@@ -1,0 +1,115 @@
+{
+  "id": "movement.air_dash",
+  "name": "Air Dash",
+  "aliases": [
+    "midair dash",
+    "aerial dash",
+    "air burst"
+  ],
+  "category": "movement",
+  "subcategory": "air_mobility",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "medium",
+    "implementation": "medium",
+    "tuning": "hard"
+  },
+  "genres": [
+    "platformer",
+    "action",
+    "metroidvania"
+  ],
+  "description": "A dash that can be activated while airborne.",
+  "design_notes": "Air dash changes the shape of jumps, gaps, enemy attacks, and recovery. It should define reset rules carefully: landing, wall contact, pickups, and enemy bounces can all refill or withhold the action.",
+  "design_purpose": [
+    "Extend air-control options beyond jumping.",
+    "Support advanced traversal routes and combat repositioning.",
+    "Let designers build routes around committed aerial bursts."
+  ],
+  "player_fantasy": "The player feels agile in midair, able to redirect momentum with confidence.",
+  "required_systems": [
+    "air_action_counter",
+    "character_controller",
+    "input_buffer",
+    "collision_detection"
+  ],
+  "parameters": [
+    {
+      "name": "air_dash_distance",
+      "type": "float",
+      "typical_range": "2-8 world units",
+      "description": "Aerial displacement target before collision truncation."
+    },
+    {
+      "name": "air_dash_vector_mode",
+      "type": "string",
+      "typical_range": "horizontal, vertical, omnidirectional",
+      "description": "Allowed direction model for the dash."
+    },
+    {
+      "name": "air_dash_reset_rule",
+      "type": "string",
+      "typical_range": "landing, wall, pickup, enemy",
+      "description": "Event that restores the air dash charge."
+    },
+    {
+      "name": "air_dash_hover_frames",
+      "type": "integer",
+      "typical_range": "0-12 frames",
+      "description": "Optional gravity pause before or during the burst."
+    }
+  ],
+  "common_variants": [
+    "horizontal_air_dash",
+    "omnidirectional_air_dash",
+    "one_charge_air_dash",
+    "reset_pickup_air_dash"
+  ],
+  "edge_cases": [
+    "Using air dash at the exact landing frame can spend ground dash or air dash depending on priority.",
+    "Collision during hover frames must not leave gravity disabled.",
+    "Air dash into one-way platforms should not snap the player upward unexpectedly."
+  ],
+  "common_bugs": [
+    "Dash charge resets repeatedly on wall contact and enables unintended climbing.",
+    "Air dash uses ground friction and loses distance immediately.",
+    "Input direction is sampled after the character flips from target lock."
+  ],
+  "balancing_notes": [
+    "Air dash plus double jump greatly expands reachable space and should be tested against existing levels.",
+    "Reset pickups can make air dash a route puzzle rather than a general escape option."
+  ],
+  "accessibility_notes": [
+    "Use clear charge feedback so players know whether an air dash is available while airborne."
+  ],
+  "implementation_notes": {
+    "unity": "Use an explicit movement-state enum and feed the final desired velocity into CharacterController.Move or Rigidbody movement from FixedUpdate; keep dash and jump assists outside animation callbacks. For Air Dash, validate this path with parameters such as air_dash_distance and air_dash_vector_mode.",
+    "godot": "Keep the mechanic state on CharacterBody2D or CharacterBody3D, update velocity in _physics_process, and separate input buffering from collision response. For Air Dash, validate this path with parameters such as air_dash_distance and air_dash_vector_mode.",
+    "unreal": "Use CharacterMovement with a custom movement state or Gameplay Ability; gate activation through prediction-safe input and reconcile movement corrections cleanly in networked play. For Air Dash, validate this path with parameters such as air_dash_distance and air_dash_vector_mode.",
+    "web": "Represent the mechanic as deterministic state in the simulation loop, then apply resolved displacement before rendering through Canvas, Phaser, Three.js, or a custom engine. For Air Dash, validate this path with parameters such as air_dash_distance and air_dash_vector_mode."
+  },
+  "related_mechanics": [
+    "movement.dash",
+    "platforming.double_jump",
+    "platforming.coyote_time"
+  ],
+  "combines_well_with": [
+    "platforming.wall_jump",
+    "traversal.wall_run",
+    "camera.smooth_follow_camera"
+  ],
+  "example_games": [],
+  "tags": [
+    "movement",
+    "air_control",
+    "dash",
+    "platforming"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

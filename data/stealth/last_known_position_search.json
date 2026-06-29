@@ -1,0 +1,116 @@
+{
+  "id": "stealth.last_known_position_search",
+  "name": "Last Known Position Search",
+  "aliases": [
+    "search last position",
+    "investigate last seen",
+    "search state"
+  ],
+  "category": "stealth",
+  "subcategory": "ai_search",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "hard",
+    "implementation": "hard",
+    "tuning": "hard"
+  },
+  "genres": [
+    "stealth",
+    "action",
+    "horror"
+  ],
+  "description": "An AI search behavior that investigates where the player was last seen or heard after contact is lost.",
+  "design_notes": "Last-known-position search makes stealth recovery more believable than instant forgetfulness. It should define memory decay, search pattern, communication to allies, and when AI returns to patrol.",
+  "design_purpose": [
+    "Let players break line of sight without instantly resetting danger.",
+    "Create readable search pressure after detection.",
+    "Bridge chase and patrol states with believable investigation."
+  ],
+  "player_fantasy": "The player feels hunted but able to outsmart searchers by relocating and hiding.",
+  "required_systems": [
+    "ai_memory",
+    "navigation",
+    "perception_system",
+    "ai_state_machine"
+  ],
+  "parameters": [
+    {
+      "name": "memory_confidence_decay",
+      "type": "float",
+      "typical_range": "0.01-1 per second",
+      "description": "Decay applied to confidence in the last-known position."
+    },
+    {
+      "name": "search_radius_growth_per_second",
+      "type": "float",
+      "typical_range": "0-5 world units",
+      "description": "Expansion of search area while the player remains unseen."
+    },
+    {
+      "name": "search_waypoint_count",
+      "type": "integer",
+      "typical_range": "1-12 points",
+      "description": "Number of positions sampled during the search pattern."
+    },
+    {
+      "name": "patrol_resume_confidence",
+      "type": "float",
+      "typical_range": "0-0.5",
+      "description": "Confidence threshold below which AI returns to patrol."
+    }
+  ],
+  "common_variants": [
+    "last_seen_search",
+    "last_heard_search",
+    "squad_search",
+    "sweep_search"
+  ],
+  "edge_cases": [
+    "The player entering a vent, elevator, or water should update or hide search clues consistently.",
+    "Multiple AI sharing memory can create unfair perfect knowledge.",
+    "Search should not path into unreachable positions caused by navmesh gaps."
+  ],
+  "common_bugs": [
+    "AI searches the player's current hidden position because memory stores a live transform reference.",
+    "Confidence never decays after losing line of sight.",
+    "Returning to patrol clears alert state before allies finish searching."
+  ],
+  "balancing_notes": [
+    "Long memory sustains tension; short memory supports forgiving stealth resets.",
+    "Search radius should create escape routes, not omniscient coverage."
+  ],
+  "accessibility_notes": [
+    "Communicate search state through barks, icons, or posture so players understand they are not fully safe yet."
+  ],
+  "implementation_notes": {
+    "unity": "Store last-known data as immutable position, timestamp, and stimulus type; do not reference the live player transform during search.",
+    "godot": "Keep search memory in the AI blackboard and generate NavigationAgent targets from sampled positions around the remembered point.",
+    "unreal": "Use AI Perception events to write Blackboard memory keys and Behavior Tree or StateTree tasks for search patterns.",
+    "web": "Persist last-known position in AI state and sample reachable search nodes from the navigation graph."
+  },
+  "related_mechanics": [
+    "ai.investigate_noise",
+    "ai.patrol",
+    "stealth.visibility_meter"
+  ],
+  "combines_well_with": [
+    "combat.stealth_kill",
+    "horror.monster_patrol",
+    "ui_ux.minimap"
+  ],
+  "example_games": [],
+  "tags": [
+    "stealth",
+    "ai",
+    "search",
+    "memory",
+    "perception"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

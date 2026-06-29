@@ -1,0 +1,108 @@
+{
+  "id": "platforming.drop_through_platform",
+  "name": "Drop-Through Platform",
+  "aliases": [
+    "drop down platform",
+    "platform drop",
+    "pass down"
+  ],
+  "category": "platforming",
+  "subcategory": "platform_interaction",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D"
+  ],
+  "difficulty": {
+    "design": "easy",
+    "implementation": "medium",
+    "tuning": "medium"
+  },
+  "genres": [
+    "platformer",
+    "metroidvania",
+    "action"
+  ],
+  "description": "An intentional input that lets the player fall through an eligible platform.",
+  "design_notes": "Drop-through is an input and collision interaction layered on top of one-way platforms. It should prevent accidental drops while staying fast enough for combat and traversal.",
+  "design_purpose": [
+    "Let players move downward through layered platform spaces.",
+    "Support vertical arenas and route choice.",
+    "Make platform stacks navigable without ladders or gaps."
+  ],
+  "player_fantasy": "The player feels they can intentionally move down through layered platforms without fighting collision.",
+  "required_systems": [
+    "input_abstraction",
+    "collision_filtering",
+    "platform_tagging",
+    "character_controller"
+  ],
+  "parameters": [
+    {
+      "name": "drop_input_chord",
+      "type": "string",
+      "typical_range": "down+jump, down+interact",
+      "description": "Input combination required to start the drop."
+    },
+    {
+      "name": "drop_collision_disable_ms",
+      "type": "integer",
+      "typical_range": "120-500 ms",
+      "description": "Window where the current platform ignores the player."
+    },
+    {
+      "name": "minimum_platform_clearance",
+      "type": "float",
+      "typical_range": "0.05-0.4 world units",
+      "description": "Distance the player must clear before collision can return."
+    }
+  ],
+  "common_variants": [
+    "down_jump_drop",
+    "down_interact_drop",
+    "hold_down_drop",
+    "crouch_drop"
+  ],
+  "edge_cases": [
+    "Drop input while crouched, attacking, or stunned should not accidentally fire.",
+    "Dropping through a moving platform should preserve expected relative motion.",
+    "Stacked platforms need a rule for whether one input drops through one or many layers."
+  ],
+  "common_bugs": [
+    "Collision is disabled for all platforms instead of only the current platform.",
+    "The player immediately lands again because collision returns before clearing thickness.",
+    "Input buffering turns a normal landing jump into an unintended drop."
+  ],
+  "balancing_notes": [
+    "Fast drop-through supports arena flow; strict input chords reduce accidental falls in precision layouts.",
+    "Hazards beneath platforms should be telegraphed if drop-through is common."
+  ],
+  "accessibility_notes": [
+    "Allow remapping the drop input and avoid requiring awkward simultaneous inputs on small controllers."
+  ],
+  "implementation_notes": {
+    "unity": "Use an explicit movement-state enum and feed the final desired velocity into CharacterController.Move or Rigidbody movement from FixedUpdate; keep dash and jump assists outside animation callbacks. For Drop-Through Platform, validate this path with parameters such as drop_input_chord and drop_collision_disable_ms.",
+    "godot": "Keep the mechanic state on CharacterBody2D or CharacterBody3D, update velocity in _physics_process, and separate input buffering from collision response. For Drop-Through Platform, validate this path with parameters such as drop_input_chord and drop_collision_disable_ms.",
+    "unreal": "Use CharacterMovement with a custom movement state or Gameplay Ability; gate activation through prediction-safe input and reconcile movement corrections cleanly in networked play. For Drop-Through Platform, validate this path with parameters such as drop_input_chord and drop_collision_disable_ms.",
+    "web": "Represent the mechanic as deterministic state in the simulation loop, then apply resolved displacement before rendering through Canvas, Phaser, Three.js, or a custom engine. For Drop-Through Platform, validate this path with parameters such as drop_input_chord and drop_collision_disable_ms."
+  },
+  "related_mechanics": [
+    "physics.one_way_platform",
+    "movement.crouch",
+    "platforming.jump_buffering"
+  ],
+  "combines_well_with": [
+    "platforming.coyote_time",
+    "combat.melee_attack",
+    "ui_ux.interaction_prompt"
+  ],
+  "example_games": [],
+  "tags": [
+    "platforming",
+    "collision",
+    "vertical_navigation",
+    "input"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

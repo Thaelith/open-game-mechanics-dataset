@@ -7,7 +7,7 @@
     "counter guard"
   ],
   "category": "combat",
-  "subcategory": "defense",
+  "subcategory": "timed_defense",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -21,89 +21,106 @@
   },
   "genres": [
     "action",
-    "rpg",
-    "fighting"
+    "fighting",
+    "soulslike",
+    "rpg"
   ],
-  "description": "A timed defensive action that turns an incoming attack into advantage.",
-  "design_notes": "Parry should be designed around a clear player promise, a readable trigger, and a predictable result. For combat mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A precisely timed defensive action that turns an incoming attack into advantage.",
+  "design_notes": "Parry depends on readable enemy attacks and consistent timing windows. It should define what can be parried, what reward is granted, and how failure is punished. Strong parry design avoids hidden exceptions: if grabs, projectiles, heavy attacks, or rear hits cannot be parried, the player needs signals before impact.",
   "design_purpose": [
-    "Give the player a readable way to use parry as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect parry to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Reward players for reading attack timing rather than only avoiding contact.",
+    "Create a high-skill defensive option with a distinct risk profile from block or dodge.",
+    "Open counterattack, stagger, guard break, or resource rewards after a successful read."
   ],
-  "player_fantasy": "The player feels powerful, skillful, and able to read danger under pressure.",
+  "player_fantasy": "The player feels composed under pressure, turning enemy aggression into a controlled counter moment.",
   "required_systems": [
     "combat_state_machine",
+    "incoming_attack_metadata",
     "hit_detection",
-    "damage_model",
+    "stagger_system",
     "animation_events"
   ],
   "parameters": [
     {
-      "name": "damage_value",
+      "name": "parry_startup_ms",
       "type": "integer",
-      "typical_range": "1-250",
-      "description": "Base amount of damage or threat applied by the mechanic."
+      "typical_range": "30-180 ms",
+      "description": "Delay between input and the first active parry frame."
     },
     {
-      "name": "startup_time",
-      "type": "float",
-      "typical_range": "0.05-1.2 seconds",
-      "description": "Delay before the active effect begins."
+      "name": "parry_active_window_ms",
+      "type": "integer",
+      "typical_range": "60-240 ms",
+      "description": "Window in which eligible incoming attacks are deflected."
     },
     {
-      "name": "recovery_time",
-      "type": "float",
-      "typical_range": "0.05-1.5 seconds",
-      "description": "Delay after use before the actor can fully act again."
+      "name": "parry_recovery_ms",
+      "type": "integer",
+      "typical_range": "120-700 ms",
+      "description": "Post-attempt recovery before full control returns."
+    },
+    {
+      "name": "attacker_stagger_frames",
+      "type": "integer",
+      "typical_range": "8-90 frames",
+      "description": "Stagger applied to the attacker after a successful parry."
+    },
+    {
+      "name": "parry_meter_reward",
+      "type": "integer",
+      "typical_range": "0-100 units",
+      "description": "Optional resource granted on success."
     }
   ],
   "common_variants": [
-    "parry_light_version",
-    "parry_heavy_version",
-    "timed_version",
-    "resource_limited_version"
+    "perfect_parry",
+    "directional_parry",
+    "projectile_parry",
+    "resource_parry",
+    "counterattack_parry"
   ],
   "edge_cases": [
-    "Parry is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Parry overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Parry runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Multi-hit attacks must specify whether one parry covers all hits or only the first strike.",
+    "Projectile ownership should transfer or be destroyed without damaging the parrying player later.",
+    "Parry during rollback, pause, hit stop, or slow motion must use one timing clock.",
+    "Attacks from behind, above, or outside a guard arc need explicit eligibility metadata."
   ],
   "common_bugs": [
-    "Parry state does not reset correctly after interruption or reload.",
-    "Feedback for Parry plays even when the mechanic fails or is rejected.",
-    "Parry produces different results between frame rates, platforms, or network clients."
+    "The active window is tied to animation frames and changes when animation playback rate changes.",
+    "Both parry success and damage are applied because hit resolution order is inconsistent.",
+    "Parry effects trigger on friendly or environmental hits that should be ignored.",
+    "Network prediction shows parry success locally but server authority still applies damage."
   ],
   "balancing_notes": [
-    "Make Parry strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "A generous active window can make parry replace block and dodge unless failure recovery or eligibility limits matter.",
+    "Rewards should match risk: safe parries need modest payoff, while strict parries can justify large stagger or counter windows."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Parry becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Pair parryable attacks with readable windups, audio cues, or optional indicators.",
+    "Offer timing-window assists or alternate defensive options if parry is required for progression."
   ],
   "implementation_notes": {
-    "unity": "Implement Parry with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Parry as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Parry with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Parry as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Model startup, active, recovery, and cancel windows as data, then drive hitboxes, animation events, and damage application from one combat state source. For Parry, validate this path with parameters such as parry_startup_ms and parry_active_window_ms.",
+    "godot": "Use Area2D or Area3D hit volumes with frame-window state on the actor; avoid placing damage authority inside animation-only callbacks. For Parry, validate this path with parameters such as parry_startup_ms and parry_active_window_ms.",
+    "unreal": "Implement the action as a Gameplay Ability or Actor Component with montage notifies for windows and authoritative damage on the server when networked. For Parry, validate this path with parameters such as parry_startup_ms and parry_active_window_ms.",
+    "web": "Update combat windows in the fixed simulation step, evaluate hurtbox overlap from cached transforms, and emit presentation events separately from damage state. For Parry, validate this path with parameters such as parry_startup_ms and parry_active_window_ms."
   },
   "related_mechanics": [
-    "camera.screen_shake",
-    "combat.melee_attack",
-    "combat.ranged_attack",
-    "ui_ux.damage_numbers"
+    "combat.block",
+    "combat.guard_break",
+    "combat.projectile_reflection",
+    "combat.hit_stun"
   ],
   "combines_well_with": [
     "camera.screen_shake",
-    "combat.charged_attack",
     "combat.combo_chain",
-    "ui_ux.damage_numbers"
+    "movement.dash",
+    "ui_ux.hit_marker"
   ],
   "example_games": [
     {
       "title": "Sekiro: Shadows Die Twice",
-      "note": "Centers combat pressure around timed deflection."
+      "note": "Uses timed deflection as a central combat skill."
     },
     {
       "title": "Street Fighter III",
@@ -112,9 +129,10 @@
   ],
   "tags": [
     "combat",
+    "timing",
     "defense",
-    "parry",
-    "timing"
+    "counterplay",
+    "stagger"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

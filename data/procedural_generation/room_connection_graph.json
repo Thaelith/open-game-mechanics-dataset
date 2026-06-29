@@ -1,0 +1,122 @@
+{
+  "id": "procedural_generation.room_connection_graph",
+  "name": "Room Connection Graph",
+  "aliases": [
+    "room graph",
+    "level graph",
+    "dungeon connectivity graph"
+  ],
+  "category": "procedural_generation",
+  "subcategory": "level_topology",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "hard",
+    "implementation": "hard",
+    "tuning": "expert"
+  },
+  "genres": [
+    "roguelike",
+    "adventure",
+    "dungeon_crawler"
+  ],
+  "description": "A generated graph that defines how rooms, arenas, corridors, or level nodes connect.",
+  "design_notes": "Room connection graphs define pacing before geometry exists. They should encode start, exit, critical path, branches, locks, rewards, loops, and validation rules so generated levels remain navigable and purposeful.",
+  "design_purpose": [
+    "Create navigable procedural level structure.",
+    "Control pacing through critical path length and branch rewards.",
+    "Support keys, shops, bosses, secrets, and optional rooms."
+  ],
+  "player_fantasy": "The player feels they are exploring a coherent space with choices, loops, and goals.",
+  "required_systems": [
+    "random_number_generator",
+    "graph_generator",
+    "room_template_database",
+    "validation_pass"
+  ],
+  "parameters": [
+    {
+      "name": "critical_path_node_count",
+      "type": "integer",
+      "typical_range": "3-30 rooms",
+      "description": "Rooms required between start and exit."
+    },
+    {
+      "name": "branch_probability",
+      "type": "float",
+      "typical_range": "0-1",
+      "description": "Chance that a graph node creates an optional branch."
+    },
+    {
+      "name": "loop_connection_budget",
+      "type": "integer",
+      "typical_range": "0-20 edges",
+      "description": "Extra edges used to create loops or shortcuts."
+    },
+    {
+      "name": "required_room_tag_ids",
+      "type": "array",
+      "typical_range": "0-20 tags",
+      "description": "Room types that must appear in a valid graph."
+    },
+    {
+      "name": "graph_validation_retries",
+      "type": "integer",
+      "typical_range": "0-200 attempts",
+      "description": "Attempts to rebuild a graph that fails constraints."
+    }
+  ],
+  "common_variants": [
+    "tree_dungeon_graph",
+    "looping_dungeon_graph",
+    "lock_and_key_graph",
+    "hub_and_spoke_graph"
+  ],
+  "edge_cases": [
+    "Lock-and-key graphs must prove keys appear before locks on reachable paths.",
+    "Secret rooms should not block required progression.",
+    "Room templates can fail to connect even when graph edges are valid."
+  ],
+  "common_bugs": [
+    "Graph validation checks connectivity but not critical path ordering.",
+    "Random branch generation creates unreachable isolated components.",
+    "Seed changes between graph and room placement make debugging impossible."
+  ],
+  "balancing_notes": [
+    "Long critical paths increase run commitment; branch density increases exploration and reward choice.",
+    "Loops improve navigation but can reduce tension if every route bypasses risk."
+  ],
+  "accessibility_notes": [
+    "Generated layouts should support readable maps or landmarks when graph complexity is high."
+  ],
+  "implementation_notes": {
+    "unity": "Generate the abstract graph first, validate progression constraints, then instantiate room prefabs or tile chunks from node metadata.",
+    "godot": "Represent graph nodes as dictionaries or Resources and validate connectivity before placing scenes into the world.",
+    "unreal": "Build graph data in a subsystem or generator actor, then spawn room level instances after constraints pass.",
+    "web": "Generate graph nodes and edges as plain data, run validation, then feed the graph into tile, canvas, or WebGL room placement."
+  },
+  "related_mechanics": [
+    "procedural_generation.procedural_level_rooms",
+    "procedural_generation.procedural_terrain",
+    "roguelike.procedural_floor"
+  ],
+  "combines_well_with": [
+    "puzzle.key_and_lock",
+    "economy.loot_table",
+    "roguelike.risk_reward_room"
+  ],
+  "example_games": [],
+  "tags": [
+    "procedural",
+    "graph",
+    "rooms",
+    "level_design",
+    "validation"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

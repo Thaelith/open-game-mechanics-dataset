@@ -1,0 +1,116 @@
+{
+  "id": "stealth.visibility_meter",
+  "name": "Visibility Meter",
+  "aliases": [
+    "stealth meter",
+    "visibility indicator",
+    "exposure meter"
+  ],
+  "category": "stealth",
+  "subcategory": "player_readability",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "medium",
+    "implementation": "medium",
+    "tuning": "hard"
+  },
+  "genres": [
+    "stealth",
+    "immersive_sim",
+    "horror"
+  ],
+  "description": "A player-facing indicator that communicates how visible the player is to observers.",
+  "design_notes": "A visibility meter translates lighting, stance, cover, distance, movement, and enemy perception into readable feedback. It should inform without revealing more than the game wants the player to know.",
+  "design_purpose": [
+    "Help players understand stealth exposure.",
+    "Connect lighting, stance, and movement to AI detection.",
+    "Reduce confusion when detection rules are systemic."
+  ],
+  "player_fantasy": "The player feels able to read shadows and exposure like a skilled infiltrator.",
+  "required_systems": [
+    "visibility_model",
+    "ai_perception",
+    "ui_framework",
+    "lighting_queries"
+  ],
+  "parameters": [
+    {
+      "name": "visibility_sample_points",
+      "type": "integer",
+      "typical_range": "1-12 points",
+      "description": "Body points sampled for exposure calculations."
+    },
+    {
+      "name": "light_exposure_weight",
+      "type": "float",
+      "typical_range": "0-1",
+      "description": "Weight assigned to lighting in the meter score."
+    },
+    {
+      "name": "movement_exposure_multiplier",
+      "type": "float",
+      "typical_range": "1-5",
+      "description": "Multiplier applied while moving quickly or loudly."
+    },
+    {
+      "name": "meter_smoothing_ms",
+      "type": "integer",
+      "typical_range": "50-700 ms",
+      "description": "Smoothing window before UI changes reach the displayed score."
+    }
+  ],
+  "common_variants": [
+    "binary_hidden_icon",
+    "continuous_visibility_bar",
+    "enemy_specific_meter",
+    "diegetic_light_gem"
+  ],
+  "edge_cases": [
+    "Multiple enemies can perceive different visibility scores from different angles.",
+    "Flashing lights or moving shadows can create noisy meter updates.",
+    "Crouch, prone, and cover states must agree with AI perception."
+  ],
+  "common_bugs": [
+    "UI meter uses lighting only while AI detects by line of sight and distance.",
+    "Smoothing hides sudden exposure and makes detection feel unfair.",
+    "Meter remains hidden during tutorials where players need it most."
+  ],
+  "balancing_notes": [
+    "Precise meters reduce uncertainty; vague indicators preserve tension.",
+    "Visibility should be useful but not so exact that stealth becomes spreadsheet play."
+  ],
+  "accessibility_notes": [
+    "Avoid color-only hidden/detected states and allow meter scaling or alternate icon modes."
+  ],
+  "implementation_notes": {
+    "unity": "Sample lighting or authored stealth volumes and feed the result into the same perception score used by AI where possible.",
+    "godot": "Combine Area-based shadow volumes, ray checks, and movement state into a visibility score updated on a fixed cadence.",
+    "unreal": "Use perception components, lighting volumes, or gameplay tags to compute exposure and replicate only needed UI state.",
+    "web": "Compute exposure from tile, light, and cover data in the simulation model, then render the meter as a separate UI binding."
+  },
+  "related_mechanics": [
+    "ai.line_of_sight_detection",
+    "stealth.shadow_cover",
+    "movement.crouch"
+  ],
+  "combines_well_with": [
+    "combat.stealth_kill",
+    "stealth.last_known_position_search",
+    "ui_ux.interaction_prompt"
+  ],
+  "example_games": [],
+  "tags": [
+    "stealth",
+    "visibility",
+    "ui",
+    "perception",
+    "accessibility"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

@@ -1,0 +1,109 @@
+{
+  "id": "platforming.jump_buffering",
+  "name": "Jump Buffering",
+  "aliases": [
+    "pre-jump buffer",
+    "queued jump",
+    "jump input buffer"
+  ],
+  "category": "platforming",
+  "subcategory": "jump_assist",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "easy",
+    "implementation": "easy",
+    "tuning": "medium"
+  },
+  "genres": [
+    "platformer",
+    "metroidvania",
+    "action"
+  ],
+  "description": "A short input buffer that stores a jump press just before jumping becomes legal.",
+  "design_notes": "Jump buffering makes landings, wall contacts, and platform arrivals feel responsive. It should be tied to specific jump eligibility events so a stale input does not trigger long after the player intent has passed.",
+  "design_purpose": [
+    "Accept intended jump inputs pressed a little early.",
+    "Make landing jumps and wall jumps feel responsive.",
+    "Reduce timing frustration without changing level geometry."
+  ],
+  "player_fantasy": "The player feels the game understood the jump they meant to perform.",
+  "required_systems": [
+    "input_buffer",
+    "jump_state",
+    "ground_detection",
+    "wall_detection"
+  ],
+  "parameters": [
+    {
+      "name": "jump_buffer_ms",
+      "type": "integer",
+      "typical_range": "50-180 ms",
+      "description": "How long a queued jump input remains valid."
+    },
+    {
+      "name": "buffer_accepts_hold",
+      "type": "boolean",
+      "typical_range": "true or false",
+      "description": "Whether holding the button can create a buffered jump."
+    },
+    {
+      "name": "buffer_priority_order",
+      "type": "string",
+      "typical_range": "ground, wall, air, ledge",
+      "description": "Priority used when multiple jump types become legal together."
+    }
+  ],
+  "common_variants": [
+    "landing_jump_buffer",
+    "wall_jump_buffer",
+    "ledge_jump_buffer",
+    "assist_mode_buffer"
+  ],
+  "edge_cases": [
+    "Buffered jump during hit stun should usually expire before control returns.",
+    "A buffered jump on a drop-through platform can conflict with downward input.",
+    "Multiple queued actions need a priority rule so jump does not steal dash or interact inputs."
+  ],
+  "common_bugs": [
+    "The buffer never clears after an invalid jump and fires seconds later.",
+    "Hold-to-jump creates repeated buffered jumps every frame.",
+    "The buffer consumes input before variable jump height can read button release."
+  ],
+  "balancing_notes": [
+    "A small buffer improves feel without changing challenge; a large buffer can make rhythmic timing automatic.",
+    "Buffering should be tested with coyote time because the pair changes perceived jump leniency."
+  ],
+  "accessibility_notes": [
+    "Expose stronger buffering in assist settings for games with frequent precision jumps."
+  ],
+  "implementation_notes": {
+    "unity": "Use an explicit movement-state enum and feed the final desired velocity into CharacterController.Move or Rigidbody movement from FixedUpdate; keep dash and jump assists outside animation callbacks. For Jump Buffering, validate this path with parameters such as jump_buffer_ms and buffer_accepts_hold.",
+    "godot": "Keep the mechanic state on CharacterBody2D or CharacterBody3D, update velocity in _physics_process, and separate input buffering from collision response. For Jump Buffering, validate this path with parameters such as jump_buffer_ms and buffer_accepts_hold.",
+    "unreal": "Use CharacterMovement with a custom movement state or Gameplay Ability; gate activation through prediction-safe input and reconcile movement corrections cleanly in networked play. For Jump Buffering, validate this path with parameters such as jump_buffer_ms and buffer_accepts_hold.",
+    "web": "Represent the mechanic as deterministic state in the simulation loop, then apply resolved displacement before rendering through Canvas, Phaser, Three.js, or a custom engine. For Jump Buffering, validate this path with parameters such as jump_buffer_ms and buffer_accepts_hold."
+  },
+  "related_mechanics": [
+    "platforming.coyote_time",
+    "platforming.double_jump",
+    "platforming.wall_jump"
+  ],
+  "combines_well_with": [
+    "platforming.wall_slide",
+    "movement.air_dash",
+    "accessibility.toggle_hold_option"
+  ],
+  "example_games": [],
+  "tags": [
+    "platforming",
+    "input_buffer",
+    "jump_assist",
+    "accessibility"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

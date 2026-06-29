@@ -2,12 +2,12 @@
   "id": "combat.block",
   "name": "Block",
   "aliases": [
-    "block mechanic",
-    "block system",
-    "block"
+    "guard",
+    "defensive stance",
+    "weapon block"
   ],
   "category": "combat",
-  "subcategory": "defense",
+  "subcategory": "sustained_defense",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -21,91 +21,109 @@
   },
   "genres": [
     "action",
+    "fighting",
     "rpg",
-    "fighting"
+    "soulslike"
   ],
-  "description": "Block is an interaction that creates threat, defense, damage, timing, or tactical pressure during conflict.",
-  "design_notes": "Block should be designed around a clear player promise, a readable trigger, and a predictable result. For combat mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A defensive state that reduces or prevents incoming damage within defined limits.",
+  "design_notes": "Block is a defensive baseline that must coexist with dodge, parry, armor, and positioning. It needs clear rules for guard direction, chip damage, stamina drain, guard break, and unblockable attacks. If the player cannot tell why a block failed, the system will feel unfair even when technically correct.",
   "design_purpose": [
-    "Give the player a readable way to use block as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect block to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players a reliable defensive option against readable pressure.",
+    "Create resource and positioning tradeoffs through stamina, guard angle, or chip damage.",
+    "Support enemy move design with blockable, guard-breaking, and unblockable categories."
   ],
-  "player_fantasy": "The player feels powerful, skillful, and able to read danger under pressure.",
+  "player_fantasy": "The player feels braced and protected, absorbing danger through preparation instead of movement.",
   "required_systems": [
-    "combat_state_machine",
-    "hit_detection",
+    "guard_state",
+    "incoming_attack_metadata",
+    "stamina_system",
     "damage_model",
-    "animation_events"
+    "animation_state_machine"
   ],
   "parameters": [
     {
-      "name": "damage_value",
+      "name": "guard_arc_degrees",
+      "type": "float",
+      "typical_range": "60-220 degrees",
+      "description": "Facing cone in which incoming attacks can be blocked."
+    },
+    {
+      "name": "block_damage_reduction_ratio",
+      "type": "float",
+      "typical_range": "0.2-1.0",
+      "description": "Share of eligible incoming damage prevented by guard."
+    },
+    {
+      "name": "guard_stamina_cost_per_hit",
+      "type": "float",
+      "typical_range": "1-50 units",
+      "description": "Stamina spent when a blocked attack lands."
+    },
+    {
+      "name": "guard_raise_ms",
       "type": "integer",
-      "typical_range": "1-250",
-      "description": "Base amount of damage or threat applied by the mechanic."
+      "typical_range": "50-300 ms",
+      "description": "Delay before a new block state becomes fully protective."
     },
     {
-      "name": "startup_time",
+      "name": "chip_damage_ratio",
       "type": "float",
-      "typical_range": "0.05-1.2 seconds",
-      "description": "Delay before the active effect begins."
-    },
-    {
-      "name": "recovery_time",
-      "type": "float",
-      "typical_range": "0.05-1.5 seconds",
-      "description": "Delay after use before the actor can fully act again."
+      "typical_range": "0-0.5",
+      "description": "Share of blocked damage that still affects health."
     }
   ],
   "common_variants": [
-    "block_light_version",
-    "block_heavy_version",
-    "timed_version",
-    "resource_limited_version"
+    "directional_block",
+    "shield_block",
+    "perfect_block",
+    "hold_block",
+    "auto_guard"
   ],
   "edge_cases": [
-    "Block is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Block overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Block runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Area attacks and explosions need rules for whether guard angle or distance matters more.",
+    "Blocking while airborne, crouched, stunned, climbing, or reloading should have explicit priority.",
+    "Guard break at zero stamina must clear block state before applying follow-up hit reactions.",
+    "Multiple simultaneous attackers should not multiply stamina drain unintentionally unless designed."
   ],
   "common_bugs": [
-    "Block state does not reset correctly after interruption or reload.",
-    "Feedback for Block plays even when the mechanic fails or is rejected.",
-    "Block produces different results between frame rates, platforms, or network clients."
+    "Block checks use the attacker's facing instead of the defender's guard arc.",
+    "Stamina reaches zero after damage reduction, allowing one extra free block.",
+    "Hold block remains active after weapon swap or animation cancel.",
+    "Client and server calculate different guard angles because rotation smoothing is presentation-only."
   ],
   "balancing_notes": [
-    "Make Block strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "High reduction and low stamina cost make block dominant; chip damage and guard break preserve pressure.",
+    "Enemies need visible answers to block, but unblockable attacks should be signaled before commitment."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Block becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Support hold and toggle guard if blocking is sustained for long encounters.",
+    "Use distinct indicators for blockable, guard-breaking, and unblockable attacks where readability is critical."
   ],
   "implementation_notes": {
-    "unity": "Implement Block with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Block as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Block with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Block as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Model startup, active, recovery, and cancel windows as data, then drive hitboxes, animation events, and damage application from one combat state source. For Block, validate this path with parameters such as guard_arc_degrees and block_damage_reduction_ratio.",
+    "godot": "Use Area2D or Area3D hit volumes with frame-window state on the actor; avoid placing damage authority inside animation-only callbacks. For Block, validate this path with parameters such as guard_arc_degrees and block_damage_reduction_ratio.",
+    "unreal": "Implement the action as a Gameplay Ability or Actor Component with montage notifies for windows and authoritative damage on the server when networked. For Block, validate this path with parameters such as guard_arc_degrees and block_damage_reduction_ratio.",
+    "web": "Update combat windows in the fixed simulation step, evaluate hurtbox overlap from cached transforms, and emit presentation events separately from damage state. For Block, validate this path with parameters such as guard_arc_degrees and block_damage_reduction_ratio."
   },
   "related_mechanics": [
-    "camera.screen_shake",
-    "combat.melee_attack",
-    "combat.ranged_attack",
-    "ui_ux.damage_numbers"
+    "combat.parry",
+    "combat.shield",
+    "combat.guard_break",
+    "survival.stamina"
   ],
   "combines_well_with": [
-    "camera.screen_shake",
-    "combat.charged_attack",
-    "combat.combo_chain",
-    "ui_ux.damage_numbers"
+    "combat.melee_attack",
+    "combat.lock_on_targeting",
+    "ui_ux.cooldown_indicator",
+    "accessibility.toggle_hold_option"
   ],
   "example_games": [],
   "tags": [
-    "block",
     "combat",
     "defense",
-    "timing"
+    "stamina",
+    "guard",
+    "damage_reduction"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

@@ -7,7 +7,7 @@
     "trauma shake"
   ],
   "category": "camera",
-  "subcategory": "view_control",
+  "subcategory": "impact_feedback",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,105 +16,123 @@
   ],
   "difficulty": {
     "design": "medium",
-    "implementation": "medium",
+    "implementation": "easy",
     "tuning": "medium"
   },
   "genres": [
     "action",
-    "adventure",
-    "simulation"
+    "shooter",
+    "platformer",
+    "arcade"
   ],
-  "description": "A short camera displacement used to emphasize impact, danger, or power.",
-  "design_notes": "Screen Shake should be designed around a clear player promise, a readable trigger, and a predictable result. For camera mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A temporary camera offset or rotation effect used to emphasize impact, danger, or scale.",
+  "design_notes": "Screen shake is presentation, not a substitute for clear game-state feedback. It should be authored with intensity caps, decay behavior, priority, and user controls. The best shake supports readability by emphasizing events while avoiding motion that hides hazards, reticles, UI, or player position.",
   "design_purpose": [
-    "Give the player a readable way to use screen shake as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect screen shake to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Sell impact and weight for attacks, explosions, landings, and world events.",
+    "Communicate danger or scale without changing simulation rules.",
+    "Differentiate small, medium, and major impacts through authored response profiles."
   ],
-  "player_fantasy": "The player feels oriented and confident because the game frames what matters.",
+  "player_fantasy": "The player feels the force of an event through the camera while still retaining control and orientation.",
   "required_systems": [
     "camera_controller",
-    "target_tracking",
-    "smoothing",
-    "screen_bounds"
+    "event_bus",
+    "shake_profile_table",
+    "accessibility_settings",
+    "presentation_layer"
   ],
   "parameters": [
     {
-      "name": "follow_lag",
+      "name": "trauma_add_per_event",
       "type": "float",
-      "typical_range": "0-0.5 seconds",
-      "description": "How far behind the target the camera is allowed to feel."
+      "typical_range": "0.02-1.0",
+      "description": "Contribution added to the current shake accumulator."
     },
     {
-      "name": "framing_offset",
-      "type": "vector",
-      "typical_range": "0-40% of screen",
-      "description": "Offset used to keep the important subject away from dead center."
+      "name": "trauma_decay_rate",
+      "type": "float",
+      "typical_range": "0.5-8 units/second",
+      "description": "Rate at which accumulated shake falls back to zero."
     },
     {
-      "name": "transition_speed",
+      "name": "max_positional_offset_pixels",
       "type": "float",
-      "typical_range": "0.1-5.0 seconds",
-      "description": "How quickly the camera blends to the new behavior."
+      "typical_range": "1-40 pixels",
+      "description": "Maximum screen-space offset applied at full intensity."
+    },
+    {
+      "name": "max_rotational_offset_degrees",
+      "type": "float",
+      "typical_range": "0-8 degrees",
+      "description": "Maximum roll, yaw, or pitch perturbation."
+    },
+    {
+      "name": "shake_frequency_hz",
+      "type": "float",
+      "typical_range": "6-35 Hz",
+      "description": "Noise sampling rate or oscillation frequency for the shake profile."
     }
   ],
   "common_variants": [
-    "screen_shake_fixed_mode",
-    "screen_shake_player_controlled_mode",
-    "context_sensitive_mode",
-    "cinematic_mode"
+    "impact_shake",
+    "explosion_shake",
+    "landing_shake",
+    "low_health_tremor",
+    "directional_shake"
   ],
   "edge_cases": [
-    "Screen Shake is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Screen Shake overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Screen Shake runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Repeated rapid events should accumulate through a cap rather than stacking into unreadable camera motion.",
+    "Cutscenes, menus, split screen, photo mode, and dialogue cameras need opt-in or suppression rules.",
+    "Shake must not move UI reticles or hit markers unless the game intentionally wants diegetic instability.",
+    "Large world coordinates should not introduce floating-point jitter into shake offsets."
   ],
   "common_bugs": [
-    "Screen Shake state does not reset correctly after interruption or reload.",
-    "Feedback for Screen Shake plays even when the mechanic fails or is rejected.",
-    "Screen Shake produces different results between frame rates, platforms, or network clients."
+    "Shake is applied before camera collision and pushes the camera through walls.",
+    "Multiple systems write camera offsets and one cancels the other each frame.",
+    "Pause stops decay but not event accumulation, causing a burst when unpaused.",
+    "The accessibility intensity slider scales visuals but not controller vibration or audio rumble."
   ],
   "balancing_notes": [
-    "Make Screen Shake strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Use small profiles frequently and reserve large profiles for rare events so shake keeps meaning.",
+    "Camera motion should never be required to understand damage, direction, or timing."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Screen Shake becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Expose intensity and disable options, and pair impacts with non-motion cues such as hit flash, sound, or haptics.",
+    "Avoid high-frequency shake patterns that can cause discomfort or obscure precision tasks."
   ],
   "implementation_notes": {
-    "unity": "Implement Screen Shake with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Screen Shake as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Screen Shake with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Screen Shake as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Apply shake as a late camera offset after follow smoothing but before final composition; with Cinemachine, use impulse profiles and scale them through accessibility settings.",
+    "godot": "Keep a shake accumulator on the Camera2D or Camera3D rig and sample deterministic noise in _process after the target position is resolved.",
+    "unreal": "Use Camera Shake Sources or PlayerCameraManager modifiers with authored profiles and expose user scaling through settings.",
+    "web": "Apply shake to the render camera transform or canvas view matrix after simulation; keep UI layers separate when reticles must stay stable."
   },
   "related_mechanics": [
-    "camera.first_person_camera",
-    "camera.smooth_follow_camera",
-    "combat.lock_on_targeting",
-    "movement.run"
+    "combat.melee_attack",
+    "combat.ranged_attack",
+    "combat.hit_stun",
+    "ui_ux.hit_marker"
   ],
   "combines_well_with": [
-    "camera.third_person_camera",
-    "camera.top_down_camera",
-    "combat.lock_on_targeting",
-    "movement.run"
+    "combat.parry",
+    "combat.combo_chain",
+    "physics.breakable_object",
+    "vehicles.vehicle_damage"
   ],
   "example_games": [
     {
       "title": "Nuclear Throne",
-      "note": "Uses shake to emphasize weapon impact."
+      "note": "Uses frequent shake to emphasize weapon impact."
     },
     {
       "title": "Celeste",
-      "note": "Uses restrained shake to sell impacts and transitions."
+      "note": "Uses restrained shake to support impacts and transitions."
     }
   ],
   "tags": [
     "camera",
-    "readability",
-    "screen",
-    "view_control"
+    "feedback",
+    "impact",
+    "accessibility",
+    "presentation"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

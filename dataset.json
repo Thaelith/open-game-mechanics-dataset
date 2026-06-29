@@ -3,8 +3,8 @@
   "schema_version": "0.1.0",
   "license": "CC0-1.0",
   "tool_license": "MIT",
-  "total_mechanics": 203,
-  "last_generated": "2026-06-28T23:04:35+00:00",
+  "total_mechanics": 223,
+  "last_generated": "2026-06-29T00:23:56+00:00",
   "mechanics": [
     {
       "id": "accessibility.adjustable_difficulty",
@@ -97,6 +97,31 @@
         "text"
       ],
       "path": "data/accessibility/text_scaling.json"
+    },
+    {
+      "id": "accessibility.toggle_hold_option",
+      "name": "Toggle/Hold Option",
+      "category": "accessibility",
+      "subcategory": "input_preference",
+      "status": "draft",
+      "dimensions": [
+        "2D",
+        "2.5D",
+        "3D"
+      ],
+      "genres": [
+        "all_genres",
+        "action",
+        "shooter",
+        "adventure"
+      ],
+      "tags": [
+        "accessibility",
+        "input",
+        "toggle",
+        "settings"
+      ],
+      "path": "data/accessibility/toggle_hold_option.json"
     },
     {
       "id": "ai.boss_phase_transition",
@@ -318,7 +343,7 @@
       "id": "ai.patrol",
       "name": "Patrol",
       "category": "ai",
-      "subcategory": "agent_behavior",
+      "subcategory": "navigation_behavior",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -326,17 +351,45 @@
         "3D"
       ],
       "genres": [
+        "stealth",
         "action",
         "strategy",
-        "simulation"
+        "horror"
       ],
       "tags": [
-        "agent_behavior",
         "ai",
-        "behavior",
-        "patrol"
+        "patrol",
+        "stealth",
+        "navigation",
+        "perception"
       ],
       "path": "data/ai/patrol.json"
+    },
+    {
+      "id": "ai.utility_scoring",
+      "name": "Utility Scoring",
+      "category": "ai",
+      "subcategory": "decision_model",
+      "status": "draft",
+      "dimensions": [
+        "2D",
+        "2.5D",
+        "3D"
+      ],
+      "genres": [
+        "simulation",
+        "strategy",
+        "action",
+        "immersive_sim"
+      ],
+      "tags": [
+        "ai",
+        "decision_model",
+        "utility",
+        "simulation",
+        "debugging"
+      ],
+      "path": "data/ai/utility_scoring.json"
     },
     {
       "id": "camera.camera_lock_on",
@@ -460,7 +513,7 @@
       "id": "camera.screen_shake",
       "name": "Screen Shake",
       "category": "camera",
-      "subcategory": "view_control",
+      "subcategory": "impact_feedback",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -469,14 +522,16 @@
       ],
       "genres": [
         "action",
-        "adventure",
-        "simulation"
+        "shooter",
+        "platformer",
+        "arcade"
       ],
       "tags": [
         "camera",
-        "readability",
-        "screen",
-        "view_control"
+        "feedback",
+        "impact",
+        "accessibility",
+        "presentation"
       ],
       "path": "data/camera/screen_shake.json"
     },
@@ -577,6 +632,30 @@
       "path": "data/camera/top_down_camera.json"
     },
     {
+      "id": "combat.aim_down_sights",
+      "name": "Aim Down Sights",
+      "category": "combat",
+      "subcategory": "aiming",
+      "status": "draft",
+      "dimensions": [
+        "2.5D",
+        "3D"
+      ],
+      "genres": [
+        "shooter",
+        "action",
+        "survival"
+      ],
+      "tags": [
+        "combat",
+        "aiming",
+        "camera",
+        "ranged",
+        "accessibility"
+      ],
+      "path": "data/combat/aim_down_sights.json"
+    },
+    {
       "id": "combat.area_of_effect_attack",
       "name": "Area-of-Effect Attack",
       "category": "combat",
@@ -604,7 +683,7 @@
       "id": "combat.block",
       "name": "Block",
       "category": "combat",
-      "subcategory": "defense",
+      "subcategory": "sustained_defense",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -613,14 +692,16 @@
       ],
       "genres": [
         "action",
+        "fighting",
         "rpg",
-        "fighting"
+        "soulslike"
       ],
       "tags": [
-        "block",
         "combat",
         "defense",
-        "timing"
+        "stamina",
+        "guard",
+        "damage_reduction"
       ],
       "path": "data/combat/block.json"
     },
@@ -652,7 +733,7 @@
       "id": "combat.combo_chain",
       "name": "Combo Chain",
       "category": "combat",
-      "subcategory": "offense",
+      "subcategory": "attack_sequence",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -661,14 +742,16 @@
       ],
       "genres": [
         "action",
-        "rpg",
-        "fighting"
+        "fighting",
+        "beat_em_up",
+        "rpg"
       ],
       "tags": [
         "combat",
         "combo",
-        "offense",
-        "timing"
+        "input_buffer",
+        "cancel",
+        "skill_expression"
       ],
       "path": "data/combat/combo_chain.json"
     },
@@ -695,6 +778,55 @@
         "timing"
       ],
       "path": "data/combat/critical_hit.json"
+    },
+    {
+      "id": "combat.damage_over_time",
+      "name": "Damage Over Time",
+      "category": "combat",
+      "subcategory": "status_effect",
+      "status": "draft",
+      "dimensions": [
+        "2D",
+        "2.5D",
+        "3D"
+      ],
+      "genres": [
+        "rpg",
+        "action",
+        "survival",
+        "strategy"
+      ],
+      "tags": [
+        "combat",
+        "status_effect",
+        "damage",
+        "timer"
+      ],
+      "path": "data/combat/damage_over_time.json"
+    },
+    {
+      "id": "combat.guard_break",
+      "name": "Guard Break",
+      "category": "combat",
+      "subcategory": "defense_counter",
+      "status": "draft",
+      "dimensions": [
+        "2D",
+        "2.5D",
+        "3D"
+      ],
+      "genres": [
+        "action",
+        "fighting",
+        "rpg"
+      ],
+      "tags": [
+        "combat",
+        "guard",
+        "stagger",
+        "defense_counter"
+      ],
+      "path": "data/combat/guard_break.json"
     },
     {
       "id": "combat.hit_stun",
@@ -772,23 +904,24 @@
       "id": "combat.lock_on_targeting",
       "name": "Lock-on Targeting",
       "category": "combat",
-      "subcategory": "combat_control",
+      "subcategory": "targeting",
       "status": "draft",
       "dimensions": [
-        "2D",
         "2.5D",
         "3D"
       ],
       "genres": [
         "action",
         "rpg",
-        "fighting"
+        "soulslike",
+        "adventure"
       ],
       "tags": [
         "combat",
-        "combat_control",
-        "lock",
-        "timing"
+        "targeting",
+        "camera",
+        "aiming",
+        "accessibility"
       ],
       "path": "data/combat/lock_on_targeting.json"
     },
@@ -796,7 +929,7 @@
       "id": "combat.melee_attack",
       "name": "Melee Attack",
       "category": "combat",
-      "subcategory": "offense",
+      "subcategory": "close_range_offense",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -806,13 +939,15 @@
       "genres": [
         "action",
         "rpg",
-        "fighting"
+        "fighting",
+        "beat_em_up"
       ],
       "tags": [
         "combat",
+        "hitbox",
         "melee",
-        "offense",
-        "timing"
+        "timing",
+        "spacing"
       ],
       "path": "data/combat/melee_attack.json"
     },
@@ -820,7 +955,7 @@
       "id": "combat.parry",
       "name": "Parry",
       "category": "combat",
-      "subcategory": "defense",
+      "subcategory": "timed_defense",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -829,14 +964,16 @@
       ],
       "genres": [
         "action",
-        "rpg",
-        "fighting"
+        "fighting",
+        "soulslike",
+        "rpg"
       ],
       "tags": [
         "combat",
+        "timing",
         "defense",
-        "parry",
-        "timing"
+        "counterplay",
+        "stagger"
       ],
       "path": "data/combat/parry.json"
     },
@@ -868,7 +1005,7 @@
       "id": "combat.ranged_attack",
       "name": "Ranged Attack",
       "category": "combat",
-      "subcategory": "offense",
+      "subcategory": "ranged_offense",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -876,17 +1013,44 @@
         "3D"
       ],
       "genres": [
+        "shooter",
         "action",
         "rpg",
-        "fighting"
+        "platformer"
       ],
       "tags": [
         "combat",
-        "offense",
-        "ranged",
-        "timing"
+        "projectile",
+        "aiming",
+        "ammo",
+        "ranged"
       ],
       "path": "data/combat/ranged_attack.json"
+    },
+    {
+      "id": "combat.reload",
+      "name": "Reload",
+      "category": "combat",
+      "subcategory": "ranged_resource",
+      "status": "draft",
+      "dimensions": [
+        "2D",
+        "2.5D",
+        "3D"
+      ],
+      "genres": [
+        "shooter",
+        "action",
+        "survival"
+      ],
+      "tags": [
+        "combat",
+        "ammo",
+        "ranged",
+        "reload",
+        "resource"
+      ],
+      "path": "data/combat/reload.json"
     },
     {
       "id": "combat.shield",
@@ -916,7 +1080,7 @@
       "id": "combat.stealth_kill",
       "name": "Stealth Kill",
       "category": "combat",
-      "subcategory": "offense",
+      "subcategory": "stealth_attack",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -924,15 +1088,17 @@
         "3D"
       ],
       "genres": [
+        "stealth",
         "action",
-        "rpg",
-        "fighting"
+        "immersive_sim",
+        "rpg"
       ],
       "tags": [
         "combat",
-        "offense",
         "stealth",
-        "timing"
+        "takedown",
+        "ai_awareness",
+        "positioning"
       ],
       "path": "data/combat/stealth_kill.json"
     },
@@ -1146,7 +1312,7 @@
       "id": "economy.loot_table",
       "name": "Loot Table",
       "category": "economy",
-      "subcategory": "economy",
+      "subcategory": "reward_distribution",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1155,13 +1321,16 @@
       ],
       "genres": [
         "rpg",
-        "simulation",
-        "strategy"
+        "roguelike",
+        "looter",
+        "survival"
       ],
       "tags": [
         "economy",
         "loot",
-        "rewards"
+        "randomness",
+        "rewards",
+        "rarity"
       ],
       "path": "data/economy/loot_table.json"
     },
@@ -1534,6 +1703,30 @@
       "path": "data/meta/player_profile_stats.json"
     },
     {
+      "id": "movement.air_dash",
+      "name": "Air Dash",
+      "category": "movement",
+      "subcategory": "air_mobility",
+      "status": "draft",
+      "dimensions": [
+        "2D",
+        "2.5D",
+        "3D"
+      ],
+      "genres": [
+        "platformer",
+        "action",
+        "metroidvania"
+      ],
+      "tags": [
+        "movement",
+        "air_control",
+        "dash",
+        "platforming"
+      ],
+      "path": "data/movement/air_dash.json"
+    },
+    {
       "id": "movement.climbing",
       "name": "Climbing",
       "category": "movement",
@@ -1561,7 +1754,7 @@
       "id": "movement.crouch",
       "name": "Crouch",
       "category": "movement",
-      "subcategory": "locomotion",
+      "subcategory": "stance",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1570,14 +1763,16 @@
       ],
       "genres": [
         "platformer",
-        "action",
+        "stealth",
+        "shooter",
         "adventure"
       ],
       "tags": [
-        "controls",
-        "crouch",
-        "locomotion",
-        "mobility"
+        "stance",
+        "collision",
+        "stealth",
+        "accessibility",
+        "movement"
       ],
       "path": "data/movement/crouch.json"
     },
@@ -1595,13 +1790,15 @@
       "genres": [
         "platformer",
         "action",
-        "adventure"
+        "metroidvania",
+        "roguelike"
       ],
       "tags": [
+        "mobility",
         "burst_movement",
-        "controls",
-        "dash",
-        "mobility"
+        "cooldown",
+        "i_frames",
+        "skill_expression"
       ],
       "path": "data/movement/dash.json"
     },
@@ -1705,7 +1902,7 @@
       "id": "movement.sprint",
       "name": "Sprint",
       "category": "movement",
-      "subcategory": "burst_movement",
+      "subcategory": "locomotion_modifier",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1713,15 +1910,17 @@
         "3D"
       ],
       "genres": [
-        "platformer",
         "action",
-        "adventure"
+        "adventure",
+        "survival",
+        "shooter"
       ],
       "tags": [
-        "burst_movement",
-        "controls",
-        "mobility",
-        "sprint"
+        "locomotion",
+        "stamina",
+        "pace",
+        "noise",
+        "accessibility"
       ],
       "path": "data/movement/sprint.json"
     },
@@ -1753,7 +1952,7 @@
       "id": "movement.swimming",
       "name": "Swimming",
       "category": "movement",
-      "subcategory": "locomotion",
+      "subcategory": "environmental_locomotion",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1761,15 +1960,17 @@
         "3D"
       ],
       "genres": [
+        "adventure",
+        "survival",
         "platformer",
-        "action",
-        "adventure"
+        "exploration"
       ],
       "tags": [
-        "controls",
-        "locomotion",
-        "mobility",
-        "swimming"
+        "water",
+        "buoyancy",
+        "oxygen",
+        "environmental_locomotion",
+        "survival"
       ],
       "path": "data/movement/swimming.json"
     },
@@ -2130,6 +2331,30 @@
       "path": "data/narrative/reputation_choice.json"
     },
     {
+      "id": "narrative.reputation_gating",
+      "name": "Reputation Gating",
+      "category": "narrative",
+      "subcategory": "state_gating",
+      "status": "draft",
+      "dimensions": [
+        "2D",
+        "2.5D",
+        "3D"
+      ],
+      "genres": [
+        "rpg",
+        "adventure",
+        "simulation"
+      ],
+      "tags": [
+        "narrative",
+        "reputation",
+        "gating",
+        "choices"
+      ],
+      "path": "data/narrative/reputation_gating.json"
+    },
+    {
       "id": "physics.breakable_object",
       "name": "Breakable Object",
       "category": "physics",
@@ -2274,6 +2499,29 @@
       "path": "data/physics/moving_platform.json"
     },
     {
+      "id": "physics.one_way_platform",
+      "name": "One-Way Platform",
+      "category": "physics",
+      "subcategory": "collision_affordance",
+      "status": "draft",
+      "dimensions": [
+        "2D",
+        "2.5D"
+      ],
+      "genres": [
+        "platformer",
+        "metroidvania",
+        "action"
+      ],
+      "tags": [
+        "physics",
+        "collision",
+        "platforming",
+        "semisolid"
+      ],
+      "path": "data/physics/one_way_platform.json"
+    },
+    {
       "id": "physics.pendulum_swing",
       "name": "Pendulum Swing",
       "category": "physics",
@@ -2369,10 +2617,10 @@
       "path": "data/physics/wind_force.json"
     },
     {
-      "id": "platforming.double_jump",
-      "name": "Double Jump",
+      "id": "platforming.coyote_time",
+      "name": "Coyote Time",
       "category": "platforming",
-      "subcategory": "vertical_mobility",
+      "subcategory": "jump_assist",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2382,15 +2630,87 @@
       "genres": [
         "platformer",
         "metroidvania",
-        "precision_platformer"
+        "action"
       ],
       "tags": [
-        "double",
+        "platforming",
+        "jump_assist",
+        "forgiveness",
+        "input_timing"
+      ],
+      "path": "data/platforming/coyote_time.json"
+    },
+    {
+      "id": "platforming.double_jump",
+      "name": "Double Jump",
+      "category": "platforming",
+      "subcategory": "air_control",
+      "status": "draft",
+      "dimensions": [
+        "2D",
+        "2.5D",
+        "3D"
+      ],
+      "genres": [
+        "platformer",
+        "metroidvania",
+        "action"
+      ],
+      "tags": [
+        "platforming",
+        "air_control",
         "mobility",
-        "precision",
-        "vertical_mobility"
+        "forgiveness",
+        "upgrade"
       ],
       "path": "data/platforming/double_jump.json"
+    },
+    {
+      "id": "platforming.drop_through_platform",
+      "name": "Drop-Through Platform",
+      "category": "platforming",
+      "subcategory": "platform_interaction",
+      "status": "draft",
+      "dimensions": [
+        "2D",
+        "2.5D"
+      ],
+      "genres": [
+        "platformer",
+        "metroidvania",
+        "action"
+      ],
+      "tags": [
+        "platforming",
+        "collision",
+        "vertical_navigation",
+        "input"
+      ],
+      "path": "data/platforming/drop_through_platform.json"
+    },
+    {
+      "id": "platforming.jump_buffering",
+      "name": "Jump Buffering",
+      "category": "platforming",
+      "subcategory": "jump_assist",
+      "status": "draft",
+      "dimensions": [
+        "2D",
+        "2.5D",
+        "3D"
+      ],
+      "genres": [
+        "platformer",
+        "metroidvania",
+        "action"
+      ],
+      "tags": [
+        "platforming",
+        "input_buffer",
+        "jump_assist",
+        "accessibility"
+      ],
+      "path": "data/platforming/jump_buffering.json"
     },
     {
       "id": "platforming.ledge_climb",
@@ -2468,7 +2788,7 @@
       "id": "platforming.wall_jump",
       "name": "Wall Jump",
       "category": "platforming",
-      "subcategory": "vertical_mobility",
+      "subcategory": "wall_interaction",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2478,13 +2798,14 @@
       "genres": [
         "platformer",
         "metroidvania",
-        "precision_platformer"
+        "action"
       ],
       "tags": [
+        "platforming",
+        "wall_interaction",
         "mobility",
-        "precision",
-        "vertical_mobility",
-        "wall"
+        "verticality",
+        "precision"
       ],
       "path": "data/platforming/wall_jump.json"
     },
@@ -2492,7 +2813,7 @@
       "id": "platforming.wall_slide",
       "name": "Wall Slide",
       "category": "platforming",
-      "subcategory": "vertical_mobility",
+      "subcategory": "wall_interaction",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2502,13 +2823,13 @@
       "genres": [
         "platformer",
         "metroidvania",
-        "precision_platformer"
+        "action"
       ],
       "tags": [
-        "mobility",
-        "precision",
-        "vertical_mobility",
-        "wall"
+        "platforming",
+        "wall_interaction",
+        "fall_control",
+        "precision"
       ],
       "path": "data/platforming/wall_slide.json"
     },
@@ -2610,7 +2931,7 @@
       "id": "procedural_generation.procedural_terrain",
       "name": "Procedural Terrain",
       "category": "procedural_generation",
-      "subcategory": "content_generation",
+      "subcategory": "terrain_generation",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2618,14 +2939,17 @@
         "3D"
       ],
       "genres": [
-        "roguelike",
         "sandbox",
-        "survival"
+        "survival",
+        "simulation",
+        "open_world"
       ],
       "tags": [
-        "content_generation",
         "procedural",
-        "replayability"
+        "terrain",
+        "chunks",
+        "seeded",
+        "validation"
       ],
       "path": "data/procedural_generation/procedural_terrain.json"
     },
@@ -2652,6 +2976,31 @@
         "replayability"
       ],
       "path": "data/procedural_generation/random_encounters.json"
+    },
+    {
+      "id": "procedural_generation.room_connection_graph",
+      "name": "Room Connection Graph",
+      "category": "procedural_generation",
+      "subcategory": "level_topology",
+      "status": "draft",
+      "dimensions": [
+        "2D",
+        "2.5D",
+        "3D"
+      ],
+      "genres": [
+        "roguelike",
+        "adventure",
+        "dungeon_crawler"
+      ],
+      "tags": [
+        "procedural",
+        "graph",
+        "rooms",
+        "level_design",
+        "validation"
+      ],
+      "path": "data/procedural_generation/room_connection_graph.json"
     },
     {
       "id": "procedural_generation.seeded_generation",
@@ -2863,10 +3212,10 @@
       "path": "data/progression/prestige_reset.json"
     },
     {
-      "id": "progression.skill_tree",
-      "name": "Skill Tree",
+      "id": "progression.respec",
+      "name": "Respec",
       "category": "progression",
-      "subcategory": "progression",
+      "subcategory": "build_management",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2876,12 +3225,40 @@
       "genres": [
         "rpg",
         "action",
+        "strategy",
         "roguelike"
       ],
       "tags": [
         "progression",
-        "rewards",
-        "skill"
+        "respec",
+        "buildcraft",
+        "refund"
+      ],
+      "path": "data/progression/respec.json"
+    },
+    {
+      "id": "progression.skill_tree",
+      "name": "Skill Tree",
+      "category": "progression",
+      "subcategory": "ability_graph",
+      "status": "draft",
+      "dimensions": [
+        "2D",
+        "2.5D",
+        "3D"
+      ],
+      "genres": [
+        "rpg",
+        "action",
+        "roguelike",
+        "strategy"
+      ],
+      "tags": [
+        "progression",
+        "buildcraft",
+        "graph",
+        "unlock",
+        "respec"
       ],
       "path": "data/progression/skill_tree.json"
     },
@@ -3079,7 +3456,7 @@
       "id": "puzzle.pressure_plate",
       "name": "Pressure Plate",
       "category": "puzzle",
-      "subcategory": "state_puzzle",
+      "subcategory": "physical_trigger",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3089,13 +3466,15 @@
       "genres": [
         "puzzle",
         "adventure",
-        "escape_room"
+        "platformer",
+        "immersive_sim"
       ],
       "tags": [
-        "pressure",
         "puzzle",
+        "trigger",
+        "weight",
         "state",
-        "state_puzzle"
+        "physics"
       ],
       "path": "data/puzzle/pressure_plate.json"
     },
@@ -3308,6 +3687,31 @@
         "runs"
       ],
       "path": "data/roguelike/permadeath.json"
+    },
+    {
+      "id": "roguelike.pick_one_upgrade_choice",
+      "name": "Pick-One Upgrade Choice",
+      "category": "roguelike",
+      "subcategory": "run_reward_choice",
+      "status": "draft",
+      "dimensions": [
+        "2D",
+        "2.5D",
+        "3D"
+      ],
+      "genres": [
+        "roguelike",
+        "deckbuilder",
+        "action"
+      ],
+      "tags": [
+        "roguelike",
+        "choice",
+        "upgrades",
+        "run_progression",
+        "randomness"
+      ],
+      "path": "data/roguelike/pick_one_upgrade_choice.json"
     },
     {
       "id": "roguelike.procedural_floor",
@@ -3586,6 +3990,31 @@
       "path": "data/stealth/distraction_throw.json"
     },
     {
+      "id": "stealth.last_known_position_search",
+      "name": "Last Known Position Search",
+      "category": "stealth",
+      "subcategory": "ai_search",
+      "status": "draft",
+      "dimensions": [
+        "2D",
+        "2.5D",
+        "3D"
+      ],
+      "genres": [
+        "stealth",
+        "action",
+        "horror"
+      ],
+      "tags": [
+        "stealth",
+        "ai",
+        "search",
+        "memory",
+        "perception"
+      ],
+      "path": "data/stealth/last_known_position_search.json"
+    },
+    {
       "id": "stealth.noise_meter",
       "name": "Noise Meter",
       "category": "stealth",
@@ -3630,6 +4059,31 @@
         "stealth"
       ],
       "path": "data/stealth/shadow_cover.json"
+    },
+    {
+      "id": "stealth.visibility_meter",
+      "name": "Visibility Meter",
+      "category": "stealth",
+      "subcategory": "player_readability",
+      "status": "draft",
+      "dimensions": [
+        "2D",
+        "2.5D",
+        "3D"
+      ],
+      "genres": [
+        "stealth",
+        "immersive_sim",
+        "horror"
+      ],
+      "tags": [
+        "stealth",
+        "visibility",
+        "ui",
+        "perception",
+        "accessibility"
+      ],
+      "path": "data/stealth/visibility_meter.json"
     },
     {
       "id": "strategy.fog_of_war",
@@ -4329,6 +4783,30 @@
       "path": "data/traversal/vehicle_mount.json"
     },
     {
+      "id": "traversal.wall_run",
+      "name": "Wall Run",
+      "category": "traversal",
+      "subcategory": "wall_traversal",
+      "status": "draft",
+      "dimensions": [
+        "2.5D",
+        "3D"
+      ],
+      "genres": [
+        "action",
+        "platformer",
+        "shooter",
+        "parkour"
+      ],
+      "tags": [
+        "traversal",
+        "wall_interaction",
+        "parkour",
+        "momentum"
+      ],
+      "path": "data/traversal/wall_run.json"
+    },
+    {
       "id": "traversal.zipline",
       "name": "Zipline",
       "category": "traversal",
@@ -4471,6 +4949,56 @@
         "ui_ux"
       ],
       "path": "data/ui_ux/dialogue_choice.json"
+    },
+    {
+      "id": "ui_ux.hit_marker",
+      "name": "Hit Marker",
+      "category": "ui_ux",
+      "subcategory": "combat_feedback",
+      "status": "draft",
+      "dimensions": [
+        "2D",
+        "2.5D",
+        "3D"
+      ],
+      "genres": [
+        "shooter",
+        "action",
+        "rpg"
+      ],
+      "tags": [
+        "ui",
+        "combat_feedback",
+        "hit_confirm",
+        "accessibility"
+      ],
+      "path": "data/ui_ux/hit_marker.json"
+    },
+    {
+      "id": "ui_ux.interaction_prompt",
+      "name": "Interaction Prompt",
+      "category": "ui_ux",
+      "subcategory": "contextual_prompt",
+      "status": "draft",
+      "dimensions": [
+        "2D",
+        "2.5D",
+        "3D"
+      ],
+      "genres": [
+        "adventure",
+        "rpg",
+        "action",
+        "simulation"
+      ],
+      "tags": [
+        "ui",
+        "interaction",
+        "prompt",
+        "input",
+        "accessibility"
+      ],
+      "path": "data/ui_ux/interaction_prompt.json"
     },
     {
       "id": "ui_ux.inventory_grid",
@@ -4783,7 +5311,8 @@
         "accessibility.adjustable_difficulty",
         "accessibility.assist_mode",
         "accessibility.colorblind_modes",
-        "accessibility.text_scaling"
+        "accessibility.text_scaling",
+        "accessibility.toggle_hold_option"
       ],
       "ai": [
         "ai.boss_phase_transition",
@@ -4795,7 +5324,8 @@
         "ai.flocking",
         "ai.investigate_noise",
         "ai.line_of_sight_detection",
-        "ai.patrol"
+        "ai.patrol",
+        "ai.utility_scoring"
       ],
       "camera": [
         "camera.camera_lock_on",
@@ -4810,11 +5340,14 @@
         "camera.top_down_camera"
       ],
       "combat": [
+        "combat.aim_down_sights",
         "combat.area_of_effect_attack",
         "combat.block",
         "combat.charged_attack",
         "combat.combo_chain",
         "combat.critical_hit",
+        "combat.damage_over_time",
+        "combat.guard_break",
         "combat.hit_stun",
         "combat.invincibility_frames",
         "combat.knockback",
@@ -4823,6 +5356,7 @@
         "combat.parry",
         "combat.projectile_reflection",
         "combat.ranged_attack",
+        "combat.reload",
         "combat.shield",
         "combat.stealth_kill"
       ],
@@ -4861,6 +5395,7 @@
         "meta.player_profile_stats"
       ],
       "movement": [
+        "movement.air_dash",
         "movement.climbing",
         "movement.crouch",
         "movement.dash",
@@ -4889,7 +5424,8 @@
         "narrative.branching_dialogue",
         "narrative.codex_journal",
         "narrative.environmental_storytelling",
-        "narrative.reputation_choice"
+        "narrative.reputation_choice",
+        "narrative.reputation_gating"
       ],
       "physics": [
         "physics.breakable_object",
@@ -4898,13 +5434,17 @@
         "physics.gravity",
         "physics.low_gravity_zone",
         "physics.moving_platform",
+        "physics.one_way_platform",
         "physics.pendulum_swing",
         "physics.physics_push_pull",
         "physics.ragdoll",
         "physics.wind_force"
       ],
       "platforming": [
+        "platforming.coyote_time",
         "platforming.double_jump",
+        "platforming.drop_through_platform",
+        "platforming.jump_buffering",
         "platforming.ledge_climb",
         "platforming.ledge_grab",
         "platforming.variable_jump_height",
@@ -4918,6 +5458,7 @@
         "procedural_generation.procedural_quests",
         "procedural_generation.procedural_terrain",
         "procedural_generation.random_encounters",
+        "procedural_generation.room_connection_graph",
         "procedural_generation.seeded_generation",
         "procedural_generation.wave_generation"
       ],
@@ -4929,6 +5470,7 @@
         "progression.level_up",
         "progression.meta_progression",
         "progression.prestige_reset",
+        "progression.respec",
         "progression.skill_tree",
         "progression.unlockable_abilities",
         "progression.upgrade_shop"
@@ -4954,6 +5496,7 @@
       "roguelike": [
         "roguelike.curse_modifier",
         "roguelike.permadeath",
+        "roguelike.pick_one_upgrade_choice",
         "roguelike.procedural_floor",
         "roguelike.random_powerups",
         "roguelike.relic_synergy",
@@ -4970,8 +5513,10 @@
       "stealth": [
         "stealth.alert_state",
         "stealth.distraction_throw",
+        "stealth.last_known_position_search",
         "stealth.noise_meter",
-        "stealth.shadow_cover"
+        "stealth.shadow_cover",
+        "stealth.visibility_meter"
       ],
       "strategy": [
         "strategy.fog_of_war",
@@ -5010,6 +5555,7 @@
         "traversal.rope_swing",
         "traversal.teleport_blink",
         "traversal.vehicle_mount",
+        "traversal.wall_run",
         "traversal.zipline"
       ],
       "ui_ux": [
@@ -5018,6 +5564,8 @@
         "ui_ux.cooldown_indicator",
         "ui_ux.damage_numbers",
         "ui_ux.dialogue_choice",
+        "ui_ux.hit_marker",
+        "ui_ux.interaction_prompt",
         "ui_ux.inventory_grid",
         "ui_ux.minimap",
         "ui_ux.quest_marker",
@@ -5041,6 +5589,7 @@
         "accessibility.assist_mode",
         "accessibility.colorblind_modes",
         "accessibility.text_scaling",
+        "accessibility.toggle_hold_option",
         "ai.boss_phase_transition",
         "ai.chase",
         "ai.companion_follow",
@@ -5051,6 +5600,7 @@
         "ai.investigate_noise",
         "ai.line_of_sight_detection",
         "ai.patrol",
+        "ai.utility_scoring",
         "camera.camera_lock_on",
         "camera.camera_zoom",
         "camera.cinematic_camera",
@@ -5061,11 +5611,14 @@
         "camera.split_screen",
         "camera.third_person_camera",
         "camera.top_down_camera",
+        "combat.aim_down_sights",
         "combat.area_of_effect_attack",
         "combat.block",
         "combat.charged_attack",
         "combat.combo_chain",
         "combat.critical_hit",
+        "combat.damage_over_time",
+        "combat.guard_break",
         "combat.hit_stun",
         "combat.invincibility_frames",
         "combat.knockback",
@@ -5074,6 +5627,7 @@
         "combat.parry",
         "combat.projectile_reflection",
         "combat.ranged_attack",
+        "combat.reload",
         "combat.shield",
         "combat.stealth_kill",
         "crafting.crafting_queue",
@@ -5102,6 +5656,7 @@
         "meta.daily_challenge",
         "meta.new_game_plus",
         "meta.player_profile_stats",
+        "movement.air_dash",
         "movement.climbing",
         "movement.crouch",
         "movement.dash",
@@ -5127,17 +5682,22 @@
         "narrative.codex_journal",
         "narrative.environmental_storytelling",
         "narrative.reputation_choice",
+        "narrative.reputation_gating",
         "physics.breakable_object",
         "physics.buoyancy",
         "physics.destructible_environment",
         "physics.gravity",
         "physics.low_gravity_zone",
         "physics.moving_platform",
+        "physics.one_way_platform",
         "physics.pendulum_swing",
         "physics.physics_push_pull",
         "physics.ragdoll",
         "physics.wind_force",
+        "platforming.coyote_time",
         "platforming.double_jump",
+        "platforming.drop_through_platform",
+        "platforming.jump_buffering",
         "platforming.ledge_climb",
         "platforming.ledge_grab",
         "platforming.variable_jump_height",
@@ -5149,6 +5709,7 @@
         "procedural_generation.procedural_quests",
         "procedural_generation.procedural_terrain",
         "procedural_generation.random_encounters",
+        "procedural_generation.room_connection_graph",
         "procedural_generation.seeded_generation",
         "procedural_generation.wave_generation",
         "progression.achievement_system",
@@ -5158,6 +5719,7 @@
         "progression.level_up",
         "progression.meta_progression",
         "progression.prestige_reset",
+        "progression.respec",
         "progression.skill_tree",
         "progression.unlockable_abilities",
         "progression.upgrade_shop",
@@ -5177,6 +5739,7 @@
         "rhythm.sync_window",
         "roguelike.curse_modifier",
         "roguelike.permadeath",
+        "roguelike.pick_one_upgrade_choice",
         "roguelike.procedural_floor",
         "roguelike.random_powerups",
         "roguelike.relic_synergy",
@@ -5189,8 +5752,10 @@
         "simulation.traffic_flow",
         "stealth.alert_state",
         "stealth.distraction_throw",
+        "stealth.last_known_position_search",
         "stealth.noise_meter",
         "stealth.shadow_cover",
+        "stealth.visibility_meter",
         "strategy.fog_of_war",
         "strategy.tech_tree",
         "strategy.territory_control",
@@ -5221,12 +5786,15 @@
         "traversal.rope_swing",
         "traversal.teleport_blink",
         "traversal.vehicle_mount",
+        "traversal.wall_run",
         "traversal.zipline",
         "ui_ux.accessibility_remap_controls",
         "ui_ux.checkpoint_notification",
         "ui_ux.cooldown_indicator",
         "ui_ux.damage_numbers",
         "ui_ux.dialogue_choice",
+        "ui_ux.hit_marker",
+        "ui_ux.interaction_prompt",
         "ui_ux.inventory_grid",
         "ui_ux.minimap",
         "ui_ux.quest_marker",
@@ -5246,6 +5814,7 @@
         "accessibility.assist_mode",
         "accessibility.colorblind_modes",
         "accessibility.text_scaling",
+        "accessibility.toggle_hold_option",
         "ai.boss_phase_transition",
         "ai.chase",
         "ai.companion_follow",
@@ -5256,6 +5825,7 @@
         "ai.investigate_noise",
         "ai.line_of_sight_detection",
         "ai.patrol",
+        "ai.utility_scoring",
         "camera.camera_lock_on",
         "camera.camera_zoom",
         "camera.cinematic_camera",
@@ -5271,14 +5841,16 @@
         "combat.charged_attack",
         "combat.combo_chain",
         "combat.critical_hit",
+        "combat.damage_over_time",
+        "combat.guard_break",
         "combat.hit_stun",
         "combat.invincibility_frames",
         "combat.knockback",
-        "combat.lock_on_targeting",
         "combat.melee_attack",
         "combat.parry",
         "combat.projectile_reflection",
         "combat.ranged_attack",
+        "combat.reload",
         "combat.shield",
         "combat.stealth_kill",
         "crafting.crafting_queue",
@@ -5307,6 +5879,7 @@
         "meta.daily_challenge",
         "meta.new_game_plus",
         "meta.player_profile_stats",
+        "movement.air_dash",
         "movement.climbing",
         "movement.crouch",
         "movement.dash",
@@ -5332,17 +5905,22 @@
         "narrative.codex_journal",
         "narrative.environmental_storytelling",
         "narrative.reputation_choice",
+        "narrative.reputation_gating",
         "physics.breakable_object",
         "physics.buoyancy",
         "physics.destructible_environment",
         "physics.gravity",
         "physics.low_gravity_zone",
         "physics.moving_platform",
+        "physics.one_way_platform",
         "physics.pendulum_swing",
         "physics.physics_push_pull",
         "physics.ragdoll",
         "physics.wind_force",
+        "platforming.coyote_time",
         "platforming.double_jump",
+        "platforming.drop_through_platform",
+        "platforming.jump_buffering",
         "platforming.ledge_climb",
         "platforming.ledge_grab",
         "platforming.variable_jump_height",
@@ -5354,6 +5932,7 @@
         "procedural_generation.procedural_quests",
         "procedural_generation.procedural_terrain",
         "procedural_generation.random_encounters",
+        "procedural_generation.room_connection_graph",
         "procedural_generation.seeded_generation",
         "procedural_generation.wave_generation",
         "progression.achievement_system",
@@ -5363,6 +5942,7 @@
         "progression.level_up",
         "progression.meta_progression",
         "progression.prestige_reset",
+        "progression.respec",
         "progression.skill_tree",
         "progression.unlockable_abilities",
         "progression.upgrade_shop",
@@ -5382,6 +5962,7 @@
         "rhythm.sync_window",
         "roguelike.curse_modifier",
         "roguelike.permadeath",
+        "roguelike.pick_one_upgrade_choice",
         "roguelike.procedural_floor",
         "roguelike.random_powerups",
         "roguelike.relic_synergy",
@@ -5394,8 +5975,10 @@
         "simulation.traffic_flow",
         "stealth.alert_state",
         "stealth.distraction_throw",
+        "stealth.last_known_position_search",
         "stealth.noise_meter",
         "stealth.shadow_cover",
+        "stealth.visibility_meter",
         "strategy.fog_of_war",
         "strategy.tech_tree",
         "strategy.territory_control",
@@ -5432,6 +6015,8 @@
         "ui_ux.cooldown_indicator",
         "ui_ux.damage_numbers",
         "ui_ux.dialogue_choice",
+        "ui_ux.hit_marker",
+        "ui_ux.interaction_prompt",
         "ui_ux.inventory_grid",
         "ui_ux.minimap",
         "ui_ux.quest_marker",
@@ -5451,6 +6036,7 @@
         "accessibility.assist_mode",
         "accessibility.colorblind_modes",
         "accessibility.text_scaling",
+        "accessibility.toggle_hold_option",
         "ai.boss_phase_transition",
         "ai.chase",
         "ai.companion_follow",
@@ -5461,6 +6047,7 @@
         "ai.investigate_noise",
         "ai.line_of_sight_detection",
         "ai.patrol",
+        "ai.utility_scoring",
         "camera.camera_lock_on",
         "camera.camera_zoom",
         "camera.cinematic_camera",
@@ -5471,11 +6058,14 @@
         "camera.split_screen",
         "camera.third_person_camera",
         "camera.top_down_camera",
+        "combat.aim_down_sights",
         "combat.area_of_effect_attack",
         "combat.block",
         "combat.charged_attack",
         "combat.combo_chain",
         "combat.critical_hit",
+        "combat.damage_over_time",
+        "combat.guard_break",
         "combat.hit_stun",
         "combat.invincibility_frames",
         "combat.knockback",
@@ -5484,6 +6074,7 @@
         "combat.parry",
         "combat.projectile_reflection",
         "combat.ranged_attack",
+        "combat.reload",
         "combat.shield",
         "combat.stealth_kill",
         "crafting.crafting_queue",
@@ -5512,6 +6103,7 @@
         "meta.daily_challenge",
         "meta.new_game_plus",
         "meta.player_profile_stats",
+        "movement.air_dash",
         "movement.climbing",
         "movement.crouch",
         "movement.dash",
@@ -5537,6 +6129,7 @@
         "narrative.codex_journal",
         "narrative.environmental_storytelling",
         "narrative.reputation_choice",
+        "narrative.reputation_gating",
         "physics.breakable_object",
         "physics.buoyancy",
         "physics.destructible_environment",
@@ -5547,7 +6140,9 @@
         "physics.physics_push_pull",
         "physics.ragdoll",
         "physics.wind_force",
+        "platforming.coyote_time",
         "platforming.double_jump",
+        "platforming.jump_buffering",
         "platforming.ledge_climb",
         "platforming.ledge_grab",
         "platforming.variable_jump_height",
@@ -5559,6 +6154,7 @@
         "procedural_generation.procedural_quests",
         "procedural_generation.procedural_terrain",
         "procedural_generation.random_encounters",
+        "procedural_generation.room_connection_graph",
         "procedural_generation.seeded_generation",
         "procedural_generation.wave_generation",
         "progression.achievement_system",
@@ -5568,6 +6164,7 @@
         "progression.level_up",
         "progression.meta_progression",
         "progression.prestige_reset",
+        "progression.respec",
         "progression.skill_tree",
         "progression.unlockable_abilities",
         "progression.upgrade_shop",
@@ -5587,6 +6184,7 @@
         "rhythm.sync_window",
         "roguelike.curse_modifier",
         "roguelike.permadeath",
+        "roguelike.pick_one_upgrade_choice",
         "roguelike.procedural_floor",
         "roguelike.random_powerups",
         "roguelike.relic_synergy",
@@ -5599,8 +6197,10 @@
         "simulation.traffic_flow",
         "stealth.alert_state",
         "stealth.distraction_throw",
+        "stealth.last_known_position_search",
         "stealth.noise_meter",
         "stealth.shadow_cover",
+        "stealth.visibility_meter",
         "strategy.fog_of_war",
         "strategy.tech_tree",
         "strategy.territory_control",
@@ -5631,12 +6231,15 @@
         "traversal.rope_swing",
         "traversal.teleport_blink",
         "traversal.vehicle_mount",
+        "traversal.wall_run",
         "traversal.zipline",
         "ui_ux.accessibility_remap_controls",
         "ui_ux.checkpoint_notification",
         "ui_ux.cooldown_indicator",
         "ui_ux.damage_numbers",
         "ui_ux.dialogue_choice",
+        "ui_ux.hit_marker",
+        "ui_ux.interaction_prompt",
         "ui_ux.inventory_grid",
         "ui_ux.minimap",
         "ui_ux.quest_marker",
@@ -5655,6 +6258,7 @@
     "difficulty": {
       "design": {
         "easy": [
+          "accessibility.toggle_hold_option",
           "movement.climbing",
           "movement.crouch",
           "movement.dash",
@@ -5664,8 +6268,13 @@
           "movement.slide",
           "movement.sprint",
           "movement.stamina_movement",
-          "movement.swimming",
-          "movement.walk"
+          "movement.walk",
+          "platforming.coyote_time",
+          "platforming.drop_through_platform",
+          "platforming.jump_buffering",
+          "puzzle.pressure_plate",
+          "ui_ux.hit_marker",
+          "ui_ux.interaction_prompt"
         ],
         "hard": [
           "ai.boss_phase_transition",
@@ -5677,7 +6286,9 @@
           "ai.flocking",
           "ai.investigate_noise",
           "ai.line_of_sight_detection",
-          "ai.patrol",
+          "ai.utility_scoring",
+          "combat.combo_chain",
+          "combat.stealth_kill",
           "economy.coins",
           "economy.crafting_materials",
           "economy.dynamic_pricing",
@@ -5710,12 +6321,14 @@
           "narrative.codex_journal",
           "narrative.environmental_storytelling",
           "narrative.reputation_choice",
+          "narrative.reputation_gating",
           "procedural_generation.biome_generation",
           "procedural_generation.loot_generation",
           "procedural_generation.procedural_level_rooms",
           "procedural_generation.procedural_quests",
           "procedural_generation.procedural_terrain",
           "procedural_generation.random_encounters",
+          "procedural_generation.room_connection_graph",
           "procedural_generation.seeded_generation",
           "procedural_generation.wave_generation",
           "progression.achievement_system",
@@ -5734,12 +6347,12 @@
           "puzzle.mirror_light_reflection",
           "puzzle.physics_weight_puzzle",
           "puzzle.portal_pair",
-          "puzzle.pressure_plate",
           "puzzle.sequence_memory",
           "puzzle.sliding_block",
           "puzzle.timed_door",
           "roguelike.curse_modifier",
           "roguelike.permadeath",
+          "roguelike.pick_one_upgrade_choice",
           "roguelike.procedural_floor",
           "roguelike.random_powerups",
           "roguelike.relic_synergy",
@@ -5752,6 +6365,7 @@
           "simulation.traffic_flow",
           "stealth.alert_state",
           "stealth.distraction_throw",
+          "stealth.last_known_position_search",
           "stealth.noise_meter",
           "stealth.shadow_cover",
           "strategy.fog_of_war",
@@ -5764,13 +6378,15 @@
           "time.slow_motion",
           "time.time_freeze",
           "time.time_rewind",
-          "time.timed_challenge"
+          "time.timed_challenge",
+          "traversal.wall_run"
         ],
         "medium": [
           "accessibility.adjustable_difficulty",
           "accessibility.assist_mode",
           "accessibility.colorblind_modes",
           "accessibility.text_scaling",
+          "ai.patrol",
           "camera.camera_lock_on",
           "camera.camera_zoom",
           "camera.cinematic_camera",
@@ -5781,11 +6397,13 @@
           "camera.split_screen",
           "camera.third_person_camera",
           "camera.top_down_camera",
+          "combat.aim_down_sights",
           "combat.area_of_effect_attack",
           "combat.block",
           "combat.charged_attack",
-          "combat.combo_chain",
           "combat.critical_hit",
+          "combat.damage_over_time",
+          "combat.guard_break",
           "combat.hit_stun",
           "combat.invincibility_frames",
           "combat.knockback",
@@ -5794,8 +6412,8 @@
           "combat.parry",
           "combat.projectile_reflection",
           "combat.ranged_attack",
+          "combat.reload",
           "combat.shield",
-          "combat.stealth_kill",
           "crafting.crafting_queue",
           "crafting.ingredient_quality",
           "crafting.recipe_crafting",
@@ -5804,12 +6422,15 @@
           "meta.daily_challenge",
           "meta.new_game_plus",
           "meta.player_profile_stats",
+          "movement.air_dash",
+          "movement.swimming",
           "physics.breakable_object",
           "physics.buoyancy",
           "physics.destructible_environment",
           "physics.gravity",
           "physics.low_gravity_zone",
           "physics.moving_platform",
+          "physics.one_way_platform",
           "physics.pendulum_swing",
           "physics.physics_push_pull",
           "physics.ragdoll",
@@ -5820,10 +6441,12 @@
           "platforming.variable_jump_height",
           "platforming.wall_jump",
           "platforming.wall_slide",
+          "progression.respec",
           "rhythm.beat_matching",
           "rhythm.combo_multiplier",
           "rhythm.note_lane",
           "rhythm.sync_window",
+          "stealth.visibility_meter",
           "survival.base_building",
           "survival.day_night_cycle",
           "survival.durability",
@@ -5866,17 +6489,18 @@
       },
       "implementation": {
         "easy": [
+          "camera.screen_shake",
           "movement.climbing",
-          "movement.crouch",
-          "movement.dash",
           "movement.dodge_roll",
           "movement.prone",
           "movement.run",
           "movement.slide",
           "movement.sprint",
           "movement.stamina_movement",
-          "movement.swimming",
-          "movement.walk"
+          "movement.walk",
+          "platforming.coyote_time",
+          "platforming.jump_buffering",
+          "ui_ux.hit_marker"
         ],
         "expert": [
           "multiplayer.asymmetric_roles",
@@ -5900,7 +6524,8 @@
           "ai.flocking",
           "ai.investigate_noise",
           "ai.line_of_sight_detection",
-          "ai.patrol",
+          "ai.utility_scoring",
+          "combat.lock_on_targeting",
           "physics.breakable_object",
           "physics.buoyancy",
           "physics.destructible_environment",
@@ -5917,6 +6542,7 @@
           "procedural_generation.procedural_quests",
           "procedural_generation.procedural_terrain",
           "procedural_generation.random_encounters",
+          "procedural_generation.room_connection_graph",
           "procedural_generation.seeded_generation",
           "procedural_generation.wave_generation",
           "rhythm.beat_matching",
@@ -5929,6 +6555,7 @@
           "simulation.traffic_flow",
           "stealth.alert_state",
           "stealth.distraction_throw",
+          "stealth.last_known_position_search",
           "stealth.noise_meter",
           "stealth.shadow_cover",
           "strategy.fog_of_war",
@@ -5951,6 +6578,7 @@
           "traversal.rope_swing",
           "traversal.teleport_blink",
           "traversal.vehicle_mount",
+          "traversal.wall_run",
           "traversal.zipline",
           "vehicles.drifting",
           "vehicles.fuel",
@@ -5966,29 +6594,33 @@
           "accessibility.assist_mode",
           "accessibility.colorblind_modes",
           "accessibility.text_scaling",
+          "accessibility.toggle_hold_option",
+          "ai.patrol",
           "camera.camera_lock_on",
           "camera.camera_zoom",
           "camera.cinematic_camera",
           "camera.dynamic_fov",
           "camera.first_person_camera",
-          "camera.screen_shake",
           "camera.smooth_follow_camera",
           "camera.split_screen",
           "camera.third_person_camera",
           "camera.top_down_camera",
+          "combat.aim_down_sights",
           "combat.area_of_effect_attack",
           "combat.block",
           "combat.charged_attack",
           "combat.combo_chain",
           "combat.critical_hit",
+          "combat.damage_over_time",
+          "combat.guard_break",
           "combat.hit_stun",
           "combat.invincibility_frames",
           "combat.knockback",
-          "combat.lock_on_targeting",
           "combat.melee_attack",
           "combat.parry",
           "combat.projectile_reflection",
           "combat.ranged_attack",
+          "combat.reload",
           "combat.shield",
           "combat.stealth_kill",
           "crafting.crafting_queue",
@@ -6017,11 +6649,18 @@
           "meta.daily_challenge",
           "meta.new_game_plus",
           "meta.player_profile_stats",
+          "movement.air_dash",
+          "movement.crouch",
+          "movement.dash",
+          "movement.swimming",
           "narrative.branching_dialogue",
           "narrative.codex_journal",
           "narrative.environmental_storytelling",
           "narrative.reputation_choice",
+          "narrative.reputation_gating",
+          "physics.one_way_platform",
           "platforming.double_jump",
+          "platforming.drop_through_platform",
           "platforming.ledge_climb",
           "platforming.ledge_grab",
           "platforming.variable_jump_height",
@@ -6034,6 +6673,7 @@
           "progression.level_up",
           "progression.meta_progression",
           "progression.prestige_reset",
+          "progression.respec",
           "progression.skill_tree",
           "progression.unlockable_abilities",
           "progression.upgrade_shop",
@@ -6049,12 +6689,14 @@
           "puzzle.timed_door",
           "roguelike.curse_modifier",
           "roguelike.permadeath",
+          "roguelike.pick_one_upgrade_choice",
           "roguelike.procedural_floor",
           "roguelike.random_powerups",
           "roguelike.relic_synergy",
           "roguelike.risk_reward_room",
           "roguelike.run_based_progression",
           "roguelike.shop_between_levels",
+          "stealth.visibility_meter",
           "survival.base_building",
           "survival.day_night_cycle",
           "survival.durability",
@@ -6070,6 +6712,7 @@
           "ui_ux.cooldown_indicator",
           "ui_ux.damage_numbers",
           "ui_ux.dialogue_choice",
+          "ui_ux.interaction_prompt",
           "ui_ux.inventory_grid",
           "ui_ux.minimap",
           "ui_ux.quest_marker",
@@ -6078,7 +6721,12 @@
         ]
       },
       "tuning": {
+        "easy": [
+          "accessibility.toggle_hold_option"
+        ],
         "expert": [
+          "ai.utility_scoring",
+          "combat.combo_chain",
           "economy.coins",
           "economy.crafting_materials",
           "economy.dynamic_pricing",
@@ -6095,6 +6743,7 @@
           "procedural_generation.procedural_quests",
           "procedural_generation.procedural_terrain",
           "procedural_generation.random_encounters",
+          "procedural_generation.room_connection_graph",
           "procedural_generation.seeded_generation",
           "procedural_generation.wave_generation",
           "progression.achievement_system",
@@ -6113,6 +6762,7 @@
           "rhythm.sync_window",
           "roguelike.curse_modifier",
           "roguelike.permadeath",
+          "roguelike.pick_one_upgrade_choice",
           "roguelike.procedural_floor",
           "roguelike.random_powerups",
           "roguelike.relic_synergy",
@@ -6145,12 +6795,13 @@
           "ai.flocking",
           "ai.investigate_noise",
           "ai.line_of_sight_detection",
-          "ai.patrol",
+          "combat.aim_down_sights",
           "combat.area_of_effect_attack",
           "combat.block",
           "combat.charged_attack",
-          "combat.combo_chain",
           "combat.critical_hit",
+          "combat.damage_over_time",
+          "combat.guard_break",
           "combat.hit_stun",
           "combat.invincibility_frames",
           "combat.knockback",
@@ -6173,6 +6824,8 @@
           "meta.daily_challenge",
           "meta.new_game_plus",
           "meta.player_profile_stats",
+          "movement.air_dash",
+          "movement.swimming",
           "multiplayer.asymmetric_roles",
           "multiplayer.friendly_fire",
           "multiplayer.local_coop",
@@ -6187,12 +6840,14 @@
           "narrative.codex_journal",
           "narrative.environmental_storytelling",
           "narrative.reputation_choice",
+          "narrative.reputation_gating",
           "physics.breakable_object",
           "physics.buoyancy",
           "physics.destructible_environment",
           "physics.gravity",
           "physics.low_gravity_zone",
           "physics.moving_platform",
+          "physics.one_way_platform",
           "physics.pendulum_swing",
           "physics.physics_push_pull",
           "physics.ragdoll",
@@ -6202,21 +6857,22 @@
           "platforming.ledge_grab",
           "platforming.variable_jump_height",
           "platforming.wall_jump",
-          "platforming.wall_slide",
+          "progression.respec",
           "puzzle.color_matching",
           "puzzle.key_and_lock",
           "puzzle.lever_switch",
           "puzzle.mirror_light_reflection",
           "puzzle.physics_weight_puzzle",
           "puzzle.portal_pair",
-          "puzzle.pressure_plate",
           "puzzle.sequence_memory",
           "puzzle.sliding_block",
           "puzzle.timed_door",
           "stealth.alert_state",
           "stealth.distraction_throw",
+          "stealth.last_known_position_search",
           "stealth.noise_meter",
           "stealth.shadow_cover",
+          "stealth.visibility_meter",
           "survival.base_building",
           "survival.day_night_cycle",
           "survival.durability",
@@ -6236,6 +6892,7 @@
           "traversal.rope_swing",
           "traversal.teleport_blink",
           "traversal.vehicle_mount",
+          "traversal.wall_run",
           "traversal.zipline",
           "vehicles.drifting",
           "vehicles.fuel",
@@ -6251,6 +6908,7 @@
           "accessibility.assist_mode",
           "accessibility.colorblind_modes",
           "accessibility.text_scaling",
+          "ai.patrol",
           "camera.camera_lock_on",
           "camera.camera_zoom",
           "camera.cinematic_camera",
@@ -6261,6 +6919,7 @@
           "camera.split_screen",
           "camera.third_person_camera",
           "camera.top_down_camera",
+          "combat.reload",
           "crafting.crafting_queue",
           "crafting.ingredient_quality",
           "crafting.recipe_crafting",
@@ -6274,13 +6933,19 @@
           "movement.slide",
           "movement.sprint",
           "movement.stamina_movement",
-          "movement.swimming",
           "movement.walk",
+          "platforming.coyote_time",
+          "platforming.drop_through_platform",
+          "platforming.jump_buffering",
+          "platforming.wall_slide",
+          "puzzle.pressure_plate",
           "ui_ux.accessibility_remap_controls",
           "ui_ux.checkpoint_notification",
           "ui_ux.cooldown_indicator",
           "ui_ux.damage_numbers",
           "ui_ux.dialogue_choice",
+          "ui_ux.hit_marker",
+          "ui_ux.interaction_prompt",
           "ui_ux.inventory_grid",
           "ui_ux.minimap",
           "ui_ux.quest_marker",
@@ -6297,6 +6962,7 @@
         "strategy.unit_counter_system"
       ],
       "action": [
+        "accessibility.toggle_hold_option",
         "ai.boss_phase_transition",
         "ai.chase",
         "ai.companion_follow",
@@ -6307,6 +6973,7 @@
         "ai.investigate_noise",
         "ai.line_of_sight_detection",
         "ai.patrol",
+        "ai.utility_scoring",
         "camera.camera_lock_on",
         "camera.camera_zoom",
         "camera.cinematic_camera",
@@ -6317,11 +6984,14 @@
         "camera.split_screen",
         "camera.third_person_camera",
         "camera.top_down_camera",
+        "combat.aim_down_sights",
         "combat.area_of_effect_attack",
         "combat.block",
         "combat.charged_attack",
         "combat.combo_chain",
         "combat.critical_hit",
+        "combat.damage_over_time",
+        "combat.guard_break",
         "combat.hit_stun",
         "combat.invincibility_frames",
         "combat.knockback",
@@ -6330,10 +7000,11 @@
         "combat.parry",
         "combat.projectile_reflection",
         "combat.ranged_attack",
+        "combat.reload",
         "combat.shield",
         "combat.stealth_kill",
+        "movement.air_dash",
         "movement.climbing",
-        "movement.crouch",
         "movement.dash",
         "movement.dodge_roll",
         "movement.prone",
@@ -6341,8 +7012,14 @@
         "movement.slide",
         "movement.sprint",
         "movement.stamina_movement",
-        "movement.swimming",
         "movement.walk",
+        "physics.one_way_platform",
+        "platforming.coyote_time",
+        "platforming.double_jump",
+        "platforming.drop_through_platform",
+        "platforming.jump_buffering",
+        "platforming.wall_jump",
+        "platforming.wall_slide",
         "progression.achievement_system",
         "progression.crafting_unlocks",
         "progression.equipment_rarity",
@@ -6350,6 +7027,7 @@
         "progression.level_up",
         "progression.meta_progression",
         "progression.prestige_reset",
+        "progression.respec",
         "progression.skill_tree",
         "progression.unlockable_abilities",
         "progression.upgrade_shop",
@@ -6359,6 +7037,7 @@
         "rhythm.sync_window",
         "roguelike.curse_modifier",
         "roguelike.permadeath",
+        "roguelike.pick_one_upgrade_choice",
         "roguelike.procedural_floor",
         "roguelike.random_powerups",
         "roguelike.relic_synergy",
@@ -6367,6 +7046,7 @@
         "roguelike.shop_between_levels",
         "stealth.alert_state",
         "stealth.distraction_throw",
+        "stealth.last_known_position_search",
         "stealth.noise_meter",
         "stealth.shadow_cover",
         "time.cooldown_time",
@@ -6376,11 +7056,14 @@
         "time.time_freeze",
         "time.time_rewind",
         "time.timed_challenge",
+        "traversal.wall_run",
         "ui_ux.accessibility_remap_controls",
         "ui_ux.checkpoint_notification",
         "ui_ux.cooldown_indicator",
         "ui_ux.damage_numbers",
         "ui_ux.dialogue_choice",
+        "ui_ux.hit_marker",
+        "ui_ux.interaction_prompt",
         "ui_ux.inventory_grid",
         "ui_ux.minimap",
         "ui_ux.quest_marker",
@@ -6388,16 +7071,17 @@
         "ui_ux.tutorial_prompt"
       ],
       "adventure": [
+        "accessibility.toggle_hold_option",
         "camera.camera_lock_on",
         "camera.camera_zoom",
         "camera.cinematic_camera",
         "camera.dynamic_fov",
         "camera.first_person_camera",
-        "camera.screen_shake",
         "camera.smooth_follow_camera",
         "camera.split_screen",
         "camera.third_person_camera",
         "camera.top_down_camera",
+        "combat.lock_on_targeting",
         "horror.hiding",
         "horror.jump_scare_trigger",
         "horror.light_resource",
@@ -6408,7 +7092,6 @@
         "horror.sound_lure",
         "movement.climbing",
         "movement.crouch",
-        "movement.dash",
         "movement.dodge_roll",
         "movement.prone",
         "movement.run",
@@ -6421,6 +7104,8 @@
         "narrative.codex_journal",
         "narrative.environmental_storytelling",
         "narrative.reputation_choice",
+        "narrative.reputation_gating",
+        "procedural_generation.room_connection_graph",
         "puzzle.color_matching",
         "puzzle.key_and_lock",
         "puzzle.lever_switch",
@@ -6440,19 +7125,26 @@
         "traversal.rope_swing",
         "traversal.teleport_blink",
         "traversal.vehicle_mount",
-        "traversal.zipline"
+        "traversal.zipline",
+        "ui_ux.interaction_prompt"
       ],
       "all_genres": [
         "accessibility.adjustable_difficulty",
         "accessibility.assist_mode",
         "accessibility.colorblind_modes",
-        "accessibility.text_scaling"
+        "accessibility.text_scaling",
+        "accessibility.toggle_hold_option"
       ],
       "arcade": [
+        "camera.screen_shake",
         "meta.collection_log",
         "meta.daily_challenge",
         "meta.new_game_plus",
         "meta.player_profile_stats"
+      ],
+      "beat_em_up": [
+        "combat.combo_chain",
+        "combat.melee_attack"
       ],
       "cooperative": [
         "multiplayer.asymmetric_roles",
@@ -6469,12 +7161,16 @@
       "deckbuilder": [
         "roguelike.curse_modifier",
         "roguelike.permadeath",
+        "roguelike.pick_one_upgrade_choice",
         "roguelike.procedural_floor",
         "roguelike.random_powerups",
         "roguelike.relic_synergy",
         "roguelike.risk_reward_room",
         "roguelike.run_based_progression",
         "roguelike.shop_between_levels"
+      ],
+      "dungeon_crawler": [
+        "procedural_generation.room_connection_graph"
       ],
       "educational": [
         "accessibility.adjustable_difficulty",
@@ -6489,10 +7185,12 @@
         "puzzle.mirror_light_reflection",
         "puzzle.physics_weight_puzzle",
         "puzzle.portal_pair",
-        "puzzle.pressure_plate",
         "puzzle.sequence_memory",
         "puzzle.sliding_block",
         "puzzle.timed_door"
+      ],
+      "exploration": [
+        "movement.swimming"
       ],
       "family": [
         "accessibility.adjustable_difficulty",
@@ -6506,18 +7204,17 @@
         "combat.charged_attack",
         "combat.combo_chain",
         "combat.critical_hit",
+        "combat.guard_break",
         "combat.hit_stun",
         "combat.invincibility_frames",
         "combat.knockback",
-        "combat.lock_on_targeting",
         "combat.melee_attack",
         "combat.parry",
         "combat.projectile_reflection",
-        "combat.ranged_attack",
-        "combat.shield",
-        "combat.stealth_kill"
+        "combat.shield"
       ],
       "horror": [
+        "ai.patrol",
         "horror.hiding",
         "horror.jump_scare_trigger",
         "horror.light_resource",
@@ -6526,6 +7223,8 @@
         "horror.safe_room",
         "horror.sanity_meter",
         "horror.sound_lure",
+        "stealth.last_known_position_search",
+        "stealth.visibility_meter",
         "survival.base_building",
         "survival.day_night_cycle",
         "survival.durability",
@@ -6538,16 +7237,23 @@
         "survival.thirst"
       ],
       "immersive_sim": [
+        "ai.utility_scoring",
+        "combat.stealth_kill",
+        "puzzle.pressure_plate",
         "stealth.alert_state",
         "stealth.distraction_throw",
         "stealth.noise_meter",
-        "stealth.shadow_cover"
+        "stealth.shadow_cover",
+        "stealth.visibility_meter"
       ],
       "live_service": [
         "meta.collection_log",
         "meta.daily_challenge",
         "meta.new_game_plus",
         "meta.player_profile_stats"
+      ],
+      "looter": [
+        "economy.loot_table"
       ],
       "management": [
         "simulation.needs_simulation",
@@ -6556,7 +7262,13 @@
         "simulation.traffic_flow"
       ],
       "metroidvania": [
+        "movement.air_dash",
+        "movement.dash",
+        "physics.one_way_platform",
+        "platforming.coyote_time",
         "platforming.double_jump",
+        "platforming.drop_through_platform",
+        "platforming.jump_buffering",
         "platforming.ledge_climb",
         "platforming.ledge_grab",
         "platforming.variable_jump_height",
@@ -6570,6 +7282,7 @@
         "rhythm.sync_window"
       ],
       "open_world": [
+        "procedural_generation.procedural_terrain",
         "traversal.gliding",
         "traversal.grappling_hook",
         "traversal.jetpack",
@@ -6589,6 +7302,9 @@
         "vehicles.vehicle_braking",
         "vehicles.vehicle_damage"
       ],
+      "parkour": [
+        "traversal.wall_run"
+      ],
       "party": [
         "multiplayer.asymmetric_roles",
         "multiplayer.friendly_fire",
@@ -6602,6 +7318,9 @@
         "multiplayer.team_objective"
       ],
       "platformer": [
+        "camera.screen_shake",
+        "combat.ranged_attack",
+        "movement.air_dash",
         "movement.climbing",
         "movement.crouch",
         "movement.dash",
@@ -6609,16 +7328,20 @@
         "movement.prone",
         "movement.run",
         "movement.slide",
-        "movement.sprint",
         "movement.stamina_movement",
         "movement.swimming",
         "movement.walk",
+        "physics.one_way_platform",
+        "platforming.coyote_time",
         "platforming.double_jump",
+        "platforming.drop_through_platform",
+        "platforming.jump_buffering",
         "platforming.ledge_climb",
         "platforming.ledge_grab",
         "platforming.variable_jump_height",
         "platforming.wall_jump",
         "platforming.wall_slide",
+        "puzzle.pressure_plate",
         "traversal.gliding",
         "traversal.grappling_hook",
         "traversal.jetpack",
@@ -6628,15 +7351,13 @@
         "traversal.rope_swing",
         "traversal.teleport_blink",
         "traversal.vehicle_mount",
+        "traversal.wall_run",
         "traversal.zipline"
       ],
       "precision_platformer": [
-        "platforming.double_jump",
         "platforming.ledge_climb",
         "platforming.ledge_grab",
-        "platforming.variable_jump_height",
-        "platforming.wall_jump",
-        "platforming.wall_slide"
+        "platforming.variable_jump_height"
       ],
       "puzzle": [
         "physics.breakable_object",
@@ -6697,16 +7418,18 @@
         "rhythm.sync_window"
       ],
       "roguelike": [
+        "economy.loot_table",
         "meta.collection_log",
         "meta.daily_challenge",
         "meta.new_game_plus",
         "meta.player_profile_stats",
+        "movement.dash",
         "procedural_generation.biome_generation",
         "procedural_generation.loot_generation",
         "procedural_generation.procedural_level_rooms",
         "procedural_generation.procedural_quests",
-        "procedural_generation.procedural_terrain",
         "procedural_generation.random_encounters",
+        "procedural_generation.room_connection_graph",
         "procedural_generation.seeded_generation",
         "procedural_generation.wave_generation",
         "progression.achievement_system",
@@ -6716,11 +7439,13 @@
         "progression.level_up",
         "progression.meta_progression",
         "progression.prestige_reset",
+        "progression.respec",
         "progression.skill_tree",
         "progression.unlockable_abilities",
         "progression.upgrade_shop",
         "roguelike.curse_modifier",
         "roguelike.permadeath",
+        "roguelike.pick_one_upgrade_choice",
         "roguelike.procedural_floor",
         "roguelike.random_powerups",
         "roguelike.relic_synergy",
@@ -6734,6 +7459,8 @@
         "combat.charged_attack",
         "combat.combo_chain",
         "combat.critical_hit",
+        "combat.damage_over_time",
+        "combat.guard_break",
         "combat.hit_stun",
         "combat.invincibility_frames",
         "combat.knockback",
@@ -6762,6 +7489,7 @@
         "narrative.codex_journal",
         "narrative.environmental_storytelling",
         "narrative.reputation_choice",
+        "narrative.reputation_gating",
         "progression.achievement_system",
         "progression.crafting_unlocks",
         "progression.equipment_rarity",
@@ -6769,6 +7497,7 @@
         "progression.level_up",
         "progression.meta_progression",
         "progression.prestige_reset",
+        "progression.respec",
         "progression.skill_tree",
         "progression.unlockable_abilities",
         "progression.upgrade_shop",
@@ -6777,6 +7506,8 @@
         "ui_ux.cooldown_indicator",
         "ui_ux.damage_numbers",
         "ui_ux.dialogue_choice",
+        "ui_ux.hit_marker",
+        "ui_ux.interaction_prompt",
         "ui_ux.inventory_grid",
         "ui_ux.minimap",
         "ui_ux.quest_marker",
@@ -6822,6 +7553,13 @@
         "survival.thirst"
       ],
       "shooter": [
+        "accessibility.toggle_hold_option",
+        "camera.screen_shake",
+        "combat.aim_down_sights",
+        "combat.ranged_attack",
+        "combat.reload",
+        "movement.crouch",
+        "movement.sprint",
         "multiplayer.asymmetric_roles",
         "multiplayer.friendly_fire",
         "multiplayer.local_coop",
@@ -6831,7 +7569,9 @@
         "multiplayer.revive_teammate",
         "multiplayer.role_swap",
         "multiplayer.shared_resource_pool",
-        "multiplayer.team_objective"
+        "multiplayer.team_objective",
+        "traversal.wall_run",
+        "ui_ux.hit_marker"
       ],
       "simulation": [
         "ai.boss_phase_transition",
@@ -6843,13 +7583,12 @@
         "ai.flocking",
         "ai.investigate_noise",
         "ai.line_of_sight_detection",
-        "ai.patrol",
+        "ai.utility_scoring",
         "camera.camera_lock_on",
         "camera.camera_zoom",
         "camera.cinematic_camera",
         "camera.dynamic_fov",
         "camera.first_person_camera",
-        "camera.screen_shake",
         "camera.smooth_follow_camera",
         "camera.split_screen",
         "camera.third_person_camera",
@@ -6859,11 +7598,11 @@
         "economy.dynamic_pricing",
         "economy.gacha_pull",
         "economy.idle_income",
-        "economy.loot_table",
         "economy.repair_cost",
         "economy.resource_conversion",
         "economy.shop",
         "economy.trading",
+        "narrative.reputation_gating",
         "physics.breakable_object",
         "physics.buoyancy",
         "physics.destructible_environment",
@@ -6874,10 +7613,12 @@
         "physics.physics_push_pull",
         "physics.ragdoll",
         "physics.wind_force",
+        "procedural_generation.procedural_terrain",
         "simulation.needs_simulation",
         "simulation.population_model",
         "simulation.systemic_weather",
         "simulation.traffic_flow",
+        "ui_ux.interaction_prompt",
         "vehicles.drifting",
         "vehicles.fuel",
         "vehicles.suspension_physics",
@@ -6887,11 +7628,21 @@
         "vehicles.vehicle_braking",
         "vehicles.vehicle_damage"
       ],
+      "soulslike": [
+        "combat.block",
+        "combat.lock_on_targeting",
+        "combat.parry"
+      ],
       "stealth": [
+        "ai.patrol",
+        "combat.stealth_kill",
+        "movement.crouch",
         "stealth.alert_state",
         "stealth.distraction_throw",
+        "stealth.last_known_position_search",
         "stealth.noise_meter",
-        "stealth.shadow_cover"
+        "stealth.shadow_cover",
+        "stealth.visibility_meter"
       ],
       "strategy": [
         "ai.boss_phase_transition",
@@ -6904,16 +7655,19 @@
         "ai.investigate_noise",
         "ai.line_of_sight_detection",
         "ai.patrol",
+        "ai.utility_scoring",
+        "combat.damage_over_time",
         "economy.coins",
         "economy.crafting_materials",
         "economy.dynamic_pricing",
         "economy.gacha_pull",
         "economy.idle_income",
-        "economy.loot_table",
         "economy.repair_cost",
         "economy.resource_conversion",
         "economy.shop",
         "economy.trading",
+        "progression.respec",
+        "progression.skill_tree",
         "strategy.fog_of_war",
         "strategy.tech_tree",
         "strategy.territory_control",
@@ -6930,10 +7684,14 @@
         "ui_ux.tutorial_prompt"
       ],
       "survival": [
+        "combat.aim_down_sights",
+        "combat.damage_over_time",
+        "combat.reload",
         "crafting.crafting_queue",
         "crafting.ingredient_quality",
         "crafting.recipe_crafting",
         "crafting.workbench",
+        "economy.loot_table",
         "horror.hiding",
         "horror.jump_scare_trigger",
         "horror.light_resource",
@@ -6942,6 +7700,8 @@
         "horror.safe_room",
         "horror.sanity_meter",
         "horror.sound_lure",
+        "movement.sprint",
+        "movement.swimming",
         "procedural_generation.biome_generation",
         "procedural_generation.loot_generation",
         "procedural_generation.procedural_level_rooms",
@@ -6974,6 +7734,7 @@
         "accessibility.assist_mode",
         "accessibility.colorblind_modes",
         "accessibility.text_scaling",
+        "accessibility.toggle_hold_option",
         "ai.boss_phase_transition",
         "ai.chase",
         "ai.companion_follow",
@@ -6984,6 +7745,7 @@
         "ai.investigate_noise",
         "ai.line_of_sight_detection",
         "ai.patrol",
+        "ai.utility_scoring",
         "camera.camera_lock_on",
         "camera.camera_zoom",
         "camera.cinematic_camera",
@@ -6994,11 +7756,14 @@
         "camera.split_screen",
         "camera.third_person_camera",
         "camera.top_down_camera",
+        "combat.aim_down_sights",
         "combat.area_of_effect_attack",
         "combat.block",
         "combat.charged_attack",
         "combat.combo_chain",
         "combat.critical_hit",
+        "combat.damage_over_time",
+        "combat.guard_break",
         "combat.hit_stun",
         "combat.invincibility_frames",
         "combat.knockback",
@@ -7007,6 +7772,7 @@
         "combat.parry",
         "combat.projectile_reflection",
         "combat.ranged_attack",
+        "combat.reload",
         "combat.shield",
         "combat.stealth_kill",
         "crafting.crafting_queue",
@@ -7035,6 +7801,7 @@
         "meta.daily_challenge",
         "meta.new_game_plus",
         "meta.player_profile_stats",
+        "movement.air_dash",
         "movement.climbing",
         "movement.crouch",
         "movement.dash",
@@ -7060,17 +7827,22 @@
         "narrative.codex_journal",
         "narrative.environmental_storytelling",
         "narrative.reputation_choice",
+        "narrative.reputation_gating",
         "physics.breakable_object",
         "physics.buoyancy",
         "physics.destructible_environment",
         "physics.gravity",
         "physics.low_gravity_zone",
         "physics.moving_platform",
+        "physics.one_way_platform",
         "physics.pendulum_swing",
         "physics.physics_push_pull",
         "physics.ragdoll",
         "physics.wind_force",
+        "platforming.coyote_time",
         "platforming.double_jump",
+        "platforming.drop_through_platform",
+        "platforming.jump_buffering",
         "platforming.ledge_climb",
         "platforming.ledge_grab",
         "platforming.variable_jump_height",
@@ -7082,6 +7854,7 @@
         "procedural_generation.procedural_quests",
         "procedural_generation.procedural_terrain",
         "procedural_generation.random_encounters",
+        "procedural_generation.room_connection_graph",
         "procedural_generation.seeded_generation",
         "procedural_generation.wave_generation",
         "progression.achievement_system",
@@ -7091,6 +7864,7 @@
         "progression.level_up",
         "progression.meta_progression",
         "progression.prestige_reset",
+        "progression.respec",
         "progression.skill_tree",
         "progression.unlockable_abilities",
         "progression.upgrade_shop",
@@ -7110,6 +7884,7 @@
         "rhythm.sync_window",
         "roguelike.curse_modifier",
         "roguelike.permadeath",
+        "roguelike.pick_one_upgrade_choice",
         "roguelike.procedural_floor",
         "roguelike.random_powerups",
         "roguelike.relic_synergy",
@@ -7122,8 +7897,10 @@
         "simulation.traffic_flow",
         "stealth.alert_state",
         "stealth.distraction_throw",
+        "stealth.last_known_position_search",
         "stealth.noise_meter",
         "stealth.shadow_cover",
+        "stealth.visibility_meter",
         "strategy.fog_of_war",
         "strategy.tech_tree",
         "strategy.territory_control",
@@ -7154,12 +7931,15 @@
         "traversal.rope_swing",
         "traversal.teleport_blink",
         "traversal.vehicle_mount",
+        "traversal.wall_run",
         "traversal.zipline",
         "ui_ux.accessibility_remap_controls",
         "ui_ux.checkpoint_notification",
         "ui_ux.cooldown_indicator",
         "ui_ux.damage_numbers",
         "ui_ux.dialogue_choice",
+        "ui_ux.hit_marker",
+        "ui_ux.interaction_prompt",
         "ui_ux.inventory_grid",
         "ui_ux.minimap",
         "ui_ux.quest_marker",
@@ -7181,7 +7961,17 @@
         "accessibility.assist_mode",
         "accessibility.colorblind_modes",
         "accessibility.text_scaling",
-        "ui_ux.accessibility_remap_controls"
+        "accessibility.toggle_hold_option",
+        "camera.screen_shake",
+        "combat.aim_down_sights",
+        "combat.lock_on_targeting",
+        "movement.crouch",
+        "movement.sprint",
+        "platforming.jump_buffering",
+        "stealth.visibility_meter",
+        "ui_ux.accessibility_remap_controls",
+        "ui_ux.hit_marker",
+        "ui_ux.interaction_prompt"
       ],
       "achievement": [
         "progression.achievement_system"
@@ -7198,8 +7988,7 @@
         "ai.flee",
         "ai.flocking",
         "ai.investigate_noise",
-        "ai.line_of_sight_detection",
-        "ai.patrol"
+        "ai.line_of_sight_detection"
       ],
       "ai": [
         "ai.boss_phase_transition",
@@ -7211,10 +8000,28 @@
         "ai.flocking",
         "ai.investigate_noise",
         "ai.line_of_sight_detection",
-        "ai.patrol"
+        "ai.patrol",
+        "ai.utility_scoring",
+        "stealth.last_known_position_search"
+      ],
+      "ai_awareness": [
+        "combat.stealth_kill"
+      ],
+      "aiming": [
+        "combat.aim_down_sights",
+        "combat.lock_on_targeting",
+        "combat.ranged_attack"
+      ],
+      "air_control": [
+        "movement.air_dash",
+        "platforming.double_jump"
       ],
       "alert": [
         "stealth.alert_state"
+      ],
+      "ammo": [
+        "combat.ranged_attack",
+        "combat.reload"
       ],
       "area": [
         "combat.area_of_effect_attack"
@@ -7240,14 +8047,10 @@
         "ai.flee",
         "ai.flocking",
         "ai.investigate_noise",
-        "ai.line_of_sight_detection",
-        "ai.patrol"
+        "ai.line_of_sight_detection"
       ],
       "biome": [
         "procedural_generation.biome_generation"
-      ],
-      "block": [
-        "combat.block"
       ],
       "boss": [
         "ai.boss_phase_transition"
@@ -7258,14 +8061,18 @@
       "breakable": [
         "physics.breakable_object"
       ],
+      "buildcraft": [
+        "progression.respec",
+        "progression.skill_tree"
+      ],
       "buoyancy": [
+        "movement.swimming",
         "physics.buoyancy"
       ],
       "burst_movement": [
         "movement.dash",
         "movement.dodge_roll",
-        "movement.slide",
-        "movement.sprint"
+        "movement.slide"
       ],
       "camera": [
         "camera.camera_lock_on",
@@ -7277,7 +8084,12 @@
         "camera.smooth_follow_camera",
         "camera.split_screen",
         "camera.third_person_camera",
-        "camera.top_down_camera"
+        "camera.top_down_camera",
+        "combat.aim_down_sights",
+        "combat.lock_on_targeting"
+      ],
+      "cancel": [
+        "combat.combo_chain"
       ],
       "charged": [
         "combat.charged_attack"
@@ -7292,7 +8104,14 @@
         "narrative.branching_dialogue",
         "narrative.codex_journal",
         "narrative.environmental_storytelling",
-        "narrative.reputation_choice"
+        "narrative.reputation_choice",
+        "roguelike.pick_one_upgrade_choice"
+      ],
+      "choices": [
+        "narrative.reputation_gating"
+      ],
+      "chunks": [
+        "procedural_generation.procedural_terrain"
       ],
       "cinematic": [
         "camera.cinematic_camera"
@@ -7309,6 +8128,11 @@
       "collection": [
         "meta.collection_log"
       ],
+      "collision": [
+        "movement.crouch",
+        "physics.one_way_platform",
+        "platforming.drop_through_platform"
+      ],
       "color": [
         "puzzle.color_matching"
       ],
@@ -7316,11 +8140,14 @@
         "accessibility.colorblind_modes"
       ],
       "combat": [
+        "combat.aim_down_sights",
         "combat.area_of_effect_attack",
         "combat.block",
         "combat.charged_attack",
         "combat.combo_chain",
         "combat.critical_hit",
+        "combat.damage_over_time",
+        "combat.guard_break",
         "combat.hit_stun",
         "combat.invincibility_frames",
         "combat.knockback",
@@ -7329,13 +8156,16 @@
         "combat.parry",
         "combat.projectile_reflection",
         "combat.ranged_attack",
+        "combat.reload",
         "combat.shield",
         "combat.stealth_kill"
       ],
       "combat_control": [
         "combat.hit_stun",
-        "combat.knockback",
-        "combat.lock_on_targeting"
+        "combat.knockback"
+      ],
+      "combat_feedback": [
+        "ui_ux.hit_marker"
       ],
       "combo": [
         "combat.combo_chain",
@@ -7349,7 +8179,6 @@
         "procedural_generation.loot_generation",
         "procedural_generation.procedural_level_rooms",
         "procedural_generation.procedural_quests",
-        "procedural_generation.procedural_terrain",
         "procedural_generation.random_encounters",
         "procedural_generation.seeded_generation",
         "procedural_generation.wave_generation"
@@ -7366,18 +8195,15 @@
       ],
       "controls": [
         "movement.climbing",
-        "movement.crouch",
-        "movement.dash",
         "movement.dodge_roll",
         "movement.prone",
         "movement.run",
         "movement.slide",
-        "movement.sprint",
         "movement.stamina_movement",
-        "movement.swimming",
         "movement.walk"
       ],
       "cooldown": [
+        "movement.dash",
         "time.cooldown_time",
         "ui_ux.cooldown_indicator"
       ],
@@ -7393,6 +8219,9 @@
         "multiplayer.shared_resource_pool",
         "multiplayer.team_objective"
       ],
+      "counterplay": [
+        "combat.parry"
+      ],
       "cover": [
         "ai.cover_seeking"
       ],
@@ -7407,9 +8236,6 @@
       "critical": [
         "combat.critical_hit"
       ],
-      "crouch": [
-        "movement.crouch"
-      ],
       "curse": [
         "roguelike.curse_modifier"
       ],
@@ -7417,14 +8243,24 @@
         "meta.daily_challenge"
       ],
       "damage": [
+        "combat.damage_over_time",
         "ui_ux.damage_numbers"
       ],
+      "damage_reduction": [
+        "combat.block"
+      ],
       "dash": [
-        "movement.dash"
+        "movement.air_dash"
       ],
       "day": [
         "survival.day_night_cycle",
         "time.day_night_schedule"
+      ],
+      "debugging": [
+        "ai.utility_scoring"
+      ],
+      "decision_model": [
+        "ai.utility_scoring"
       ],
       "defense": [
         "combat.block",
@@ -7432,6 +8268,9 @@
         "combat.parry",
         "combat.projectile_reflection",
         "combat.shield"
+      ],
+      "defense_counter": [
+        "combat.guard_break"
       ],
       "destructible": [
         "physics.destructible_environment"
@@ -7450,9 +8289,6 @@
       ],
       "dodge": [
         "movement.dodge_roll"
-      ],
-      "double": [
-        "platforming.double_jump"
       ],
       "drifting": [
         "vehicles.drifting"
@@ -7482,13 +8318,20 @@
       "environmental": [
         "narrative.environmental_storytelling"
       ],
+      "environmental_locomotion": [
+        "movement.swimming"
+      ],
       "equipment": [
         "progression.equipment_rarity"
       ],
       "experience": [
         "progression.experience_points"
       ],
+      "fall_control": [
+        "platforming.wall_slide"
+      ],
       "feedback": [
+        "camera.screen_shake",
         "ui_ux.accessibility_remap_controls",
         "ui_ux.checkpoint_notification",
         "ui_ux.cooldown_indicator",
@@ -7512,6 +8355,10 @@
       "fog": [
         "strategy.fog_of_war"
       ],
+      "forgiveness": [
+        "platforming.coyote_time",
+        "platforming.double_jump"
+      ],
       "friendly": [
         "multiplayer.friendly_fire"
       ],
@@ -7521,14 +8368,25 @@
       "gacha": [
         "economy.gacha_pull"
       ],
+      "gating": [
+        "narrative.reputation_gating"
+      ],
       "gliding": [
         "traversal.gliding"
+      ],
+      "graph": [
+        "procedural_generation.room_connection_graph",
+        "progression.skill_tree"
       ],
       "grappling": [
         "traversal.grappling_hook"
       ],
       "gravity": [
         "physics.gravity"
+      ],
+      "guard": [
+        "combat.block",
+        "combat.guard_break"
       ],
       "health": [
         "survival.health"
@@ -7538,6 +8396,12 @@
       ],
       "hit": [
         "combat.hit_stun"
+      ],
+      "hit_confirm": [
+        "ui_ux.hit_marker"
+      ],
+      "hitbox": [
+        "combat.melee_attack"
       ],
       "horror": [
         "horror.hiding",
@@ -7552,11 +8416,32 @@
       "hunger": [
         "survival.hunger"
       ],
+      "i_frames": [
+        "movement.dash"
+      ],
       "idle": [
         "economy.idle_income"
       ],
+      "impact": [
+        "camera.screen_shake"
+      ],
       "ingredient": [
         "crafting.ingredient_quality"
+      ],
+      "input": [
+        "accessibility.toggle_hold_option",
+        "platforming.drop_through_platform",
+        "ui_ux.interaction_prompt"
+      ],
+      "input_buffer": [
+        "combat.combo_chain",
+        "platforming.jump_buffering"
+      ],
+      "input_timing": [
+        "platforming.coyote_time"
+      ],
+      "interaction": [
+        "ui_ux.interaction_prompt"
       ],
       "interface": [
         "ui_ux.accessibility_remap_controls",
@@ -7590,6 +8475,10 @@
       "jump": [
         "horror.jump_scare_trigger"
       ],
+      "jump_assist": [
+        "platforming.coyote_time",
+        "platforming.jump_buffering"
+      ],
       "key": [
         "puzzle.key_and_lock"
       ],
@@ -7606,6 +8495,9 @@
       "level": [
         "progression.level_up"
       ],
+      "level_design": [
+        "procedural_generation.room_connection_graph"
+      ],
       "lever": [
         "puzzle.lever_switch"
       ],
@@ -7621,15 +8513,11 @@
       "local": [
         "multiplayer.local_coop"
       ],
-      "lock": [
-        "combat.lock_on_targeting"
-      ],
       "locomotion": [
-        "movement.crouch",
         "movement.prone",
         "movement.run",
+        "movement.sprint",
         "movement.stamina_movement",
-        "movement.swimming",
         "movement.walk",
         "traversal.gliding",
         "traversal.grappling_hook",
@@ -7656,6 +8544,9 @@
       "melee": [
         "combat.melee_attack"
       ],
+      "memory": [
+        "stealth.last_known_position_search"
+      ],
       "meta": [
         "meta.collection_log",
         "meta.daily_challenge",
@@ -7671,22 +8562,18 @@
       ],
       "mobility": [
         "movement.climbing",
-        "movement.crouch",
         "movement.dash",
         "movement.dodge_roll",
         "movement.prone",
         "movement.run",
         "movement.slide",
-        "movement.sprint",
         "movement.stamina_movement",
-        "movement.swimming",
         "movement.walk",
         "platforming.double_jump",
         "platforming.ledge_climb",
         "platforming.ledge_grab",
         "platforming.variable_jump_height",
         "platforming.wall_jump",
-        "platforming.wall_slide",
         "traversal.gliding",
         "traversal.grappling_hook",
         "traversal.jetpack",
@@ -7698,8 +8585,15 @@
         "traversal.vehicle_mount",
         "traversal.zipline"
       ],
+      "momentum": [
+        "traversal.wall_run"
+      ],
       "monster": [
         "horror.monster_patrol"
+      ],
+      "movement": [
+        "movement.air_dash",
+        "movement.crouch"
       ],
       "moving": [
         "physics.moving_platform"
@@ -7720,9 +8614,11 @@
         "narrative.branching_dialogue",
         "narrative.codex_journal",
         "narrative.environmental_storytelling",
-        "narrative.reputation_choice"
+        "narrative.reputation_choice",
+        "narrative.reputation_gating"
       ],
       "navigation": [
+        "ai.patrol",
         "traversal.gliding",
         "traversal.grappling_hook",
         "traversal.jetpack",
@@ -7741,6 +8637,7 @@
         "meta.new_game_plus"
       ],
       "noise": [
+        "movement.sprint",
         "stealth.noise_meter"
       ],
       "note": [
@@ -7749,29 +8646,32 @@
       "offense": [
         "combat.area_of_effect_attack",
         "combat.charged_attack",
-        "combat.combo_chain",
-        "combat.critical_hit",
-        "combat.melee_attack",
-        "combat.ranged_attack",
-        "combat.stealth_kill"
+        "combat.critical_hit"
       ],
       "online": [
         "multiplayer.online_coop"
       ],
       "oxygen": [
+        "movement.swimming",
         "survival.oxygen"
       ],
-      "parkour": [
-        "traversal.parkour_vault"
+      "pace": [
+        "movement.sprint"
       ],
-      "parry": [
-        "combat.parry"
+      "parkour": [
+        "traversal.parkour_vault",
+        "traversal.wall_run"
       ],
       "patrol": [
         "ai.patrol"
       ],
       "pendulum": [
         "physics.pendulum_swing"
+      ],
+      "perception": [
+        "ai.patrol",
+        "stealth.last_known_position_search",
+        "stealth.visibility_meter"
       ],
       "permadeath": [
         "roguelike.permadeath"
@@ -7783,11 +8683,13 @@
         "physics.gravity",
         "physics.low_gravity_zone",
         "physics.moving_platform",
+        "physics.one_way_platform",
         "physics.pendulum_swing",
         "physics.physics_push_pull",
         "physics.ragdoll",
         "physics.wind_force",
-        "puzzle.physics_weight_puzzle"
+        "puzzle.physics_weight_puzzle",
+        "puzzle.pressure_plate"
       ],
       "ping": [
         "multiplayer.ping_system"
@@ -7797,6 +8699,16 @@
         "strategy.tech_tree",
         "strategy.territory_control",
         "strategy.unit_counter_system"
+      ],
+      "platforming": [
+        "movement.air_dash",
+        "physics.one_way_platform",
+        "platforming.coyote_time",
+        "platforming.double_jump",
+        "platforming.drop_through_platform",
+        "platforming.jump_buffering",
+        "platforming.wall_jump",
+        "platforming.wall_slide"
       ],
       "player": [
         "meta.player_profile_stats"
@@ -7819,16 +8731,18 @@
       "portal": [
         "puzzle.portal_pair"
       ],
+      "positioning": [
+        "combat.stealth_kill"
+      ],
       "precision": [
-        "platforming.double_jump",
         "platforming.ledge_climb",
         "platforming.ledge_grab",
         "platforming.variable_jump_height",
         "platforming.wall_jump",
         "platforming.wall_slide"
       ],
-      "pressure": [
-        "puzzle.pressure_plate"
+      "presentation": [
+        "camera.screen_shake"
       ],
       "prestige": [
         "progression.prestige_reset"
@@ -7840,6 +8754,7 @@
         "procedural_generation.procedural_quests",
         "procedural_generation.procedural_terrain",
         "procedural_generation.random_encounters",
+        "procedural_generation.room_connection_graph",
         "procedural_generation.seeded_generation",
         "procedural_generation.wave_generation",
         "roguelike.procedural_floor"
@@ -7852,12 +8767,17 @@
         "progression.level_up",
         "progression.meta_progression",
         "progression.prestige_reset",
+        "progression.respec",
         "progression.skill_tree",
         "progression.unlockable_abilities",
         "progression.upgrade_shop"
       ],
       "projectile": [
-        "combat.projectile_reflection"
+        "combat.projectile_reflection",
+        "combat.ranged_attack"
+      ],
+      "prompt": [
+        "ui_ux.interaction_prompt"
       ],
       "prone": [
         "movement.prone"
@@ -7887,8 +8807,17 @@
         "procedural_generation.random_encounters",
         "roguelike.random_powerups"
       ],
+      "randomness": [
+        "economy.loot_table",
+        "roguelike.pick_one_upgrade_choice"
+      ],
       "ranged": [
-        "combat.ranged_attack"
+        "combat.aim_down_sights",
+        "combat.ranged_attack",
+        "combat.reload"
+      ],
+      "rarity": [
+        "economy.loot_table"
       ],
       "readability": [
         "camera.camera_lock_on",
@@ -7896,7 +8825,6 @@
         "camera.cinematic_camera",
         "camera.dynamic_fov",
         "camera.first_person_camera",
-        "camera.screen_shake",
         "camera.smooth_follow_camera",
         "camera.split_screen",
         "camera.third_person_camera",
@@ -7905,8 +8833,14 @@
       "recipe": [
         "crafting.recipe_crafting"
       ],
+      "refund": [
+        "progression.respec"
+      ],
       "relic": [
         "roguelike.relic_synergy"
+      ],
+      "reload": [
+        "combat.reload"
       ],
       "repair": [
         "economy.repair_cost"
@@ -7916,15 +8850,16 @@
         "procedural_generation.loot_generation",
         "procedural_generation.procedural_level_rooms",
         "procedural_generation.procedural_quests",
-        "procedural_generation.procedural_terrain",
         "procedural_generation.random_encounters",
         "procedural_generation.seeded_generation",
         "procedural_generation.wave_generation"
       ],
       "reputation": [
-        "narrative.reputation_choice"
+        "narrative.reputation_choice",
+        "narrative.reputation_gating"
       ],
       "resource": [
+        "combat.reload",
         "economy.resource_conversion"
       ],
       "resource_management": [
@@ -7938,6 +8873,10 @@
         "survival.stamina",
         "survival.temperature",
         "survival.thirst"
+      ],
+      "respec": [
+        "progression.respec",
+        "progression.skill_tree"
       ],
       "retention": [
         "meta.collection_log",
@@ -7966,7 +8905,6 @@
         "progression.level_up",
         "progression.meta_progression",
         "progression.prestige_reset",
-        "progression.skill_tree",
         "progression.unlockable_abilities",
         "progression.upgrade_shop"
       ],
@@ -7983,6 +8921,7 @@
       "roguelike": [
         "roguelike.curse_modifier",
         "roguelike.permadeath",
+        "roguelike.pick_one_upgrade_choice",
         "roguelike.procedural_floor",
         "roguelike.random_powerups",
         "roguelike.relic_synergy",
@@ -7993,12 +8932,18 @@
       "role": [
         "multiplayer.role_swap"
       ],
+      "rooms": [
+        "procedural_generation.room_connection_graph"
+      ],
       "rope": [
         "traversal.rope_swing"
       ],
       "run": [
         "movement.run",
         "roguelike.run_based_progression"
+      ],
+      "run_progression": [
+        "roguelike.pick_one_upgrade_choice"
       ],
       "runs": [
         "roguelike.curse_modifier",
@@ -8016,11 +8961,15 @@
       "sanity": [
         "horror.sanity_meter"
       ],
-      "screen": [
-        "camera.screen_shake"
+      "search": [
+        "stealth.last_known_position_search"
       ],
       "seeded": [
+        "procedural_generation.procedural_terrain",
         "procedural_generation.seeded_generation"
+      ],
+      "semisolid": [
+        "physics.one_way_platform"
       ],
       "sequence": [
         "puzzle.sequence_memory"
@@ -8029,7 +8978,8 @@
         "accessibility.adjustable_difficulty",
         "accessibility.assist_mode",
         "accessibility.colorblind_modes",
-        "accessibility.text_scaling"
+        "accessibility.text_scaling",
+        "accessibility.toggle_hold_option"
       ],
       "shadow": [
         "stealth.shadow_cover"
@@ -8045,6 +8995,7 @@
         "roguelike.shop_between_levels"
       ],
       "simulation": [
+        "ai.utility_scoring",
         "physics.breakable_object",
         "physics.buoyancy",
         "physics.destructible_environment",
@@ -8072,8 +9023,9 @@
         "physics.ragdoll",
         "physics.wind_force"
       ],
-      "skill": [
-        "progression.skill_tree"
+      "skill_expression": [
+        "combat.combo_chain",
+        "movement.dash"
       ],
       "slide": [
         "movement.slide"
@@ -8090,15 +9042,24 @@
       "sound": [
         "horror.sound_lure"
       ],
+      "spacing": [
+        "combat.melee_attack"
+      ],
       "split": [
         "camera.split_screen"
       ],
-      "sprint": [
-        "movement.sprint"
+      "stagger": [
+        "combat.guard_break",
+        "combat.parry"
       ],
       "stamina": [
+        "combat.block",
+        "movement.sprint",
         "movement.stamina_movement",
         "survival.stamina"
+      ],
+      "stance": [
+        "movement.crouch"
       ],
       "state": [
         "puzzle.color_matching",
@@ -8119,17 +9080,23 @@
         "puzzle.mirror_light_reflection",
         "puzzle.physics_weight_puzzle",
         "puzzle.portal_pair",
-        "puzzle.pressure_plate",
         "puzzle.sequence_memory",
         "puzzle.sliding_block",
         "puzzle.timed_door"
       ],
+      "status_effect": [
+        "combat.damage_over_time"
+      ],
       "stealth": [
+        "ai.patrol",
         "combat.stealth_kill",
+        "movement.crouch",
         "stealth.alert_state",
         "stealth.distraction_throw",
+        "stealth.last_known_position_search",
         "stealth.noise_meter",
-        "stealth.shadow_cover"
+        "stealth.shadow_cover",
+        "stealth.visibility_meter"
       ],
       "strategy": [
         "strategy.fog_of_war",
@@ -8138,6 +9105,7 @@
         "strategy.unit_counter_system"
       ],
       "survival": [
+        "movement.swimming",
         "survival.base_building",
         "survival.day_night_cycle",
         "survival.durability",
@@ -8152,9 +9120,6 @@
       "suspension": [
         "vehicles.suspension_physics"
       ],
-      "swimming": [
-        "movement.swimming"
-      ],
       "sync": [
         "rhythm.sync_window"
       ],
@@ -8166,6 +9131,12 @@
         "simulation.population_model",
         "simulation.systemic_weather",
         "simulation.traffic_flow"
+      ],
+      "takedown": [
+        "combat.stealth_kill"
+      ],
+      "targeting": [
+        "combat.lock_on_targeting"
       ],
       "team": [
         "multiplayer.team_objective"
@@ -8188,6 +9159,9 @@
         "horror.safe_room",
         "horror.sanity_meter",
         "horror.sound_lure"
+      ],
+      "terrain": [
+        "procedural_generation.procedural_terrain"
       ],
       "territory": [
         "strategy.territory_control"
@@ -8214,22 +9188,20 @@
         "puzzle.timed_door",
         "time.timed_challenge"
       ],
+      "timer": [
+        "combat.damage_over_time"
+      ],
       "timing": [
         "combat.area_of_effect_attack",
-        "combat.block",
         "combat.charged_attack",
-        "combat.combo_chain",
         "combat.critical_hit",
         "combat.hit_stun",
         "combat.invincibility_frames",
         "combat.knockback",
-        "combat.lock_on_targeting",
         "combat.melee_attack",
         "combat.parry",
         "combat.projectile_reflection",
-        "combat.ranged_attack",
         "combat.shield",
-        "combat.stealth_kill",
         "rhythm.beat_matching",
         "rhythm.combo_multiplier",
         "rhythm.note_lane",
@@ -8242,6 +9214,9 @@
         "time.time_rewind",
         "time.timed_challenge"
       ],
+      "toggle": [
+        "accessibility.toggle_hold_option"
+      ],
       "top": [
         "camera.top_down_camera"
       ],
@@ -8251,8 +9226,19 @@
       "traffic": [
         "simulation.traffic_flow"
       ],
+      "traversal": [
+        "traversal.wall_run"
+      ],
+      "trigger": [
+        "puzzle.pressure_plate"
+      ],
       "tutorial": [
         "ui_ux.tutorial_prompt"
+      ],
+      "ui": [
+        "stealth.visibility_meter",
+        "ui_ux.hit_marker",
+        "ui_ux.interaction_prompt"
       ],
       "ui_ux": [
         "ui_ux.accessibility_remap_controls",
@@ -8269,14 +9255,28 @@
       "unit": [
         "strategy.unit_counter_system"
       ],
+      "unlock": [
+        "progression.skill_tree"
+      ],
       "unlockable": [
         "progression.unlockable_abilities"
       ],
       "upgrade": [
+        "platforming.double_jump",
         "progression.upgrade_shop"
       ],
       "upgradeable": [
         "vehicles.upgradeable_vehicle"
+      ],
+      "upgrades": [
+        "roguelike.pick_one_upgrade_choice"
+      ],
+      "utility": [
+        "ai.utility_scoring"
+      ],
+      "validation": [
+        "procedural_generation.procedural_terrain",
+        "procedural_generation.room_connection_graph"
       ],
       "variable": [
         "platforming.variable_jump_height"
@@ -8300,14 +9300,17 @@
       ],
       "vertical_mobility": [
         "movement.climbing",
-        "platforming.double_jump",
         "platforming.ledge_climb",
         "platforming.ledge_grab",
         "platforming.variable_jump_height",
-        "platforming.wall_jump",
-        "platforming.wall_slide",
         "traversal.ladder_climb",
         "traversal.mantling"
+      ],
+      "vertical_navigation": [
+        "platforming.drop_through_platform"
+      ],
+      "verticality": [
+        "platforming.wall_jump"
       ],
       "view_control": [
         "camera.camera_lock_on",
@@ -8315,21 +9318,30 @@
         "camera.cinematic_camera",
         "camera.dynamic_fov",
         "camera.first_person_camera",
-        "camera.screen_shake",
         "camera.smooth_follow_camera",
         "camera.split_screen",
         "camera.third_person_camera",
         "camera.top_down_camera"
       ],
+      "visibility": [
+        "stealth.visibility_meter"
+      ],
       "walk": [
         "movement.walk"
       ],
-      "wall": [
+      "wall_interaction": [
         "platforming.wall_jump",
-        "platforming.wall_slide"
+        "platforming.wall_slide",
+        "traversal.wall_run"
+      ],
+      "water": [
+        "movement.swimming"
       ],
       "wave": [
         "procedural_generation.wave_generation"
+      ],
+      "weight": [
+        "puzzle.pressure_plate"
       ],
       "wind": [
         "physics.wind_force"

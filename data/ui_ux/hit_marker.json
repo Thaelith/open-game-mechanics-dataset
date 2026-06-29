@@ -1,0 +1,115 @@
+{
+  "id": "ui_ux.hit_marker",
+  "name": "Hit Marker",
+  "aliases": [
+    "hit confirm indicator",
+    "damage confirmation",
+    "impact marker"
+  ],
+  "category": "ui_ux",
+  "subcategory": "combat_feedback",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "easy",
+    "implementation": "easy",
+    "tuning": "medium"
+  },
+  "genres": [
+    "shooter",
+    "action",
+    "rpg"
+  ],
+  "description": "A visual or audio confirmation that an attack connected with a valid target.",
+  "design_notes": "Hit markers tell players whether an attack connected, but they can also reveal hidden information. Decide whether markers differ for armor, critical hits, shields, weak points, or kills.",
+  "design_purpose": [
+    "Confirm successful hits quickly.",
+    "Differentiate hit types without requiring the player to inspect tiny effects.",
+    "Support ranged combat readability at distance."
+  ],
+  "player_fantasy": "The player feels confident that their attack landed and understands its rough quality.",
+  "required_systems": [
+    "damage_events",
+    "ui_framework",
+    "audio_feedback",
+    "combat_metadata"
+  ],
+  "parameters": [
+    {
+      "name": "marker_linger_ms",
+      "type": "integer",
+      "typical_range": "80-500 ms",
+      "description": "Display window for the hit marker."
+    },
+    {
+      "name": "critical_marker_scale",
+      "type": "float",
+      "typical_range": "1-2.5",
+      "description": "Size multiplier for critical or weak-point hits."
+    },
+    {
+      "name": "marker_audio_variant_count",
+      "type": "integer",
+      "typical_range": "1-8 variants",
+      "description": "Number of sounds used for different hit categories."
+    },
+    {
+      "name": "screen_center_offset_pixels",
+      "type": "vector",
+      "typical_range": "0-120 pixels",
+      "description": "Offset from reticle or target position."
+    }
+  ],
+  "common_variants": [
+    "reticle_hit_marker",
+    "world_space_hit_marker",
+    "critical_hit_marker",
+    "armor_hit_marker"
+  ],
+  "edge_cases": [
+    "Damage over time should not spam markers every tick unless desired.",
+    "Invisible or hidden enemies may need suppressed hit markers.",
+    "Networked hits should distinguish predicted and confirmed events."
+  ],
+  "common_bugs": [
+    "Marker plays on blocked or immune hits because any collision counts.",
+    "Critical marker appears for overkill damage instead of weak-point metadata.",
+    "Audio marker stacks loudly during shotgun or AoE hits."
+  ],
+  "balancing_notes": [
+    "Strong hit markers improve readability but can reveal targets through smoke or darkness.",
+    "Different marker types should communicate important combat state, not cosmetic noise."
+  ],
+  "accessibility_notes": [
+    "Provide visual and audio confirmation options independently, with color-safe marker variants."
+  ],
+  "implementation_notes": {
+    "unity": "Listen to authoritative damage events and drive UI/audio markers from hit category metadata, not raw collision callbacks.",
+    "godot": "Emit hit-confirm signals from the damage system and render marker Control nodes or world-space labels as needed.",
+    "unreal": "Route damage confirmation through gameplay cues or UI events and distinguish predicted from confirmed hits in multiplayer.",
+    "web": "Queue marker events from the simulation step and render them in UI or world space with short lifetimes."
+  },
+  "related_mechanics": [
+    "combat.ranged_attack",
+    "ui_ux.damage_numbers",
+    "combat.critical_hit"
+  ],
+  "combines_well_with": [
+    "camera.screen_shake",
+    "combat.damage_over_time",
+    "combat.combo_chain"
+  ],
+  "example_games": [],
+  "tags": [
+    "ui",
+    "combat_feedback",
+    "hit_confirm",
+    "accessibility"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

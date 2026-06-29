@@ -1,0 +1,114 @@
+{
+  "id": "platforming.coyote_time",
+  "name": "Coyote Time",
+  "aliases": [
+    "ledge grace jump",
+    "post-ledge jump grace",
+    "late jump grace"
+  ],
+  "category": "platforming",
+  "subcategory": "jump_assist",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "easy",
+    "implementation": "easy",
+    "tuning": "medium"
+  },
+  "genres": [
+    "platformer",
+    "metroidvania",
+    "action"
+  ],
+  "description": "A short grace window that allows jumping shortly after leaving a valid floor.",
+  "design_notes": "Coyote time hides small timing errors around ledges while preserving the player's belief that they jumped from the platform. It should be short enough to feel like forgiveness rather than air jumping, and it should define which floor types grant grace.",
+  "design_purpose": [
+    "Make platforming inputs feel fair around ledges.",
+    "Reduce frustration from collision and animation mismatch.",
+    "Support precise level layouts without demanding perfect input timing."
+  ],
+  "player_fantasy": "The player feels that the avatar responds to intended jumps even when input is slightly late.",
+  "required_systems": [
+    "ground_detection",
+    "jump_state",
+    "input_buffer",
+    "floor_tagging"
+  ],
+  "parameters": [
+    {
+      "name": "ledge_grace_ms",
+      "type": "integer",
+      "typical_range": "50-180 ms",
+      "description": "Window after floor exit during which ground jump remains legal."
+    },
+    {
+      "name": "eligible_floor_tags",
+      "type": "array",
+      "typical_range": "1-20 tags",
+      "description": "Surface tags that grant ledge grace."
+    },
+    {
+      "name": "grace_consumed_on_jump",
+      "type": "boolean",
+      "typical_range": "true or false",
+      "description": "Whether the window is consumed immediately after a jump."
+    }
+  ],
+  "common_variants": [
+    "standard_coyote_time",
+    "surface_specific_grace",
+    "difficulty_scaled_grace",
+    "jump_assist_grace"
+  ],
+  "edge_cases": [
+    "Walking off a moving platform should preserve or discard the platform velocity by design.",
+    "Damage knockback off a ledge should not always grant a free recovery jump.",
+    "Leaving one-way platforms, slopes, or crumbling floors needs eligibility rules."
+  ],
+  "common_bugs": [
+    "Grace timer refreshes while touching wall collision that is not a floor.",
+    "The timer uses render frames and varies with frame rate.",
+    "Jump buffering and coyote time both consume input and produce two jumps."
+  ],
+  "balancing_notes": [
+    "Long grace windows make ledges forgiving but can blur into an extra air jump.",
+    "Hard precision games may expose grace as an assist setting rather than defaulting to a large window."
+  ],
+  "accessibility_notes": [
+    "Coyote time is an effective motor accessibility affordance when platforming demands frequent edge jumps."
+  ],
+  "implementation_notes": {
+    "unity": "Use an explicit movement-state enum and feed the final desired velocity into CharacterController.Move or Rigidbody movement from FixedUpdate; keep dash and jump assists outside animation callbacks. For Coyote Time, validate this path with parameters such as ledge_grace_ms and eligible_floor_tags.",
+    "godot": "Keep the mechanic state on CharacterBody2D or CharacterBody3D, update velocity in _physics_process, and separate input buffering from collision response. For Coyote Time, validate this path with parameters such as ledge_grace_ms and eligible_floor_tags.",
+    "unreal": "Use CharacterMovement with a custom movement state or Gameplay Ability; gate activation through prediction-safe input and reconcile movement corrections cleanly in networked play. For Coyote Time, validate this path with parameters such as ledge_grace_ms and eligible_floor_tags.",
+    "web": "Represent the mechanic as deterministic state in the simulation loop, then apply resolved displacement before rendering through Canvas, Phaser, Three.js, or a custom engine. For Coyote Time, validate this path with parameters such as ledge_grace_ms and eligible_floor_tags."
+  },
+  "related_mechanics": [
+    "platforming.jump_buffering",
+    "platforming.variable_jump_height",
+    "platforming.double_jump"
+  ],
+  "combines_well_with": [
+    "movement.dash",
+    "platforming.wall_jump",
+    "physics.one_way_platform"
+  ],
+  "example_games": [
+    {
+      "title": "Celeste",
+      "note": "Uses forgiving input timing around platform edges."
+    }
+  ],
+  "tags": [
+    "platforming",
+    "jump_assist",
+    "forgiveness",
+    "input_timing"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

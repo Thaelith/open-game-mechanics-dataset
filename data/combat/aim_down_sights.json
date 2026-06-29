@@ -1,0 +1,117 @@
+{
+  "id": "combat.aim_down_sights",
+  "name": "Aim Down Sights",
+  "aliases": [
+    "ADS",
+    "sight aiming",
+    "scope aim"
+  ],
+  "category": "combat",
+  "subcategory": "aiming",
+  "status": "draft",
+  "dimensions": [
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "medium",
+    "implementation": "medium",
+    "tuning": "hard"
+  },
+  "genres": [
+    "shooter",
+    "action",
+    "survival"
+  ],
+  "description": "A focused aiming state that narrows view or reticle behavior to improve precision.",
+  "design_notes": "Aim down sights changes perception, movement, recoil, and input sensitivity. It should define whether ADS is a commitment, a precision mode, a zoom mode, or a tactical tradeoff.",
+  "design_purpose": [
+    "Let players trade mobility and awareness for precision.",
+    "Support weapon identity through sights, scopes, sway, and recoil behavior.",
+    "Make ranged combat readable at different distances."
+  ],
+  "player_fantasy": "The player feels focused and deliberate, lining up a shot through the weapon sight.",
+  "required_systems": [
+    "aiming_system",
+    "camera_controller",
+    "weapon_state",
+    "input_settings"
+  ],
+  "parameters": [
+    {
+      "name": "ads_zoom_multiplier",
+      "type": "float",
+      "typical_range": "1.05-8.0",
+      "description": "View magnification applied while aiming."
+    },
+    {
+      "name": "ads_enter_ms",
+      "type": "integer",
+      "typical_range": "80-400 ms",
+      "description": "Blend window before full sight behavior is active."
+    },
+    {
+      "name": "ads_move_multiplier",
+      "type": "float",
+      "typical_range": "0.2-1.0",
+      "description": "Locomotion multiplier while aiming."
+    },
+    {
+      "name": "ads_spread_multiplier",
+      "type": "float",
+      "typical_range": "0-1.0",
+      "description": "Spread multiplier applied to shots fired while aiming."
+    }
+  ],
+  "common_variants": [
+    "iron_sights",
+    "scoped_aim",
+    "over_the_shoulder_aim",
+    "hold_ads",
+    "toggle_ads"
+  ],
+  "edge_cases": [
+    "Entering ADS while sprinting, reloading, climbing, or swimming needs priority rules.",
+    "High zoom can break camera collision or reticle placement near walls.",
+    "Toggle ADS should clear on weapon swap, death, and menus."
+  ],
+  "common_bugs": [
+    "Sensitivity changes stack every time ADS is entered.",
+    "Projectile origin remains hip-fire while reticle uses scoped camera.",
+    "FOV changes do not respect user motion settings."
+  ],
+  "balancing_notes": [
+    "ADS should improve precision enough to matter while costing awareness, mobility, or readiness.",
+    "Strong aim assist in ADS can overwhelm manual skill if target switching is too sticky."
+  ],
+  "accessibility_notes": [
+    "Offer hold/toggle settings, scoped sensitivity, reticle options, and reduced zoom-motion settings."
+  ],
+  "implementation_notes": {
+    "unity": "Model startup, active, recovery, and cancel windows as data, then drive hitboxes, animation events, and damage application from one combat state source. For Aim Down Sights, validate this path with parameters such as ads_zoom_multiplier and ads_enter_ms.",
+    "godot": "Use Area2D or Area3D hit volumes with frame-window state on the actor; avoid placing damage authority inside animation-only callbacks. For Aim Down Sights, validate this path with parameters such as ads_zoom_multiplier and ads_enter_ms.",
+    "unreal": "Implement the action as a Gameplay Ability or Actor Component with montage notifies for windows and authoritative damage on the server when networked. For Aim Down Sights, validate this path with parameters such as ads_zoom_multiplier and ads_enter_ms.",
+    "web": "Update combat windows in the fixed simulation step, evaluate hurtbox overlap from cached transforms, and emit presentation events separately from damage state. For Aim Down Sights, validate this path with parameters such as ads_zoom_multiplier and ads_enter_ms."
+  },
+  "related_mechanics": [
+    "combat.ranged_attack",
+    "combat.reload",
+    "camera.camera_zoom",
+    "accessibility.toggle_hold_option"
+  ],
+  "combines_well_with": [
+    "ui_ux.hit_marker",
+    "camera.dynamic_fov",
+    "combat.lock_on_targeting"
+  ],
+  "example_games": [],
+  "tags": [
+    "combat",
+    "aiming",
+    "camera",
+    "ranged",
+    "accessibility"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

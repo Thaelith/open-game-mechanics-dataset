@@ -1,0 +1,116 @@
+{
+  "id": "progression.respec",
+  "name": "Respec",
+  "aliases": [
+    "refund skills",
+    "reallocate points",
+    "reset build"
+  ],
+  "category": "progression",
+  "subcategory": "build_management",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D",
+    "3D"
+  ],
+  "difficulty": {
+    "design": "medium",
+    "implementation": "medium",
+    "tuning": "hard"
+  },
+  "genres": [
+    "rpg",
+    "action",
+    "strategy",
+    "roguelike"
+  ],
+  "description": "A system that lets players refund and reassign progression choices.",
+  "design_notes": "Respec rules define how experimental the progression system feels. Costs, location requirements, refund percentages, and locked choices all affect whether players treat builds as commitments or flexible loadouts.",
+  "design_purpose": [
+    "Let players recover from mistaken or outdated build choices.",
+    "Encourage experimentation with abilities and gear.",
+    "Support balance patches without permanently punishing existing saves."
+  ],
+  "player_fantasy": "The player feels free to reshape a build as they learn the game.",
+  "required_systems": [
+    "progression_state",
+    "refund_rules",
+    "ability_grants",
+    "save_migration"
+  ],
+  "parameters": [
+    {
+      "name": "respec_currency_cost",
+      "type": "integer",
+      "typical_range": "0-100000 currency",
+      "description": "Cost required to start a respec."
+    },
+    {
+      "name": "refund_ratio",
+      "type": "float",
+      "typical_range": "0-1",
+      "description": "Share of spent resources returned."
+    },
+    {
+      "name": "respec_location_rule",
+      "type": "string",
+      "typical_range": "anywhere, hub, vendor, checkpoint",
+      "description": "Where the player can respec."
+    },
+    {
+      "name": "locked_node_policy",
+      "type": "string",
+      "typical_range": "keep, refund, forbid",
+      "description": "Handling for quest, class, or story-locked choices."
+    }
+  ],
+  "common_variants": [
+    "free_respec",
+    "paid_respec",
+    "limited_token_respec",
+    "partial_respec"
+  ],
+  "edge_cases": [
+    "Refunding a prerequisite must remove dependent abilities.",
+    "Removed abilities need cleanup for hotbars, passives, summons, and equipment requirements.",
+    "Balance patches may need free respec grants."
+  ],
+  "common_bugs": [
+    "Passive stat bonuses remain after the node is refunded.",
+    "UI shows refunded points before validation and loses them on save reload.",
+    "Respec allows invalid builds that cannot be reloaded later."
+  ],
+  "balancing_notes": [
+    "Cheap respec supports experimentation; expensive respec reinforces identity and long-term planning.",
+    "Punishing respec costs can discourage players from engaging with complex trees."
+  ],
+  "accessibility_notes": [
+    "Provide confirmation, preview, and undo steps so players do not lose progress through accidental clicks."
+  ],
+  "implementation_notes": {
+    "unity": "Apply respec through a transaction that removes grants, validates dependencies, refunds resources, and writes one save-state update.",
+    "godot": "Keep build state separate from granted effects so refunding can recompute final stats from selected nodes.",
+    "unreal": "Centralize respec authority in a progression component and replay ability grants after validation.",
+    "web": "Represent selected nodes as IDs and recompute derived stats from scratch after every refund or purchase transaction."
+  },
+  "related_mechanics": [
+    "progression.skill_tree",
+    "progression.level_up",
+    "economy.shop"
+  ],
+  "combines_well_with": [
+    "progression.unlockable_abilities",
+    "ui_ux.dialogue_choice",
+    "narrative.reputation_gating"
+  ],
+  "example_games": [],
+  "tags": [
+    "progression",
+    "respec",
+    "buildcraft",
+    "refund"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

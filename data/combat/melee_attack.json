@@ -2,12 +2,12 @@
   "id": "combat.melee_attack",
   "name": "Melee Attack",
   "aliases": [
-    "melee attack mechanic",
-    "melee attack system",
-    "melee attack"
+    "close attack",
+    "weapon swing",
+    "strike"
   ],
   "category": "combat",
-  "subcategory": "offense",
+  "subcategory": "close_range_offense",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -22,90 +22,109 @@
   "genres": [
     "action",
     "rpg",
-    "fighting"
+    "fighting",
+    "beat_em_up"
   ],
-  "description": "Melee Attack is an interaction that creates threat, defense, damage, timing, or tactical pressure during conflict.",
-  "design_notes": "Melee Attack should be designed around a clear player promise, a readable trigger, and a predictable result. For combat mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A close-range attack that uses a hitbox, weapon arc, or contact trace near the attacker.",
+  "design_notes": "Melee attacks are built from timing, reach, facing, collision, recovery, and hit reaction. A useful melee entry should define startup, active frames, cancel rules, target filtering, and how the game communicates range. Weapon feel often comes from hit stop, sound, camera response, and enemy reaction as much as damage numbers.",
   "design_purpose": [
-    "Give the player a readable way to use melee attack as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect melee attack to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give the player a direct close-range way to apply pressure or defeat enemies.",
+    "Create spacing decisions through reach, startup, recovery, and hit stun.",
+    "Support combat identity through weapon arcs, combo links, and target reactions."
   ],
-  "player_fantasy": "The player feels powerful, skillful, and able to read danger under pressure.",
+  "player_fantasy": "The player feels physically connected to the fight, reading distance and timing to land decisive hits.",
   "required_systems": [
     "combat_state_machine",
-    "hit_detection",
+    "hitbox_system",
+    "hurtbox_system",
     "damage_model",
     "animation_events"
   ],
   "parameters": [
     {
-      "name": "damage_value",
+      "name": "melee_startup_frames",
       "type": "integer",
-      "typical_range": "1-250",
-      "description": "Base amount of damage or threat applied by the mechanic."
+      "typical_range": "2-30 frames",
+      "description": "Frames before the attack can hit."
     },
     {
-      "name": "startup_time",
-      "type": "float",
-      "typical_range": "0.05-1.2 seconds",
-      "description": "Delay before the active effect begins."
+      "name": "melee_active_frames",
+      "type": "integer",
+      "typical_range": "1-20 frames",
+      "description": "Frames during which the hitbox or trace can connect."
     },
     {
-      "name": "recovery_time",
+      "name": "melee_recovery_frames",
+      "type": "integer",
+      "typical_range": "4-60 frames",
+      "description": "Frames before the attacker can take the next full action."
+    },
+    {
+      "name": "hitbox_forward_extent",
       "type": "float",
-      "typical_range": "0.05-1.5 seconds",
-      "description": "Delay after use before the actor can fully act again."
+      "typical_range": "0.4-4 world units",
+      "description": "Reach of the attack in front of the actor."
+    },
+    {
+      "name": "hit_stop_frames_on_connect",
+      "type": "integer",
+      "typical_range": "0-12 frames",
+      "description": "Brief freeze applied on hit for impact readability."
     }
   ],
   "common_variants": [
-    "melee_attack_light_version",
-    "melee_attack_heavy_version",
-    "timed_version",
-    "resource_limited_version"
+    "light_attack",
+    "heavy_attack",
+    "directional_attack",
+    "cleave_attack",
+    "launcher_attack",
+    "dash_attack"
   ],
   "edge_cases": [
-    "Melee Attack is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Melee Attack overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Melee Attack runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Fast movement during active frames should not let the hitbox skip through small targets.",
+    "The same swing must define whether it can hit one target once, many targets once, or the same target repeatedly.",
+    "Attacking near walls should handle weapon clipping and blocked arcs consistently.",
+    "Animation cancel, parry, dodge, and hit stun must agree on when the attack is interruptible."
   ],
   "common_bugs": [
-    "Melee Attack state does not reset correctly after interruption or reload.",
-    "Feedback for Melee Attack plays even when the mechanic fails or is rejected.",
-    "Melee Attack produces different results between frame rates, platforms, or network clients."
+    "Damage is applied every frame of overlap because hit targets are not tracked per attack instance.",
+    "Hitboxes spawn from animated bones that update after physics, causing one-frame visual mismatch.",
+    "Attack range differs between left and right facing due to unmirrored offsets.",
+    "Combo input is accepted during hit stop but discarded when the simulation resumes."
   ],
   "balancing_notes": [
-    "Make Melee Attack strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Long reach and low recovery make melee safe; slower recovery or commitment preserves enemy counterplay.",
+    "Hit stun, knockback, and cancel windows should be balanced together because they determine whether pressure loops are possible."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Melee Attack becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use clear hit confirmation through impact sound, hit flash, controller vibration, or hit markers.",
+    "Avoid requiring hidden animation-frame knowledge for basic attacks; reserve tight cancels for advanced mastery."
   ],
   "implementation_notes": {
-    "unity": "Implement Melee Attack with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Melee Attack as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Melee Attack with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Melee Attack as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Model startup, active, recovery, and cancel windows as data, then drive hitboxes, animation events, and damage application from one combat state source. For Melee Attack, validate this path with parameters such as melee_startup_frames and melee_active_frames.",
+    "godot": "Use Area2D or Area3D hit volumes with frame-window state on the actor; avoid placing damage authority inside animation-only callbacks. For Melee Attack, validate this path with parameters such as melee_startup_frames and melee_active_frames.",
+    "unreal": "Implement the action as a Gameplay Ability or Actor Component with montage notifies for windows and authoritative damage on the server when networked. For Melee Attack, validate this path with parameters such as melee_startup_frames and melee_active_frames.",
+    "web": "Update combat windows in the fixed simulation step, evaluate hurtbox overlap from cached transforms, and emit presentation events separately from damage state. For Melee Attack, validate this path with parameters such as melee_startup_frames and melee_active_frames."
   },
   "related_mechanics": [
-    "camera.screen_shake",
-    "combat.charged_attack",
-    "combat.ranged_attack",
-    "ui_ux.damage_numbers"
+    "combat.combo_chain",
+    "combat.hit_stun",
+    "combat.knockback",
+    "combat.guard_break"
   ],
   "combines_well_with": [
     "camera.screen_shake",
-    "combat.combo_chain",
+    "combat.charged_attack",
     "combat.parry",
-    "ui_ux.damage_numbers"
+    "ui_ux.hit_marker"
   ],
   "example_games": [],
   "tags": [
     "combat",
+    "hitbox",
     "melee",
-    "offense",
-    "timing"
+    "timing",
+    "spacing"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

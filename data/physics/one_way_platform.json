@@ -1,0 +1,108 @@
+{
+  "id": "physics.one_way_platform",
+  "name": "One-Way Platform",
+  "aliases": [
+    "semisolid platform",
+    "pass-through platform",
+    "jump-through platform"
+  ],
+  "category": "physics",
+  "subcategory": "collision_affordance",
+  "status": "draft",
+  "dimensions": [
+    "2D",
+    "2.5D"
+  ],
+  "difficulty": {
+    "design": "medium",
+    "implementation": "medium",
+    "tuning": "hard"
+  },
+  "genres": [
+    "platformer",
+    "metroidvania",
+    "action"
+  ],
+  "description": "A platform that collides from selected directions while allowing entry or exit from others.",
+  "design_notes": "One-way platforms are collision rules with player-facing expectations. They need consistent behavior for upward movement, downward drop-through, slopes, moving platforms, enemies, and projectiles.",
+  "design_purpose": [
+    "Increase vertical route density without enclosing the player.",
+    "Let players jump through floors and land on top surfaces.",
+    "Support layered arena and platform layouts."
+  ],
+  "player_fantasy": "The player feels they can move through platforms naturally while still trusting landings.",
+  "required_systems": [
+    "collision_filtering",
+    "surface_normal_detection",
+    "character_controller",
+    "platform_tagging"
+  ],
+  "parameters": [
+    {
+      "name": "landing_normal_min_y",
+      "type": "float",
+      "typical_range": "0.5-1.0",
+      "description": "Minimum upward surface normal required for collision."
+    },
+    {
+      "name": "pass_through_margin",
+      "type": "float",
+      "typical_range": "0.01-0.2 world units",
+      "description": "Tolerance used while entering from below."
+    },
+    {
+      "name": "drop_disable_ms",
+      "type": "integer",
+      "typical_range": "120-500 ms",
+      "description": "Window where collision is disabled after intentional drop-through."
+    }
+  ],
+  "common_variants": [
+    "top_only_platform",
+    "drop_through_platform",
+    "enemy_solid_platform",
+    "projectile_passthrough_platform"
+  ],
+  "edge_cases": [
+    "Fast upward movement must not snag on the platform underside.",
+    "Moving one-way platforms need stable passenger transfer.",
+    "Characters starting inside the platform after spawn or load need a recovery rule."
+  ],
+  "common_bugs": [
+    "Collision toggles globally and makes the platform non-solid for every actor.",
+    "The player lands from below because previous-frame position was above due to tunneling.",
+    "Drop-through re-enables before the player clears the platform thickness."
+  ],
+  "balancing_notes": [
+    "Dense one-way layouts support vertical combat but can become visually confusing.",
+    "Drop-through delay should be long enough to avoid re-catching but short enough to permit quick recovery."
+  ],
+  "accessibility_notes": [
+    "Use consistent visual language for semisolid platforms so players can identify collision behavior before jumping."
+  ],
+  "implementation_notes": {
+    "unity": "Use PlatformEffector2D where applicable or a custom collision filter that disables contact per actor during drop-through windows.",
+    "godot": "Use one-way collision settings for CollisionShape2D or explicit collision layers for 3D-style controllers.",
+    "unreal": "Implement through custom movement collision filtering or platform components that ignore actors based on approach direction and drop state.",
+    "web": "Resolve platform collision only when the actor crosses the top plane from above and has not requested a drop-through window."
+  },
+  "related_mechanics": [
+    "platforming.drop_through_platform",
+    "platforming.coyote_time",
+    "physics.moving_platform"
+  ],
+  "combines_well_with": [
+    "platforming.jump_buffering",
+    "movement.crouch",
+    "puzzle.pressure_plate"
+  ],
+  "example_games": [],
+  "tags": [
+    "physics",
+    "collision",
+    "platforming",
+    "semisolid"
+  ],
+  "source_confidence": "medium",
+  "last_updated": "2026-06-29"
+}

@@ -2,12 +2,12 @@
   "id": "combat.stealth_kill",
   "name": "Stealth Kill",
   "aliases": [
-    "stealth kill mechanic",
-    "stealth kill system",
-    "stealth kill"
+    "silent takedown",
+    "backstab",
+    "stealth takedown"
   ],
   "category": "combat",
-  "subcategory": "offense",
+  "subcategory": "stealth_attack",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,97 +15,115 @@
     "3D"
   ],
   "difficulty": {
-    "design": "medium",
+    "design": "hard",
     "implementation": "medium",
     "tuning": "hard"
   },
   "genres": [
+    "stealth",
     "action",
-    "rpg",
-    "fighting"
+    "immersive_sim",
+    "rpg"
   ],
-  "description": "Stealth Kill is an interaction that creates threat, defense, damage, timing, or tactical pressure during conflict.",
-  "design_notes": "Stealth Kill should be designed around a clear player promise, a readable trigger, and a predictable result. For combat mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A high-reward attack performed from concealment, surprise, or a vulnerable target state.",
+  "design_notes": "Stealth kill combines AI awareness, positioning, animation alignment, damage rules, and moral or systemic consequences. The mechanic should make eligibility visible enough to feel earned but not so automatic that stealth collapses into prompt hunting.",
   "design_purpose": [
-    "Give the player a readable way to use stealth kill as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect stealth kill to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Reward players for reaching a target without raising alarm.",
+    "Provide a decisive alternative to open combat when positioning and awareness conditions are met.",
+    "Create tension around body discovery, noise, animation commitment, and nearby witnesses."
   ],
-  "player_fantasy": "The player feels powerful, skillful, and able to read danger under pressure.",
+  "player_fantasy": "The player feels precise and unseen, removing a threat through planning rather than direct confrontation.",
   "required_systems": [
-    "combat_state_machine",
-    "hit_detection",
+    "ai_awareness_state",
+    "interaction_prompt",
+    "animation_alignment",
     "damage_model",
-    "animation_events"
+    "noise_system"
   ],
   "parameters": [
     {
-      "name": "damage_value",
+      "name": "takedown_angle_degrees",
+      "type": "float",
+      "typical_range": "30-160 degrees",
+      "description": "Facing or rear-arc requirement for eligibility."
+    },
+    {
+      "name": "takedown_prompt_distance",
+      "type": "float",
+      "typical_range": "0.5-3 world units",
+      "description": "Maximum distance for showing the takedown prompt."
+    },
+    {
+      "name": "execution_lock_frames",
       "type": "integer",
-      "typical_range": "1-250",
-      "description": "Base amount of damage or threat applied by the mechanic."
+      "typical_range": "20-180 frames",
+      "description": "Commitment frames where player and target are locked into the action."
     },
     {
-      "name": "startup_time",
+      "name": "takedown_noise_radius",
       "type": "float",
-      "typical_range": "0.05-1.2 seconds",
-      "description": "Delay before the active effect begins."
+      "typical_range": "0-20 world units",
+      "description": "Noise event emitted after the takedown."
     },
     {
-      "name": "recovery_time",
+      "name": "witness_alert_radius",
       "type": "float",
-      "typical_range": "0.05-1.5 seconds",
-      "description": "Delay after use before the actor can fully act again."
+      "typical_range": "2-30 world units",
+      "description": "Area checked for AI that can see or hear the takedown."
     }
   ],
   "common_variants": [
-    "stealth_kill_light_version",
-    "stealth_kill_heavy_version",
-    "timed_version",
-    "resource_limited_version"
+    "rear_takedown",
+    "ledge_takedown",
+    "aerial_takedown",
+    "nonlethal_takedown",
+    "chain_takedown"
   ],
   "edge_cases": [
-    "Stealth Kill is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Stealth Kill overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Stealth Kill runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The target turning during prompt display should either preserve eligibility briefly or cancel before input.",
+    "Nearby witnesses need line-of-sight and hearing checks before alarm state changes.",
+    "Large enemies, bosses, vehicles, and scripted NPCs need explicit immune or special-case metadata.",
+    "Co-op players attempting the same target must avoid duplicate takedown ownership."
   ],
   "common_bugs": [
-    "Stealth Kill state does not reset correctly after interruption or reload.",
-    "Feedback for Stealth Kill plays even when the mechanic fails or is rejected.",
-    "Stealth Kill produces different results between frame rates, platforms, or network clients."
+    "Prompt appears through walls because eligibility uses distance but not visibility.",
+    "The target dies before animation alignment completes, leaving the player locked in place.",
+    "Body discovery logic runs before the takedown finishes and alerts the room instantly.",
+    "Networked takedown authority is split and both players receive kill credit or conflicting animations."
   ],
   "balancing_notes": [
-    "Make Stealth Kill strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Instant takedowns should be gated by awareness, enemy type, animation commitment, or post-kill consequences.",
+    "Noise and body management keep stealth kills from removing all encounter pressure."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Stealth Kill becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use a clear prompt with configurable size and avoid color-only eligibility changes.",
+    "Allow prompt hold or confirm settings so accidental takedowns do not punish motor control differences."
   ],
   "implementation_notes": {
-    "unity": "Implement Stealth Kill with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Stealth Kill as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Stealth Kill with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Stealth Kill as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Model startup, active, recovery, and cancel windows as data, then drive hitboxes, animation events, and damage application from one combat state source. For Stealth Kill, validate this path with parameters such as takedown_angle_degrees and takedown_prompt_distance.",
+    "godot": "Use Area2D or Area3D hit volumes with frame-window state on the actor; avoid placing damage authority inside animation-only callbacks. For Stealth Kill, validate this path with parameters such as takedown_angle_degrees and takedown_prompt_distance.",
+    "unreal": "Implement the action as a Gameplay Ability or Actor Component with montage notifies for windows and authoritative damage on the server when networked. For Stealth Kill, validate this path with parameters such as takedown_angle_degrees and takedown_prompt_distance.",
+    "web": "Update combat windows in the fixed simulation step, evaluate hurtbox overlap from cached transforms, and emit presentation events separately from damage state. For Stealth Kill, validate this path with parameters such as takedown_angle_degrees and takedown_prompt_distance."
   },
   "related_mechanics": [
-    "camera.screen_shake",
-    "combat.melee_attack",
-    "combat.ranged_attack",
-    "ui_ux.damage_numbers"
+    "stealth.visibility_meter",
+    "stealth.last_known_position_search",
+    "ai.line_of_sight_detection",
+    "ui_ux.interaction_prompt"
   ],
   "combines_well_with": [
-    "camera.screen_shake",
-    "combat.charged_attack",
-    "combat.combo_chain",
-    "ui_ux.damage_numbers"
+    "stealth.shadow_cover",
+    "ai.patrol",
+    "horror.hiding",
+    "narrative.reputation_gating"
   ],
   "example_games": [],
   "tags": [
     "combat",
-    "offense",
     "stealth",
-    "timing"
+    "takedown",
+    "ai_awareness",
+    "positioning"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

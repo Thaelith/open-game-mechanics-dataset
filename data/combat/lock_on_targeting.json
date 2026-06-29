@@ -2,110 +2,127 @@
   "id": "combat.lock_on_targeting",
   "name": "Lock-on Targeting",
   "aliases": [
-    "lock on targeting mechanic",
-    "lock on targeting system",
-    "lock-on targeting"
+    "target lock",
+    "soft lock",
+    "enemy lock-on"
   ],
   "category": "combat",
-  "subcategory": "combat_control",
+  "subcategory": "targeting",
   "status": "draft",
   "dimensions": [
-    "2D",
     "2.5D",
     "3D"
   ],
   "difficulty": {
     "design": "medium",
-    "implementation": "medium",
+    "implementation": "hard",
     "tuning": "hard"
   },
   "genres": [
     "action",
     "rpg",
-    "fighting"
+    "soulslike",
+    "adventure"
   ],
-  "description": "Lock-on Targeting is an interaction that creates threat, defense, damage, timing, or tactical pressure during conflict.",
-  "design_notes": "Lock-on Targeting should be designed around a clear player promise, a readable trigger, and a predictable result. For combat mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A targeting mode that keeps combat focus, camera framing, or attacks oriented toward a selected target.",
+  "design_notes": "Lock-on targeting is a contract between combat, camera, movement, and input. The player expects target selection to be stable but not sticky, visible but not noisy, and helpful without stealing control. Rules for switching, losing line of sight, target death, and crowd prioritization determine whether lock-on feels trustworthy.",
   "design_purpose": [
-    "Give the player a readable way to use lock-on targeting as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect lock-on targeting to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Help players keep a threatening target framed during close or mid-range combat.",
+    "Support directional attacks, strafing, blocking, and camera behavior around a chosen enemy.",
+    "Reduce aiming burden while preserving target-selection decisions."
   ],
-  "player_fantasy": "The player feels powerful, skillful, and able to read danger under pressure.",
+  "player_fantasy": "The player feels focused and duelist-like, able to track one threat clearly in a chaotic fight.",
   "required_systems": [
-    "combat_state_machine",
-    "hit_detection",
-    "damage_model",
-    "animation_events"
+    "target_query",
+    "camera_controller",
+    "input_abstraction",
+    "line_of_sight_detection",
+    "combat_orientation"
   ],
   "parameters": [
     {
-      "name": "damage_value",
+      "name": "lock_candidate_radius",
+      "type": "float",
+      "typical_range": "3-40 world units",
+      "description": "Search radius used to find eligible targets."
+    },
+    {
+      "name": "max_lock_angle_degrees",
+      "type": "float",
+      "typical_range": "15-120 degrees",
+      "description": "Camera or facing cone used to accept a target."
+    },
+    {
+      "name": "target_switch_deadzone",
+      "type": "float",
+      "typical_range": "0.1-0.6 stick units",
+      "description": "Input threshold for intentional target switching."
+    },
+    {
+      "name": "line_of_sight_break_ms",
       "type": "integer",
-      "typical_range": "1-250",
-      "description": "Base amount of damage or threat applied by the mechanic."
+      "typical_range": "200-1500 ms",
+      "description": "Grace window before lock breaks after occlusion."
     },
     {
-      "name": "startup_time",
+      "name": "target_priority_weight",
       "type": "float",
-      "typical_range": "0.05-1.2 seconds",
-      "description": "Delay before the active effect begins."
-    },
-    {
-      "name": "recovery_time",
-      "type": "float",
-      "typical_range": "0.05-1.5 seconds",
-      "description": "Delay after use before the actor can fully act again."
+      "typical_range": "0-10",
+      "description": "Weight assigned to distance, screen position, threat, or recency."
     }
   ],
   "common_variants": [
-    "lock_on_targeting_light_version",
-    "lock_on_targeting_heavy_version",
-    "timed_version",
-    "resource_limited_version"
+    "hard_lock",
+    "soft_lock",
+    "camera_lock",
+    "attack_assist_lock",
+    "manual_cycle_lock"
   ],
   "edge_cases": [
-    "Lock-on Targeting is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Lock-on Targeting overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Lock-on Targeting runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Target death, despawn, stealth, or phase transition must choose the next target or clear lock cleanly.",
+    "Large bosses with multiple weak points need target anchors that do not pull camera into geometry.",
+    "Crowds can cause target cycling to skip expected enemies if screen-space and distance scores disagree.",
+    "Lock-on while climbing, swimming, mounted, or in split screen may need separate camera rules."
   ],
   "common_bugs": [
-    "Lock-on Targeting state does not reset correctly after interruption or reload.",
-    "Feedback for Lock-on Targeting plays even when the mechanic fails or is rejected.",
-    "Lock-on Targeting produces different results between frame rates, platforms, or network clients."
+    "The camera locks to the target root instead of a visible anchor and clips through the floor or body.",
+    "Target switching fires from stick drift because no deadzone or cooldown is applied.",
+    "Line-of-sight traces hit the player's own weapon or shield and break lock incorrectly.",
+    "Attack orientation updates but movement orientation does not, causing strafing and animation mismatch."
   ],
   "balancing_notes": [
-    "Make Lock-on Targeting strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Strong lock-on increases combat readability but can reduce spatial awareness in group fights.",
+    "Target assist should help intended attacks connect without invalidating manual aim or positioning."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Lock-on Targeting becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer lock-on reticle size/color options and clear target-switch controls.",
+    "Provide camera sensitivity and auto-recenter settings to reduce motion discomfort during lock-on."
   ],
   "implementation_notes": {
-    "unity": "Implement Lock-on Targeting with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Lock-on Targeting as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Lock-on Targeting with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Lock-on Targeting as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Model startup, active, recovery, and cancel windows as data, then drive hitboxes, animation events, and damage application from one combat state source. For Lock-on Targeting, validate this path with parameters such as lock_candidate_radius and max_lock_angle_degrees.",
+    "godot": "Use Area2D or Area3D hit volumes with frame-window state on the actor; avoid placing damage authority inside animation-only callbacks. For Lock-on Targeting, validate this path with parameters such as lock_candidate_radius and max_lock_angle_degrees.",
+    "unreal": "Implement the action as a Gameplay Ability or Actor Component with montage notifies for windows and authoritative damage on the server when networked. For Lock-on Targeting, validate this path with parameters such as lock_candidate_radius and max_lock_angle_degrees.",
+    "web": "Update combat windows in the fixed simulation step, evaluate hurtbox overlap from cached transforms, and emit presentation events separately from damage state. For Lock-on Targeting, validate this path with parameters such as lock_candidate_radius and max_lock_angle_degrees."
   },
   "related_mechanics": [
-    "camera.screen_shake",
-    "combat.melee_attack",
-    "combat.ranged_attack",
-    "ui_ux.damage_numbers"
+    "camera.camera_lock_on",
+    "camera.third_person_camera",
+    "ai.line_of_sight_detection",
+    "combat.ranged_attack"
   ],
   "combines_well_with": [
-    "camera.screen_shake",
-    "combat.charged_attack",
-    "combat.combo_chain",
-    "ui_ux.damage_numbers"
+    "combat.block",
+    "combat.parry",
+    "camera.smooth_follow_camera",
+    "ui_ux.hit_marker"
   ],
   "example_games": [],
   "tags": [
     "combat",
-    "combat_control",
-    "lock",
-    "timing"
+    "targeting",
+    "camera",
+    "aiming",
+    "accessibility"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

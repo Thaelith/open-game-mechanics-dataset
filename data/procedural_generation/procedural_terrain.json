@@ -2,12 +2,12 @@
   "id": "procedural_generation.procedural_terrain",
   "name": "Procedural Terrain",
   "aliases": [
-    "procedural terrain mechanic",
-    "procedural terrain system",
-    "procedural terrain"
+    "generated terrain",
+    "terrain generation",
+    "landscape generation"
   ],
   "category": "procedural_generation",
-  "subcategory": "content_generation",
+  "subcategory": "terrain_generation",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -20,91 +20,115 @@
     "tuning": "expert"
   },
   "genres": [
-    "roguelike",
     "sandbox",
-    "survival"
+    "survival",
+    "simulation",
+    "open_world"
   ],
-  "description": "Procedural Terrain is a content-generation mechanic that creates spaces, events, rewards, or structures from rules and seeds.",
-  "design_notes": "Procedural Terrain should be designed around a clear player promise, a readable trigger, and a predictable result. For procedural generation mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A rule-driven system that generates playable landforms, surfaces, or height fields from seeds and constraints.",
+  "design_notes": "Procedural terrain is useful only when generated spaces support the intended play. Terrain generation should be judged by navigation, resource placement, biome readability, performance budgets, and failure recovery, not just visual variety. A validation pass is essential because rare bad terrain can ruin long sessions.",
   "design_purpose": [
-    "Give the player a readable way to use procedural terrain as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect procedural terrain to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create large or replayable spaces without hand-authoring every surface.",
+    "Support exploration through varied landforms, biomes, resources, and landmarks.",
+    "Produce deterministic worlds when seeds, sharing, or debugging require reproducibility."
   ],
-  "player_fantasy": "The player feels each run or world can surprise them while still following understandable rules.",
+  "player_fantasy": "The player feels they are exploring a world with scale, variety, and discoverable structure.",
   "required_systems": [
     "random_number_generator",
-    "content_rules",
-    "validation_pass",
-    "seed_storage"
+    "terrain_chunk_streaming",
+    "noise_sampling",
+    "biome_rules",
+    "validation_pass"
   ],
   "parameters": [
     {
-      "name": "seed_value",
+      "name": "chunk_size",
       "type": "integer",
-      "typical_range": "0-2^32",
-      "description": "Seed used to make generation reproducible."
+      "typical_range": "16-256 tiles or meters",
+      "description": "Terrain area generated and streamed as one unit."
     },
     {
-      "name": "generation_depth",
-      "type": "integer",
-      "typical_range": "1-20 passes",
-      "description": "Number of passes used to construct and validate output."
+      "name": "noise_scale",
+      "type": "float",
+      "typical_range": "0.001-2.0",
+      "description": "Sampling scale used by the main terrain noise function."
     },
     {
-      "name": "content_budget",
+      "name": "octave_count",
       "type": "integer",
-      "typical_range": "1-10000 items",
-      "description": "Maximum number of pieces, rooms, encounters, or rewards generated."
+      "typical_range": "1-12 octaves",
+      "description": "Number of layered noise samples used for terrain detail."
+    },
+    {
+      "name": "height_quantization_step",
+      "type": "float",
+      "typical_range": "0-5 world units",
+      "description": "Optional step size for terraced or tile-friendly height output."
+    },
+    {
+      "name": "validation_retries",
+      "type": "integer",
+      "typical_range": "0-50 attempts",
+      "description": "Attempts to regenerate or repair a chunk that fails playability checks."
     }
   ],
   "common_variants": [
-    "procedural_terrain_fully_random",
-    "procedural_terrain_seeded_random",
-    "grammar_based",
-    "hand_authored_chunks"
+    "heightmap_terrain",
+    "tilemap_terrain",
+    "voxel_terrain",
+    "biome_blended_terrain",
+    "erosion_simulated_terrain"
   ],
   "edge_cases": [
-    "Procedural Terrain is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Procedural Terrain overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Procedural Terrain runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Spawn positions can appear inside water, cliffs, caves, or unreachable terrain unless validated.",
+    "Chunk boundaries must align height, collision, resources, and nav data without visible seams.",
+    "Changing generation rules after release can break existing world seeds and player bases.",
+    "Floating-point differences across platforms can desync deterministic terrain if noise functions are not stable."
   ],
   "common_bugs": [
-    "Procedural Terrain state does not reset correctly after interruption or reload.",
-    "Feedback for Procedural Terrain plays even when the mechanic fails or is rejected.",
-    "Procedural Terrain produces different results between frame rates, platforms, or network clients."
+    "Visual mesh and collision mesh are generated from different samples and do not line up.",
+    "Biome blending creates thin invalid strips that trap players or pathfinding agents.",
+    "Generation runs on the render thread and stalls when the player crosses chunk boundaries.",
+    "Validation checks only local chunks and misses roads, rivers, or caves that fail across chunk edges."
   ],
   "balancing_notes": [
-    "Make Procedural Terrain strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Terrain variety should serve navigation and goals; pure noise often creates fatigue rather than exploration.",
+    "Resource and enemy placement need to be balanced against terrain difficulty and travel cost."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Procedural Terrain becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Avoid relying only on subtle color changes to distinguish traversal-safe terrain from hazards.",
+    "Provide map, marker, or pathing support if generated terrain can create visually dense navigation problems."
   ],
   "implementation_notes": {
-    "unity": "Implement Procedural Terrain with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Procedural Terrain as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Procedural Terrain with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Procedural Terrain as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Generate height, biome, collision, and decoration data from a deterministic chunk seed; use jobs or background tasks for expensive passes where possible.",
+    "godot": "Build chunk data in worker threads when safe, then apply TileMap, MeshInstance, or collision updates on the main thread with deterministic seed inputs.",
+    "unreal": "Use World Partition, Procedural Content Generation tools, or custom runtime components with explicit seed/version metadata for generated chunks.",
+    "web": "Generate chunks as typed arrays or mesh buffers off the main thread with Web Workers when available; keep seed and generator version in save data."
   },
   "related_mechanics": [
-    "economy.loot_table",
-    "procedural_generation.procedural_level_rooms",
-    "procedural_generation.random_encounters",
-    "roguelike.procedural_floor"
+    "procedural_generation.seeded_generation",
+    "procedural_generation.biome_generation",
+    "procedural_generation.room_connection_graph",
+    "simulation.systemic_weather"
   ],
   "combines_well_with": [
+    "survival.base_building",
     "economy.loot_table",
-    "procedural_generation.biome_generation",
-    "procedural_generation.seeded_generation",
-    "roguelike.procedural_floor"
+    "ai.enemy_spawn_director",
+    "ui_ux.minimap"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Minecraft",
+      "note": "Uses generated terrain and world seeds for large explorable worlds."
+    }
+  ],
   "tags": [
-    "content_generation",
     "procedural",
-    "replayability"
+    "terrain",
+    "chunks",
+    "seeded",
+    "validation"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"
