@@ -123,6 +123,36 @@
     "survival.health",
     "platforming.coyote_time"
   ],
+  "relationships": [
+    {
+      "target": "accessibility.assist_mode",
+      "type": "supports",
+      "reason": "Adjustable difficulty works best when assist features expose the specific timing, damage, or input modifiers being changed.",
+      "strength": "strong"
+    },
+    {
+      "target": "ui_ux.tutorial_prompt",
+      "type": "supports",
+      "reason": "Tutorial and settings prompts can explain difficulty changes without forcing players to infer hidden rule changes.",
+      "strength": "medium"
+    },
+    {
+      "target": "progression.achievement_system",
+      "type": "soft_conflicts_with",
+      "reason": "Difficulty modifiers need policy rules for achievements or challenge rewards that depend on fixed constraints.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 4,
+    "content_cost": 2,
+    "networking_risk": 1,
+    "save_load_risk": 4,
+    "ui_risk": 5
+  },
   "example_games": [
     {
       "title": "Celeste",
@@ -141,5 +171,5 @@
     "ranked_policy"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

@@ -133,6 +133,36 @@
     "ai.patrol",
     "simulation.traffic_flow"
   ],
+  "relationships": [
+    {
+      "target": "ui_ux.minimap",
+      "type": "requires",
+      "reason": "Fog of war needs minimap and map rendering to separate visible, explored, and hidden regions.",
+      "strength": "strong"
+    },
+    {
+      "target": "strategy.territory_control",
+      "type": "soft_conflicts_with",
+      "reason": "Territory ownership and fog visibility need rules for whether captured regions reveal current enemy activity.",
+      "strength": "medium"
+    },
+    {
+      "target": "camera.top_down_camera",
+      "type": "supports",
+      "reason": "Top-down cameras use fog cells to constrain visible tactical information.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 4,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 4,
+    "save_load_risk": 4,
+    "ui_risk": 5
+  },
   "example_games": [
     {
       "title": "StarCraft II",
@@ -151,5 +181,5 @@
     "multiplayer_authority"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

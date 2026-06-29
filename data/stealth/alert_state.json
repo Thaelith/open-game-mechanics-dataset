@@ -123,6 +123,36 @@
     "stealth.distraction_throw",
     "ui_ux.damage_numbers"
   ],
+  "relationships": [
+    {
+      "target": "ai.line_of_sight_detection",
+      "type": "requires",
+      "reason": "Alert state needs perception events from line-of-sight checks to escalate suspicion or combat.",
+      "strength": "strong"
+    },
+    {
+      "target": "stealth.noise_meter",
+      "type": "supports",
+      "reason": "Noise events can raise suspicion or alert state even without visual contact.",
+      "strength": "medium"
+    },
+    {
+      "target": "stealth.last_known_position_search",
+      "type": "feeds",
+      "reason": "Losing direct detection can feed last-known-position search behavior.",
+      "strength": "strong"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 4,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Metal Gear Solid V",
@@ -141,5 +171,5 @@
     "debug_reason_trace"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

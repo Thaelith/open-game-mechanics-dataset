@@ -119,6 +119,36 @@
     "procedural_generation.procedural_terrain",
     "strategy.fog_of_war"
   ],
+  "relationships": [
+    {
+      "target": "vehicles.vehicle_damage",
+      "type": "soft_conflicts_with",
+      "reason": "Destruction and vehicle damage need collision impulse attribution and debris authority rules.",
+      "strength": "medium"
+    },
+    {
+      "target": "ai.cover_seeking",
+      "type": "soft_conflicts_with",
+      "reason": "Destroyed cover must invalidate AI cover slots and pathing assumptions.",
+      "strength": "medium"
+    },
+    {
+      "target": "time.time_rewind",
+      "type": "soft_conflicts_with",
+      "reason": "Rewind must capture chunk state, debris lifetime, and navmesh changes to restore destruction safely.",
+      "strength": "strong"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 5,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 5,
+    "networking_risk": 5,
+    "save_load_risk": 5,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Red Faction: Guerrilla",
@@ -137,5 +167,5 @@
     "persistence"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

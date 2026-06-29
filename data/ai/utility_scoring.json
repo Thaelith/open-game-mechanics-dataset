@@ -118,6 +118,36 @@
     "ai.companion_follow",
     "procedural_generation.random_encounters"
   ],
+  "relationships": [
+    {
+      "target": "ai.flee",
+      "type": "supports",
+      "reason": "Utility scoring can compare flee, attack, investigate, and cover actions from the same blackboard state.",
+      "strength": "medium"
+    },
+    {
+      "target": "ai.cover_seeking",
+      "type": "supports",
+      "reason": "Cover choices can be scored by threat exposure, distance, occupancy, and tactical value.",
+      "strength": "medium"
+    },
+    {
+      "target": "simulation.needs_simulation",
+      "type": "enhances",
+      "reason": "Simulated needs can feed utility scores for agents that choose actions beyond combat.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 4,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 4,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "The Sims",
@@ -136,5 +166,5 @@
     "debugging"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

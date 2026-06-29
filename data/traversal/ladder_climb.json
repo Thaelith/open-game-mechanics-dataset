@@ -123,6 +123,36 @@
     "stealth.visibility_meter",
     "survival.stamina"
   ],
+  "relationships": [
+    {
+      "target": "ui_ux.interaction_prompt",
+      "type": "supports",
+      "reason": "Ladder climb needs prompts or affordances when attach points are valid and exits are blocked.",
+      "strength": "medium"
+    },
+    {
+      "target": "movement.stamina_movement",
+      "type": "soft_conflicts_with",
+      "reason": "Stamina drain on ladders needs fail and rest rules so players are not trapped mid-climb.",
+      "strength": "medium"
+    },
+    {
+      "target": "camera.smooth_follow_camera",
+      "type": "supports",
+      "reason": "Camera follow profiles need vertical damping and obstruction handling during ladder movement.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 2,
+    "save_load_risk": 2,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Spelunky",
@@ -141,5 +171,5 @@
     "exit_clearance"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

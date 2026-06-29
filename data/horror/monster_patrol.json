@@ -133,6 +133,36 @@
     "stealth.last_known_position_search",
     "horror.limited_visibility"
   ],
+  "relationships": [
+    {
+      "target": "ai.patrol",
+      "type": "extends",
+      "reason": "Monster patrol extends generic patrol with tension pacing, search transitions, and scripted pressure rules.",
+      "strength": "strong"
+    },
+    {
+      "target": "horror.sound_lure",
+      "type": "supports",
+      "reason": "Sound lures provide noise targets that can redirect monster patrol or search paths.",
+      "strength": "strong"
+    },
+    {
+      "target": "horror.hiding",
+      "type": "soft_conflicts_with",
+      "reason": "Monster patrol must define when hiding spots are searched, ignored, or invalidated.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 4,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 4,
+    "networking_risk": 3,
+    "save_load_risk": 4,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Alien: Isolation",
@@ -151,5 +181,5 @@
     "search_state"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

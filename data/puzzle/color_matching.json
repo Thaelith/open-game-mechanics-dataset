@@ -118,6 +118,36 @@
     "narrative.environmental_storytelling",
     "ui_ux.dialogue_choice"
   ],
+  "relationships": [
+    {
+      "target": "accessibility.colorblind_modes",
+      "type": "requires",
+      "reason": "Color matching puzzles need redundant symbols or patterns so solutions are not encoded only by hue.",
+      "strength": "strong"
+    },
+    {
+      "target": "puzzle.sequence_memory",
+      "type": "enhances",
+      "reason": "Matching colors can be combined with ordered sequence recall for layered symbol puzzles.",
+      "strength": "weak"
+    },
+    {
+      "target": "ui_ux.tutorial_prompt",
+      "type": "supports",
+      "reason": "Tutorial prompts can introduce symbol and color rules before the puzzle demands precision.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 2,
+    "design_cost": 4,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 1,
+    "save_load_risk": 2,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "The Witness",
@@ -136,5 +166,5 @@
     "puzzle"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

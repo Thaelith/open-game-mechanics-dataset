@@ -133,6 +133,36 @@
     "ui_ux.minimap",
     "simulation.traffic_flow"
   ],
+  "relationships": [
+    {
+      "target": "strategy.fog_of_war",
+      "type": "soft_conflicts_with",
+      "reason": "Territory control must define how ownership interacts with stale intel and hidden enemy presence.",
+      "strength": "medium"
+    },
+    {
+      "target": "multiplayer.team_objective",
+      "type": "supports",
+      "reason": "Team objectives can score or gate victory from territory ownership state.",
+      "strength": "strong"
+    },
+    {
+      "target": "economy.coins",
+      "type": "feeds",
+      "reason": "Controlled regions can generate income or resources for the owning player or team.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 4,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 4,
+    "networking_risk": 5,
+    "save_load_risk": 5,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Company of Heroes",
@@ -151,5 +181,5 @@
     "resource_income"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

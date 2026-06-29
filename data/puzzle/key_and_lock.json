@@ -118,6 +118,36 @@
     "narrative.reputation_gating",
     "ui_ux.interaction_prompt"
   ],
+  "relationships": [
+    {
+      "target": "ui_ux.interaction_prompt",
+      "type": "supports",
+      "reason": "Key-lock puzzles need readable prompts when a valid key, locked object, or missing requirement is targeted.",
+      "strength": "medium"
+    },
+    {
+      "target": "progression.unlockable_abilities",
+      "type": "soft_conflicts_with",
+      "reason": "Ability locks and key locks can stack into confusing gates unless dependencies are shown clearly.",
+      "strength": "medium"
+    },
+    {
+      "target": "procedural_generation.room_connection_graph",
+      "type": "requires",
+      "reason": "Procedural key-lock layouts need graph validation so keys appear before required locks.",
+      "strength": "strong"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 4,
+    "networking_risk": 2,
+    "save_load_risk": 4,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "The Legend of Zelda: Ocarina of Time",
@@ -136,5 +166,5 @@
     "interaction"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

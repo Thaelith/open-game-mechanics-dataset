@@ -124,6 +124,36 @@
     "camera.third_person_camera",
     "accessibility.toggle_hold_option"
   ],
+  "relationships": [
+    {
+      "target": "vehicles.vehicle_acceleration",
+      "type": "balances",
+      "reason": "Braking defines how acceleration is reduced, reversed, or converted into controlled stopping distance.",
+      "strength": "strong"
+    },
+    {
+      "target": "vehicles.drifting",
+      "type": "supports",
+      "reason": "Brake and counter-steer input often initiate or control drift state.",
+      "strength": "medium"
+    },
+    {
+      "target": "camera.dynamic_fov",
+      "type": "soft_conflicts_with",
+      "reason": "Rapid braking and FOV changes need smoothing rules to avoid uncomfortable camera pulses.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 2,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Gran Turismo 7",
@@ -142,5 +172,5 @@
     "assist"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

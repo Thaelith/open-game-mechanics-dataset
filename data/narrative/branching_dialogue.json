@@ -129,6 +129,36 @@
     "progression.achievement_system",
     "accessibility.text_scaling"
   ],
+  "relationships": [
+    {
+      "target": "ui_ux.dialogue_choice",
+      "type": "requires",
+      "reason": "Branching dialogue needs choice widgets with focus, localization, timing, and committed choice state.",
+      "strength": "strong"
+    },
+    {
+      "target": "narrative.reputation_choice",
+      "type": "feeds",
+      "reason": "Dialogue branches can commit reputation changes or faction consequences after player choices.",
+      "strength": "medium"
+    },
+    {
+      "target": "camera.cinematic_camera",
+      "type": "enhances",
+      "reason": "Cinematic framing can support authored conversations without changing branch logic.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 4,
+    "design_cost": 5,
+    "tuning_cost": 4,
+    "content_cost": 5,
+    "networking_risk": 2,
+    "save_load_risk": 5,
+    "ui_risk": 5
+  },
   "example_games": [
     {
       "title": "Mass Effect",
@@ -147,5 +177,5 @@
     "consequence"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

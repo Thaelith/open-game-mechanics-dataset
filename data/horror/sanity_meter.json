@@ -126,6 +126,36 @@
     "camera.screen_shake",
     "accessibility.adjustable_difficulty"
   ],
+  "relationships": [
+    {
+      "target": "horror.limited_visibility",
+      "type": "enhances",
+      "reason": "Low sanity can alter visibility, perception, or screen effects to increase tension.",
+      "strength": "medium"
+    },
+    {
+      "target": "horror.safe_room",
+      "type": "balances",
+      "reason": "Safe rooms can restore sanity or pause decay so pressure has recoverable boundaries.",
+      "strength": "strong"
+    },
+    {
+      "target": "accessibility.assist_mode",
+      "type": "supports",
+      "reason": "Intensity settings can limit sanity effects that distort perception or readability.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 1,
+    "save_load_risk": 4,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Amnesia: The Dark Descent",
@@ -144,5 +174,5 @@
     "accessibility_intensity"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

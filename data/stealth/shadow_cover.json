@@ -123,6 +123,36 @@
     "camera.top_down_camera",
     "ui_ux.minimap"
   ],
+  "relationships": [
+    {
+      "target": "stealth.visibility_meter",
+      "type": "feeds",
+      "reason": "Shadow cover modifies visibility values based on light sampling and cover volumes.",
+      "strength": "strong"
+    },
+    {
+      "target": "horror.light_resource",
+      "type": "soft_conflicts_with",
+      "reason": "Player light resources can reveal shadow cover and change stealth readability.",
+      "strength": "medium"
+    },
+    {
+      "target": "accessibility.colorblind_modes",
+      "type": "supports",
+      "reason": "Shadow cover feedback needs contrast-safe indicators beyond dark color alone.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 2,
+    "save_load_risk": 3,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Thief: The Dark Project",
@@ -141,5 +171,5 @@
     "stealth"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

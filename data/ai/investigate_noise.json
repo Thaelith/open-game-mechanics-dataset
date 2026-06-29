@@ -117,6 +117,36 @@
     "horror.sound_lure",
     "ui_ux.minimap"
   ],
+  "relationships": [
+    {
+      "target": "stealth.noise_meter",
+      "type": "requires",
+      "reason": "Noise investigation needs loudness, radius, surface, and occlusion data from the stealth noise model.",
+      "strength": "strong"
+    },
+    {
+      "target": "stealth.distraction_throw",
+      "type": "supports",
+      "reason": "Distraction objects create noise events that investigation behavior can prioritize.",
+      "strength": "strong"
+    },
+    {
+      "target": "ai.patrol",
+      "type": "enhances",
+      "reason": "Investigation interrupts patrol routes and creates a recoverable search state before returning to normal behavior.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 3,
+    "save_load_risk": 3,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "The Last of Us",
@@ -134,5 +164,5 @@
     "investigate"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

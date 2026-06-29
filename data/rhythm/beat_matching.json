@@ -133,6 +133,36 @@
     "combat.combo_chain",
     "accessibility.adjustable_difficulty"
   ],
+  "relationships": [
+    {
+      "target": "rhythm.sync_window",
+      "type": "requires",
+      "reason": "Beat matching depends on timing windows that compare input timestamps against the audio clock.",
+      "strength": "strong"
+    },
+    {
+      "target": "rhythm.combo_multiplier",
+      "type": "feeds",
+      "reason": "Accurate beat matches can increase combo multiplier or maintain rhythm streak state.",
+      "strength": "medium"
+    },
+    {
+      "target": "accessibility.assist_mode",
+      "type": "supports",
+      "reason": "Timing assists can widen beat windows or expose calibration options without changing chart data.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 4,
+    "networking_risk": 1,
+    "save_load_risk": 3,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Beat Saber",
@@ -151,5 +181,5 @@
     "rhythm"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

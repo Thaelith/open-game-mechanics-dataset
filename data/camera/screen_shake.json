@@ -123,6 +123,36 @@
     "physics.breakable_object",
     "vehicles.vehicle_damage"
   ],
+  "relationships": [
+    {
+      "target": "combat.knockback",
+      "type": "enhances",
+      "reason": "Camera shake can reinforce heavy impacts and knockback without changing resolver state.",
+      "strength": "weak"
+    },
+    {
+      "target": "accessibility.assist_mode",
+      "type": "requires",
+      "reason": "Screen shake needs reduction or disabling controls so impact feedback remains comfortable.",
+      "strength": "strong"
+    },
+    {
+      "target": "horror.jump_scare_trigger",
+      "type": "soft_conflicts_with",
+      "reason": "Jump-scare camera impulses should respect global shake and intensity settings.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "polish",
+    "implementation_cost": 2,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 2,
+    "networking_risk": 1,
+    "save_load_risk": 1,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Nuclear Throne",
@@ -141,5 +171,5 @@
     "presentation"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

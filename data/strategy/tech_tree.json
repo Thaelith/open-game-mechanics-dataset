@@ -133,6 +133,36 @@
     "economy.shop",
     "meta.new_game_plus"
   ],
+  "relationships": [
+    {
+      "target": "progression.unlockable_abilities",
+      "type": "unlocks",
+      "reason": "Tech trees grant access to units, buildings, abilities, or upgrades through structured prerequisites.",
+      "strength": "strong"
+    },
+    {
+      "target": "economy.resource_conversion",
+      "type": "consumes",
+      "reason": "Research often spends converted resources or strategic materials through committed transactions.",
+      "strength": "medium"
+    },
+    {
+      "target": "ui_ux.tutorial_prompt",
+      "type": "supports",
+      "reason": "Tutorial prompts can explain prerequisite chains and unlock consequences without overwhelming new players.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 4,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 4,
+    "networking_risk": 4,
+    "save_load_risk": 5,
+    "ui_risk": 5
+  },
   "example_games": [
     {
       "title": "Civilization VI",
@@ -151,5 +181,5 @@
     "resource_transaction"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

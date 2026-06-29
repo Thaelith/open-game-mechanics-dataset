@@ -124,6 +124,36 @@
     "vehicles.upgradeable_vehicle",
     "ui_ux.cooldown_indicator"
   ],
+  "relationships": [
+    {
+      "target": "vehicles.vehicle_acceleration",
+      "type": "balances",
+      "reason": "Fuel limits sustained acceleration and route range by adding a consumable travel resource.",
+      "strength": "strong"
+    },
+    {
+      "target": "economy.shop",
+      "type": "supports",
+      "reason": "Shops or stations can sell refills through validated purchase transactions.",
+      "strength": "medium"
+    },
+    {
+      "target": "survival.base_building",
+      "type": "enhances",
+      "reason": "Bases can host storage or refueling structures that make travel planning strategic.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 5,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Mad Max",
@@ -142,5 +172,5 @@
     "persistence"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

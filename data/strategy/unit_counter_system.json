@@ -133,6 +133,36 @@
     "ai.utility_scoring",
     "ui_ux.hit_marker"
   ],
+  "relationships": [
+    {
+      "target": "combat.damage_over_time",
+      "type": "soft_conflicts_with",
+      "reason": "Counter tables and status damage need clear modifier stacking rules to avoid hidden matchup surprises.",
+      "strength": "medium"
+    },
+    {
+      "target": "ui_ux.damage_numbers",
+      "type": "supports",
+      "reason": "Readable damage feedback helps players learn unit counter relationships from combat outcomes.",
+      "strength": "medium"
+    },
+    {
+      "target": "strategy.tech_tree",
+      "type": "enhances",
+      "reason": "Tech trees can unlock counter units or upgrades that shift matchup strategy over time.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 4,
+    "save_load_risk": 3,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Age of Empires II",
@@ -151,5 +181,5 @@
     "combat_preview"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

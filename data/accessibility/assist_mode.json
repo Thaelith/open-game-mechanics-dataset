@@ -123,6 +123,36 @@
     "movement.stamina_movement",
     "combat.parry"
   ],
+  "relationships": [
+    {
+      "target": "accessibility.adjustable_difficulty",
+      "type": "extends",
+      "reason": "Assist mode extends difficulty options with named settings that target input, timing, survival, or traversal barriers.",
+      "strength": "strong"
+    },
+    {
+      "target": "platforming.coyote_time",
+      "type": "enhances",
+      "reason": "Timing assists can widen coyote windows for players who need more forgiving jump timing.",
+      "strength": "medium"
+    },
+    {
+      "target": "combat.invincibility_frames",
+      "type": "soft_conflicts_with",
+      "reason": "Defensive assist settings must define whether they change immunity windows in modes with competitive or achievement constraints.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 2,
+    "networking_risk": 1,
+    "save_load_risk": 4,
+    "ui_risk": 5
+  },
   "example_games": [
     {
       "title": "Celeste",
@@ -141,5 +171,5 @@
     "settings"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

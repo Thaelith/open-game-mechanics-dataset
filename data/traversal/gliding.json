@@ -123,6 +123,36 @@
     "camera.dynamic_fov",
     "survival.stamina"
   ],
+  "relationships": [
+    {
+      "target": "platforming.double_jump",
+      "type": "enhances",
+      "reason": "Gliding pairs with airborne jumps by extending aerial route planning after the jump apex.",
+      "strength": "medium"
+    },
+    {
+      "target": "physics.wind_force",
+      "type": "supports",
+      "reason": "Wind force can add authored lift, drift, or hazard lanes to gliding traversal.",
+      "strength": "medium"
+    },
+    {
+      "target": "survival.stamina",
+      "type": "consumes",
+      "reason": "Some gliding designs spend stamina to limit long-distance bypasses and create landing decisions.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 2,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "The Legend of Zelda: Breath of the Wild",
@@ -141,5 +171,5 @@
     "camera_comfort"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

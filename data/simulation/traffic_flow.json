@@ -139,6 +139,36 @@
     "physics.moving_platform",
     "procedural_generation.procedural_terrain"
   ],
+  "relationships": [
+    {
+      "target": "ai.flocking",
+      "type": "supports",
+      "reason": "Traffic flow can use local steering and flocking rules for density and lane behavior.",
+      "strength": "medium"
+    },
+    {
+      "target": "vehicles.vehicle_acceleration",
+      "type": "soft_conflicts_with",
+      "reason": "Vehicle controls and traffic simulation need collision and authority boundaries when player vehicles enter traffic.",
+      "strength": "medium"
+    },
+    {
+      "target": "simulation.population_model",
+      "type": "supports",
+      "reason": "Population density can feed traffic demand and spawn budgets.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 5,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 4,
+    "networking_risk": 4,
+    "save_load_risk": 5,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Cities: Skylines",
@@ -157,5 +187,5 @@
     "debug_overlay"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

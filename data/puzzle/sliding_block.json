@@ -124,6 +124,36 @@
     "ui_ux.tutorial_prompt",
     "time.time_rewind"
   ],
+  "relationships": [
+    {
+      "target": "physics.physics_push_pull",
+      "type": "requires",
+      "reason": "Sliding block puzzles need controlled push or pull movement with collision and grid validation.",
+      "strength": "strong"
+    },
+    {
+      "target": "puzzle.pressure_plate",
+      "type": "enhances",
+      "reason": "Blocks can activate pressure plates and create spatial dependency chains.",
+      "strength": "medium"
+    },
+    {
+      "target": "time.time_rewind",
+      "type": "enhances",
+      "reason": "Rewind or undo helps recover from soft-lock positions in block puzzles.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 4,
+    "networking_risk": 2,
+    "save_load_risk": 4,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Sokoban",
@@ -142,5 +172,5 @@
     "soft_lock"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

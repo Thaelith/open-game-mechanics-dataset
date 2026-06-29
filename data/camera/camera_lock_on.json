@@ -116,6 +116,36 @@
     "combat.lock_on_targeting",
     "movement.run"
   ],
+  "relationships": [
+    {
+      "target": "combat.lock_on_targeting",
+      "type": "supports",
+      "reason": "Camera lock-on uses the combat target lock to frame targets and manage cycling rules.",
+      "strength": "strong"
+    },
+    {
+      "target": "combat.parry",
+      "type": "enhances",
+      "reason": "Stable lock-on framing helps players read parry timing and incoming attack direction.",
+      "strength": "medium"
+    },
+    {
+      "target": "accessibility.assist_mode",
+      "type": "supports",
+      "reason": "Assist modes can adjust target cycling, recentering, or camera comfort for lock-on systems.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 4,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 2,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "The Legend of Zelda: Ocarina of Time",
@@ -132,5 +162,5 @@
     "view_control"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

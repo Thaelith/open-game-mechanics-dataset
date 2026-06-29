@@ -133,6 +133,36 @@
     "meta.collection_log",
     "strategy.tech_tree"
   ],
+  "relationships": [
+    {
+      "target": "progression.meta_progression",
+      "type": "extends",
+      "reason": "New game plus extends long-term progression by carrying selected account or completion state into another playthrough.",
+      "strength": "strong"
+    },
+    {
+      "target": "roguelike.run_based_progression",
+      "type": "soft_conflicts_with",
+      "reason": "New game plus persistence can blur run reset boundaries unless account and run state are separated.",
+      "strength": "medium"
+    },
+    {
+      "target": "progression.achievement_system",
+      "type": "enhances",
+      "reason": "Achievements can track completion milestones that unlock or recognize new game plus starts.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 3,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 2,
+    "save_load_risk": 5,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Dark Souls",
@@ -151,5 +181,5 @@
     "profile_state"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

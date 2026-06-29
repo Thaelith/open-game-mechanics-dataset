@@ -123,6 +123,36 @@
     "narrative.codex_journal",
     "multiplayer.role_swap"
   ],
+  "relationships": [
+    {
+      "target": "narrative.reputation_choice",
+      "type": "requires",
+      "reason": "Reputation gates depend on previous choices or state changes that set faction thresholds.",
+      "strength": "strong"
+    },
+    {
+      "target": "economy.dynamic_pricing",
+      "type": "supports",
+      "reason": "Reputation gates can drive shop access or price modifiers in a readable way.",
+      "strength": "medium"
+    },
+    {
+      "target": "progression.unlockable_abilities",
+      "type": "soft_conflicts_with",
+      "reason": "Reputation-gated abilities need fallback or respec policy if players can lock themselves out permanently.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 2,
+    "save_load_risk": 5,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Fallout: New Vegas",
@@ -141,5 +171,5 @@
     "choice_history"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

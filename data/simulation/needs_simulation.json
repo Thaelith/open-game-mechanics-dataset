@@ -139,6 +139,36 @@
     "ai.utility_scoring",
     "ui_ux.cooldown_indicator"
   ],
+  "relationships": [
+    {
+      "target": "survival.hunger",
+      "type": "supports",
+      "reason": "Needs simulation can drive hunger decay, thresholds, and recovery sources for agents or players.",
+      "strength": "medium"
+    },
+    {
+      "target": "ai.utility_scoring",
+      "type": "feeds",
+      "reason": "Agent needs can feed utility scores that choose eating, resting, working, or fleeing.",
+      "strength": "medium"
+    },
+    {
+      "target": "simulation.population_model",
+      "type": "supports",
+      "reason": "Population systems use individual or group needs to model demand and behavior pressure.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 4,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 2,
+    "save_load_risk": 5,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "The Sims",
@@ -157,5 +187,5 @@
     "offline_policy"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

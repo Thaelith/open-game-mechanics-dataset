@@ -117,6 +117,36 @@
     "survival.health",
     "multiplayer.team_objective"
   ],
+  "relationships": [
+    {
+      "target": "survival.health",
+      "type": "requires",
+      "reason": "Flee decisions often depend on health thresholds, panic state, or survival pressure.",
+      "strength": "medium"
+    },
+    {
+      "target": "ai.utility_scoring",
+      "type": "supports",
+      "reason": "Utility scoring can choose flee when threat, health, and cover scores exceed attack options.",
+      "strength": "medium"
+    },
+    {
+      "target": "ai.cover_seeking",
+      "type": "enhances",
+      "reason": "Flee behavior can route toward cover slots or safe regions instead of only running away.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 2,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "The Sims",
@@ -134,5 +164,5 @@
     "flee"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

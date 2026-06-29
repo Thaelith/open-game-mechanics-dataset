@@ -133,6 +133,36 @@
     "economy.loot_table",
     "accessibility.text_scaling"
   ],
+  "relationships": [
+    {
+      "target": "progression.achievement_system",
+      "type": "supports",
+      "reason": "Collection logs and achievements can share discovered item counters and profile-level unlock state.",
+      "strength": "medium"
+    },
+    {
+      "target": "economy.loot_table",
+      "type": "feeds",
+      "reason": "Loot tables provide collectible item identities and rarity data for collection progress.",
+      "strength": "medium"
+    },
+    {
+      "target": "accessibility.text_scaling",
+      "type": "requires",
+      "reason": "Collection logs need scalable text and search layout because entries can become long and dense.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 4,
+    "networking_risk": 1,
+    "save_load_risk": 5,
+    "ui_risk": 5
+  },
   "example_games": [
     {
       "title": "Vampire Survivors",
@@ -151,5 +181,5 @@
     "completion_tracking"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

@@ -115,6 +115,36 @@
     "combat.lock_on_targeting",
     "movement.run"
   ],
+  "relationships": [
+    {
+      "target": "movement.run",
+      "type": "enhances",
+      "reason": "Dynamic FOV can make high-velocity running feel faster while leaving movement state unchanged.",
+      "strength": "weak"
+    },
+    {
+      "target": "traversal.jetpack",
+      "type": "enhances",
+      "reason": "FOV changes communicate thrust and forward acceleration during powered traversal.",
+      "strength": "weak"
+    },
+    {
+      "target": "accessibility.assist_mode",
+      "type": "soft_conflicts_with",
+      "reason": "FOV effects need comfort settings or assist overrides for players sensitive to motion intensity.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "polish",
+    "implementation_cost": 2,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 1,
+    "networking_risk": 1,
+    "save_load_risk": 1,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Minecraft",
@@ -132,5 +162,5 @@
     "view_control"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

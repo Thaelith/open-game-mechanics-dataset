@@ -123,6 +123,36 @@
     "accessibility.text_scaling",
     "narrative.branching_dialogue"
   ],
+  "relationships": [
+    {
+      "target": "narrative.codex_journal",
+      "type": "feeds",
+      "reason": "Environmental clues can unlock lore records when the player examines or discovers authored story nodes.",
+      "strength": "medium"
+    },
+    {
+      "target": "camera.top_down_camera",
+      "type": "soft_conflicts_with",
+      "reason": "Top-down views can make subtle environmental clues too visible or too small unless composition is tuned.",
+      "strength": "weak"
+    },
+    {
+      "target": "accessibility.colorblind_modes",
+      "type": "supports",
+      "reason": "Environmental clues should avoid relying only on hue or low-contrast markings for interpretation.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 3,
+    "design_cost": 5,
+    "tuning_cost": 4,
+    "content_cost": 5,
+    "networking_risk": 1,
+    "save_load_risk": 3,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "BioShock",
@@ -141,5 +171,5 @@
     "readability"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

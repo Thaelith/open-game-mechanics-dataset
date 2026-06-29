@@ -123,6 +123,36 @@
     "puzzle.pressure_plate",
     "camera.smooth_follow_camera"
   ],
+  "relationships": [
+    {
+      "target": "strategy.fog_of_war",
+      "type": "supports",
+      "reason": "Top-down strategy views often pair with fog-of-war cells and minimap visibility state.",
+      "strength": "medium"
+    },
+    {
+      "target": "ui_ux.minimap",
+      "type": "soft_conflicts_with",
+      "reason": "Top-down cameras and minimaps can duplicate spatial information unless marker filtering and zoom levels are coordinated.",
+      "strength": "weak"
+    },
+    {
+      "target": "ai.line_of_sight_detection",
+      "type": "soft_conflicts_with",
+      "reason": "Top-down visibility to the player may reveal areas that AI line-of-sight rules still treat as hidden.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 2,
+    "networking_risk": 2,
+    "save_load_risk": 2,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Hades",
@@ -141,5 +171,5 @@
     "input_mapping"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

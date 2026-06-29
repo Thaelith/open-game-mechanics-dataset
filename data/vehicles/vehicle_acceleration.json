@@ -124,6 +124,36 @@
     "camera.dynamic_fov",
     "traversal.vehicle_mount"
   ],
+  "relationships": [
+    {
+      "target": "vehicles.fuel",
+      "type": "consumes",
+      "reason": "Acceleration can consume fuel according to throttle state and engine load.",
+      "strength": "medium"
+    },
+    {
+      "target": "vehicles.vehicle_braking",
+      "type": "balances",
+      "reason": "Braking counterweights acceleration and controls stopping distance, reverse state, and traction recovery.",
+      "strength": "strong"
+    },
+    {
+      "target": "physics.wind_force",
+      "type": "soft_conflicts_with",
+      "reason": "Wind or slope forces must combine with vehicle acceleration without producing unstable velocity spikes.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 4,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 4,
+    "save_load_risk": 3,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Mario Kart 8",
@@ -142,5 +172,5 @@
     "prediction"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

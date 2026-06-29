@@ -123,6 +123,36 @@
     "progression.upgrade_shop",
     "ui_ux.cooldown_indicator"
   ],
+  "relationships": [
+    {
+      "target": "vehicles.fuel",
+      "type": "consumes",
+      "reason": "Jetpacks can use fuel-style resource drain and refill transactions to constrain vertical travel.",
+      "strength": "medium"
+    },
+    {
+      "target": "camera.dynamic_fov",
+      "type": "enhances",
+      "reason": "FOV changes communicate thrust and forward acceleration during powered flight.",
+      "strength": "weak"
+    },
+    {
+      "target": "survival.oxygen",
+      "type": "soft_conflicts_with",
+      "reason": "Jetpack traversal can bypass oxygen or hazard spaces unless altitude, fuel, and area rules align.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 4,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 4,
+    "save_load_risk": 3,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Jetpack Joyride",
@@ -141,5 +171,5 @@
     "camera_comfort"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

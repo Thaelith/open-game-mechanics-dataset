@@ -118,6 +118,36 @@
     "puzzle.physics_weight_puzzle",
     "survival.temperature"
   ],
+  "relationships": [
+    {
+      "target": "movement.swimming",
+      "type": "supports",
+      "reason": "Swimming movement relies on buoyancy, drag, and submerged-state rules to feel consistent.",
+      "strength": "strong"
+    },
+    {
+      "target": "survival.oxygen",
+      "type": "soft_conflicts_with",
+      "reason": "Buoyancy and oxygen systems need shared submerged-state boundaries so air supply matches water contact.",
+      "strength": "medium"
+    },
+    {
+      "target": "physics.gravity",
+      "type": "balances",
+      "reason": "Buoyancy counteracts gravity based on submerged ratio, body mass, and fluid volume state.",
+      "strength": "strong"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 4,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 3,
+    "save_load_risk": 4,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "Subnautica",
@@ -136,5 +166,5 @@
     "physics"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

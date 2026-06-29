@@ -7,7 +7,7 @@
     "capability unlocks"
   ],
   "category": "progression",
-  "subcategory": "progression",
+  "subcategory": "unlock_system",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -134,5 +134,5 @@
     "unlockable"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

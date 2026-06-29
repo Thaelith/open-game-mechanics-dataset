@@ -124,6 +124,36 @@
     "platforming.coyote_time",
     "multiplayer.local_coop"
   ],
+  "relationships": [
+    {
+      "target": "puzzle.pressure_plate",
+      "type": "supports",
+      "reason": "Pressure plates commonly provide the activation event that starts a timed door window.",
+      "strength": "medium"
+    },
+    {
+      "target": "time.timed_challenge",
+      "type": "is_variant_of",
+      "reason": "Timed doors are localized timed challenges with a door state, grace window, and reset policy.",
+      "strength": "medium"
+    },
+    {
+      "target": "accessibility.assist_mode",
+      "type": "supports",
+      "reason": "Assist options can extend door windows or provide clearer countdowns without changing the puzzle structure.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 2,
+    "save_load_risk": 3,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Portal 2",
@@ -142,5 +172,5 @@
     "timing"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

@@ -118,6 +118,36 @@
     "platforming.coyote_time",
     "traversal.gliding"
   ],
+  "relationships": [
+    {
+      "target": "platforming.variable_jump_height",
+      "type": "requires",
+      "reason": "Jump arcs depend on gravity scale, fall multipliers, and fixed-step vertical velocity rules.",
+      "strength": "strong"
+    },
+    {
+      "target": "physics.low_gravity_zone",
+      "type": "extends",
+      "reason": "Low gravity zones specialize the base gravity model with local trigger volumes and altered acceleration.",
+      "strength": "medium"
+    },
+    {
+      "target": "time.slow_motion",
+      "type": "soft_conflicts_with",
+      "reason": "Slow motion must define whether physics timestep, gravity integration, and animation clocks scale together.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 1,
+    "networking_risk": 3,
+    "save_load_risk": 3,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "Super Mario Bros.",
@@ -136,5 +166,5 @@
     "movement_feel"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

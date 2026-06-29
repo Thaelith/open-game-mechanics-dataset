@@ -133,6 +133,36 @@
     "economy.coins",
     "accessibility.text_scaling"
   ],
+  "relationships": [
+    {
+      "target": "progression.achievement_system",
+      "type": "supports",
+      "reason": "Profile stats provide counters that achievements can evaluate retroactively or display publicly.",
+      "strength": "medium"
+    },
+    {
+      "target": "meta.daily_challenge",
+      "type": "supports",
+      "reason": "Daily challenge history and claim state can be summarized through profile stats.",
+      "strength": "medium"
+    },
+    {
+      "target": "multiplayer.matchmaking_lobby",
+      "type": "soft_conflicts_with",
+      "reason": "Profile stats shown in lobbies need privacy rules and stale-data handling.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 3,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 5,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Apex Legends",
@@ -151,5 +181,5 @@
     "platform_sync"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

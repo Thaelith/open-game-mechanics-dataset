@@ -123,6 +123,36 @@
     "narrative.environmental_storytelling",
     "time.slow_motion"
   ],
+  "relationships": [
+    {
+      "target": "narrative.branching_dialogue",
+      "type": "supports",
+      "reason": "Cinematic cameras can frame dialogue beats and restore gameplay cameras after choice or cutscene state commits.",
+      "strength": "medium"
+    },
+    {
+      "target": "ui_ux.checkpoint_notification",
+      "type": "soft_conflicts_with",
+      "reason": "Cinematic transitions and save notifications need ordering rules so save feedback is not hidden by camera cuts.",
+      "strength": "weak"
+    },
+    {
+      "target": "accessibility.text_scaling",
+      "type": "supports",
+      "reason": "Subtitles and dialogue UI must remain readable during authored camera shots and cuts.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "polish",
+    "implementation_cost": 4,
+    "design_cost": 4,
+    "tuning_cost": 4,
+    "content_cost": 5,
+    "networking_risk": 1,
+    "save_load_risk": 3,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "God of War",
@@ -141,5 +171,5 @@
     "camera_comfort"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

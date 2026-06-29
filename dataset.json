@@ -4,7 +4,7 @@
   "license": "CC0-1.0",
   "tool_license": "MIT",
   "total_mechanics": 223,
-  "last_generated": "2026-06-29T22:31:20+00:00",
+  "last_generated": "2026-06-29T22:45:16+00:00",
   "mechanics": [
     {
       "id": "accessibility.adjustable_difficulty",
@@ -3180,7 +3180,7 @@
       "id": "progression.achievement_system",
       "name": "Achievement System",
       "category": "progression",
-      "subcategory": "progression",
+      "subcategory": "achievement_system",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3203,7 +3203,7 @@
       "id": "progression.crafting_unlocks",
       "name": "Crafting Unlocks",
       "category": "progression",
-      "subcategory": "progression",
+      "subcategory": "crafting_progression",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3226,7 +3226,7 @@
       "id": "progression.equipment_rarity",
       "name": "Equipment Rarity",
       "category": "progression",
-      "subcategory": "progression",
+      "subcategory": "equipment_progression",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3249,7 +3249,7 @@
       "id": "progression.experience_points",
       "name": "Experience Points",
       "category": "progression",
-      "subcategory": "progression",
+      "subcategory": "experience_system",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3272,7 +3272,7 @@
       "id": "progression.level_up",
       "name": "Level Up",
       "category": "progression",
-      "subcategory": "progression",
+      "subcategory": "leveling_system",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3295,7 +3295,7 @@
       "id": "progression.meta_progression",
       "name": "Meta Progression",
       "category": "progression",
-      "subcategory": "progression",
+      "subcategory": "meta_progression",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3318,7 +3318,7 @@
       "id": "progression.prestige_reset",
       "name": "Prestige Reset",
       "category": "progression",
-      "subcategory": "progression",
+      "subcategory": "prestige_system",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3392,7 +3392,7 @@
       "id": "progression.unlockable_abilities",
       "name": "Unlockable Abilities",
       "category": "progression",
-      "subcategory": "progression",
+      "subcategory": "unlock_system",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3415,7 +3415,7 @@
       "id": "progression.upgrade_shop",
       "name": "Upgrade Shop",
       "category": "progression",
-      "subcategory": "progression",
+      "subcategory": "upgrade_system",
       "status": "draft",
       "dimensions": [
         "2D",

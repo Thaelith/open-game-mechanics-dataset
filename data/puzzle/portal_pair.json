@@ -124,6 +124,36 @@
     "combat.projectile_reflection",
     "camera.dynamic_fov"
   ],
+  "relationships": [
+    {
+      "target": "physics.one_way_platform",
+      "type": "soft_conflicts_with",
+      "reason": "Portal movement and one-way collision rules need clear priority to avoid one-sided trapping or clipping.",
+      "strength": "medium"
+    },
+    {
+      "target": "time.time_rewind",
+      "type": "soft_conflicts_with",
+      "reason": "Rewind must capture portal entry, exit transforms, and cooldowns to avoid loop divergence.",
+      "strength": "medium"
+    },
+    {
+      "target": "camera.camera_lock_on",
+      "type": "soft_conflicts_with",
+      "reason": "Lock-on cameras can lose orientation when portals remap character position or facing direction.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 5,
+    "design_cost": 5,
+    "tuning_cost": 5,
+    "content_cost": 4,
+    "networking_risk": 3,
+    "save_load_risk": 5,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Portal",
@@ -142,5 +172,5 @@
     "spatial_puzzle"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

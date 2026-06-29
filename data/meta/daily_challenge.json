@@ -133,6 +133,36 @@
     "ui_ux.quest_marker",
     "roguelike.permadeath"
   ],
+  "relationships": [
+    {
+      "target": "progression.achievement_system",
+      "type": "supports",
+      "reason": "Daily challenges can share account counters, reward claim state, and platform profile records with achievements.",
+      "strength": "medium"
+    },
+    {
+      "target": "procedural_generation.seeded_generation",
+      "type": "requires",
+      "reason": "Daily challenge rotations need stable seeds, content versions, and server timestamps for fair comparison.",
+      "strength": "strong"
+    },
+    {
+      "target": "economy.coins",
+      "type": "feeds",
+      "reason": "Daily challenges can grant currency rewards through account-safe claim transactions.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 3,
+    "networking_risk": 3,
+    "save_load_risk": 5,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Spelunky 2",
@@ -151,5 +181,5 @@
     "account_profile"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

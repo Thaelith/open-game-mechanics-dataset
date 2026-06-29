@@ -123,6 +123,36 @@
     "accessibility.assist_mode",
     "narrative.branching_dialogue"
   ],
+  "relationships": [
+    {
+      "target": "ui_ux.dialogue_choice",
+      "type": "supports",
+      "reason": "Dialogue choices need layout reflow and focus preservation when text scale changes.",
+      "strength": "strong"
+    },
+    {
+      "target": "narrative.codex_journal",
+      "type": "supports",
+      "reason": "Codex and journal entries require scalable text, search readability, and localization-safe layout.",
+      "strength": "strong"
+    },
+    {
+      "target": "ui_ux.tutorial_prompt",
+      "type": "supports",
+      "reason": "Tutorial prompts often carry required instructions, so text scaling must preserve timing and safe-area layout.",
+      "strength": "strong"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 0,
+    "save_load_risk": 3,
+    "ui_risk": 5
+  },
   "example_games": [
     {
       "title": "The Last of Us Part II",
@@ -141,5 +171,5 @@
     "subtitles"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

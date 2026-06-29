@@ -116,6 +116,36 @@
     "combat.lock_on_targeting",
     "movement.run"
   ],
+  "relationships": [
+    {
+      "target": "movement.walk",
+      "type": "supports",
+      "reason": "Smooth follow damping is usually tuned around the default walk and run acceleration profile.",
+      "strength": "medium"
+    },
+    {
+      "target": "traversal.grappling_hook",
+      "type": "soft_conflicts_with",
+      "reason": "Fast attachment and release movement can outrun camera damping unless catch-up and lookahead rules are tuned.",
+      "strength": "medium"
+    },
+    {
+      "target": "accessibility.assist_mode",
+      "type": "supports",
+      "reason": "Camera assist settings can adjust follow damping, recenter delay, or lookahead for comfort.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 1,
+    "networking_risk": 2,
+    "save_load_risk": 1,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Celeste",
@@ -133,5 +163,5 @@
     "view_control"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

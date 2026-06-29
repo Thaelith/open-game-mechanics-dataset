@@ -185,13 +185,25 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Report typed mechanic graph coverage.")
     parser.add_argument("--root", type=Path, default=repo_root(), help="Repository root")
     parser.add_argument("--json", action="store_true", help="Print machine-readable JSON")
+    parser.add_argument("--output", type=Path, help="Optional output path for the report")
     args = parser.parse_args()
 
     report = build_report(args.root.resolve())
     if args.json:
-        print(json.dumps(report, indent=2, ensure_ascii=False))
+        rendered = json.dumps(report, indent=2, ensure_ascii=False) + "\n"
     else:
-        print(render_markdown(report))
+        rendered = render_markdown(report)
+
+    if args.output:
+        output_path = args.output
+        if not output_path.is_absolute():
+            output_path = args.root.resolve() / output_path
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(rendered, encoding="utf-8", newline="\n")
+        mode = "JSON" if args.json else "Markdown"
+        print(f"Wrote {mode} mechanic graph report to {output_path}")
+    else:
+        print(rendered, end="" if rendered.endswith("\n") else "\n")
     return 0
 
 

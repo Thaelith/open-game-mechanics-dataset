@@ -123,6 +123,36 @@
     "ui_ux.minimap",
     "accessibility.colorblind_modes"
   ],
+  "relationships": [
+    {
+      "target": "ai.line_of_sight_detection",
+      "type": "supports",
+      "reason": "Visibility values weight AI sight detection by stance, light, distance, and movement.",
+      "strength": "strong"
+    },
+    {
+      "target": "stealth.shadow_cover",
+      "type": "requires",
+      "reason": "Shadow cover is one of the main sources that changes the visibility meter.",
+      "strength": "medium"
+    },
+    {
+      "target": "ui_ux.cooldown_indicator",
+      "type": "soft_conflicts_with",
+      "reason": "Visibility meters and cooldown indicators can compete for HUD space in stealth action layouts.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 3,
+    "ui_risk": 5
+  },
   "example_games": [
     {
       "title": "Thief: The Dark Project",
@@ -141,5 +171,5 @@
     "accessibility"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

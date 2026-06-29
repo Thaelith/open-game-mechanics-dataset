@@ -118,6 +118,36 @@
     "physics.physics_push_pull",
     "multiplayer.local_coop"
   ],
+  "relationships": [
+    {
+      "target": "physics.physics_push_pull",
+      "type": "supports",
+      "reason": "Pressure plates often depend on movable physics objects or bodies that can be positioned on trigger volumes.",
+      "strength": "medium"
+    },
+    {
+      "target": "puzzle.timed_door",
+      "type": "feeds",
+      "reason": "A pressure plate can open or power a timed door while weight or presence remains valid.",
+      "strength": "medium"
+    },
+    {
+      "target": "multiplayer.online_coop",
+      "type": "enhances",
+      "reason": "Co-op players can split roles by holding plates while teammates move through opened paths.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 2,
+    "save_load_risk": 3,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Portal",
@@ -136,5 +166,5 @@
     "puzzle"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

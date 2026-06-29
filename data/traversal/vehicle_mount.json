@@ -123,6 +123,36 @@
     "multiplayer.asymmetric_roles",
     "camera.third_person_camera"
   ],
+  "relationships": [
+    {
+      "target": "ui_ux.interaction_prompt",
+      "type": "requires",
+      "reason": "Mount prompts need target priority and input glyphs so players know which seat or vehicle will be used.",
+      "strength": "strong"
+    },
+    {
+      "target": "multiplayer.online_coop",
+      "type": "soft_conflicts_with",
+      "reason": "Vehicle mounting needs authority, seat ownership, and disconnect handling in networked sessions.",
+      "strength": "strong"
+    },
+    {
+      "target": "vehicles.fuel",
+      "type": "enhances",
+      "reason": "Fuel adds route planning and resupply decisions after the player gains vehicle access.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 4,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 5,
+    "save_load_risk": 4,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Halo: Combat Evolved",
@@ -141,5 +171,5 @@
     "anti_grief"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

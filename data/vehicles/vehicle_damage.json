@@ -133,6 +133,36 @@
     "multiplayer.friendly_fire",
     "ui_ux.damage_numbers"
   ],
+  "relationships": [
+    {
+      "target": "physics.destructible_environment",
+      "type": "soft_conflicts_with",
+      "reason": "Vehicle damage and world destruction need source attribution and collision impulse ownership.",
+      "strength": "medium"
+    },
+    {
+      "target": "economy.repair_cost",
+      "type": "requires",
+      "reason": "Vehicle damage needs repair costs or recipes when damaged state can be restored.",
+      "strength": "medium"
+    },
+    {
+      "target": "ui_ux.damage_numbers",
+      "type": "supports",
+      "reason": "Damage feedback helps players distinguish collision damage from combat or environmental wear.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 4,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 4,
+    "networking_risk": 4,
+    "save_load_risk": 5,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Grand Theft Auto V",
@@ -151,5 +181,5 @@
     "part_health"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

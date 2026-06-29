@@ -123,6 +123,36 @@
     "progression.achievement_system",
     "narrative.reputation_choice"
   ],
+  "relationships": [
+    {
+      "target": "accessibility.text_scaling",
+      "type": "requires",
+      "reason": "Codex and journal entries need scalable text and layout reflow for long localized content.",
+      "strength": "strong"
+    },
+    {
+      "target": "narrative.environmental_storytelling",
+      "type": "feeds",
+      "reason": "Discovered environmental clues can unlock codex or journal records for later review.",
+      "strength": "medium"
+    },
+    {
+      "target": "ui_ux.quest_marker",
+      "type": "soft_conflicts_with",
+      "reason": "Journal guidance and quest markers need spoiler-safe rules so hidden objectives are not revealed early.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 3,
+    "content_cost": 5,
+    "networking_risk": 1,
+    "save_load_risk": 5,
+    "ui_risk": 5
+  },
   "example_games": [
     {
       "title": "Mass Effect",
@@ -141,5 +171,5 @@
     "spoiler_gating"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

@@ -126,6 +126,36 @@
     "survival.health",
     "narrative.environmental_storytelling"
   ],
+  "relationships": [
+    {
+      "target": "horror.sanity_meter",
+      "type": "balances",
+      "reason": "Safe rooms can pause or recover sanity to create pressure relief between horror sequences.",
+      "strength": "strong"
+    },
+    {
+      "target": "ui_ux.checkpoint_notification",
+      "type": "supports",
+      "reason": "Safe rooms often pair with save or checkpoint feedback so players understand recovery state.",
+      "strength": "medium"
+    },
+    {
+      "target": "horror.monster_patrol",
+      "type": "conflicts_with",
+      "reason": "Safe rooms usually exclude active monster patrol entry by rule, boundary, or director state.",
+      "strength": "strong"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 1,
+    "save_load_risk": 5,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Resident Evil 2",
@@ -144,5 +174,5 @@
     "pacing"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

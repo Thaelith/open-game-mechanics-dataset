@@ -123,6 +123,36 @@
     "ui_ux.interaction_prompt",
     "combat.stealth_kill"
   ],
+  "relationships": [
+    {
+      "target": "stealth.noise_meter",
+      "type": "feeds",
+      "reason": "Thrown distractions create noise events with radius, loudness, and lifetime for AI hearing.",
+      "strength": "strong"
+    },
+    {
+      "target": "ai.investigate_noise",
+      "type": "supports",
+      "reason": "Investigation behavior consumes distraction noise and routes agents toward the lure position.",
+      "strength": "strong"
+    },
+    {
+      "target": "ui_ux.interaction_prompt",
+      "type": "supports",
+      "reason": "Prompts can show when a throwable distraction target or pickup is valid.",
+      "strength": "weak"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "optional",
+    "implementation_cost": 3,
+    "design_cost": 4,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 3,
+    "save_load_risk": 3,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "The Last of Us",
@@ -141,5 +171,5 @@
     "sound_lure"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

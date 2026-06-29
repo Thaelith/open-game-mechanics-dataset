@@ -118,6 +118,36 @@
     "horror.monster_patrol",
     "ui_ux.minimap"
   ],
+  "relationships": [
+    {
+      "target": "ai.line_of_sight_detection",
+      "type": "requires",
+      "reason": "Patrol needs sight checks when route state can escalate into suspicion, chase, or combat.",
+      "strength": "strong"
+    },
+    {
+      "target": "ai.investigate_noise",
+      "type": "supports",
+      "reason": "Noise investigation gives patrol agents a believable interruption and return path after hearing events.",
+      "strength": "medium"
+    },
+    {
+      "target": "stealth.alert_state",
+      "type": "feeds",
+      "reason": "Patrol perception events can raise stealth alert state from idle to suspicious or searching.",
+      "strength": "strong"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 4,
+    "content_cost": 3,
+    "networking_risk": 3,
+    "save_load_risk": 3,
+    "ui_risk": 1
+  },
   "example_games": [
     {
       "title": "Metal Gear Solid",
@@ -136,5 +166,5 @@
     "perception"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-06-30"
 }

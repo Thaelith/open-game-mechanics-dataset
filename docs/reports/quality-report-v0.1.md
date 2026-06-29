@@ -6,7 +6,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Metric | Value |
 | --- | --- |
-| Generated at | 2026-06-29T22:31:56+00:00 |
+| Generated at | 2026-06-29T22:45:45+00:00 |
 | Schema version | 0.2.0 |
 | Total mechanics | 223 |
 | Total categories | 26 |
@@ -144,9 +144,7 @@ _None._
 
 ### Generic Subcategory Flags
 
-| Category | Subcategory | Mechanics |
-| --- | --- | --- |
-| progression | progression | 9 |
+_None._
 
 ### `accessibility`
 
@@ -322,9 +320,17 @@ _None._
 
 | Subcategory | Mechanics |
 | --- | --- |
-| progression | 9 |
 | ability_graph | 1 |
+| achievement_system | 1 |
 | build_management | 1 |
+| crafting_progression | 1 |
+| equipment_progression | 1 |
+| experience_system | 1 |
+| leveling_system | 1 |
+| meta_progression | 1 |
+| prestige_system | 1 |
+| unlock_system | 1 |
+| upgrade_system | 1 |
 
 ### `puzzle`
 
@@ -602,5 +608,4 @@ _None._
 ## Recommended Next Passes
 
 - Run a wording pass on `accessibility`; it has the highest average advisory warning rate (0.00 per mechanic).
-- Plan a focused subcategory cleanup for `progression`; 1 generic subcategory bucket(s) are present.
 - Improve relationship coverage in `platforming`; it averages 7.22 outgoing link(s) per mechanic.
