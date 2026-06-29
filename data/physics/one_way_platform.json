@@ -23,68 +23,86 @@
     "metroidvania",
     "action"
   ],
-  "description": "A platform that collides from selected directions while allowing entry or exit from others.",
-  "design_notes": "One-way platforms are collision rules with player-facing expectations. They need consistent behavior for upward movement, downward drop-through, slopes, moving platforms, enemies, and projectiles.",
+  "description": "A platform blocks movement from selected approach directions while allowing entry or exit through other directions.",
+  "design_notes": "One-way platforms are collision filters with strong player expectations. They need per-actor ignore windows, approach-side tests, surface normal rules, and drop-through handling so upward movement, falling landings, enemies, projectiles, and moving platforms do not contradict each other.",
   "design_purpose": [
-    "Increase vertical route density without enclosing the player.",
-    "Let players jump through floors and land on top surfaces.",
-    "Support layered arena and platform layouts."
+    "Increase vertical route density without fully enclosing the player.",
+    "Let players jump through floors and land on top surfaces in layered arenas.",
+    "Support drop-through movement, enemy routing, and platforming shortcuts with readable collision behavior."
   ],
-  "player_fantasy": "The player feels they can move through platforms naturally while still trusting landings.",
+  "player_fantasy": "The player feels they can pass through platforms naturally while still trusting landings from above.",
   "required_systems": [
     "collision_filtering",
     "surface_normal_detection",
     "character_controller",
-    "platform_tagging"
+    "platform_tagging",
+    "input_buffer"
   ],
   "parameters": [
     {
       "name": "landing_normal_min_y",
       "type": "float",
       "typical_range": "0.5-1.0",
-      "description": "Minimum upward surface normal required for collision."
+      "description": "Minimum upward surface normal required before the contact can become a landing."
     },
     {
-      "name": "pass_through_margin",
+      "name": "pass_through_margin_units",
       "type": "float",
       "typical_range": "0.01-0.2 world units",
-      "description": "Tolerance used while entering from below."
+      "description": "Clearance tolerance used while entering from below so thin platforms do not snag the actor."
     },
     {
-      "name": "drop_disable_ms",
+      "name": "drop_ignore_window_ms",
       "type": "integer",
       "typical_range": "120-500 ms",
-      "description": "Window where collision is disabled after intentional drop-through."
+      "description": "Per-actor collision ignore window after intentional drop-through input is accepted."
+    },
+    {
+      "name": "actor_ignore_token_id",
+      "type": "string",
+      "typical_range": "player_1_drop, enemy_phase, scripted_fall",
+      "description": "Token that prevents global collider toggles and scopes pass-through behavior to one actor."
+    },
+    {
+      "name": "previous_position_sample_id",
+      "type": "string",
+      "typical_range": "feet_last_fixed_step, capsule_bottom_previous",
+      "description": "Sample used to decide whether the actor approached from above or crossed from below."
     }
   ],
   "common_variants": [
     "top_only_platform",
     "drop_through_platform",
     "enemy_solid_platform",
-    "projectile_passthrough_platform"
+    "projectile_passthrough_platform",
+    "moving_semisolid_platform"
   ],
   "edge_cases": [
-    "Fast upward movement must not snag on the platform underside.",
-    "Moving one-way platforms need stable passenger transfer.",
-    "Characters starting inside the platform after spawn or load need a recovery rule."
+    "Fast upward movement must not snag on the platform underside or become a false landing after tunneling.",
+    "A moving one-way platform changes contact normals while carrying the player sideways or downward.",
+    "Characters spawn or load inside the platform and need a recovery rule before collision becomes solid.",
+    "Drop-through input is buffered just before landing and should not immediately cancel the landing unintentionally."
   ],
   "common_bugs": [
-    "Collision toggles globally and makes the platform non-solid for every actor.",
-    "The player lands from below because previous-frame position was above due to tunneling.",
-    "Drop-through re-enables before the player clears the platform thickness."
+    "Collision toggles globally and makes the platform non-solid for every actor instead of only the dropping actor.",
+    "Previous-frame position is sampled after movement, so the approach-side test always thinks the actor came from above.",
+    "Drop-through re-enables before the actor clears platform thickness and catches them in a loop.",
+    "Enemies, projectiles, and players all share one collision rule even though design expects different behavior."
   ],
   "balancing_notes": [
-    "Dense one-way layouts support vertical combat but can become visually confusing.",
-    "Drop-through delay should be long enough to avoid re-catching but short enough to permit quick recovery."
+    "Dense one-way layouts support vertical combat but can become visually confusing without consistent platform art.",
+    "Drop-through delay should be long enough to avoid re-catching but short enough to allow quick recovery.",
+    "If enemies use different collision rules, teach that behavior before it matters in combat."
   ],
   "accessibility_notes": [
-    "Use consistent visual language for semisolid platforms so players can identify collision behavior before jumping."
+    "Use consistent visual language for semisolid platforms so players can identify collision behavior before jumping.",
+    "Allow remappable or hold-based drop-through input for players who have difficulty pressing down plus jump quickly."
   ],
   "implementation_notes": {
-    "unity": "Use PlatformEffector2D for 2D projects or filter contacts manually by comparing previous actor bottom position, current velocity, and the platform top plane before accepting a landing.",
-    "godot": "Use one-way collision on CollisionShape2D where possible; for custom controllers, accept the platform only when the body approaches from above and is outside any drop-through ignore window.",
-    "unreal": "Implement a platform component that exposes a top plane and per-actor ignore timers, then have the character movement sweep reject contacts that arrive from below.",
-    "web": "Resolve the platform as a segment or slab that only blocks downward crossings from above, with actor-specific drop timers rather than globally disabling the platform."
+    "unity": "PlatformEffector2D handles many 2D cases, but custom controllers should filter contacts per actor using previous feet position, contact_normal, and drop_ignore_window_ms. Avoid disabling the shared collider globally; use Physics2D.IgnoreCollision or contact modification scoped to actor_ignore_token_id.",
+    "godot": "One-way collision on CollisionShape2D is useful for standard cases. For custom controllers, accept the platform only when the previous position sample was above the top plane and no per-actor drop token is active.",
+    "unreal": "Use a platform component exposing top plane, approach tests, and per-character ignore tokens. CharacterMovement sweeps can reject contacts from below, while replicated drop-through should send the accepted input tick so server and client ignore windows match.",
+    "web": "Resolve the platform as a segment or slab that blocks only downward crossings from above. Store drop_ignore_window_ms per actor, sample previous feet position before integration, and keep moving platform deltas in the same collision pass."
   },
   "related_mechanics": [
     "platforming.drop_through_platform",
@@ -100,13 +118,18 @@
     {
       "title": "Super Mario World",
       "note": "Uses semisolid platforms that can be jumped through and stood on."
+    },
+    {
+      "title": "Celeste",
+      "note": "Uses pass-through platforms in precision platforming layouts."
     }
   ],
   "tags": [
-    "physics",
     "collision",
     "platforming",
-    "semisolid"
+    "semisolid",
+    "drop_through",
+    "contact_filter"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

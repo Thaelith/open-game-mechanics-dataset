@@ -2,12 +2,12 @@
   "id": "time.rhythm_timing",
   "name": "Rhythm Timing",
   "aliases": [
-    "rhythm timing mechanic",
-    "rhythm timing system",
-    "rhythm timing"
+    "beat timing",
+    "judgment window",
+    "input rhythm"
   ],
   "category": "time",
-  "subcategory": "time",
+  "subcategory": "rhythm_window",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -20,91 +20,120 @@
     "tuning": "expert"
   },
   "genres": [
-    "puzzle",
+    "rhythm",
     "action",
-    "racing"
+    "music",
+    "arcade"
   ],
-  "description": "Rhythm Timing is a temporal mechanic that changes speed, ordering, deadlines, cooldowns, or history.",
-  "design_notes": "Rhythm Timing should be designed around a clear player promise, a readable trigger, and a predictable result. For time mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Player input is evaluated against a beat grid or scheduled cue, producing graded results based on offset.",
+  "design_notes": "Rhythm timing succeeds when players can trust the audio, animation, and judgment result to describe the same event. Designers need explicit beat_grid_id data, input_offset_ms calibration, early and late hit windows, and a policy for whether gameplay simulation or audio playback is the authority.",
   "design_purpose": [
-    "Give the player a readable way to use rhythm timing as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect rhythm timing to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Reward precise input without hiding why a hit, miss, or grade occurred.",
+    "Synchronize combat, traversal, or scoring to a musical or metronomic structure.",
+    "Give designers tunable judgment bands for accessibility, mastery, and difficulty modes."
   ],
-  "player_fantasy": "The player feels they can manipulate urgency, sequence, or consequence.",
+  "player_fantasy": "The player feels locked into the beat and sees the game respond to their timing skill.",
   "required_systems": [
-    "time_controller",
-    "state_history_or_clock",
-    "effect_system",
-    "feedback_system"
+    "audio_clock",
+    "input_buffer",
+    "judgment_resolver",
+    "latency_calibration",
+    "ui_hit_marker"
   ],
   "parameters": [
     {
-      "name": "time_scale",
-      "type": "float",
-      "typical_range": "0-2",
-      "description": "Multiplier applied to game time or affected systems."
+      "name": "beat_grid_id",
+      "type": "string",
+      "typical_range": "song_chart_a, combat_metronome, boss_phase_grid",
+      "description": "Identifier for the cue grid or chart that maps musical beats to gameplay judgments."
     },
     {
-      "name": "duration",
-      "type": "float",
-      "typical_range": "0.1-30 seconds",
-      "description": "How long the temporal effect remains active."
+      "name": "input_offset_ms",
+      "type": "integer",
+      "typical_range": "-250 to 250 ms",
+      "description": "Player or platform calibration offset applied before judging buffered input against the beat grid."
     },
     {
-      "name": "recovery_or_cooldown",
-      "type": "float",
-      "typical_range": "0-120 seconds",
-      "description": "Delay before the mechanic can be used again."
+      "name": "early_hit_window_ms",
+      "type": "integer",
+      "typical_range": "15-180 ms",
+      "description": "Milliseconds before the target beat that still count as an accepted early input."
+    },
+    {
+      "name": "late_hit_window_ms",
+      "type": "integer",
+      "typical_range": "15-220 ms",
+      "description": "Milliseconds after the target beat that still count as an accepted late input."
+    },
+    {
+      "name": "judgment_table_id",
+      "type": "string",
+      "typical_range": "perfect_good_miss, five_band_arcade, assist_mode_wide",
+      "description": "Data table that converts signed input error into score, effects, hit markers, or combo changes."
     }
   ],
   "common_variants": [
-    "rhythm_timing_player_triggered",
-    "rhythm_timing_zone_based",
-    "resource_limited",
-    "scripted_sequence"
+    "strict_chart_judgment",
+    "adaptive_latency_window",
+    "combat_beat_window",
+    "call_and_response_rhythm",
+    "server_verified_rhythm_input"
   ],
   "edge_cases": [
-    "Rhythm Timing is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Rhythm Timing overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Rhythm Timing runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Audio playback drifts from the simulation clock after device sleep, tab throttling, pause, or buffer underrun.",
+    "Input buffering captures a press before a scene transition and replays it against the next chart section.",
+    "Frame drops delay visual hit markers while audio and judgment state already advanced.",
+    "Online play requires server validation but the local client must still feel immediate and musical."
   ],
   "common_bugs": [
-    "Rhythm Timing state does not reset correctly after interruption or reload.",
-    "Feedback for Rhythm Timing plays even when the mechanic fails or is rejected.",
-    "Rhythm Timing produces different results between frame rates, platforms, or network clients."
+    "Judgment uses frame delta instead of the audio clock, making the same input grade differently across hardware.",
+    "Calibration offset is applied twice to held notes or not applied to release events.",
+    "The hit marker displays the predicted grade but combo state uses the corrected authority result.",
+    "Beat indices wrap incorrectly in looping music and cause a perfect input to be scored against the previous loop."
   ],
   "balancing_notes": [
-    "Make Rhythm Timing strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Wider windows increase approachability, but too much width can erase the distinction between intentional rhythm and random tapping.",
+    "Separate scoring strictness from progression requirements so players can finish content without needing expert timing.",
+    "Late windows often need to be slightly more forgiving than early windows because visual reaction naturally trails audio."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Rhythm Timing becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide audio, visual, and optional haptic beat cues, and allow players to calibrate display and input latency.",
+    "Offer reduced precision modes or wider judgment tables without changing the song or encounter structure."
   ],
   "implementation_notes": {
-    "unity": "Implement Rhythm Timing with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Rhythm Timing as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Rhythm Timing with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Rhythm Timing as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use AudioSettings.dspTime or a dedicated audio_clock as the authority for beat lookup, then convert buffered input timestamps into chart offsets. Keep animation and VFX driven by the same beat_grid_id, and store calibration per player profile rather than per scene.",
+    "godot": "Read AudioServer playback position plus measured output latency for judgment, while collecting input events with timestamp metadata. Use Resources for judgment_table_id data and keep UI hit markers separate from the resolver so prediction corrections can update cleanly.",
+    "unreal": "Quartz clocks or a custom audio clock can schedule beat events; gameplay should resolve input against stored cue timestamps rather than Tick delta. In networked modes, send input timestamp and beat index to the server, then reconcile local hit markers with the authoritative judgment.",
+    "web": "Use Web Audio currentTime for chart progression and performance.now for input capture, then reconcile both through a calibration offset. Browser tab throttling and autoplay resumes should reset chart anchors instead of letting beat indices drift silently."
   },
   "related_mechanics": [
-    "combat.invincibility_frames",
+    "rhythm.beat_matching",
+    "rhythm.sync_window",
     "time.slow_motion",
-    "time.time_rewind",
-    "ui_ux.cooldown_indicator"
+    "ui_ux.hit_marker"
   ],
   "combines_well_with": [
-    "combat.invincibility_frames",
-    "time.day_night_schedule",
-    "time.time_freeze",
-    "ui_ux.cooldown_indicator"
+    "combat.combo_chain",
+    "rhythm.combo_multiplier",
+    "ui_ux.damage_numbers",
+    "ui_ux.hit_marker"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Hi-Fi Rush",
+      "note": "Uses rhythm timing to grade and empower action inputs."
+    },
+    {
+      "title": "Crypt of the NecroDancer",
+      "note": "Links movement and combat actions to a beat grid."
+    }
+  ],
   "tags": [
     "rhythm",
-    "time",
-    "timing"
+    "audio_sync",
+    "input_buffer",
+    "judgment_window",
+    "latency"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

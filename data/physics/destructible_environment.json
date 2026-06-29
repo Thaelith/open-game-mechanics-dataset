@@ -2,12 +2,12 @@
   "id": "physics.destructible_environment",
   "name": "Destructible Environment",
   "aliases": [
-    "destructible environment mechanic",
-    "destructible environment system",
-    "destructible environment"
+    "environment destruction",
+    "breakable terrain",
+    "destructible world"
   ],
   "category": "physics",
-  "subcategory": "simulation_force",
+  "subcategory": "persistent_destruction",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,97 +15,126 @@
     "3D"
   ],
   "difficulty": {
-    "design": "medium",
-    "implementation": "hard",
-    "tuning": "hard"
+    "design": "hard",
+    "implementation": "expert",
+    "tuning": "expert"
   },
   "genres": [
-    "puzzle",
+    "action",
     "sandbox",
+    "shooter",
     "simulation"
   ],
-  "description": "Destructible Environment is a world-system mechanic driven by forces, constraints, collision response, or simulated motion.",
-  "design_notes": "Destructible Environment should be designed around a clear player promise, a readable trigger, and a predictable result. For physics mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Parts of the level can be damaged, fractured, removed, or converted into debris that changes navigation and tactics.",
+  "design_notes": "Destructible environments affect more than visuals: chunk ids, damage thresholds, debris lifetime, navmesh rebuilds, save persistence, replication, and soft-lock prevention all need rules. The design should decide what destruction can solve, what it can never bypass, and how players read structural state before committing resources.",
   "design_purpose": [
-    "Give the player a readable way to use destructible environment as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect destructible environment to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players reshape cover, paths, hazards, or combat sightlines through physical interaction.",
+    "Make powerful attacks or tools feel consequential in the world rather than only on health bars.",
+    "Create emergent tactical choices while preserving authored progression and performance budgets."
   ],
-  "player_fantasy": "The player feels the world has weight, motion, and consequences.",
+  "player_fantasy": "The player feels that the environment reacts materially to their power and choices.",
   "required_systems": [
-    "physics_world",
-    "collision_detection",
-    "rigidbody_or_constraint_system",
-    "event_dispatch"
+    "damage_system",
+    "fracture_graph",
+    "debris_manager",
+    "navmesh_rebuild",
+    "save_load_state",
+    "replication_system"
   ],
   "parameters": [
     {
-      "name": "force_strength",
-      "type": "float",
-      "typical_range": "0.1-1000 units",
-      "description": "Magnitude of the force, impulse, or constraint effect."
+      "name": "destructible_chunk_id",
+      "type": "string",
+      "typical_range": "wall_a_03, bridge_support_left, tile_cluster_18",
+      "description": "Stable chunk identifier used for damage accumulation, persistence, replication, and debug logs."
     },
     {
-      "name": "mass_or_weight",
+      "name": "damage_impulse_threshold",
       "type": "float",
-      "typical_range": "0.1-500 units",
-      "description": "Mass scale used by collision and force calculations."
+      "typical_range": "5-5000 impulse units",
+      "description": "Minimum impact or damage impulse required before the chunk changes fracture state."
     },
     {
-      "name": "damping",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "How quickly motion loses energy over time."
+      "name": "fracture_graph_id",
+      "type": "string",
+      "typical_range": "wood_planks_small, concrete_wall_large, voxel_cave",
+      "description": "Data asset that defines how the chunk splits, collapses, or swaps to damaged geometry."
+    },
+    {
+      "name": "debris_lifetime_ms",
+      "type": "integer",
+      "typical_range": "500-120000 ms",
+      "description": "Milliseconds debris remains interactive before fading, pooling, sleeping, or becoming static decoration."
+    },
+    {
+      "name": "navmesh_rebuild_policy_id",
+      "type": "string",
+      "typical_range": "none, local_tile_rebuild, deferred_batch, block_until_ready",
+      "description": "Policy for updating AI navigation after destruction changes walkable or blocked space."
     }
   ],
   "common_variants": [
-    "destructible_environment_scripted_version",
-    "destructible_environment_fully_simulated_version",
-    "network_synced_version",
-    "puzzle_variant"
+    "prefractured_chunks",
+    "voxel_destruction",
+    "cover_destruction",
+    "terrain_carving",
+    "network_replicated_destruction"
   ],
   "edge_cases": [
-    "Destructible Environment is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Destructible Environment overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Destructible Environment runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Destroying a bridge, wall, or floor removes the only route to a required objective or spawn point.",
+    "A navmesh rebuild occurs while AI agents are pathing through the damaged area.",
+    "A late-joining client needs the exact destruction state without replaying every historical damage event.",
+    "Debris collides with newly fractured chunks and creates an escalating physics cost."
   ],
   "common_bugs": [
-    "Destructible Environment state does not reset correctly after interruption or reload.",
-    "Feedback for Destructible Environment plays even when the mechanic fails or is rejected.",
-    "Destructible Environment produces different results between frame rates, platforms, or network clients."
+    "Destroyed chunk state is not saved, so reload restores blocked paths or duplicate rewards.",
+    "Damage is applied to child debris after fracture and recursively creates far more bodies than the performance budget allows.",
+    "Clients predict different fracture results because random chunk ordering or floating-point impulses are not deterministic.",
+    "AI cover and line-of-sight data still reference a wall that has been removed."
   ],
   "balancing_notes": [
-    "Make Destructible Environment strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Destruction is most satisfying when it opens options, but critical paths need fallback routes or repair rules.",
+    "Debris damage, cover removal, and visibility changes can swing combat difficulty more than the initial explosion.",
+    "Limit persistent destruction density per area if save size, navmesh rebuilds, or replication payloads become expensive."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Destructible Environment becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide reduced debris, reduced camera shake, and reduced particle options for destruction-heavy scenes.",
+    "Use shape, silhouette, and UI cues to distinguish destructible surfaces from purely decorative damage."
   ],
   "implementation_notes": {
-    "unity": "Implement Destructible Environment with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Destructible Environment as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Destructible Environment with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Destructible Environment as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use stable destructible_chunk_id values and swap between intact, damaged, and fractured prefab states through one authority transaction. Batch Rigidbody debris activation, cap debris_lifetime_ms, rebuild NavMesh tiles asynchronously, and persist chunk state rather than relying on scene defaults.",
+    "godot": "Represent chunks as nodes with explicit fracture_state and optional debris scenes. Use NavigationServer region updates after destruction, pool debris bodies, and save chunk ids with state flags so streamed levels restore the same layout.",
+    "unreal": "Geometry Collections, Chaos destruction, or authored mesh swaps should be driven by server-approved damage events. Replicate chunk state or fracture commands deterministically, update navigation invokers or navmesh tiles, and move cosmetic debris to client-only when it no longer affects gameplay.",
+    "web": "Use authored tile or chunk swaps for most browser projects, reserving dynamic rigidbody debris for small counts. Keep destruction state in compact arrays keyed by chunk id, and debounce pathfinding or collision rebuilds after multiple nearby edits."
   },
   "related_mechanics": [
+    "physics.breakable_object",
     "physics.gravity",
-    "physics.low_gravity_zone",
-    "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "ai.cover_seeking",
+    "puzzle.physics_weight_puzzle"
   ],
   "combines_well_with": [
-    "physics.buoyancy",
-    "physics.wind_force",
-    "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "combat.area_of_effect_attack",
+    "physics.ragdoll",
+    "procedural_generation.procedural_terrain",
+    "strategy.fog_of_war"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Red Faction: Guerrilla",
+      "note": "Uses destructible structures as a major combat and sandbox feature."
+    },
+    {
+      "title": "Battlefield: Bad Company",
+      "note": "Uses environmental destruction to change cover and sightlines."
+    }
+  ],
   "tags": [
-    "destructible",
-    "physics",
-    "simulation",
-    "simulation_force"
+    "destruction",
+    "environment",
+    "debris",
+    "navmesh",
+    "persistence"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

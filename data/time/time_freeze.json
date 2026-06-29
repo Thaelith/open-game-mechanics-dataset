@@ -2,12 +2,12 @@
   "id": "time.time_freeze",
   "name": "Time Freeze",
   "aliases": [
-    "time freeze mechanic",
-    "time freeze system",
-    "time freeze"
+    "stop time",
+    "stasis",
+    "frozen world"
   ],
   "category": "time",
-  "subcategory": "time",
+  "subcategory": "state_suspension",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -22,88 +22,118 @@
   "genres": [
     "puzzle",
     "action",
-    "racing"
+    "adventure",
+    "stealth"
   ],
-  "description": "Time Freeze is a temporal mechanic that changes speed, ordering, deadlines, cooldowns, or history.",
-  "design_notes": "Time Freeze should be designed around a clear player promise, a readable trigger, and a predictable result. For time mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A freeze suspends selected actors, projectiles, hazards, or simulation channels while exempt systems continue running.",
+  "design_notes": "A freeze mechanic needs a strict affected_channel_mask and exemption rules before content is built around it. Designers should decide whether the player can move, whether collisions with frozen bodies are solid, how queued impulses resume, and which clocks continue for UI, audio, networking, and scripted objectives.",
   "design_purpose": [
-    "Give the player a readable way to use time freeze as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect time freeze to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create tactical windows where the player can reposition, inspect, or set up delayed interactions.",
+    "Support puzzles that depend on storing motion, hazards, or enemy state at a chosen moment.",
+    "Give encounters a dramatic pause without fully entering a menu or cutscene state."
   ],
-  "player_fantasy": "The player feels they can manipulate urgency, sequence, or consequence.",
+  "player_fantasy": "The player feels like they can hold the world still while planning the next decisive action.",
   "required_systems": [
-    "time_controller",
-    "state_history_or_clock",
-    "effect_system",
-    "feedback_system"
+    "clock_manager",
+    "simulation_channel_registry",
+    "physics_state_cache",
+    "animation_controller",
+    "network_authority"
   ],
   "parameters": [
     {
-      "name": "time_scale",
-      "type": "float",
-      "typical_range": "0-2",
-      "description": "Multiplier applied to game time or affected systems."
+      "name": "freeze_scope_id",
+      "type": "string",
+      "typical_range": "global, radius_12m, enemies_only, projectile_layer",
+      "description": "Scope definition that chooses which entities and simulation channels are suspended."
     },
     {
-      "name": "duration",
-      "type": "float",
-      "typical_range": "0.1-30 seconds",
-      "description": "How long the temporal effect remains active."
+      "name": "affected_channel_mask",
+      "type": "array",
+      "typical_range": "animation, ai, projectiles, rigidbodies, particles",
+      "description": "Simulation channels paused by the freeze while exempt channels continue advancing."
     },
     {
-      "name": "recovery_or_cooldown",
-      "type": "float",
-      "typical_range": "0-120 seconds",
-      "description": "Delay before the mechanic can be used again."
+      "name": "freeze_window_ms",
+      "type": "integer",
+      "typical_range": "100-15000 ms",
+      "description": "Milliseconds the suspension stays active before release rules restore affected channels."
+    },
+    {
+      "name": "exemption_rule_id",
+      "type": "string",
+      "typical_range": "player_moves, ui_only, boss_resists, objective_clock_continues",
+      "description": "Data rule that defines actors or systems allowed to keep updating during the freeze."
+    },
+    {
+      "name": "release_blend_ms",
+      "type": "integer",
+      "typical_range": "0-1000 ms",
+      "description": "Blend window used to resume animation, particles, and stored rigidbody velocities smoothly."
     }
   ],
   "common_variants": [
-    "time_freeze_player_triggered",
-    "time_freeze_zone_based",
-    "resource_limited",
-    "scripted_sequence"
+    "global_stasis",
+    "localized_freeze_bubble",
+    "enemy_only_freeze",
+    "projectile_freeze",
+    "puzzle_object_stasis"
   ],
   "edge_cases": [
-    "Time Freeze is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Time Freeze overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Time Freeze runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A frozen rigidbody is moved by the player, then released with stale velocity or overlapping collision shapes.",
+    "A freeze starts while an AI, animation montage, or ability transaction is halfway through a state transition.",
+    "Objective timers, cooldowns, and rhythm charts disagree about whether the freeze should pause them.",
+    "Server-authoritative multiplayer must choose whether all clients see the freeze or only the triggering player does."
   ],
   "common_bugs": [
-    "Time Freeze state does not reset correctly after interruption or reload.",
-    "Feedback for Time Freeze plays even when the mechanic fails or is rejected.",
-    "Time Freeze produces different results between frame rates, platforms, or network clients."
+    "Frozen actors still receive damage ticks, status effects, or scripted callbacks from unpaused systems.",
+    "Release restores velocity but not angular velocity, sleeping state, animation phase, or particle emission state.",
+    "Hit detection runs against the visually frozen pose while the authority simulation has already resumed.",
+    "Nested freeze effects overwrite each other's saved state and release too early."
   ],
   "balancing_notes": [
-    "Make Time Freeze strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "A full global freeze is usually stronger than a slow-motion effect because it removes enemy reaction entirely.",
+    "Bosses and objectives may need resistance or shortened windows, but exemptions should be visible and consistent.",
+    "Let players understand what will resume with stored momentum so puzzle outcomes feel earned rather than random."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Time Freeze becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Avoid intense flashing, sudden audio dropouts, or heavy color inversion as the only freeze indication.",
+    "If the freeze creates planning space, provide enough UI clarity for players using slower input methods."
   ],
   "implementation_notes": {
-    "unity": "Implement Time Freeze with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Time Freeze as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Time Freeze with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Time Freeze as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Do not rely only on Time.timeScale = 0 for selective freezes. Store per-entity freeze_state_id, Rigidbody velocity, angular velocity, sleep state, Animator speed, and particle playback state, then restore through a release transaction that validates overlaps.",
+    "godot": "Use process_mode, physics processing toggles, and explicit state caches for frozen nodes. RigidBody and CharacterBody objects need velocity and contact state restoration, while UI and exempt actors should remain on an unscaled clock.",
+    "unreal": "Use component-level tick disabling, Custom Time Dilation, movement mode suspension, and physics body state snapshots rather than pausing the entire world. In replicated play, the server should approve freeze_scope_id and replicate release timestamps to clients.",
+    "web": "Tag simulation channels with frozen or exempt state in the update loop. Matter.js, Arcade Physics, or custom solvers should skip integration for frozen bodies but keep cached transforms, velocities, and collision masks available for release validation."
   },
   "related_mechanics": [
-    "combat.invincibility_frames",
     "time.slow_motion",
     "time.time_rewind",
-    "ui_ux.cooldown_indicator"
+    "combat.hit_stun",
+    "physics.moving_platform"
   ],
   "combines_well_with": [
-    "combat.invincibility_frames",
-    "time.day_night_schedule",
-    "time.timed_challenge",
+    "puzzle.pressure_plate",
+    "combat.projectile_reflection",
+    "time.cooldown_time",
     "ui_ux.cooldown_indicator"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Legend of Zelda: Breath of the Wild",
+      "note": "Uses stasis-like freezing on objects for puzzle and combat interactions."
+    },
+    {
+      "title": "Superhot",
+      "note": "Uses extreme time manipulation as the central action premise."
+    }
+  ],
   "tags": [
-    "time",
-    "timing"
+    "freeze",
+    "stasis",
+    "clock_management",
+    "state_cache",
+    "puzzle"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

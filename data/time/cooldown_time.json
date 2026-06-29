@@ -2,12 +2,12 @@
   "id": "time.cooldown_time",
   "name": "Cooldown Time",
   "aliases": [
-    "cooldown time mechanic",
-    "cooldown time system",
-    "cooldown time"
+    "ability recharge",
+    "reuse delay",
+    "action lockout"
   ],
   "category": "time",
-  "subcategory": "time",
+  "subcategory": "action_recharge",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,78 +15,96 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
-    "implementation": "hard",
-    "tuning": "expert"
+    "design": "medium",
+    "implementation": "medium",
+    "tuning": "hard"
   },
   "genres": [
-    "puzzle",
     "action",
-    "racing"
+    "rpg",
+    "strategy",
+    "roguelike"
   ],
-  "description": "Cooldown Time is a temporal mechanic that changes speed, ordering, deadlines, cooldowns, or history.",
-  "design_notes": "Cooldown Time should be designed around a clear player promise, a readable trigger, and a predictable result. For time mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A reusable action becomes unavailable after activation, then returns after a tracked recharge interval.",
+  "design_notes": "Cooldowns are pacing contracts: the player spends an action now and plans around the next available window. The useful design work is deciding which gameplay_clock_id owns the recharge, whether charges recover independently, how duplicate activation is rejected, and how the UI communicates readiness without encouraging constant staring at icons.",
   "design_purpose": [
-    "Give the player a readable way to use cooldown time as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect cooldown time to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Prevent high-impact actions from being repeated every input frame.",
+    "Create readable windows where enemies, objectives, or traversal routes can pressure the player.",
+    "Give designers a pacing lever that is easier to reason about than hidden probability or opaque resource drains."
   ],
-  "player_fantasy": "The player feels they can manipulate urgency, sequence, or consequence.",
+  "player_fantasy": "The player feels powerful when an ability comes back exactly when their plan needs it.",
   "required_systems": [
-    "time_controller",
-    "state_history_or_clock",
-    "effect_system",
-    "feedback_system"
+    "gameplay_clock",
+    "ability_state_registry",
+    "input_validation",
+    "ui_cooldown_indicator",
+    "save_load_state"
   ],
   "parameters": [
     {
-      "name": "time_scale",
-      "type": "float",
-      "typical_range": "0-2",
-      "description": "Multiplier applied to game time or affected systems."
+      "name": "recharge_interval_ms",
+      "type": "integer",
+      "typical_range": "250-120000 ms",
+      "description": "Milliseconds between a confirmed activation and the next accepted activation for the same ability slot."
     },
     {
-      "name": "duration",
-      "type": "float",
-      "typical_range": "0.1-30 seconds",
-      "description": "How long the temporal effect remains active."
+      "name": "recharge_group_id",
+      "type": "string",
+      "typical_range": "dash, potion, global_spell_lockout",
+      "description": "Identifier shared by actions that should lock each other out after one of them succeeds."
     },
     {
-      "name": "recovery_or_cooldown",
-      "type": "float",
-      "typical_range": "0-120 seconds",
-      "description": "Delay before the mechanic can be used again."
+      "name": "charge_capacity",
+      "type": "integer",
+      "typical_range": "1-5",
+      "description": "Maximum stored activations before the recharge scheduler stops granting additional charges."
+    },
+    {
+      "name": "started_at_server_ms",
+      "type": "integer",
+      "typical_range": "server timestamp or monotonic tick",
+      "description": "Authority timestamp recorded when the accepted activation begins its recharge interval."
+    },
+    {
+      "name": "pause_policy_id",
+      "type": "string",
+      "typical_range": "advance_during_pause, freeze_in_menu, freeze_in_cutscene",
+      "description": "Rule that decides whether the recharge clock advances while the game is paused or loading."
     }
   ],
   "common_variants": [
-    "cooldown_time_player_triggered",
-    "cooldown_time_zone_based",
-    "resource_limited",
-    "scripted_sequence"
+    "single_charge_recharge",
+    "multi_charge_recharge",
+    "shared_group_lockout",
+    "global_action_lockout",
+    "server_authoritative_recharge"
   ],
   "edge_cases": [
-    "Cooldown Time is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Cooldown Time overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Cooldown Time runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "An activation request arrives twice from buffered input, rollback resimulation, or a delayed network packet.",
+    "The player saves, loads, dies, or changes equipment while one or more charges are partially recovered.",
+    "A pause menu uses unscaled_time while the recharge scheduler uses gameplay_clock_id, causing UI and authority state to disagree.",
+    "Two abilities share recharge_group_id but one is removed from the character during the lockout window."
   ],
   "common_bugs": [
-    "Cooldown Time state does not reset correctly after interruption or reload.",
-    "Feedback for Cooldown Time plays even when the mechanic fails or is rejected.",
-    "Cooldown Time produces different results between frame rates, platforms, or network clients."
+    "The UI displays zero remaining milliseconds before the authority state accepts a new activation.",
+    "Recharge progress resets when the owning entity is pooled, respawned, or migrated to a different network owner.",
+    "Client prediction grants an action locally, then the server rejects it because started_at_server_ms was stale.",
+    "Multiple charges recover simultaneously when only the oldest spent charge should be advancing."
   ],
   "balancing_notes": [
-    "Make Cooldown Time strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Short intervals make the action part of the base rhythm; long intervals turn it into a deliberate commitment.",
+    "Shared lockouts are useful for preventing optimal rotations, but they can make loadouts feel samey if every strong tool blocks every other tool.",
+    "Recharge indicators should reveal enough timing to plan without requiring frame-perfect input to get full value."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Cooldown Time becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Pair radial fills with numeric or icon state changes so readiness is not communicated only by color or motion.",
+    "Allow input buffering near the final recharge window for players who cannot repeatedly tap at exact readiness frames."
   ],
   "implementation_notes": {
-    "unity": "Implement Cooldown Time with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Cooldown Time as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Cooldown Time with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Cooldown Time as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store recharge_started_at_ms, charge_count, and recharge_group_id in the ability model rather than deriving them from MonoBehaviour lifetime. Use Time.timeAsDouble for local prediction, a server timestamp for multiplayer authority, and drive UI Toolkit or Canvas indicators from a read-only remaining_ms query.",
+    "godot": "Keep recharge state in a Resource or autoloaded ability registry with a monotonic gameplay_clock_id. Process acceptance in _physics_process for deterministic input order, but update Control nodes from a projected remaining_ms so UI remains smooth while pause_policy_id is respected.",
+    "unreal": "Gameplay Ability System cooldown effects can own the authoritative lockout, but still store cooldown_group_id and charge metadata for UI and save restoration. For replicated games, reject duplicate activation in the server ability commit path and let UMG display predicted progress until correction arrives.",
+    "web": "Use performance.now or a fixed simulation tick as the local clock, but keep activation acceptance in one transaction that writes started_at_ms, charge_count, and group locks together. Phaser, Canvas, or custom UI should render projected remaining_ms without mutating the ability state."
   },
   "related_mechanics": [
     "combat.invincibility_frames",
@@ -100,11 +118,22 @@
     "time.time_freeze",
     "ui_ux.cooldown_indicator"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "World of Warcraft",
+      "note": "Uses ability recharge and shared lockouts across many combat actions."
+    },
+    {
+      "title": "Hades",
+      "note": "Uses short recovery windows to pace repeated combat and movement actions."
+    }
+  ],
   "tags": [
     "cooldown",
-    "time",
-    "timing"
+    "recharge",
+    "timing",
+    "ability_state",
+    "ui"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

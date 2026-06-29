@@ -1,13 +1,13 @@
 {
   "id": "physics.physics_push_pull",
-  "name": "Physics Push/Pull",
+  "name": "Physics Push Pull",
   "aliases": [
-    "physics push pull mechanic",
-    "physics push pull system",
-    "physics push/pull"
+    "object pushing",
+    "pullable object",
+    "physical object manipulation"
   ],
   "category": "physics",
-  "subcategory": "simulation_force",
+  "subcategory": "object_manipulation",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -21,90 +21,119 @@
   },
   "genres": [
     "puzzle",
-    "sandbox",
+    "adventure",
+    "survival",
     "simulation"
   ],
-  "description": "Physics Push/Pull is a world-system mechanic driven by forces, constraints, collision response, or simulated motion.",
-  "design_notes": "Physics Push/Pull should be designed around a clear player promise, a readable trigger, and a predictable result. For physics mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Players move physical objects by pushing, pulling, grabbing, or dragging them through collision-aware interaction.",
+  "design_notes": "Push and pull mechanics need a clear manipulation transaction: acquire an object, validate mass and grip anchor, constrain movement, resolve collisions, then release or cancel cleanly. Designers should define when the player is locked, how slopes and corners behave, and what happens when the object blocks progress or leaves valid space.",
   "design_purpose": [
-    "Give the player a readable way to use physics push/pull as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect physics push/pull to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players solve spatial puzzles by repositioning crates, blocks, carts, or props.",
+    "Make heavy objects feel distinct from inventory items or instant interactions.",
+    "Create collaboration between character movement, collision, and environmental layout."
   ],
-  "player_fantasy": "The player feels the world has weight, motion, and consequences.",
+  "player_fantasy": "The player feels physically connected to an object and can use effort and positioning to reshape the space.",
   "required_systems": [
-    "physics_world",
-    "collision_detection",
-    "rigidbody_or_constraint_system",
-    "event_dispatch"
+    "interaction_system",
+    "rigidbody_simulation",
+    "constraint_solver",
+    "character_controller",
+    "collision_detection"
   ],
   "parameters": [
     {
-      "name": "force_strength",
-      "type": "float",
-      "typical_range": "0.1-1000 units",
-      "description": "Magnitude of the force, impulse, or constraint effect."
+      "name": "manipulable_body_id",
+      "type": "string",
+      "typical_range": "crate_01, stone_block_b, cart_large",
+      "description": "Stable identifier for the object being pushed, pulled, grabbed, or constrained."
     },
     {
-      "name": "mass_or_weight",
+      "name": "max_object_mass_kg",
       "type": "float",
-      "typical_range": "0.1-500 units",
-      "description": "Mass scale used by collision and force calculations."
+      "typical_range": "5-500 kg",
+      "description": "Maximum mass the actor can manipulate before requiring upgrades, multiple players, or alternate tools."
     },
     {
-      "name": "damping",
+      "name": "grip_anchor_offset",
+      "type": "vector",
+      "typical_range": "body-local offset near handle or face center",
+      "description": "Object-local anchor used to align character hands, pulling direction, and constraint attachment."
+    },
+    {
+      "name": "push_acceleration",
       "type": "float",
-      "typical_range": "0-1",
-      "description": "How quickly motion loses energy over time."
+      "typical_range": "0.5-20 world units per second squared",
+      "description": "Acceleration applied while the actor drives the object through the manipulation constraint."
+    },
+    {
+      "name": "alignment_tolerance_degrees",
+      "type": "float",
+      "typical_range": "5-45 degrees",
+      "description": "Allowed angle between actor facing, grip anchor, and desired movement direction before interaction fails."
     }
   ],
   "common_variants": [
-    "physics_push_pull_scripted_version",
-    "physics_push_pull_fully_simulated_version",
-    "network_synced_version",
-    "puzzle_variant"
+    "grid_push_block",
+    "freeform_drag_object",
+    "two_player_heavy_push",
+    "magnetic_pull",
+    "physics_handle_grab"
   ],
   "edge_cases": [
-    "Physics Push/Pull is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Physics Push/Pull overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Physics Push/Pull runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The object wedges against a corner while the player remains locked to the manipulation state.",
+    "A moving platform, elevator, or slope changes the object frame of reference during push or pull.",
+    "Two players or AI actors attempt to manipulate the same body from different anchors.",
+    "A save file loads while the object is mid-constraint and the player is no longer nearby."
   ],
   "common_bugs": [
-    "Physics Push/Pull state does not reset correctly after interruption or reload.",
-    "Feedback for Physics Push/Pull plays even when the mechanic fails or is rejected.",
-    "Physics Push/Pull produces different results between frame rates, platforms, or network clients."
+    "The player capsule overlaps the object after release and is pushed through walls by collision correction.",
+    "Client prediction moves the object locally but the server rejects the manipulation because mass or ownership changed.",
+    "Push acceleration ignores object mass and makes small props and heavy blocks move identically.",
+    "The grip anchor is not updated after rotation, so pull direction flips or drifts around corners."
   ],
   "balancing_notes": [
-    "Make Physics Push/Pull strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Manipulation pace should respect object weight without forcing long, repetitive pushes across empty rooms.",
+    "Grid-based pushing is easier to read for puzzles; freeform physics allows more emergence but needs stronger recovery tools.",
+    "Heavy-object limits can gate progression, but the required upgrade or partner state should be obvious."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Physics Push/Pull becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer hold-to-push, toggle-grab, or simplified alignment options for players who struggle with sustained inputs.",
+    "Use clear object highlights and invalid-movement cues so players can understand why a push or pull is blocked."
   ],
   "implementation_notes": {
-    "unity": "Implement Physics Push/Pull with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Physics Push/Pull as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Physics Push/Pull with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Physics Push/Pull as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use Rigidbody constraints, ConfigurableJoint, or a custom kinematic motor depending on whether emergence or puzzle precision is more important. Store manipulable_body_id, grip_anchor_offset, actor owner, and transaction state; release through one path that resolves overlaps and server correction.",
+    "godot": "RigidBody with joints can support freeform motion, while CharacterBody-driven blocks work better for tile puzzles. Keep manipulation state separate from input state, validate mass and alignment before acquisition, and debug draw grip anchors plus blocked collision normals.",
+    "unreal": "Physics Handle Components, constraints, or custom movement modes can implement grabbing and pushing. Multiplayer projects should let the server own object motion, replicate constraint owner and body transform, and reject competing manipulation requests deterministically.",
+    "web": "For Phaser or Matter.js, use a constraint or kinematic target for dragged bodies and resolve player collision separately. Store object ownership and anchor data in the simulation model so replay, undo, or save/load can restore mid-puzzle state safely."
   },
   "related_mechanics": [
-    "physics.gravity",
-    "physics.low_gravity_zone",
     "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "physics.moving_platform",
+    "physics.gravity",
+    "puzzle.pressure_plate"
   ],
   "combines_well_with": [
-    "physics.buoyancy",
-    "physics.wind_force",
-    "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "multiplayer.local_coop",
+    "survival.inventory_limit",
+    "progression.unlockable_abilities",
+    "ui_ux.interaction_prompt"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Half-Life 2",
+      "note": "Uses physics object manipulation as part of traversal, combat, and puzzles."
+    },
+    {
+      "title": "The Legend of Zelda: Ocarina of Time",
+      "note": "Uses pushable blocks as spatial puzzle elements."
+    }
+  ],
   "tags": [
-    "physics",
-    "simulation",
-    "simulation_force"
+    "push_pull",
+    "object_manipulation",
+    "constraint",
+    "puzzle",
+    "collision"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

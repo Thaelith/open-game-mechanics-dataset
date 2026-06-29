@@ -2,12 +2,12 @@
   "id": "physics.breakable_object",
   "name": "Breakable Object",
   "aliases": [
-    "breakable object mechanic",
-    "breakable object system",
-    "breakable object"
+    "breakable prop",
+    "smashable object",
+    "fragile object"
   ],
   "category": "physics",
-  "subcategory": "simulation_force",
+  "subcategory": "breakable_object",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,97 +15,125 @@
     "3D"
   ],
   "difficulty": {
-    "design": "medium",
-    "implementation": "hard",
-    "tuning": "hard"
+    "design": "easy",
+    "implementation": "medium",
+    "tuning": "medium"
   },
   "genres": [
+    "action",
+    "adventure",
     "puzzle",
-    "sandbox",
-    "simulation"
+    "sandbox"
   ],
-  "description": "Breakable Object is a world-system mechanic driven by forces, constraints, collision response, or simulated motion.",
-  "design_notes": "Breakable Object should be designed around a clear player promise, a readable trigger, and a predictable result. For physics mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A prop or small object changes state, spawns pieces, drops rewards, or disappears after sufficient impact or damage.",
+  "design_notes": "Breakable objects are compact transactions: accept a hit, validate the threshold, change the object state once, then spawn debris, loot, audio, and gameplay events. The object_piece_id, break_threshold, damage impulse rules, pooling policy, and save persistence should be defined before designers place many copies.",
   "design_purpose": [
-    "Give the player a readable way to use breakable object as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect breakable object to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Make attacks, collisions, and exploration feel responsive in the environment.",
+    "Hide rewards, routes, or tactical interactions behind readable fragile props.",
+    "Provide low-risk physics feedback without requiring full environment destruction."
   ],
-  "player_fantasy": "The player feels the world has weight, motion, and consequences.",
+  "player_fantasy": "The player feels that their movement, weapons, or tools can physically affect nearby objects.",
   "required_systems": [
-    "physics_world",
-    "collision_detection",
-    "rigidbody_or_constraint_system",
-    "event_dispatch"
+    "damage_system",
+    "collision_events",
+    "object_state_machine",
+    "debris_pool",
+    "loot_spawn"
   ],
   "parameters": [
     {
-      "name": "force_strength",
-      "type": "float",
-      "typical_range": "0.1-1000 units",
-      "description": "Magnitude of the force, impulse, or constraint effect."
+      "name": "object_piece_id",
+      "type": "string",
+      "typical_range": "crate_small_a, vase_blue_02, glass_panel_5",
+      "description": "Stable prop identifier used for state changes, loot tables, pooling, and persistence."
     },
     {
-      "name": "mass_or_weight",
+      "name": "break_threshold",
       "type": "float",
-      "typical_range": "0.1-500 units",
-      "description": "Mass scale used by collision and force calculations."
+      "typical_range": "1-500 damage or impulse units",
+      "description": "Minimum accumulated damage or impact impulse required before the object enters its broken state."
     },
     {
-      "name": "damping",
+      "name": "damage_impulse_threshold",
       "type": "float",
-      "typical_range": "0-1",
-      "description": "How quickly motion loses energy over time."
+      "typical_range": "0-3000 impulse units",
+      "description": "Impact threshold used to allow collisions, explosions, or thrown objects to break the prop."
+    },
+    {
+      "name": "fracture_profile_id",
+      "type": "string",
+      "typical_range": "wood_crate_chunks, ceramic_shards, glass_splinters",
+      "description": "Visual and physical breakup profile that chooses debris pieces, audio, and particle effects."
+    },
+    {
+      "name": "loot_spawn_table_id",
+      "type": "string",
+      "typical_range": "none, small_coins, ammo_crate, random_materials",
+      "description": "Optional reward table evaluated exactly once when the break transaction succeeds."
     }
   ],
   "common_variants": [
-    "breakable_object_scripted_version",
-    "breakable_object_fully_simulated_version",
-    "network_synced_version",
-    "puzzle_variant"
+    "single_hit_prop",
+    "health_based_breakable",
+    "impact_only_breakable",
+    "loot_container",
+    "respawning_breakable"
   ],
   "edge_cases": [
-    "Breakable Object is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Breakable Object overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Breakable Object runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Multiple hits arrive in the same frame and try to spawn debris or rewards more than once.",
+    "A pooled prop is reused but still has old damage, broken visuals, or disabled collision.",
+    "A breakable object is saved while mid-break animation or while debris is still interactive.",
+    "Collision impact from a moving platform or physics object breaks props unintentionally in dense scenes."
   ],
   "common_bugs": [
-    "Breakable Object state does not reset correctly after interruption or reload.",
-    "Feedback for Breakable Object plays even when the mechanic fails or is rejected.",
-    "Breakable Object produces different results between frame rates, platforms, or network clients."
+    "The object disables its collider before the hit transaction finishes, so loot spawns at an invalid position.",
+    "Client and server both spawn rewards because break authority is not centralized.",
+    "Debris pieces use the same collision layer as the intact prop and block narrow routes after breaking.",
+    "Accumulated damage is not reset on respawn or pool checkout."
   ],
   "balancing_notes": [
-    "Make Breakable Object strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Fragile props encourage experimentation, but too many loot-bearing objects can slow pacing as players smash everything.",
+    "Break thresholds should match visual material; ceramic, wood, metal, and stone should not all react identically.",
+    "If props block routes, make the required damage source obvious and available before the player gets trapped."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Breakable Object becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use distinct silhouettes, material cues, or interaction prompts so breakable props are not identified only by subtle cracks.",
+    "Avoid requiring rapid repeated hits on breakables unless an alternate input or hold option exists."
   ],
   "implementation_notes": {
-    "unity": "Implement Breakable Object with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Breakable Object as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Breakable Object with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Breakable Object as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Drive breakables from a component with object_piece_id, intact_state, accumulated_damage, and has_broken flags. Resolve damage in one method that disables the intact collider, spawns pooled debris, evaluates loot_spawn_table_id once, and records persistence before visual cleanup.",
+    "godot": "Use a Node with explicit intact, breaking, and broken states; collision callbacks should enqueue break requests that are resolved once per physics tick. Pool debris scenes, store object_piece_id state for saves, and debug draw impact impulse when tuning thresholds.",
+    "unreal": "An Actor Component can own damage, fracture profile, and reward transaction state. Use server authority for replicated breakables, multicast cosmetic debris when needed, and prevent duplicate OnTakeAnyDamage or hit events from re-entering the break transaction.",
+    "web": "For Phaser or custom engines, represent breakables as data records with collision ids and state flags. Pool fragments and particles, keep reward spawning in the simulation layer, and avoid allocating new debris objects for every prop in dense rooms."
   },
   "related_mechanics": [
-    "physics.gravity",
-    "physics.low_gravity_zone",
-    "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "physics.destructible_environment",
+    "combat.area_of_effect_attack",
+    "economy.loot_table",
+    "puzzle.pressure_plate"
   ],
   "combines_well_with": [
-    "physics.buoyancy",
-    "physics.wind_force",
-    "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "physics.ragdoll",
+    "physics.gravity",
+    "ui_ux.damage_numbers",
+    "progression.crafting_unlocks"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Legend of Zelda: Ocarina of Time",
+      "note": "Uses breakable pots as interactive props and reward containers."
+    },
+    {
+      "title": "Diablo III",
+      "note": "Uses breakable environmental props for combat feedback and occasional rewards."
+    }
+  ],
   "tags": [
     "breakable",
-    "physics",
-    "simulation",
-    "simulation_force"
+    "prop",
+    "debris",
+    "loot",
+    "collision"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

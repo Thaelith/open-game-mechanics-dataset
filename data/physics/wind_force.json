@@ -2,12 +2,12 @@
   "id": "physics.wind_force",
   "name": "Wind Force",
   "aliases": [
-    "wind force mechanic",
-    "wind force system",
-    "wind force"
+    "wind gust",
+    "air current",
+    "environmental push"
   ],
   "category": "physics",
-  "subcategory": "simulation_force",
+  "subcategory": "environmental_acceleration",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,96 +16,124 @@
   ],
   "difficulty": {
     "design": "medium",
-    "implementation": "hard",
+    "implementation": "medium",
     "tuning": "hard"
   },
   "genres": [
+    "platformer",
     "puzzle",
-    "sandbox",
+    "survival",
     "simulation"
   ],
-  "description": "Wind Force is a world-system mechanic driven by forces, constraints, collision response, or simulated motion.",
-  "design_notes": "Wind Force should be designed around a clear player promise, a readable trigger, and a predictable result. For physics mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "An environmental air current modifies movement for characters, projectiles, particles, vehicles, or loose objects.",
+  "design_notes": "Wind mechanics are readable when the affected layer mask, gust vector field, turbulence, and visual cues match the actual simulation. The mechanic should define whether wind is a constant region, pulsing hazard, weather effect, or traversal aid, and whether it affects only presentation or gameplay bodies.",
   "design_purpose": [
-    "Give the player a readable way to use wind force as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect wind force to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create environmental pressure that redirects movement, projectiles, gliding, or object placement.",
+    "Make weather and airflow matter in traversal, puzzles, survival, or vehicle handling.",
+    "Give designers a directional field that can be previewed visually and tuned per area."
   ],
-  "player_fantasy": "The player feels the world has weight, motion, and consequences.",
+  "player_fantasy": "The player feels air currents pushing through the space and learns to ride, resist, or avoid them.",
   "required_systems": [
+    "environment_volume",
     "physics_world",
-    "collision_detection",
-    "rigidbody_or_constraint_system",
-    "event_dispatch"
+    "particle_system",
+    "movement_controller",
+    "debug_visualization"
   ],
   "parameters": [
     {
-      "name": "force_strength",
-      "type": "float",
-      "typical_range": "0.1-1000 units",
-      "description": "Magnitude of the force, impulse, or constraint effect."
+      "name": "gust_vector_field_id",
+      "type": "string",
+      "typical_range": "canyon_crosswind, fan_column_02, storm_front",
+      "description": "Data source defining direction, strength, and spatial falloff for the air current."
     },
     {
-      "name": "mass_or_weight",
-      "type": "float",
-      "typical_range": "0.1-500 units",
-      "description": "Mass scale used by collision and force calculations."
+      "name": "gust_acceleration_vector",
+      "type": "vector",
+      "typical_range": "0-60 world units per second squared",
+      "description": "Acceleration applied to affected gameplay bodies while inside the wind field."
     },
     {
-      "name": "damping",
+      "name": "turbulence_noise_scale",
       "type": "float",
-      "typical_range": "0-1",
-      "description": "How quickly motion loses energy over time."
+      "typical_range": "0-5",
+      "description": "Noise multiplier used to vary gust direction or intensity without changing the authored main vector."
+    },
+    {
+      "name": "drag_coefficient",
+      "type": "float",
+      "typical_range": "0-10",
+      "description": "Resistance applied along or against the wind field for bodies with high surface area."
+    },
+    {
+      "name": "affected_layer_mask",
+      "type": "array",
+      "typical_range": "player, glider, arrows, debris, particles",
+      "description": "Gameplay and cosmetic layers that should respond to the air current."
     }
   ],
   "common_variants": [
-    "wind_force_scripted_version",
-    "wind_force_fully_simulated_version",
-    "network_synced_version",
-    "puzzle_variant"
+    "constant_crosswind",
+    "pulsing_fan_gust",
+    "vertical_updraft",
+    "weather_driven_wind",
+    "projectile_only_wind"
   ],
   "edge_cases": [
-    "Wind Force is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Wind Force overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Wind Force runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A projectile preview ignores wind while the fired projectile is affected by the gust field.",
+    "Wind pushes the player into a wall or hazard and collision correction amplifies the sideways motion.",
+    "Overlapping gust volumes produce abrupt direction changes because priority or blending is undefined.",
+    "Particles show a strong gust but gameplay bodies are excluded, creating misleading affordances."
   ],
   "common_bugs": [
-    "Wind Force state does not reset correctly after interruption or reload.",
-    "Feedback for Wind Force plays even when the mechanic fails or is rejected.",
-    "Wind Force produces different results between frame rates, platforms, or network clients."
+    "Wind is applied every render frame instead of fixed step, changing displacement by frame rate.",
+    "Affected layer masks include heavy static props and wake too many sleeping bodies at once.",
+    "Turbulence noise is sampled nondeterministically and desyncs replay or multiplayer projectile paths.",
+    "Updrafts modify vertical velocity after jump and fall caps, bypassing gravity tuning rules."
   ],
   "balancing_notes": [
-    "Make Wind Force strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Strong gusts should be paired with visible wind direction, safe test spaces, or recovery routes.",
+    "Wind that affects projectiles can deepen aiming, but it should not make short-range combat feel random.",
+    "Pulsing gusts need rhythm and audio cues if players must time traversal through them."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Wind Force becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use readable particle direction, sound, and environment motion rather than relying only on subtle cloth or grass animation.",
+    "Offer reduced particle density or motion intensity while preserving gameplay-readable wind indicators."
   ],
   "implementation_notes": {
-    "unity": "Implement Wind Force with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Wind Force as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Wind Force with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Wind Force as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Represent gusts as trigger volumes or vector-field assets that provide acceleration to eligible Rigidbody and character motors in FixedUpdate. Keep particle wind zones cosmetic unless they read the same gust_vector_field_id, and record deterministic noise seeds for replays.",
+    "godot": "Area2D or Area3D nodes can hold wind metadata and affect CharacterBody or RigidBody state during physics processing. Use groups or collision layers for affected_layer_mask, and debug draw arrows for field direction and falloff.",
+    "unreal": "Use Physics Volumes, WindDirectionalSource for presentation, or custom components for gameplay acceleration. ProjectileMovement and CharacterMovement need explicit wind hooks, while replicated games should derive gust state from server-approved volume ids and deterministic pulses.",
+    "web": "In Phaser, Matter.js, or custom loops, query gust volumes during fixed integration and apply gust_acceleration_vector to selected bodies. Use seeded noise for turbulence and keep particle rendering subscribed to the same field data as gameplay."
   },
   "related_mechanics": [
     "physics.gravity",
+    "traversal.gliding",
     "physics.low_gravity_zone",
-    "puzzle.physics_weight_puzzle",
     "simulation.systemic_weather"
   ],
   "combines_well_with": [
-    "physics.buoyancy",
-    "physics.moving_platform",
-    "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "physics.pendulum_swing",
+    "procedural_generation.biome_generation",
+    "vehicles.suspension_physics",
+    "puzzle.physics_weight_puzzle"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Legend of Zelda: Breath of the Wild",
+      "note": "Uses updrafts and wind-like traversal effects in exploration."
+    },
+    {
+      "title": "Journey",
+      "note": "Uses wind and cloth-like motion as part of environmental traversal feel."
+    }
+  ],
   "tags": [
-    "physics",
-    "simulation",
-    "simulation_force",
-    "wind"
+    "wind",
+    "gust",
+    "environment",
+    "vector_field",
+    "physics"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

@@ -2,12 +2,12 @@
   "id": "physics.buoyancy",
   "name": "Buoyancy",
   "aliases": [
-    "buoyancy mechanic",
-    "buoyancy system",
-    "buoyancy"
+    "floating physics",
+    "water buoyancy",
+    "fluid lift"
   ],
   "category": "physics",
-  "subcategory": "simulation_force",
+  "subcategory": "fluid_physics",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -20,92 +20,120 @@
     "tuning": "hard"
   },
   "genres": [
-    "puzzle",
+    "survival",
     "sandbox",
-    "simulation"
+    "simulation",
+    "adventure"
   ],
-  "description": "Buoyancy is a world-system mechanic driven by forces, constraints, collision response, or simulated motion.",
-  "design_notes": "Buoyancy should be designed around a clear player promise, a readable trigger, and a predictable result. For physics mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Objects and characters react to fluid volumes by floating, sinking, bobbing, or resisting motion based on submerged state.",
+  "design_notes": "Buoyancy works best when fluid_volume_id, buoyancy sample points, drag coefficients, and wake/sleep rules are explicit. The mechanic should define which bodies float, which sink, how players control submerged motion, and how waterline transitions affect audio, camera, and collision.",
   "design_purpose": [
-    "Give the player a readable way to use buoyancy as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect buoyancy to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Make water, lava, gas, or other fluid spaces feel physically distinct from dry ground.",
+    "Support traversal, object puzzles, survival hazards, and vehicle handling through submerged motion.",
+    "Give designers a way to classify objects by density, drag, and float behavior."
   ],
-  "player_fantasy": "The player feels the world has weight, motion, and consequences.",
+  "player_fantasy": "The player feels the resistance and lift of fluid spaces and can predict which objects will float or sink.",
   "required_systems": [
-    "physics_world",
-    "collision_detection",
-    "rigidbody_or_constraint_system",
-    "event_dispatch"
+    "fluid_volume_registry",
+    "rigidbody_simulation",
+    "sample_point_solver",
+    "drag_model",
+    "network_authority"
   ],
   "parameters": [
     {
-      "name": "force_strength",
-      "type": "float",
-      "typical_range": "0.1-1000 units",
-      "description": "Magnitude of the force, impulse, or constraint effect."
+      "name": "fluid_volume_id",
+      "type": "string",
+      "typical_range": "lake_a, flooded_room_02, lava_channel",
+      "description": "Stable identifier for the volume that defines surface height, density, drag, and damage rules."
     },
     {
-      "name": "mass_or_weight",
-      "type": "float",
-      "typical_range": "0.1-500 units",
-      "description": "Mass scale used by collision and force calculations."
+      "name": "buoyancy_sample_points",
+      "type": "integer",
+      "typical_range": "1-16",
+      "description": "Number of body-local points checked against the fluid surface to estimate submerged ratio."
     },
     {
-      "name": "damping",
+      "name": "displaced_volume_multiplier",
       "type": "float",
-      "typical_range": "0-1",
-      "description": "How quickly motion loses energy over time."
+      "typical_range": "0.1-4.0",
+      "description": "Multiplier that controls how strongly the body rises relative to its mass and submerged ratio."
+    },
+    {
+      "name": "drag_coefficient",
+      "type": "float",
+      "typical_range": "0-10",
+      "description": "Resistance applied to movement while submerged, separated from dry-ground friction or air drag."
+    },
+    {
+      "name": "surface_snap_tolerance",
+      "type": "float",
+      "typical_range": "0-0.5 world units",
+      "description": "Small tolerance used to reduce jitter when a body rests near the fluid surface."
     }
   ],
   "common_variants": [
-    "buoyancy_scripted_version",
-    "buoyancy_fully_simulated_version",
-    "network_synced_version",
-    "puzzle_variant"
+    "simple_float_height",
+    "multi_point_buoyancy",
+    "submarine_buoyancy",
+    "lava_or_acid_buoyancy",
+    "networked_watercraft"
   ],
   "edge_cases": [
-    "Buoyancy is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Buoyancy overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Buoyancy runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "An object is partly inside two overlapping fluid volumes with different density or damage rules.",
+    "A sleeping rigidbody enters fluid due to moving water, streaming, or a rising flood volume.",
+    "A player exits the water while the camera, audio filter, and movement controller still think they are submerged.",
+    "Network clients simulate bobbing locally but the server resolves a different waterline contact."
   ],
   "common_bugs": [
-    "Buoyancy state does not reset correctly after interruption or reload.",
-    "Feedback for Buoyancy plays even when the mechanic fails or is rejected.",
-    "Buoyancy produces different results between frame rates, platforms, or network clients."
+    "Buoyancy pushes upward from the center of mass only, causing long objects to float unrealistically or flip violently.",
+    "Drag is applied every render frame instead of fixed step and changes with frame rate.",
+    "Submerged state toggles rapidly at the waterline, spamming splash effects and movement mode changes.",
+    "Save/load restores object position but not sleeping state, submerged ratio, or fluid_volume_id."
   ],
   "balancing_notes": [
-    "Make Buoyancy strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "High drag makes water feel heavy and readable but can frustrate traversal if the player has little control authority.",
+    "Puzzle objects should have visually learnable density classes so players do not need trial and error for every item.",
+    "Surface bobbing can add life, but too much motion makes aiming, platforming, or item placement uncomfortable."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Buoyancy becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide stable camera options and reduced bobbing for players sensitive to waterline motion.",
+    "Use audio, particle, and UI state changes in addition to color shifts for submerged or drowning states."
   ],
   "implementation_notes": {
-    "unity": "Implement Buoyancy with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Buoyancy as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Buoyancy with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Buoyancy as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use trigger volumes for fluid_volume_id and sample body-local buoyancy points against a surface query. Apply acceleration and drag in FixedUpdate, wake sleeping bodies when flood state changes, and replicate authoritative submerged state for boats or multiplayer objects.",
+    "godot": "Area2D or Area3D can mark fluid volumes, while RigidBody integration applies lift from sampled points. Keep submerged_ratio, fluid_volume_id, and sleeping state in save data, and debug draw sample points plus surface intersections during tuning.",
+    "unreal": "Physics Volumes, Water plugin data, or custom components can provide fluid surfaces. Apply per-body lift from sample sockets, clamp angular impulses for stability, and let the server own buoyant vehicles or puzzle objects when replication matters.",
+    "web": "For Matter.js, Phaser, or custom solvers, compute submerged ratio from sample points and apply lift plus drag in the fixed simulation pass. Pool splash events and avoid allocating per-point arrays each frame in large water scenes."
   },
   "related_mechanics": [
     "physics.gravity",
-    "physics.low_gravity_zone",
-    "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "movement.swimming",
+    "survival.oxygen",
+    "physics.low_gravity_zone"
   ],
   "combines_well_with": [
-    "physics.moving_platform",
     "physics.wind_force",
+    "vehicles.fuel",
     "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "survival.temperature"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Subnautica",
+      "note": "Uses underwater movement and vehicle behavior as core exploration systems."
+    },
+    {
+      "title": "Half-Life 2",
+      "note": "Uses floating objects in water as part of physics interaction."
+    }
+  ],
   "tags": [
     "buoyancy",
-    "physics",
-    "simulation",
-    "simulation_force"
+    "fluid",
+    "drag",
+    "submerged_state",
+    "physics"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

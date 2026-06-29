@@ -2,12 +2,12 @@
   "id": "time.slow_motion",
   "name": "Slow Motion",
   "aliases": [
-    "slow motion mechanic",
-    "slow motion system",
-    "slow motion"
+    "bullet time",
+    "time dilation",
+    "slowdown effect"
   ],
   "category": "time",
-  "subcategory": "time",
+  "subcategory": "time_scale",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,96 +15,125 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
+    "design": "medium",
     "implementation": "hard",
-    "tuning": "expert"
+    "tuning": "hard"
   },
   "genres": [
-    "puzzle",
     "action",
-    "racing"
+    "shooter",
+    "racing",
+    "puzzle"
   ],
-  "description": "Slow Motion is a temporal mechanic that changes speed, ordering, deadlines, cooldowns, or history.",
-  "design_notes": "Slow Motion should be designed around a clear player promise, a readable trigger, and a predictable result. For time mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Selected gameplay systems run at a reduced simulation scale while input, UI, or audio may remain responsive.",
+  "design_notes": "Slow motion is most useful when the scope is explicit: which gameplay_clock_id is scaled, which ui_clock_id remains unscaled, how animation time scale and physics step behavior are handled, and whether multiplayer authority permits the effect. Without those boundaries it can quietly break input buffering, projectile travel, and camera feedback.",
   "design_purpose": [
-    "Give the player a readable way to use slow motion as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect slow motion to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players perceive and react to dense action that would otherwise be unreadable.",
+    "Create a cinematic reward for skillful dodges, shots, crashes, or near misses.",
+    "Support puzzle or traversal timing by temporarily widening decision windows."
   ],
-  "player_fantasy": "The player feels they can manipulate urgency, sequence, or consequence.",
+  "player_fantasy": "The player feels intensely focused as the world slows while their intent remains sharp.",
   "required_systems": [
-    "time_controller",
-    "state_history_or_clock",
-    "effect_system",
-    "feedback_system"
+    "clock_manager",
+    "animation_controller",
+    "physics_step_controller",
+    "audio_mixer",
+    "accessibility_settings"
   ],
   "parameters": [
     {
-      "name": "time_scale",
+      "name": "simulation_scale_multiplier",
       "type": "float",
-      "typical_range": "0-2",
-      "description": "Multiplier applied to game time or affected systems."
+      "typical_range": "0.05-0.75",
+      "description": "Multiplier applied to the affected gameplay clock while the slow motion effect is active."
     },
     {
-      "name": "duration",
-      "type": "float",
-      "typical_range": "0.1-30 seconds",
-      "description": "How long the temporal effect remains active."
+      "name": "effect_window_ms",
+      "type": "integer",
+      "typical_range": "100-10000 ms",
+      "description": "Milliseconds the dilation remains active before blending back to normal simulation pace."
     },
     {
-      "name": "recovery_or_cooldown",
-      "type": "float",
-      "typical_range": "0-120 seconds",
-      "description": "Delay before the mechanic can be used again."
+      "name": "entry_blend_ms",
+      "type": "integer",
+      "typical_range": "0-500 ms",
+      "description": "Blend window used when entering the slowed state so cameras, animation, and audio do not snap."
+    },
+    {
+      "name": "physics_step_policy_id",
+      "type": "string",
+      "typical_range": "scale_fixed_step, keep_fixed_step, substep_scaled_motion",
+      "description": "Rule that decides how fixed timestep simulation changes during the dilation effect."
+    },
+    {
+      "name": "unscaled_channel_mask",
+      "type": "array",
+      "typical_range": "ui, input, voice_chat, pause_menu",
+      "description": "Systems that continue using unscaled_time so menus, prompts, and accessibility settings remain responsive."
     }
   ],
   "common_variants": [
-    "slow_motion_player_triggered",
-    "slow_motion_zone_based",
-    "resource_limited",
-    "scripted_sequence"
+    "player_only_focus_mode",
+    "global_bullet_time",
+    "near_miss_slowdown",
+    "aim_assist_slowdown",
+    "cinematic_kill_slowdown"
   ],
   "edge_cases": [
-    "Slow Motion is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Slow Motion overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Slow Motion runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Projectiles, hitboxes, particles, and animation notifies run on different clocks during the slowed window.",
+    "The effect begins while a cooldown, rhythm judgment, or timed challenge is using another clock source.",
+    "A multiplayer client predicts slow motion locally even though the server rejects the trigger.",
+    "Physics substepping changes collision results when the simulation scale becomes extremely low."
   ],
   "common_bugs": [
-    "Slow Motion state does not reset correctly after interruption or reload.",
-    "Feedback for Slow Motion plays even when the mechanic fails or is rejected.",
-    "Slow Motion produces different results between frame rates, platforms, or network clients."
+    "UI prompts and input buffering become sluggish because they were accidentally attached to the scaled gameplay clock.",
+    "Audio pitch drops for dialogue or accessibility cues that should remain intelligible.",
+    "Animation events fire at scaled playback while weapon traces still use unscaled frame deltas.",
+    "The game exits slow motion but fixed timestep settings are not restored for later scenes."
   ],
   "balancing_notes": [
-    "Make Slow Motion strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Lower simulation scale gives dramatic readability but can trivialize aiming, dodging, and puzzle execution.",
+    "Limit availability through resource cost, trigger rarity, or encounter-specific rules if slow motion solves too many threats.",
+    "Camera zoom, chromatic effects, and audio filtering should support readability without overwhelming the player."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Slow Motion becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Allow players to reduce or disable motion distortion, heavy screen effects, and audio pitch shifts during slow motion.",
+    "Consider optional assist settings that provide slower reaction windows without tying them to flashy camera effects."
   ],
   "implementation_notes": {
-    "unity": "Implement Slow Motion with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Slow Motion as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Slow Motion with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Slow Motion as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use Time.timeScale only for the channels that can safely follow global dilation, and keep UI, input buffering, and menu logic on unscaledDeltaTime. If Time.fixedDeltaTime is adjusted, restore it through a scoped clock manager and audit Animator update modes, particle simulation, and Cinemachine impulses.",
+    "godot": "Engine.time_scale can drive broad dilation, but CanvasLayer UI, audio cues, and pause menus should read an unscaled clock. For physics-heavy games, define a physics_step_policy_id so CharacterBody and RigidBody behavior remains stable when the scale multiplier changes.",
+    "unreal": "Global Time Dilation, Custom Time Dilation, and physics substepping can be combined, but authority should live in a gameplay component that records trigger_id, scale, and expiry timestamp. Keep UMG and accessibility widgets on real time and replicate only approved dilation states.",
+    "web": "Maintain separate gameplay_clock_id and ui_clock_id values in the main loop. Phaser or custom canvas code should integrate simulation with scaled delta, render UI with real delta, and clamp accumulated frame deltas after tab focus changes."
   },
   "related_mechanics": [
-    "combat.invincibility_frames",
     "time.time_freeze",
     "time.time_rewind",
-    "ui_ux.cooldown_indicator"
+    "combat.invincibility_frames",
+    "camera.dynamic_fov"
   ],
   "combines_well_with": [
-    "combat.invincibility_frames",
-    "time.day_night_schedule",
-    "time.timed_challenge",
-    "ui_ux.cooldown_indicator"
+    "combat.parry",
+    "camera.screen_shake",
+    "ui_ux.hit_marker",
+    "time.cooldown_time"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Max Payne",
+      "note": "Uses slow motion as a core action readability and style mechanic."
+    },
+    {
+      "title": "The Legend of Zelda: Breath of the Wild",
+      "note": "Uses temporary slow motion during some aerial aiming moments."
+    }
+  ],
   "tags": [
-    "slow",
-    "time",
-    "timing"
+    "slow_motion",
+    "time_scale",
+    "readability",
+    "cinematic",
+    "clock_management"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

@@ -2,15 +2,14 @@
   "id": "physics.ragdoll",
   "name": "Ragdoll",
   "aliases": [
-    "ragdoll mechanic",
-    "ragdoll system",
-    "ragdoll"
+    "physics death",
+    "skeletal ragdoll",
+    "limp body simulation"
   ],
   "category": "physics",
-  "subcategory": "simulation_force",
+  "subcategory": "skeletal_physics",
   "status": "draft",
   "dimensions": [
-    "2D",
     "2.5D",
     "3D"
   ],
@@ -20,92 +19,120 @@
     "tuning": "hard"
   },
   "genres": [
-    "puzzle",
-    "sandbox",
-    "simulation"
+    "action",
+    "shooter",
+    "simulation",
+    "horror"
   ],
-  "description": "Ragdoll is a world-system mechanic driven by forces, constraints, collision response, or simulated motion.",
-  "design_notes": "Ragdoll should be designed around a clear player promise, a readable trigger, and a predictable result. For physics mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A character skeleton transitions from authored animation to simulated rigid bodies connected by joint constraints.",
+  "design_notes": "Ragdoll is a transition between animation authority and physics authority. The practical decisions are skeletal body setup, collision layers, joint limits, hit impulse transfer, get-up pose selection, and whether death or knockdown state is authoritative for networking and save files.",
   "design_purpose": [
-    "Give the player a readable way to use ragdoll as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect ragdoll to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Make impacts, deaths, knockdowns, or falls feel physically responsive.",
+    "Communicate loss of control through body motion rather than only animation playback.",
+    "Create emergent comedy, horror, or tactical cover interactions when bodies collide with the world."
   ],
-  "player_fantasy": "The player feels the world has weight, motion, and consequences.",
+  "player_fantasy": "The player sees bodies react believably to impacts and understands when control or life has been lost.",
   "required_systems": [
-    "physics_world",
-    "collision_detection",
-    "rigidbody_or_constraint_system",
-    "event_dispatch"
+    "skeletal_animation",
+    "physics_asset",
+    "joint_constraint_solver",
+    "collision_layers",
+    "state_machine"
   ],
   "parameters": [
     {
-      "name": "force_strength",
-      "type": "float",
-      "typical_range": "0.1-1000 units",
-      "description": "Magnitude of the force, impulse, or constraint effect."
+      "name": "skeletal_body_profile_id",
+      "type": "string",
+      "typical_range": "humanoid_light, creature_large, partial_upper_body",
+      "description": "Physics asset profile that defines body shapes, masses, and limb collision behavior."
     },
     {
-      "name": "mass_or_weight",
-      "type": "float",
-      "typical_range": "0.1-500 units",
-      "description": "Mass scale used by collision and force calculations."
+      "name": "joint_limit_profile_id",
+      "type": "string",
+      "typical_range": "loose_death, stiff_knockdown, creature_tail",
+      "description": "Constraint profile that limits joint rotation and stabilizes the simulated skeleton."
     },
     {
-      "name": "damping",
+      "name": "blend_in_ms",
+      "type": "integer",
+      "typical_range": "0-500 ms",
+      "description": "Milliseconds used to blend from animation pose into physics-driven limb motion."
+    },
+    {
+      "name": "impact_impulse_multiplier",
       "type": "float",
-      "typical_range": "0-1",
-      "description": "How quickly motion loses energy over time."
+      "typical_range": "0-5",
+      "description": "Multiplier applied to hit impulse before it is distributed to the affected body or limb."
+    },
+    {
+      "name": "getup_pose_selector_id",
+      "type": "string",
+      "typical_range": "face_up, face_down, nearest_navmesh_pose, disabled",
+      "description": "Rule used to choose an animation pose when a non-death ragdoll returns to controlled motion."
     }
   ],
   "common_variants": [
-    "ragdoll_scripted_version",
-    "ragdoll_fully_simulated_version",
-    "network_synced_version",
-    "puzzle_variant"
+    "death_ragdoll",
+    "temporary_knockdown_ragdoll",
+    "partial_body_ragdoll",
+    "active_ragdoll",
+    "client_cosmetic_ragdoll"
   ],
   "edge_cases": [
-    "Ragdoll is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Ragdoll overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Ragdoll runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A character ragdolls while attached to a ladder, vehicle, moving platform, or cinematic root-motion track.",
+    "The body falls asleep inside a door, elevator, or other moving collision volume.",
+    "A get-up attempt begins when the pelvis is off navmesh or the selected pose intersects geometry.",
+    "Multiplayer clients simulate cosmetic ragdolls differently from the server-authoritative death state."
   ],
   "common_bugs": [
-    "Ragdoll state does not reset correctly after interruption or reload.",
-    "Feedback for Ragdoll plays even when the mechanic fails or is rejected.",
-    "Ragdoll produces different results between frame rates, platforms, or network clients."
+    "Animation keeps writing bone transforms after physics simulation starts, causing jitter or exploding joints.",
+    "Collision layers let limbs collide with the owning capsule or weapon and launch the body.",
+    "Joint constraints are too loose or solver iterations too low, producing stretching, spinning, or folded bodies.",
+    "Death state, loot spawn, and ragdoll cleanup run independently and despawn bodies before interactions finish."
   ],
   "balancing_notes": [
-    "Make Ragdoll strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Long ragdoll recovery removes player agency; use it deliberately for heavy hits or readable punishment.",
+    "Combat readability often benefits from capped impact impulses so bodies do not obscure targets or objectives.",
+    "Temporary ragdolls need clear recovery rules or they can feel like random loss of control."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Ragdoll becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer reduced ragdoll intensity or less exaggerated impacts for players sensitive to violent body motion.",
+    "Keep critical gameplay information independent from ragdoll pose, since bodies may settle unpredictably."
   ],
   "implementation_notes": {
-    "unity": "Implement Ragdoll with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Ragdoll as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Ragdoll with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Ragdoll as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Build ragdolls from configured Rigidbody and Joint components with collision layers that ignore the owning capsule. During transition, disable Animator writes or use a controlled blend, apply impact impulses once by attack_instance_id, and keep authoritative death state separate from cosmetic limb simulation.",
+    "godot": "PhysicalBone3D can drive skeletal physics, but state machines should explicitly switch animation, collision, and control modes. Store the skeleton root, sleeping state, and getup_pose_selector_id for knockdown recovery, and debug joint limits with visible constraint axes.",
+    "unreal": "Use Physics Assets, Set Simulate Physics on skeletal bodies, Physical Animation Components for partial blends, and movement-mode changes for control loss. Networked games should replicate death or knockdown state and let clients simulate cosmetic ragdoll details within cleanup rules.",
+    "web": "For Three.js or custom engines, ragdoll is usually expensive; use simplified capsule chains or precomputed animation blends unless physics is central. If using a solver, keep stable body ids, joint anchors, and collision masks for rollback or replay captures."
   },
   "related_mechanics": [
     "physics.gravity",
-    "physics.low_gravity_zone",
-    "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "combat.knockback",
+    "combat.hit_stun",
+    "physics.destructible_environment"
   ],
   "combines_well_with": [
-    "physics.buoyancy",
-    "physics.wind_force",
-    "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "combat.area_of_effect_attack",
+    "horror.jump_scare_trigger",
+    "physics.breakable_object",
+    "ui_ux.damage_numbers"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Grand Theft Auto IV",
+      "note": "Uses ragdoll-like body reactions prominently during impacts."
+    },
+    {
+      "title": "Half-Life 2",
+      "note": "Uses physics-driven bodies as part of combat aftermath and world interaction."
+    }
+  ],
   "tags": [
-    "physics",
     "ragdoll",
-    "simulation",
-    "simulation_force"
+    "skeletal_physics",
+    "collision",
+    "animation_blend",
+    "knockdown"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

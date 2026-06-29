@@ -2,12 +2,12 @@
   "id": "time.time_rewind",
   "name": "Time Rewind",
   "aliases": [
-    "time rewind mechanic",
-    "time rewind system",
-    "time rewind"
+    "rewind",
+    "state rewind",
+    "undo time"
   ],
   "category": "time",
-  "subcategory": "time",
+  "subcategory": "state_rewind",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,104 +15,125 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
-    "implementation": "hard",
+    "design": "expert",
+    "implementation": "expert",
     "tuning": "expert"
   },
   "genres": [
     "puzzle",
+    "platformer",
     "action",
-    "racing"
+    "adventure"
   ],
-  "description": "A mechanic that restores earlier game state over a short history window.",
-  "design_notes": "Time Rewind should be designed around a clear player promise, a readable trigger, and a predictable result. For time mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Previously recorded state snapshots are replayed backward or restored to an earlier point under player or system control.",
+  "design_notes": "Rewind is a state ownership problem before it is a visual effect. Each recorded_state_channel needs a sampling cadence, memory budget, restore order, and exclusion rule for systems such as achievements, network messages, random generation, UI, and irreversible narrative choices.",
   "design_purpose": [
-    "Give the player a readable way to use time rewind as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect time rewind to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players recover from mistakes without fully restarting a challenge.",
+    "Create puzzles based on reversing object motion, player position, or causal sequences.",
+    "Expose experimentation by making recent consequences reversible while preserving chosen irreversible stakes."
   ],
-  "player_fantasy": "The player feels they can manipulate urgency, sequence, or consequence.",
+  "player_fantasy": "The player feels able to pull a mistake back through history and try a smarter line.",
   "required_systems": [
-    "time_controller",
-    "state_history_or_clock",
-    "effect_system",
-    "feedback_system"
+    "state_snapshot_buffer",
+    "deterministic_replay",
+    "physics_state_cache",
+    "input_history",
+    "save_load_state"
   ],
   "parameters": [
     {
-      "name": "time_scale",
+      "name": "rewind_buffer_seconds",
       "type": "float",
-      "typical_range": "0-2",
-      "description": "Multiplier applied to game time or affected systems."
+      "typical_range": "1-30 seconds",
+      "description": "Recent history retained for possible restoration, constrained by memory and replay requirements."
     },
     {
-      "name": "duration",
-      "type": "float",
-      "typical_range": "0.1-30 seconds",
-      "description": "How long the temporal effect remains active."
+      "name": "rewind_sample_rate_hz",
+      "type": "integer",
+      "typical_range": "10-120 Hz",
+      "description": "Snapshot sampling cadence for channels that cannot be reconstructed from deterministic input replay."
     },
     {
-      "name": "recovery_or_cooldown",
+      "name": "recorded_state_channel",
+      "type": "array",
+      "typical_range": "player_transform, velocity, health, object_state, projectile_state",
+      "description": "State channels captured into the rewind buffer and restored in a defined order."
+    },
+    {
+      "name": "memory_budget_mb",
       "type": "float",
-      "typical_range": "0-120 seconds",
-      "description": "Delay before the mechanic can be used again."
+      "typical_range": "4-512 MB",
+      "description": "Maximum memory allocation for history buffers before compression, decimation, or channel exclusion is required."
+    },
+    {
+      "name": "restore_collision_policy_id",
+      "type": "string",
+      "typical_range": "sweep_to_safe_pose, snap_with_overlap_fix, fail_if_blocked",
+      "description": "Rule used when restoring actors into spaces that may now be occupied or invalid."
     }
   ],
   "common_variants": [
-    "time_rewind_player_triggered",
-    "time_rewind_zone_based",
-    "resource_limited",
-    "scripted_sequence"
+    "player_position_rewind",
+    "full_world_rewind",
+    "ghost_replay_rewind",
+    "single_object_rewind",
+    "checkpoint_rewind"
   ],
   "edge_cases": [
-    "Time Rewind is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Time Rewind overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Time Rewind runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A rewind tries to restore an object that has been destroyed, pooled, unloaded, or replaced by a streamed chunk.",
+    "Random events, loot drops, or network messages occurred during the rewound interval and must not be duplicated.",
+    "The restored collision pose intersects moving platforms, doors, enemies, or newly spawned objects.",
+    "Audio and camera rewind smoothly while authority gameplay snaps to a discrete snapshot."
   ],
   "common_bugs": [
-    "Time Rewind state does not reset correctly after interruption or reload.",
-    "Feedback for Time Rewind plays even when the mechanic fails or is rejected.",
-    "Time Rewind produces different results between frame rates, platforms, or network clients."
+    "Only transform state is recorded, so velocity, animation phase, health, cooldowns, and AI blackboard state resume incorrectly.",
+    "Snapshot buffers grow without bounds when multiple actors enter the recorded_state_channel set.",
+    "Restored physics bodies wake with stale contact pairs and launch the player after the first solver step.",
+    "Rewinding through save, checkpoint, or achievement events grants rewards more than once."
   ],
   "balancing_notes": [
-    "Make Time Rewind strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Long buffers encourage experimentation but can remove tension unless objectives or resources define what remains irreversible.",
+    "Full-world rewind is expensive and powerful; single-channel rewind is easier to balance but must be communicated clearly.",
+    "Limit rewind in competitive or multiplayer contexts unless rollback authority and fairness rules are explicit."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Time Rewind becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Rewind can be a strong accessibility aid when it reduces repetitive failure loops; expose clear availability and remaining history.",
+    "Provide reduced motion and reduced audio-scrub options for players sensitive to reversed camera or sound effects."
   ],
   "implementation_notes": {
-    "unity": "Implement Time Rewind with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Time Rewind as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Time Rewind with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Time Rewind as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use ring buffers keyed by entity_id and recorded_state_channel rather than cloning whole GameObjects. Capture Rigidbody pose, velocity, angular velocity, Animator state hash, and gameplay fields at rewind_sample_rate_hz, then restore through a collision-aware transaction before re-enabling simulation.",
+    "godot": "Store compact snapshots for NodePath or stable entity ids in an autoload history service. PhysicsServer bodies need transform, linear velocity, angular velocity, sleeping state, and collision layer restoration, while excluded channels should be documented for deterministic replay.",
+    "unreal": "Record Actor state through components that implement a rewind snapshot interface, and keep network rollback windows separate from player-facing rewind. Chaos bodies need transform and velocity snapshots, while replicated games should let the server approve restore points.",
+    "web": "Use circular typed arrays or pooled objects for high-frequency channels to avoid garbage collection spikes. For Phaser, Matter.js, or custom simulation, restore position, velocity, active flags, and deterministic RNG stream ids together so replayed history matches captured history."
   },
   "related_mechanics": [
-    "combat.invincibility_frames",
     "time.slow_motion",
     "time.time_freeze",
-    "ui_ux.cooldown_indicator"
+    "ui_ux.checkpoint_notification",
+    "platforming.coyote_time"
   ],
   "combines_well_with": [
-    "combat.invincibility_frames",
-    "time.day_night_schedule",
+    "puzzle.timed_door",
+    "physics.moving_platform",
     "time.timed_challenge",
-    "ui_ux.cooldown_indicator"
+    "camera.screen_shake"
   ],
   "example_games": [
     {
       "title": "Braid",
-      "note": "Uses rewind as a puzzle and correction mechanic."
+      "note": "Uses rewind as a central puzzle and failure-recovery mechanic."
     },
     {
       "title": "Prince of Persia: The Sands of Time",
-      "note": "Uses rewind to recover from mistakes."
+      "note": "Uses rewind to recover from recent platforming and combat mistakes."
     }
   ],
   "tags": [
-    "time",
-    "timing"
+    "rewind",
+    "state_history",
+    "rollback",
+    "snapshot",
+    "determinism"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

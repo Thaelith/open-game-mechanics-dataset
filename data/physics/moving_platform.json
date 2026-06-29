@@ -2,12 +2,12 @@
   "id": "physics.moving_platform",
   "name": "Moving Platform",
   "aliases": [
-    "moving platform mechanic",
-    "moving platform system",
-    "moving platform"
+    "moving floor",
+    "elevator platform",
+    "conveyor platform"
   ],
   "category": "physics",
-  "subcategory": "simulation_force",
+  "subcategory": "passenger_motion",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -20,92 +20,120 @@
     "tuning": "hard"
   },
   "genres": [
+    "platformer",
     "puzzle",
-    "sandbox",
-    "simulation"
+    "action",
+    "adventure"
   ],
-  "description": "Moving Platform is a world-system mechanic driven by forces, constraints, collision response, or simulated motion.",
-  "design_notes": "Moving Platform should be designed around a clear player promise, a readable trigger, and a predictable result. For physics mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A surface moves through the world while transferring some or all of its motion to passengers standing on it.",
+  "design_notes": "Moving platforms are mostly about trust at contact boundaries. The platform_velocity, contact_normal, passenger transfer mode, edge detach rule, and rollback snapshot state all need to agree so riders do not slide, jitter, clip, or lose control when the platform starts, stops, reverses, or changes parent space.",
   "design_purpose": [
-    "Give the player a readable way to use moving platform as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect moving platform to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create timed traversal routes without requiring every challenge to be a jump distance test.",
+    "Move players, objects, or hazards through authored spaces with predictable passenger behavior.",
+    "Support puzzles where carried momentum, route timing, or platform synchronization matters."
   ],
-  "player_fantasy": "The player feels the world has weight, motion, and consequences.",
+  "player_fantasy": "The player feels they can ride, jump from, and trust moving surfaces without fighting the collision system.",
   "required_systems": [
-    "physics_world",
-    "collision_detection",
-    "rigidbody_or_constraint_system",
-    "event_dispatch"
+    "kinematic_body_controller",
+    "contact_solver",
+    "route_spline",
+    "passenger_tracking",
+    "rollback_snapshot"
   ],
   "parameters": [
     {
-      "name": "force_strength",
-      "type": "float",
-      "typical_range": "0.1-1000 units",
-      "description": "Magnitude of the force, impulse, or constraint effect."
+      "name": "platform_velocity_vector",
+      "type": "vector",
+      "typical_range": "0.5-20 world units per second along route",
+      "description": "Current platform movement vector transferred to passengers according to the selected transfer rule."
     },
     {
-      "name": "mass_or_weight",
-      "type": "float",
-      "typical_range": "0.1-500 units",
-      "description": "Mass scale used by collision and force calculations."
+      "name": "route_node_id",
+      "type": "string",
+      "typical_range": "elevator_a, loop_bridge_03, spline_platform_b",
+      "description": "Route, spline, or waypoint sequence used to compute the platform pose each fixed step."
     },
     {
-      "name": "damping",
+      "name": "passenger_transfer_mode_id",
+      "type": "string",
+      "typical_range": "parent_transform, inject_velocity, sweep_delta, conveyor_only",
+      "description": "Policy for applying platform displacement to standing characters and carried objects."
+    },
+    {
+      "name": "contact_normal_threshold",
       "type": "float",
-      "typical_range": "0-1",
-      "description": "How quickly motion loses energy over time."
+      "typical_range": "0.45-0.95",
+      "description": "Minimum upward contact normal required before an actor is treated as a platform passenger."
+    },
+    {
+      "name": "detach_grace_ms",
+      "type": "integer",
+      "typical_range": "0-250 ms",
+      "description": "Short grace window that preserves transferred motion after a rider steps or jumps off the platform."
     }
   ],
   "common_variants": [
-    "moving_platform_scripted_version",
-    "moving_platform_fully_simulated_version",
-    "network_synced_version",
-    "puzzle_variant"
+    "linear_elevator",
+    "looping_spline_platform",
+    "conveyor_surface",
+    "player_triggered_lift",
+    "network_replicated_platform"
   ],
   "edge_cases": [
-    "Moving Platform is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Moving Platform overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Moving Platform runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The platform reverses direction while a passenger is partly off the edge or touching a wall.",
+    "A rider jumps on the same fixed step that the platform changes route node or teleports to a reset pose.",
+    "Parenting a character to a rotating platform changes input axes, camera assumptions, or interpolation order.",
+    "Rollback restores the player but not the platform route progress, producing a different contact frame."
   ],
   "common_bugs": [
-    "Moving Platform state does not reset correctly after interruption or reload.",
-    "Feedback for Moving Platform plays even when the mechanic fails or is rejected.",
-    "Moving Platform produces different results between frame rates, platforms, or network clients."
+    "Passenger velocity is applied twice: once through transform parenting and once through character movement.",
+    "Fast downward platforms leave riders behind because contact is lost before transfer occurs.",
+    "Moving platforms crush characters against ceilings without a clear damage, stop, or push-out rule.",
+    "Client interpolation smooths the platform but the character rides the unsmoothed server pose and jitters."
   ],
   "balancing_notes": [
-    "Make Moving Platform strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Platform routes should telegraph start, stop, and reversal points early enough for players to plan jumps.",
+    "Fast platforms create excitement but reduce accessibility unless detach grace, coyote windows, and camera framing support them.",
+    "Passenger transfer should feel consistent across player, enemies, and puzzle objects unless the difference is visibly intentional."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Moving Platform becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Avoid requiring blind jumps from moving platforms; use framing, route previews, or repeatable rhythms.",
+    "Provide wider timing windows or alternate routes when moving platforms combine with instant-fail hazards."
   ],
   "implementation_notes": {
-    "unity": "Implement Moving Platform with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Moving Platform as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Moving Platform with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Moving Platform as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Kinematic Rigidbody platforms should move through MovePosition or a fixed-step route driver, then expose platform_velocity_vector to CharacterController or custom motor code. Prefer one passenger transfer path, either parent transform or velocity injection, and snapshot route progress plus platform pose for rollback.",
+    "godot": "AnimatableBody2D, AnimatableBody3D, or CharacterBody platforms need deterministic route updates before passenger movement. Use contact normals to decide passenger ownership, and store route_node_id plus path progress for save/load so platforms do not desync from riders.",
+    "unreal": "Use movement components, timelines, or splines to drive platform transforms on the server. CharacterMovement has base movement support, but custom platforms should replicate base actor, relative location, velocity, and route progress to avoid client jitter.",
+    "web": "In Phaser, Matter.js, or custom collision, move platforms before resolving passengers and include platform delta in the actor sweep. Avoid mutating render-only transforms; rollback snapshots need platform pose, route progress, and passenger contact id."
   },
   "related_mechanics": [
     "physics.gravity",
-    "physics.low_gravity_zone",
-    "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "physics.one_way_platform",
+    "platforming.coyote_time",
+    "puzzle.pressure_plate"
   ],
   "combines_well_with": [
-    "physics.buoyancy",
     "physics.wind_force",
-    "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "platforming.jump_buffering",
+    "time.time_rewind",
+    "traversal.zipline"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Celeste",
+      "note": "Uses moving blocks and platforms as precision traversal elements."
+    },
+    {
+      "title": "Super Mario World",
+      "note": "Uses moving platforms across many platforming routes."
+    }
+  ],
   "tags": [
-    "moving",
-    "physics",
-    "simulation",
-    "simulation_force"
+    "moving_platform",
+    "passenger_transfer",
+    "collision",
+    "platforming",
+    "kinematic"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

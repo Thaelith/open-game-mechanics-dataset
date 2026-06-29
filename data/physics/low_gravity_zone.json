@@ -1,13 +1,13 @@
 {
   "id": "physics.low_gravity_zone",
-  "name": "Low-Gravity Zone",
+  "name": "Low Gravity Zone",
   "aliases": [
-    "low gravity zone mechanic",
-    "low gravity zone system",
-    "low-gravity zone"
+    "reduced gravity area",
+    "float zone",
+    "gravity modifier volume"
   ],
   "category": "physics",
-  "subcategory": "simulation_force",
+  "subcategory": "gravity_modifier",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,96 +16,124 @@
   ],
   "difficulty": {
     "design": "medium",
-    "implementation": "hard",
+    "implementation": "medium",
     "tuning": "hard"
   },
   "genres": [
+    "platformer",
     "puzzle",
-    "sandbox",
-    "simulation"
+    "adventure",
+    "sandbox"
   ],
-  "description": "Low-Gravity Zone is a world-system mechanic driven by forces, constraints, collision response, or simulated motion.",
-  "design_notes": "Low-Gravity Zone should be designed around a clear player promise, a readable trigger, and a predictable result. For physics mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A volume or region reduces gravity effects for selected bodies, changing jump arcs, falling, and object motion.",
+  "design_notes": "Low gravity zones should be authored as explicit trigger volumes with priority, blending, and affected body masks. Players need to read the boundary before crossing it, and systems such as jump tuning, projectiles, moving platforms, and AI navigation need to know which gravity field is active.",
   "design_purpose": [
-    "Give the player a readable way to use low-gravity zone as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect low-gravity zone to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create floatier traversal spaces without retuning the entire game's movement model.",
+    "Support puzzles where object weight, jump height, or projectile arcs change by region.",
+    "Give designers contrast between normal physics spaces and special environmental areas."
   ],
-  "player_fantasy": "The player feels the world has weight, motion, and consequences.",
+  "player_fantasy": "The player feels momentarily light and can perform movements that normal gravity would not allow.",
   "required_systems": [
-    "physics_world",
-    "collision_detection",
-    "rigidbody_or_constraint_system",
-    "event_dispatch"
+    "trigger_volume",
+    "gravity_field_manager",
+    "character_controller",
+    "projectile_simulation",
+    "debug_visualization"
   ],
   "parameters": [
     {
-      "name": "force_strength",
-      "type": "float",
-      "typical_range": "0.1-1000 units",
-      "description": "Magnitude of the force, impulse, or constraint effect."
+      "name": "trigger_volume_id",
+      "type": "string",
+      "typical_range": "moon_room, magic_bubble_02, elevator_shaft_zone",
+      "description": "Identifier for the zone that applies reduced gravity rules to entering bodies."
     },
     {
-      "name": "mass_or_weight",
+      "name": "zone_gravity_multiplier",
       "type": "float",
-      "typical_range": "0.1-500 units",
-      "description": "Mass scale used by collision and force calculations."
+      "typical_range": "0-0.75",
+      "description": "Multiplier applied to the base gravity acceleration while a body is inside the zone."
     },
     {
-      "name": "damping",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "How quickly motion loses energy over time."
+      "name": "entry_blend_ms",
+      "type": "integer",
+      "typical_range": "0-1000 ms",
+      "description": "Blend window used when entering the zone to avoid sudden velocity discontinuities."
+    },
+    {
+      "name": "exit_blend_ms",
+      "type": "integer",
+      "typical_range": "0-1000 ms",
+      "description": "Blend window used when restoring normal gravity after the body leaves the zone."
+    },
+    {
+      "name": "affected_body_mask",
+      "type": "array",
+      "typical_range": "player, enemies, projectiles, puzzle_objects",
+      "description": "Body classes that should respect the zone instead of continuing with world gravity."
     }
   ],
   "common_variants": [
-    "low_gravity_zone_scripted_version",
-    "low_gravity_zone_fully_simulated_version",
-    "network_synced_version",
-    "puzzle_variant"
+    "room_wide_low_gravity",
+    "bubble_gravity_zone",
+    "projectile_only_modifier",
+    "temporary_powerup_zone",
+    "stacking_gravity_fields"
   ],
   "edge_cases": [
-    "Low-Gravity Zone is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Low-Gravity Zone overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Low-Gravity Zone runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A player straddles the boundary with the character center outside but feet or projectiles inside.",
+    "Multiple zones overlap and disagree about priority, blend windows, or affected body classes.",
+    "A saved game loads with bodies inside the zone before trigger enter events have fired.",
+    "AI jump links or projectile prediction still assume normal gravity and choose invalid paths."
   ],
   "common_bugs": [
-    "Low-Gravity Zone state does not reset correctly after interruption or reload.",
-    "Feedback for Low-Gravity Zone plays even when the mechanic fails or is rejected.",
-    "Low-Gravity Zone produces different results between frame rates, platforms, or network clients."
+    "Gravity multiplier is applied cumulatively every frame instead of replacing or blending from the base field.",
+    "Leaving the zone snaps vertical velocity and causes sudden fall damage or ceiling collisions.",
+    "Projectiles and characters use different active zone ids, so aiming previews do not match actual arcs.",
+    "Trigger exit is missed when the zone unloads, leaving a persistent low-gravity state on the body."
   ],
   "balancing_notes": [
-    "Make Low-Gravity Zone strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Lower multipliers widen jump and reaction windows but can make hazards too easy unless level scale adapts.",
+    "Boundaries should be placed where players can safely test the altered arc before facing punishment.",
+    "If projectiles are affected, combat difficulty may shift as cover, travel arcs, and dodge timing change."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Low-Gravity Zone becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide visual boundary cues and optional UI state so players know when altered gravity is active.",
+    "Reduce camera bob or auto-tilt in low gravity areas if floaty motion causes discomfort."
   ],
   "implementation_notes": {
-    "unity": "Implement Low-Gravity Zone with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Low-Gravity Zone as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Low-Gravity Zone with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Low-Gravity Zone as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use trigger colliders keyed by trigger_volume_id and maintain an active zone stack per physics_body_id. Apply zone_gravity_multiplier during the fixed movement integration path, blend entry and exit, and include active zone id in save and network snapshots.",
+    "godot": "Area2D or Area3D nodes can define gravity overrides, but custom controllers should still store active trigger_volume_id and multiplier explicitly. Debug draw zone boundaries and priority order so overlapping areas are understandable during tuning.",
+    "unreal": "Physics Volumes or Actor Components can apply per-character GravityScale changes. For multiplayer, the server should validate zone membership and replicate active gravity field state, while clients may predict entry blends for responsiveness.",
+    "web": "Represent low gravity as a region query in the fixed simulation step, not a render-only effect. Store active zone ids on bodies, clamp blends after tab resume, and keep projectile preview using the same zone lookup as simulation."
   },
   "related_mechanics": [
-    "physics.buoyancy",
     "physics.gravity",
-    "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "physics.buoyancy",
+    "traversal.gliding",
+    "platforming.variable_jump_height"
   ],
   "combines_well_with": [
-    "physics.moving_platform",
-    "physics.wind_force",
     "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "time.slow_motion",
+    "physics.wind_force",
+    "traversal.jetpack"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Super Mario Galaxy",
+      "note": "Uses gravity changes and low-gravity-like spaces as traversal features."
+    },
+    {
+      "title": "Portal 2",
+      "note": "Uses altered movement fields in puzzle spaces."
+    }
+  ],
   "tags": [
-    "low",
-    "physics",
-    "simulation",
-    "simulation_force"
+    "low_gravity",
+    "gravity_zone",
+    "trigger_volume",
+    "movement",
+    "physics"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

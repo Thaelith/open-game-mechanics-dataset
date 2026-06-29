@@ -1,13 +1,13 @@
 {
   "id": "time.day_night_schedule",
-  "name": "Day/Night Schedule",
+  "name": "Day Night Schedule",
   "aliases": [
-    "day night schedule mechanic",
-    "day night schedule system",
-    "day/night schedule"
+    "world clock",
+    "daily cycle",
+    "time of day schedule"
   ],
   "category": "time",
-  "subcategory": "time",
+  "subcategory": "schedule_cycle",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,96 +15,125 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
-    "implementation": "hard",
-    "tuning": "expert"
+    "design": "medium",
+    "implementation": "medium",
+    "tuning": "hard"
   },
   "genres": [
-    "puzzle",
-    "action",
-    "racing"
+    "survival",
+    "simulation",
+    "rpg",
+    "adventure"
   ],
-  "description": "Day/Night Schedule is a temporal mechanic that changes speed, ordering, deadlines, cooldowns, or history.",
-  "design_notes": "Day/Night Schedule should be designed around a clear player promise, a readable trigger, and a predictable result. For time mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A world schedule advances through named phases that can drive lighting, spawns, NPC routines, and gameplay gates.",
+  "design_notes": "A day and night schedule gives the world a public rhythm. The important design choices are which gameplay_clock_id advances the schedule, how phase transitions are announced, which systems subscribe to phase changes, and how save files restore the exact phase without breaking quests, spawns, or weather.",
   "design_purpose": [
-    "Give the player a readable way to use day/night schedule as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect day/night schedule to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create predictable pressure and relief cycles through visibility, temperature, enemies, or NPC availability.",
+    "Give players planning decisions around travel, crafting, stealth, and resource use.",
+    "Provide a shared schedule that other systems can reference instead of each inventing private timers."
   ],
-  "player_fantasy": "The player feels they can manipulate urgency, sequence, or consequence.",
+  "player_fantasy": "The player feels they are living inside a world that changes even when they are not directly pushing it.",
   "required_systems": [
-    "time_controller",
-    "state_history_or_clock",
-    "effect_system",
-    "feedback_system"
+    "world_schedule_clock",
+    "lighting_controller",
+    "event_dispatch",
+    "save_load_state",
+    "npc_schedule"
   ],
   "parameters": [
     {
-      "name": "time_scale",
-      "type": "float",
-      "typical_range": "0-2",
-      "description": "Multiplier applied to game time or affected systems."
+      "name": "schedule_clock_id",
+      "type": "string",
+      "typical_range": "world_day_clock, dungeon_cycle, server_world_clock",
+      "description": "Clock source that owns schedule advancement and resolves pause, acceleration, and server authority rules."
     },
     {
-      "name": "duration",
+      "name": "cycle_length_minutes",
       "type": "float",
-      "typical_range": "0.1-30 seconds",
-      "description": "How long the temporal effect remains active."
+      "typical_range": "10-120 real minutes",
+      "description": "Real-world minutes required for the schedule to complete one full in-game cycle."
     },
     {
-      "name": "recovery_or_cooldown",
+      "name": "phase_table_id",
+      "type": "string",
+      "typical_range": "default_four_phase, hourly_schedule, survival_weather_day",
+      "description": "Data table that defines dawn, day, dusk, night, and any custom phase boundaries."
+    },
+    {
+      "name": "transition_blend_ms",
+      "type": "integer",
+      "typical_range": "500-300000 ms",
+      "description": "Blend window used by lighting, audio, weather, and UI subscribers when the phase changes."
+    },
+    {
+      "name": "accelerated_tick_multiplier",
       "type": "float",
-      "typical_range": "0-120 seconds",
-      "description": "Delay before the mechanic can be used again."
+      "typical_range": "1-120",
+      "description": "Multiplier used by beds, fast travel, or debug tools when the schedule should advance faster than normal."
     }
   ],
   "common_variants": [
-    "day_night_schedule_player_triggered",
-    "day_night_schedule_zone_based",
-    "resource_limited",
-    "scripted_sequence"
+    "real_clock_schedule",
+    "accelerated_world_day",
+    "scripted_phase_schedule",
+    "server_authoritative_schedule",
+    "region_specific_schedule"
   ],
   "edge_cases": [
-    "Day/Night Schedule is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Day/Night Schedule overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Day/Night Schedule runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A save file loads during a transition blend while lighting has advanced but NPC schedules have not.",
+    "Fast travel or sleeping skips over a phase that contains a quest trigger, spawn rule, or survival hazard.",
+    "Multiplayer clients join with clock drift and briefly see different enemy or lighting states.",
+    "A gameplay gate depends on night while a cinematic or pause state temporarily freezes the local presentation."
   ],
   "common_bugs": [
-    "Day/Night Schedule state does not reset correctly after interruption or reload.",
-    "Feedback for Day/Night Schedule plays even when the mechanic fails or is rejected.",
-    "Day/Night Schedule produces different results between frame rates, platforms, or network clients."
+    "Lighting, audio, and weather subscribe to different phase names and become desynchronized after acceleration.",
+    "NPC schedules run multiple missed phase events at once after load and teleport actors into invalid spaces.",
+    "Server and client clocks round the phase fraction differently, causing doors, vendors, or hazards to disagree.",
+    "Save restoration stores only the phase name, losing the precise fraction needed for smooth continuation."
   ],
   "balancing_notes": [
-    "Make Day/Night Schedule strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Long cycles support exploration and planning; short cycles create constant pressure but can make travel feel rushed.",
+    "Night hazards should be matched with readable preparation options such as shelter, light, or alternate routes.",
+    "If the cycle gates required content, provide a waiting or schedule-skipping affordance so players are not left idle."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Day/Night Schedule becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Do not communicate phase changes only through color temperature; include icons, labels, audio, or environmental cues.",
+    "Offer gentler night contrast or visibility settings when the schedule materially affects navigation."
   ],
   "implementation_notes": {
-    "unity": "Implement Day/Night Schedule with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Day/Night Schedule as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Day/Night Schedule with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Day/Night Schedule as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Represent the schedule as a serializable ScriptableObject phase table plus a runtime schedule_clock_id component. Store cycle_fraction and phase_id in saves, drive lighting through curves, and replicate server phase ticks rather than letting each client integrate independently.",
+    "godot": "Use a Resource for phase data and an autoload schedule service that emits phase_changed with previous_phase_id and new_phase_id. Apply visual blends in _process, but advance authoritative schedule ticks through a single clock so pause_state and fast-forward rules stay consistent.",
+    "unreal": "Implement the schedule in a WorldSubsystem or replicated Actor with phase_table_id, cycle_fraction, and accelerated_tick_multiplier. Use Gameplay Tags or delegates for phase subscribers, and serialize exact phase progress for save/load rather than only storing day or night.",
+    "web": "Keep the world schedule in simulation state and expose read-only phase snapshots to rendering, audio, and UI. For multiplayer or replay, derive phase from server timestamp plus content_version so reconnects and bug reports reproduce the same schedule."
   },
   "related_mechanics": [
-    "combat.invincibility_frames",
-    "time.slow_motion",
-    "time.time_rewind",
-    "ui_ux.cooldown_indicator"
+    "survival.day_night_cycle",
+    "survival.temperature",
+    "time.timed_challenge",
+    "simulation.systemic_weather"
   ],
   "combines_well_with": [
-    "combat.invincibility_frames",
-    "time.time_freeze",
-    "time.timed_challenge",
-    "ui_ux.cooldown_indicator"
+    "horror.limited_visibility",
+    "survival.base_building",
+    "time.cooldown_time",
+    "ui_ux.quest_marker"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Minecraft",
+      "note": "Uses a day and night cycle that changes visibility and enemy pressure."
+    },
+    {
+      "title": "The Legend of Zelda: Breath of the Wild",
+      "note": "Uses a world clock for lighting, NPC routines, and scheduled world events."
+    }
+  ],
   "tags": [
-    "day",
-    "time",
-    "timing"
+    "schedule",
+    "world_clock",
+    "day_night",
+    "phase_transition",
+    "simulation"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

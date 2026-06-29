@@ -4,7 +4,7 @@
   "license": "CC0-1.0",
   "tool_license": "MIT",
   "total_mechanics": 223,
-  "last_generated": "2026-06-29T00:58:08+00:00",
+  "last_generated": "2026-06-29T10:48:20+00:00",
   "mechanics": [
     {
       "id": "accessibility.adjustable_difficulty",
@@ -2365,7 +2365,7 @@
       "id": "physics.breakable_object",
       "name": "Breakable Object",
       "category": "physics",
-      "subcategory": "simulation_force",
+      "subcategory": "breakable_object",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2373,15 +2373,17 @@
         "3D"
       ],
       "genres": [
+        "action",
+        "adventure",
         "puzzle",
-        "sandbox",
-        "simulation"
+        "sandbox"
       ],
       "tags": [
         "breakable",
-        "physics",
-        "simulation",
-        "simulation_force"
+        "prop",
+        "debris",
+        "loot",
+        "collision"
       ],
       "path": "data/physics/breakable_object.json"
     },
@@ -2389,7 +2391,7 @@
       "id": "physics.buoyancy",
       "name": "Buoyancy",
       "category": "physics",
-      "subcategory": "simulation_force",
+      "subcategory": "fluid_physics",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2397,15 +2399,17 @@
         "3D"
       ],
       "genres": [
-        "puzzle",
+        "survival",
         "sandbox",
-        "simulation"
+        "simulation",
+        "adventure"
       ],
       "tags": [
         "buoyancy",
-        "physics",
-        "simulation",
-        "simulation_force"
+        "fluid",
+        "drag",
+        "submerged_state",
+        "physics"
       ],
       "path": "data/physics/buoyancy.json"
     },
@@ -2413,7 +2417,7 @@
       "id": "physics.destructible_environment",
       "name": "Destructible Environment",
       "category": "physics",
-      "subcategory": "simulation_force",
+      "subcategory": "persistent_destruction",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2421,15 +2425,17 @@
         "3D"
       ],
       "genres": [
-        "puzzle",
+        "action",
         "sandbox",
+        "shooter",
         "simulation"
       ],
       "tags": [
-        "destructible",
-        "physics",
-        "simulation",
-        "simulation_force"
+        "destruction",
+        "environment",
+        "debris",
+        "navmesh",
+        "persistence"
       ],
       "path": "data/physics/destructible_environment.json"
     },
@@ -2437,7 +2443,7 @@
       "id": "physics.gravity",
       "name": "Gravity",
       "category": "physics",
-      "subcategory": "simulation_force",
+      "subcategory": "gravity_field",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2445,23 +2451,25 @@
         "3D"
       ],
       "genres": [
-        "puzzle",
+        "platformer",
         "sandbox",
-        "simulation"
+        "simulation",
+        "puzzle"
       ],
       "tags": [
         "gravity",
+        "acceleration",
+        "falling",
         "physics",
-        "simulation",
-        "simulation_force"
+        "movement_feel"
       ],
       "path": "data/physics/gravity.json"
     },
     {
       "id": "physics.low_gravity_zone",
-      "name": "Low-Gravity Zone",
+      "name": "Low Gravity Zone",
       "category": "physics",
-      "subcategory": "simulation_force",
+      "subcategory": "gravity_modifier",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2469,15 +2477,17 @@
         "3D"
       ],
       "genres": [
+        "platformer",
         "puzzle",
-        "sandbox",
-        "simulation"
+        "adventure",
+        "sandbox"
       ],
       "tags": [
-        "low",
-        "physics",
-        "simulation",
-        "simulation_force"
+        "low_gravity",
+        "gravity_zone",
+        "trigger_volume",
+        "movement",
+        "physics"
       ],
       "path": "data/physics/low_gravity_zone.json"
     },
@@ -2485,7 +2495,7 @@
       "id": "physics.moving_platform",
       "name": "Moving Platform",
       "category": "physics",
-      "subcategory": "simulation_force",
+      "subcategory": "passenger_motion",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2493,15 +2503,17 @@
         "3D"
       ],
       "genres": [
+        "platformer",
         "puzzle",
-        "sandbox",
-        "simulation"
+        "action",
+        "adventure"
       ],
       "tags": [
-        "moving",
-        "physics",
-        "simulation",
-        "simulation_force"
+        "moving_platform",
+        "passenger_transfer",
+        "collision",
+        "platforming",
+        "kinematic"
       ],
       "path": "data/physics/moving_platform.json"
     },
@@ -2521,10 +2533,11 @@
         "action"
       ],
       "tags": [
-        "physics",
         "collision",
         "platforming",
-        "semisolid"
+        "semisolid",
+        "drop_through",
+        "contact_filter"
       ],
       "path": "data/physics/one_way_platform.json"
     },
@@ -2532,7 +2545,7 @@
       "id": "physics.pendulum_swing",
       "name": "Pendulum Swing",
       "category": "physics",
-      "subcategory": "simulation_force",
+      "subcategory": "constraint_swing",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2540,23 +2553,25 @@
         "3D"
       ],
       "genres": [
+        "platformer",
         "puzzle",
-        "sandbox",
-        "simulation"
+        "action",
+        "adventure"
       ],
       "tags": [
         "pendulum",
-        "physics",
-        "simulation",
-        "simulation_force"
+        "constraint",
+        "rope",
+        "momentum",
+        "traversal"
       ],
       "path": "data/physics/pendulum_swing.json"
     },
     {
       "id": "physics.physics_push_pull",
-      "name": "Physics Push/Pull",
+      "name": "Physics Push Pull",
       "category": "physics",
-      "subcategory": "simulation_force",
+      "subcategory": "object_manipulation",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2565,13 +2580,16 @@
       ],
       "genres": [
         "puzzle",
-        "sandbox",
+        "adventure",
+        "survival",
         "simulation"
       ],
       "tags": [
-        "physics",
-        "simulation",
-        "simulation_force"
+        "push_pull",
+        "object_manipulation",
+        "constraint",
+        "puzzle",
+        "collision"
       ],
       "path": "data/physics/physics_push_pull.json"
     },
@@ -2579,23 +2597,24 @@
       "id": "physics.ragdoll",
       "name": "Ragdoll",
       "category": "physics",
-      "subcategory": "simulation_force",
+      "subcategory": "skeletal_physics",
       "status": "draft",
       "dimensions": [
-        "2D",
         "2.5D",
         "3D"
       ],
       "genres": [
-        "puzzle",
-        "sandbox",
-        "simulation"
+        "action",
+        "shooter",
+        "simulation",
+        "horror"
       ],
       "tags": [
-        "physics",
         "ragdoll",
-        "simulation",
-        "simulation_force"
+        "skeletal_physics",
+        "collision",
+        "animation_blend",
+        "knockdown"
       ],
       "path": "data/physics/ragdoll.json"
     },
@@ -2603,7 +2622,7 @@
       "id": "physics.wind_force",
       "name": "Wind Force",
       "category": "physics",
-      "subcategory": "simulation_force",
+      "subcategory": "environmental_acceleration",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2611,15 +2630,17 @@
         "3D"
       ],
       "genres": [
+        "platformer",
         "puzzle",
-        "sandbox",
+        "survival",
         "simulation"
       ],
       "tags": [
-        "physics",
-        "simulation",
-        "simulation_force",
-        "wind"
+        "wind",
+        "gust",
+        "environment",
+        "vector_field",
+        "physics"
       ],
       "path": "data/physics/wind_force.json"
     },
@@ -4418,7 +4439,7 @@
       "id": "time.cooldown_time",
       "name": "Cooldown Time",
       "category": "time",
-      "subcategory": "time",
+      "subcategory": "action_recharge",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4426,22 +4447,25 @@
         "3D"
       ],
       "genres": [
-        "puzzle",
         "action",
-        "racing"
+        "rpg",
+        "strategy",
+        "roguelike"
       ],
       "tags": [
         "cooldown",
-        "time",
-        "timing"
+        "recharge",
+        "timing",
+        "ability_state",
+        "ui"
       ],
       "path": "data/time/cooldown_time.json"
     },
     {
       "id": "time.day_night_schedule",
-      "name": "Day/Night Schedule",
+      "name": "Day Night Schedule",
       "category": "time",
-      "subcategory": "time",
+      "subcategory": "schedule_cycle",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4449,14 +4473,17 @@
         "3D"
       ],
       "genres": [
-        "puzzle",
-        "action",
-        "racing"
+        "survival",
+        "simulation",
+        "rpg",
+        "adventure"
       ],
       "tags": [
-        "day",
-        "time",
-        "timing"
+        "schedule",
+        "world_clock",
+        "day_night",
+        "phase_transition",
+        "simulation"
       ],
       "path": "data/time/day_night_schedule.json"
     },
@@ -4464,7 +4491,7 @@
       "id": "time.rhythm_timing",
       "name": "Rhythm Timing",
       "category": "time",
-      "subcategory": "time",
+      "subcategory": "rhythm_window",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4472,14 +4499,17 @@
         "3D"
       ],
       "genres": [
-        "puzzle",
+        "rhythm",
         "action",
-        "racing"
+        "music",
+        "arcade"
       ],
       "tags": [
         "rhythm",
-        "time",
-        "timing"
+        "audio_sync",
+        "input_buffer",
+        "judgment_window",
+        "latency"
       ],
       "path": "data/time/rhythm_timing.json"
     },
@@ -4487,7 +4517,7 @@
       "id": "time.slow_motion",
       "name": "Slow Motion",
       "category": "time",
-      "subcategory": "time",
+      "subcategory": "time_scale",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4495,14 +4525,17 @@
         "3D"
       ],
       "genres": [
-        "puzzle",
         "action",
-        "racing"
+        "shooter",
+        "racing",
+        "puzzle"
       ],
       "tags": [
-        "slow",
-        "time",
-        "timing"
+        "slow_motion",
+        "time_scale",
+        "readability",
+        "cinematic",
+        "clock_management"
       ],
       "path": "data/time/slow_motion.json"
     },
@@ -4510,7 +4543,7 @@
       "id": "time.time_freeze",
       "name": "Time Freeze",
       "category": "time",
-      "subcategory": "time",
+      "subcategory": "state_suspension",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4520,11 +4553,15 @@
       "genres": [
         "puzzle",
         "action",
-        "racing"
+        "adventure",
+        "stealth"
       ],
       "tags": [
-        "time",
-        "timing"
+        "freeze",
+        "stasis",
+        "clock_management",
+        "state_cache",
+        "puzzle"
       ],
       "path": "data/time/time_freeze.json"
     },
@@ -4532,7 +4569,7 @@
       "id": "time.time_rewind",
       "name": "Time Rewind",
       "category": "time",
-      "subcategory": "time",
+      "subcategory": "state_rewind",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4541,12 +4578,16 @@
       ],
       "genres": [
         "puzzle",
+        "platformer",
         "action",
-        "racing"
+        "adventure"
       ],
       "tags": [
-        "time",
-        "timing"
+        "rewind",
+        "state_history",
+        "rollback",
+        "snapshot",
+        "determinism"
       ],
       "path": "data/time/time_rewind.json"
     },
@@ -4554,7 +4595,7 @@
       "id": "time.timed_challenge",
       "name": "Timed Challenge",
       "category": "time",
-      "subcategory": "time",
+      "subcategory": "countdown_objective",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4562,14 +4603,17 @@
         "3D"
       ],
       "genres": [
+        "platformer",
+        "racing",
         "puzzle",
-        "action",
-        "racing"
+        "action"
       ],
       "tags": [
-        "time",
-        "timed",
-        "timing"
+        "countdown",
+        "objective",
+        "deadline",
+        "checkpoint",
+        "pressure"
       ],
       "path": "data/time/timed_challenge.json"
     },
@@ -5931,7 +5975,6 @@
         "physics.one_way_platform",
         "physics.pendulum_swing",
         "physics.physics_push_pull",
-        "physics.ragdoll",
         "physics.wind_force",
         "platforming.coyote_time",
         "platforming.double_jump",
@@ -6285,12 +6328,16 @@
           "movement.sprint",
           "movement.stamina_movement",
           "movement.walk",
+          "physics.breakable_object",
           "platforming.coyote_time",
           "platforming.drop_through_platform",
           "platforming.jump_buffering",
           "puzzle.pressure_plate",
           "ui_ux.hit_marker",
           "ui_ux.interaction_prompt"
+        ],
+        "expert": [
+          "time.time_rewind"
         ],
         "hard": [
           "ai.boss_phase_transition",
@@ -6338,6 +6385,7 @@
           "narrative.environmental_storytelling",
           "narrative.reputation_choice",
           "narrative.reputation_gating",
+          "physics.destructible_environment",
           "procedural_generation.biome_generation",
           "procedural_generation.loot_generation",
           "procedural_generation.procedural_level_rooms",
@@ -6388,13 +6436,8 @@
           "strategy.tech_tree",
           "strategy.territory_control",
           "strategy.unit_counter_system",
-          "time.cooldown_time",
-          "time.day_night_schedule",
           "time.rhythm_timing",
-          "time.slow_motion",
           "time.time_freeze",
-          "time.time_rewind",
-          "time.timed_challenge",
           "traversal.wall_run"
         ],
         "medium": [
@@ -6440,9 +6483,7 @@
           "meta.player_profile_stats",
           "movement.air_dash",
           "movement.swimming",
-          "physics.breakable_object",
           "physics.buoyancy",
-          "physics.destructible_environment",
           "physics.gravity",
           "physics.low_gravity_zone",
           "physics.moving_platform",
@@ -6473,6 +6514,10 @@
           "survival.stamina",
           "survival.temperature",
           "survival.thirst",
+          "time.cooldown_time",
+          "time.day_night_schedule",
+          "time.slow_motion",
+          "time.timed_challenge",
           "traversal.gliding",
           "traversal.grappling_hook",
           "traversal.jetpack",
@@ -6528,7 +6573,9 @@
           "multiplayer.revive_teammate",
           "multiplayer.role_swap",
           "multiplayer.shared_resource_pool",
-          "multiplayer.team_objective"
+          "multiplayer.team_objective",
+          "physics.destructible_environment",
+          "time.time_rewind"
         ],
         "hard": [
           "ai.boss_phase_transition",
@@ -6542,16 +6589,11 @@
           "ai.line_of_sight_detection",
           "ai.utility_scoring",
           "combat.lock_on_targeting",
-          "physics.breakable_object",
           "physics.buoyancy",
-          "physics.destructible_environment",
-          "physics.gravity",
-          "physics.low_gravity_zone",
           "physics.moving_platform",
           "physics.pendulum_swing",
           "physics.physics_push_pull",
           "physics.ragdoll",
-          "physics.wind_force",
           "procedural_generation.biome_generation",
           "procedural_generation.loot_generation",
           "procedural_generation.procedural_level_rooms",
@@ -6578,13 +6620,9 @@
           "strategy.tech_tree",
           "strategy.territory_control",
           "strategy.unit_counter_system",
-          "time.cooldown_time",
-          "time.day_night_schedule",
           "time.rhythm_timing",
           "time.slow_motion",
           "time.time_freeze",
-          "time.time_rewind",
-          "time.timed_challenge",
           "traversal.gliding",
           "traversal.grappling_hook",
           "traversal.jetpack",
@@ -6674,7 +6712,11 @@
           "narrative.environmental_storytelling",
           "narrative.reputation_choice",
           "narrative.reputation_gating",
+          "physics.breakable_object",
+          "physics.gravity",
+          "physics.low_gravity_zone",
           "physics.one_way_platform",
+          "physics.wind_force",
           "platforming.double_jump",
           "platforming.drop_through_platform",
           "platforming.ledge_climb",
@@ -6723,6 +6765,9 @@
           "survival.stamina",
           "survival.temperature",
           "survival.thirst",
+          "time.cooldown_time",
+          "time.day_night_schedule",
+          "time.timed_challenge",
           "ui_ux.accessibility_remap_controls",
           "ui_ux.checkpoint_notification",
           "ui_ux.cooldown_indicator",
@@ -6753,6 +6798,7 @@
           "economy.resource_conversion",
           "economy.shop",
           "economy.trading",
+          "physics.destructible_environment",
           "procedural_generation.biome_generation",
           "procedural_generation.loot_generation",
           "procedural_generation.procedural_level_rooms",
@@ -6793,13 +6839,9 @@
           "strategy.tech_tree",
           "strategy.territory_control",
           "strategy.unit_counter_system",
-          "time.cooldown_time",
-          "time.day_night_schedule",
           "time.rhythm_timing",
-          "time.slow_motion",
           "time.time_freeze",
-          "time.time_rewind",
-          "time.timed_challenge"
+          "time.time_rewind"
         ],
         "hard": [
           "ai.boss_phase_transition",
@@ -6857,9 +6899,7 @@
           "narrative.environmental_storytelling",
           "narrative.reputation_choice",
           "narrative.reputation_gating",
-          "physics.breakable_object",
           "physics.buoyancy",
-          "physics.destructible_environment",
           "physics.gravity",
           "physics.low_gravity_zone",
           "physics.moving_platform",
@@ -6899,6 +6939,10 @@
           "survival.stamina",
           "survival.temperature",
           "survival.thirst",
+          "time.cooldown_time",
+          "time.day_night_schedule",
+          "time.slow_motion",
+          "time.timed_challenge",
           "traversal.gliding",
           "traversal.grappling_hook",
           "traversal.jetpack",
@@ -6950,6 +6994,7 @@
           "movement.sprint",
           "movement.stamina_movement",
           "movement.walk",
+          "physics.breakable_object",
           "platforming.coyote_time",
           "platforming.drop_through_platform",
           "platforming.jump_buffering",
@@ -7029,7 +7074,12 @@
         "movement.sprint",
         "movement.stamina_movement",
         "movement.walk",
+        "physics.breakable_object",
+        "physics.destructible_environment",
+        "physics.moving_platform",
         "physics.one_way_platform",
+        "physics.pendulum_swing",
+        "physics.ragdoll",
         "platforming.coyote_time",
         "platforming.double_jump",
         "platforming.drop_through_platform",
@@ -7066,7 +7116,6 @@
         "stealth.noise_meter",
         "stealth.shadow_cover",
         "time.cooldown_time",
-        "time.day_night_schedule",
         "time.rhythm_timing",
         "time.slow_motion",
         "time.time_freeze",
@@ -7121,6 +7170,12 @@
         "narrative.environmental_storytelling",
         "narrative.reputation_choice",
         "narrative.reputation_gating",
+        "physics.breakable_object",
+        "physics.buoyancy",
+        "physics.low_gravity_zone",
+        "physics.moving_platform",
+        "physics.pendulum_swing",
+        "physics.physics_push_pull",
         "procedural_generation.room_connection_graph",
         "puzzle.color_matching",
         "puzzle.key_and_lock",
@@ -7132,6 +7187,9 @@
         "puzzle.sequence_memory",
         "puzzle.sliding_block",
         "puzzle.timed_door",
+        "time.day_night_schedule",
+        "time.time_freeze",
+        "time.time_rewind",
         "traversal.gliding",
         "traversal.grappling_hook",
         "traversal.jetpack",
@@ -7156,7 +7214,8 @@
         "meta.collection_log",
         "meta.daily_challenge",
         "meta.new_game_plus",
-        "meta.player_profile_stats"
+        "meta.player_profile_stats",
+        "time.rhythm_timing"
       ],
       "beat_em_up": [
         "combat.combo_chain",
@@ -7239,6 +7298,7 @@
         "horror.safe_room",
         "horror.sanity_meter",
         "horror.sound_lure",
+        "physics.ragdoll",
         "stealth.last_known_position_search",
         "stealth.visibility_meter",
         "survival.base_building",
@@ -7295,7 +7355,8 @@
         "rhythm.beat_matching",
         "rhythm.combo_multiplier",
         "rhythm.note_lane",
-        "rhythm.sync_window"
+        "rhythm.sync_window",
+        "time.rhythm_timing"
       ],
       "open_world": [
         "procedural_generation.procedural_terrain",
@@ -7347,7 +7408,12 @@
         "movement.stamina_movement",
         "movement.swimming",
         "movement.walk",
+        "physics.gravity",
+        "physics.low_gravity_zone",
+        "physics.moving_platform",
         "physics.one_way_platform",
+        "physics.pendulum_swing",
+        "physics.wind_force",
         "platforming.coyote_time",
         "platforming.double_jump",
         "platforming.drop_through_platform",
@@ -7358,6 +7424,8 @@
         "platforming.wall_jump",
         "platforming.wall_slide",
         "puzzle.pressure_plate",
+        "time.time_rewind",
+        "time.timed_challenge",
         "traversal.gliding",
         "traversal.grappling_hook",
         "traversal.jetpack",
@@ -7377,14 +7445,11 @@
       ],
       "puzzle": [
         "physics.breakable_object",
-        "physics.buoyancy",
-        "physics.destructible_environment",
         "physics.gravity",
         "physics.low_gravity_zone",
         "physics.moving_platform",
         "physics.pendulum_swing",
         "physics.physics_push_pull",
-        "physics.ragdoll",
         "physics.wind_force",
         "puzzle.color_matching",
         "puzzle.key_and_lock",
@@ -7396,21 +7461,13 @@
         "puzzle.sequence_memory",
         "puzzle.sliding_block",
         "puzzle.timed_door",
-        "time.cooldown_time",
-        "time.day_night_schedule",
-        "time.rhythm_timing",
         "time.slow_motion",
         "time.time_freeze",
         "time.time_rewind",
         "time.timed_challenge"
       ],
       "racing": [
-        "time.cooldown_time",
-        "time.day_night_schedule",
-        "time.rhythm_timing",
         "time.slow_motion",
-        "time.time_freeze",
-        "time.time_rewind",
         "time.timed_challenge",
         "vehicles.drifting",
         "vehicles.fuel",
@@ -7431,7 +7488,8 @@
         "rhythm.beat_matching",
         "rhythm.combo_multiplier",
         "rhythm.note_lane",
-        "rhythm.sync_window"
+        "rhythm.sync_window",
+        "time.rhythm_timing"
       ],
       "roguelike": [
         "economy.loot_table",
@@ -7467,7 +7525,8 @@
         "roguelike.relic_synergy",
         "roguelike.risk_reward_room",
         "roguelike.run_based_progression",
-        "roguelike.shop_between_levels"
+        "roguelike.shop_between_levels",
+        "time.cooldown_time"
       ],
       "rpg": [
         "combat.area_of_effect_attack",
@@ -7517,6 +7576,8 @@
         "progression.skill_tree",
         "progression.unlockable_abilities",
         "progression.upgrade_shop",
+        "time.cooldown_time",
+        "time.day_night_schedule",
         "ui_ux.accessibility_remap_controls",
         "ui_ux.checkpoint_notification",
         "ui_ux.cooldown_indicator",
@@ -7540,11 +7601,6 @@
         "physics.destructible_environment",
         "physics.gravity",
         "physics.low_gravity_zone",
-        "physics.moving_platform",
-        "physics.pendulum_swing",
-        "physics.physics_push_pull",
-        "physics.ragdoll",
-        "physics.wind_force",
         "procedural_generation.biome_generation",
         "procedural_generation.loot_generation",
         "procedural_generation.procedural_level_rooms",
@@ -7586,6 +7642,9 @@
         "multiplayer.role_swap",
         "multiplayer.shared_resource_pool",
         "multiplayer.team_objective",
+        "physics.destructible_environment",
+        "physics.ragdoll",
+        "time.slow_motion",
         "traversal.wall_run",
         "ui_ux.hit_marker"
       ],
@@ -7619,13 +7678,9 @@
         "economy.shop",
         "economy.trading",
         "narrative.reputation_gating",
-        "physics.breakable_object",
         "physics.buoyancy",
         "physics.destructible_environment",
         "physics.gravity",
-        "physics.low_gravity_zone",
-        "physics.moving_platform",
-        "physics.pendulum_swing",
         "physics.physics_push_pull",
         "physics.ragdoll",
         "physics.wind_force",
@@ -7634,6 +7689,7 @@
         "simulation.population_model",
         "simulation.systemic_weather",
         "simulation.traffic_flow",
+        "time.day_night_schedule",
         "ui_ux.interaction_prompt",
         "vehicles.drifting",
         "vehicles.fuel",
@@ -7658,7 +7714,8 @@
         "stealth.last_known_position_search",
         "stealth.noise_meter",
         "stealth.shadow_cover",
-        "stealth.visibility_meter"
+        "stealth.visibility_meter",
+        "time.time_freeze"
       ],
       "strategy": [
         "ai.boss_phase_transition",
@@ -7688,6 +7745,7 @@
         "strategy.tech_tree",
         "strategy.territory_control",
         "strategy.unit_counter_system",
+        "time.cooldown_time",
         "ui_ux.accessibility_remap_controls",
         "ui_ux.checkpoint_notification",
         "ui_ux.cooldown_indicator",
@@ -7718,6 +7776,9 @@
         "horror.sound_lure",
         "movement.sprint",
         "movement.swimming",
+        "physics.buoyancy",
+        "physics.physics_push_pull",
+        "physics.wind_force",
         "procedural_generation.biome_generation",
         "procedural_generation.loot_generation",
         "procedural_generation.procedural_level_rooms",
@@ -7735,7 +7796,8 @@
         "survival.oxygen",
         "survival.stamina",
         "survival.temperature",
-        "survival.thirst"
+        "survival.thirst",
+        "time.day_night_schedule"
       ],
       "visual_novel": [
         "narrative.branching_dialogue",
@@ -7972,6 +8034,12 @@
       ]
     },
     "tags": {
+      "ability_state": [
+        "time.cooldown_time"
+      ],
+      "acceleration": [
+        "physics.gravity"
+      ],
       "accessibility": [
         "accessibility.adjustable_difficulty",
         "accessibility.assist_mode",
@@ -8048,6 +8116,9 @@
         "combat.ranged_attack",
         "combat.reload"
       ],
+      "animation_blend": [
+        "physics.ragdoll"
+      ],
       "aoe": [
         "combat.area_of_effect_attack"
       ],
@@ -8056,6 +8127,9 @@
       ],
       "asymmetric": [
         "multiplayer.asymmetric_roles"
+      ],
+      "audio_sync": [
+        "time.rhythm_timing"
       ],
       "base": [
         "survival.base_building"
@@ -8123,6 +8197,7 @@
         "ai.chase"
       ],
       "checkpoint": [
+        "time.timed_challenge",
         "ui_ux.checkpoint_notification"
       ],
       "choice": [
@@ -8140,10 +8215,15 @@
         "procedural_generation.procedural_terrain"
       ],
       "cinematic": [
-        "camera.cinematic_camera"
+        "camera.cinematic_camera",
+        "time.slow_motion"
       ],
       "climbing": [
         "movement.climbing"
+      ],
+      "clock_management": [
+        "time.slow_motion",
+        "time.time_freeze"
       ],
       "codex": [
         "narrative.codex_journal"
@@ -8157,7 +8237,11 @@
       "collision": [
         "combat.knockback",
         "movement.crouch",
+        "physics.breakable_object",
+        "physics.moving_platform",
         "physics.one_way_platform",
+        "physics.physics_push_pull",
+        "physics.ragdoll",
         "platforming.drop_through_platform"
       ],
       "color": [
@@ -8201,6 +8285,13 @@
       ],
       "companion": [
         "ai.companion_follow"
+      ],
+      "constraint": [
+        "physics.pendulum_swing",
+        "physics.physics_push_pull"
+      ],
+      "contact_filter": [
+        "physics.one_way_platform"
       ],
       "content_generation": [
         "procedural_generation.biome_generation",
@@ -8247,6 +8338,9 @@
         "multiplayer.shared_resource_pool",
         "multiplayer.team_objective"
       ],
+      "countdown": [
+        "time.timed_challenge"
+      ],
       "counterplay": [
         "combat.parry"
       ],
@@ -8284,8 +8378,17 @@
         "movement.air_dash"
       ],
       "day": [
-        "survival.day_night_cycle",
+        "survival.day_night_cycle"
+      ],
+      "day_night": [
         "time.day_night_schedule"
+      ],
+      "deadline": [
+        "time.timed_challenge"
+      ],
+      "debris": [
+        "physics.breakable_object",
+        "physics.destructible_environment"
       ],
       "debugging": [
         "ai.utility_scoring"
@@ -8303,7 +8406,7 @@
       "defense_counter": [
         "combat.guard_break"
       ],
-      "destructible": [
+      "destruction": [
         "physics.destructible_environment"
       ],
       "detection": [
@@ -8311,6 +8414,9 @@
         "stealth.distraction_throw",
         "stealth.noise_meter",
         "stealth.shadow_cover"
+      ],
+      "determinism": [
+        "time.time_rewind"
       ],
       "dialogue": [
         "ui_ux.dialogue_choice"
@@ -8321,8 +8427,14 @@
       "dodge": [
         "movement.dodge_roll"
       ],
+      "drag": [
+        "physics.buoyancy"
+      ],
       "drifting": [
         "vehicles.drifting"
+      ],
+      "drop_through": [
+        "physics.one_way_platform"
       ],
       "durability": [
         "survival.durability"
@@ -8346,6 +8458,10 @@
       "enemy": [
         "ai.enemy_spawn_director"
       ],
+      "environment": [
+        "physics.destructible_environment",
+        "physics.wind_force"
+      ],
       "environmental": [
         "narrative.environmental_storytelling"
       ],
@@ -8360,6 +8476,9 @@
       ],
       "fall_control": [
         "platforming.wall_slide"
+      ],
+      "falling": [
+        "physics.gravity"
       ],
       "feedback": [
         "camera.screen_shake",
@@ -8378,12 +8497,18 @@
       "flocking": [
         "ai.flocking"
       ],
+      "fluid": [
+        "physics.buoyancy"
+      ],
       "fog": [
         "strategy.fog_of_war"
       ],
       "forgiveness": [
         "platforming.coyote_time",
         "platforming.double_jump"
+      ],
+      "freeze": [
+        "time.time_freeze"
       ],
       "friendly": [
         "multiplayer.friendly_fire"
@@ -8413,9 +8538,15 @@
       "gravity": [
         "physics.gravity"
       ],
+      "gravity_zone": [
+        "physics.low_gravity_zone"
+      ],
       "guard": [
         "combat.block",
         "combat.guard_break"
+      ],
+      "gust": [
+        "physics.wind_force"
       ],
       "health": [
         "survival.health"
@@ -8471,7 +8602,8 @@
       ],
       "input_buffer": [
         "combat.combo_chain",
-        "platforming.jump_buffering"
+        "platforming.jump_buffering",
+        "time.rhythm_timing"
       ],
       "input_glyphs": [
         "ui_ux.tutorial_prompt"
@@ -8509,6 +8641,9 @@
       "jetpack": [
         "traversal.jetpack"
       ],
+      "judgment_window": [
+        "time.rhythm_timing"
+      ],
       "jump": [
         "horror.jump_scare_trigger"
       ],
@@ -8519,11 +8654,20 @@
       "key": [
         "puzzle.key_and_lock"
       ],
+      "kinematic": [
+        "physics.moving_platform"
+      ],
       "knockback": [
         "combat.knockback"
       ],
+      "knockdown": [
+        "physics.ragdoll"
+      ],
       "ladder": [
         "traversal.ladder_climb"
+      ],
+      "latency": [
+        "time.rhythm_timing"
       ],
       "ledge": [
         "platforming.ledge_climb",
@@ -8570,9 +8714,10 @@
       ],
       "loot": [
         "economy.loot_table",
+        "physics.breakable_object",
         "procedural_generation.loot_generation"
       ],
-      "low": [
+      "low_gravity": [
         "physics.low_gravity_zone"
       ],
       "mantling": [
@@ -8629,6 +8774,7 @@
         "traversal.zipline"
       ],
       "momentum": [
+        "physics.pendulum_swing",
         "traversal.wall_run"
       ],
       "monster": [
@@ -8636,9 +8782,13 @@
       ],
       "movement": [
         "movement.air_dash",
-        "movement.crouch"
+        "movement.crouch",
+        "physics.low_gravity_zone"
       ],
-      "moving": [
+      "movement_feel": [
+        "physics.gravity"
+      ],
+      "moving_platform": [
         "physics.moving_platform"
       ],
       "multiplayer": [
@@ -8676,6 +8826,9 @@
         "ui_ux.minimap",
         "ui_ux.quest_marker"
       ],
+      "navmesh": [
+        "physics.destructible_environment"
+      ],
       "needs": [
         "simulation.needs_simulation"
       ],
@@ -8695,6 +8848,12 @@
       "numbers": [
         "ui_ux.damage_numbers"
       ],
+      "object_manipulation": [
+        "physics.physics_push_pull"
+      ],
+      "objective": [
+        "time.timed_challenge"
+      ],
       "onboarding": [
         "ui_ux.tutorial_prompt"
       ],
@@ -8712,6 +8871,9 @@
         "traversal.parkour_vault",
         "traversal.wall_run"
       ],
+      "passenger_transfer": [
+        "physics.moving_platform"
+      ],
       "patrol": [
         "ai.patrol"
       ],
@@ -8726,17 +8888,16 @@
       "permadeath": [
         "roguelike.permadeath"
       ],
+      "persistence": [
+        "physics.destructible_environment"
+      ],
+      "phase_transition": [
+        "time.day_night_schedule"
+      ],
       "physics": [
-        "physics.breakable_object",
         "physics.buoyancy",
-        "physics.destructible_environment",
         "physics.gravity",
         "physics.low_gravity_zone",
-        "physics.moving_platform",
-        "physics.one_way_platform",
-        "physics.pendulum_swing",
-        "physics.physics_push_pull",
-        "physics.ragdoll",
         "physics.wind_force",
         "puzzle.physics_weight_puzzle",
         "puzzle.pressure_plate"
@@ -8752,6 +8913,7 @@
       ],
       "platforming": [
         "movement.air_dash",
+        "physics.moving_platform",
         "physics.one_way_platform",
         "platforming.coyote_time",
         "platforming.double_jump",
@@ -8794,6 +8956,9 @@
       "presentation": [
         "camera.screen_shake"
       ],
+      "pressure": [
+        "time.timed_challenge"
+      ],
       "prestige": [
         "progression.prestige_reset"
       ],
@@ -8832,7 +8997,14 @@
       "prone": [
         "movement.prone"
       ],
+      "prop": [
+        "physics.breakable_object"
+      ],
+      "push_pull": [
+        "physics.physics_push_pull"
+      ],
       "puzzle": [
+        "physics.physics_push_pull",
         "puzzle.color_matching",
         "puzzle.key_and_lock",
         "puzzle.lever_switch",
@@ -8842,7 +9014,8 @@
         "puzzle.pressure_plate",
         "puzzle.sequence_memory",
         "puzzle.sliding_block",
-        "puzzle.timed_door"
+        "puzzle.timed_door",
+        "time.time_freeze"
       ],
       "quest": [
         "ui_ux.quest_marker"
@@ -8880,7 +9053,11 @@
         "camera.split_screen",
         "camera.third_person_camera",
         "camera.top_down_camera",
+        "time.slow_motion",
         "ui_ux.cooldown_indicator"
+      ],
+      "recharge": [
+        "time.cooldown_time"
       ],
       "recipe": [
         "crafting.recipe_crafting"
@@ -8964,6 +9141,9 @@
         "progression.unlockable_abilities",
         "progression.upgrade_shop"
       ],
+      "rewind": [
+        "time.time_rewind"
+      ],
       "rhythm": [
         "rhythm.beat_matching",
         "rhythm.combo_multiplier",
@@ -8988,10 +9168,14 @@
       "role": [
         "multiplayer.role_swap"
       ],
+      "rollback": [
+        "time.time_rewind"
+      ],
       "rooms": [
         "procedural_generation.room_connection_graph"
       ],
       "rope": [
+        "physics.pendulum_swing",
         "traversal.rope_swing"
       ],
       "run": [
@@ -9016,6 +9200,9 @@
       ],
       "sanity": [
         "horror.sanity_meter"
+      ],
+      "schedule": [
+        "time.day_night_schedule"
       ],
       "search": [
         "stealth.last_known_position_search"
@@ -9055,32 +9242,14 @@
       ],
       "simulation": [
         "ai.utility_scoring",
-        "physics.breakable_object",
-        "physics.buoyancy",
-        "physics.destructible_environment",
-        "physics.gravity",
-        "physics.low_gravity_zone",
-        "physics.moving_platform",
-        "physics.pendulum_swing",
-        "physics.physics_push_pull",
-        "physics.ragdoll",
-        "physics.wind_force",
         "simulation.needs_simulation",
         "simulation.population_model",
         "simulation.systemic_weather",
-        "simulation.traffic_flow"
+        "simulation.traffic_flow",
+        "time.day_night_schedule"
       ],
-      "simulation_force": [
-        "physics.breakable_object",
-        "physics.buoyancy",
-        "physics.destructible_environment",
-        "physics.gravity",
-        "physics.low_gravity_zone",
-        "physics.moving_platform",
-        "physics.pendulum_swing",
-        "physics.physics_push_pull",
-        "physics.ragdoll",
-        "physics.wind_force"
+      "skeletal_physics": [
+        "physics.ragdoll"
       ],
       "skill_expression": [
         "combat.combo_chain",
@@ -9092,11 +9261,14 @@
       "sliding": [
         "puzzle.sliding_block"
       ],
-      "slow": [
+      "slow_motion": [
         "time.slow_motion"
       ],
       "smooth": [
         "camera.smooth_follow_camera"
+      ],
+      "snapshot": [
+        "time.time_rewind"
       ],
       "sound": [
         "horror.sound_lure"
@@ -9125,6 +9297,9 @@
       "stance": [
         "movement.crouch"
       ],
+      "stasis": [
+        "time.time_freeze"
+      ],
       "state": [
         "puzzle.color_matching",
         "puzzle.key_and_lock",
@@ -9136,6 +9311,12 @@
         "puzzle.sequence_memory",
         "puzzle.sliding_block",
         "puzzle.timed_door"
+      ],
+      "state_cache": [
+        "time.time_freeze"
+      ],
+      "state_history": [
+        "time.time_rewind"
       ],
       "state_puzzle": [
         "puzzle.color_matching",
@@ -9167,6 +9348,9 @@
         "strategy.tech_tree",
         "strategy.territory_control",
         "strategy.unit_counter_system"
+      ],
+      "submerged_state": [
+        "physics.buoyancy"
       ],
       "survival": [
         "movement.swimming",
@@ -9242,18 +9426,11 @@
       "thirst": [
         "survival.thirst"
       ],
-      "time": [
-        "time.cooldown_time",
-        "time.day_night_schedule",
-        "time.rhythm_timing",
-        "time.slow_motion",
-        "time.time_freeze",
-        "time.time_rewind",
-        "time.timed_challenge"
+      "time_scale": [
+        "time.slow_motion"
       ],
       "timed": [
-        "puzzle.timed_door",
-        "time.timed_challenge"
+        "puzzle.timed_door"
       ],
       "timer": [
         "combat.damage_over_time"
@@ -9268,13 +9445,7 @@
         "rhythm.combo_multiplier",
         "rhythm.note_lane",
         "rhythm.sync_window",
-        "time.cooldown_time",
-        "time.day_night_schedule",
-        "time.rhythm_timing",
-        "time.slow_motion",
-        "time.time_freeze",
-        "time.time_rewind",
-        "time.timed_challenge"
+        "time.cooldown_time"
       ],
       "toggle": [
         "accessibility.toggle_hold_option"
@@ -9289,16 +9460,21 @@
         "simulation.traffic_flow"
       ],
       "traversal": [
+        "physics.pendulum_swing",
         "traversal.wall_run"
       ],
       "trigger": [
         "puzzle.pressure_plate"
+      ],
+      "trigger_volume": [
+        "physics.low_gravity_zone"
       ],
       "tutorial": [
         "ui_ux.tutorial_prompt"
       ],
       "ui": [
         "stealth.visibility_meter",
+        "time.cooldown_time",
         "ui_ux.cooldown_indicator",
         "ui_ux.damage_numbers",
         "ui_ux.dialogue_choice",
@@ -9342,6 +9518,9 @@
       ],
       "variable": [
         "platforming.variable_jump_height"
+      ],
+      "vector_field": [
+        "physics.wind_force"
       ],
       "vehicle": [
         "traversal.vehicle_mount",
@@ -9410,6 +9589,9 @@
       ],
       "workbench": [
         "crafting.workbench"
+      ],
+      "world_clock": [
+        "time.day_night_schedule"
       ],
       "zipline": [
         "traversal.zipline"

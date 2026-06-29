@@ -2,12 +2,12 @@
   "id": "physics.gravity",
   "name": "Gravity",
   "aliases": [
-    "gravity mechanic",
-    "gravity system",
-    "gravity"
+    "gravity field",
+    "fall acceleration",
+    "world gravity"
   ],
   "category": "physics",
-  "subcategory": "simulation_force",
+  "subcategory": "gravity_field",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,105 +16,124 @@
   ],
   "difficulty": {
     "design": "medium",
-    "implementation": "hard",
+    "implementation": "medium",
     "tuning": "hard"
   },
   "genres": [
-    "puzzle",
+    "platformer",
     "sandbox",
-    "simulation"
+    "simulation",
+    "puzzle"
   ],
-  "description": "Gravity is a world-system mechanic driven by forces, constraints, collision response, or simulated motion.",
-  "design_notes": "Gravity should be designed around a clear player promise, a readable trigger, and a predictable result. For physics mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A persistent acceleration field pulls bodies along a defined vector and shapes jumps, falls, arcs, and physical weight.",
+  "design_notes": "Gravity is the baseline contract for how the world treats airborne bodies. Designers should define the gravity_acceleration_vector, per-body gravity_scale, terminal velocity caps, and any local field override rules before tuning jumps, knockback, buoyancy, or moving-platform transfer.",
   "design_purpose": [
-    "Give the player a readable way to use gravity as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect gravity to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give motion a readable downward pull and make airborne decisions have commitment.",
+    "Shape traversal feel through jump arcs, fall recovery, ledge timing, and object motion.",
+    "Provide a shared physical rule that other mechanics can modify rather than each inventing its own fall behavior."
   ],
-  "player_fantasy": "The player feels the world has weight, motion, and consequences.",
+  "player_fantasy": "The player feels the world has weight and learns to master arcs, landings, and falling risk.",
   "required_systems": [
     "physics_world",
+    "character_controller",
+    "fixed_timestep_loop",
     "collision_detection",
-    "rigidbody_or_constraint_system",
-    "event_dispatch"
+    "debug_visualization"
   ],
   "parameters": [
     {
-      "name": "force_strength",
-      "type": "float",
-      "typical_range": "0.1-1000 units",
-      "description": "Magnitude of the force, impulse, or constraint effect."
+      "name": "gravity_acceleration_vector",
+      "type": "vector",
+      "typical_range": "(0,-9.8,0) to custom local vectors",
+      "description": "Direction and magnitude applied to affected bodies each fixed simulation step."
     },
     {
-      "name": "mass_or_weight",
+      "name": "gravity_scale_multiplier",
       "type": "float",
-      "typical_range": "0.1-500 units",
-      "description": "Mass scale used by collision and force calculations."
+      "typical_range": "0-5",
+      "description": "Per-body multiplier used for characters, projectiles, debris, or special zones."
     },
     {
-      "name": "damping",
+      "name": "terminal_velocity_cap",
       "type": "float",
-      "typical_range": "0-1",
-      "description": "How quickly motion loses energy over time."
+      "typical_range": "10-100 world units per second",
+      "description": "Maximum falling velocity allowed before integration clamps additional acceleration."
+    },
+    {
+      "name": "fixed_step_policy_id",
+      "type": "string",
+      "typical_range": "fixed_60hz, fixed_120hz, substep_large_fall",
+      "description": "Simulation cadence rule used to keep fall arcs stable across frame rates and platforms."
+    },
+    {
+      "name": "local_field_priority",
+      "type": "integer",
+      "typical_range": "0-100",
+      "description": "Priority used when overlapping gravity zones compete to modify the same physics_body_id."
     }
   ],
   "common_variants": [
-    "gravity_scripted_version",
-    "gravity_fully_simulated_version",
-    "network_synced_version",
-    "puzzle_variant"
+    "constant_world_gravity",
+    "per_character_gravity_scale",
+    "radial_planet_gravity",
+    "zone_based_gravity",
+    "reversible_gravity"
   ],
   "edge_cases": [
-    "Gravity is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Gravity overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Gravity runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A body crosses from world gravity into a local field while airborne and keeps stale terminal velocity settings.",
+    "A jump, knockback, or dash overrides vertical velocity during the same fixed step that gravity is integrated.",
+    "Large frame spikes cause multiple fixed steps and make fall damage or landing events fire more than once.",
+    "Network rollback restores position but not accumulated vertical velocity, producing a different landing frame."
   ],
   "common_bugs": [
-    "Gravity state does not reset correctly after interruption or reload.",
-    "Feedback for Gravity plays even when the mechanic fails or is rejected.",
-    "Gravity produces different results between frame rates, platforms, or network clients."
+    "Gravity is applied in both Update and the fixed simulation loop, doubling fall acceleration on high frame rates.",
+    "Character controllers and rigidbodies use different gravity_scale_multiplier values and separate jump tuning tables.",
+    "Terminal velocity clamps upward motion as well as falling motion because the velocity sign is not checked.",
+    "Local gravity zones change the vector but leave camera, input, or contact_normal handling in world-down assumptions."
   ],
   "balancing_notes": [
-    "Make Gravity strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Stronger gravity can make jumps feel crisp, but it narrows correction windows for players with slower reactions.",
+    "Terminal velocity should match level scale and fall recovery; very high caps make pits feel punitive and collision tunneling more likely.",
+    "If gravity changes by zone, surface language and camera orientation must help players predict the new fall direction."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Gravity becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer assists such as wider coyote windows, jump buffering, or reduced fall penalty when gravity tuning demands fast reactions.",
+    "Use clear environmental cues for altered gravity fields so players are not surprised by sudden motion changes."
   ],
   "implementation_notes": {
-    "unity": "Implement Gravity with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Gravity as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Gravity with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Gravity as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "For Rigidbody objects, set Physics.gravity only for global rules and use per-body acceleration for local fields or character-specific gravity_scale_multiplier. CharacterController movement should integrate gravity_acceleration_vector in the same fixed cadence as collision sweeps, and Netcode snapshots need position, velocity, gravity_scale, and active field id.",
+    "godot": "ProjectSettings gravity works for global 2D or 3D defaults, but custom CharacterBody movement should store vertical velocity and gravity_scale explicitly. Area2D or Area3D zones can override gravity vectors; debug draw active field priority and contact normals to catch transition errors.",
+    "unreal": "CharacterMovement exposes GravityScale and movement modes for most character cases, while physics bodies can receive custom acceleration through components or Physics Volumes. Replicated games should keep server authority over gravity mode changes and include velocity plus movement mode in correction packets.",
+    "web": "In Phaser, Matter.js, or a custom loop, integrate gravity from a fixed-step accumulator rather than render delta. Store physics_body_id, velocity, gravity_scale, and active zone in rollback snapshots so replay and browser frame spikes produce the same landing result."
   },
   "related_mechanics": [
     "physics.buoyancy",
     "physics.low_gravity_zone",
-    "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "platforming.variable_jump_height",
+    "puzzle.physics_weight_puzzle"
   ],
   "combines_well_with": [
     "physics.moving_platform",
     "physics.wind_force",
-    "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "platforming.coyote_time",
+    "traversal.gliding"
   ],
   "example_games": [
     {
       "title": "Super Mario Bros.",
-      "note": "Uses tuned gravity to shape jump feel."
+      "note": "Uses tuned gravity to shape jump arcs and falling commitment."
     },
     {
       "title": "Portal",
-      "note": "Uses gravity with spatial puzzle constraints."
+      "note": "Uses gravity with spatial puzzle layouts and momentum transfer."
     }
   ],
   "tags": [
     "gravity",
+    "acceleration",
+    "falling",
     "physics",
-    "simulation",
-    "simulation_force"
+    "movement_feel"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

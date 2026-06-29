@@ -2,12 +2,12 @@
   "id": "physics.pendulum_swing",
   "name": "Pendulum Swing",
   "aliases": [
-    "pendulum swing mechanic",
-    "pendulum swing system",
-    "pendulum swing"
+    "rope swing",
+    "constraint swing",
+    "swinging mass"
   ],
   "category": "physics",
-  "subcategory": "simulation_force",
+  "subcategory": "constraint_swing",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -20,92 +20,120 @@
     "tuning": "hard"
   },
   "genres": [
+    "platformer",
     "puzzle",
-    "sandbox",
-    "simulation"
+    "action",
+    "adventure"
   ],
-  "description": "Pendulum Swing is a world-system mechanic driven by forces, constraints, collision response, or simulated motion.",
-  "design_notes": "Pendulum Swing should be designed around a clear player promise, a readable trigger, and a predictable result. For physics mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A body swings around an anchor through a constraint, rope, chain, or joint while conserving and redirecting momentum.",
+  "design_notes": "Pendulum swings need clear anchor placement, rope length, tangential input, damping, release impulse, and collision behavior. The player must understand when they are attached, how input pumps the arc, and what velocity they keep when the constraint releases.",
   "design_purpose": [
-    "Give the player a readable way to use pendulum swing as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect pendulum swing to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create traversal or puzzle motion based on arcs, timing, and momentum transfer.",
+    "Let players build or redirect kinetic energy instead of moving only through direct acceleration.",
+    "Support readable hazards or moving objects that obey a constrained path."
   ],
-  "player_fantasy": "The player feels the world has weight, motion, and consequences.",
+  "player_fantasy": "The player feels momentum build through a swing and chooses the release point that carries them forward.",
   "required_systems": [
-    "physics_world",
+    "constraint_solver",
+    "anchor_registry",
     "collision_detection",
-    "rigidbody_or_constraint_system",
-    "event_dispatch"
+    "input_mapping",
+    "debug_visualization"
   ],
   "parameters": [
     {
-      "name": "force_strength",
-      "type": "float",
-      "typical_range": "0.1-1000 units",
-      "description": "Magnitude of the force, impulse, or constraint effect."
+      "name": "constraint_joint_id",
+      "type": "string",
+      "typical_range": "rope_joint_a, chain_hinge_04, swing_anchor_player",
+      "description": "Stable identifier for the joint or constraint that keeps the body attached to the anchor."
     },
     {
-      "name": "mass_or_weight",
-      "type": "float",
-      "typical_range": "0.1-500 units",
-      "description": "Mass scale used by collision and force calculations."
+      "name": "joint_anchor",
+      "type": "vector",
+      "typical_range": "world position or body-local anchor point",
+      "description": "Anchor position used by the rope, hinge, or distance constraint."
     },
     {
-      "name": "damping",
+      "name": "rope_length_units",
       "type": "float",
-      "typical_range": "0-1",
-      "description": "How quickly motion loses energy over time."
+      "typical_range": "1-30 world units",
+      "description": "Constraint length from anchor to body, including any authored slack or extension."
+    },
+    {
+      "name": "tangential_input_acceleration",
+      "type": "float",
+      "typical_range": "0-80 world units per second squared",
+      "description": "Acceleration applied along the swing tangent when the player pumps or steers the arc."
+    },
+    {
+      "name": "release_impulse_multiplier",
+      "type": "float",
+      "typical_range": "0.5-2.0",
+      "description": "Multiplier applied to current tangential velocity when the body detaches from the constraint."
     }
   ],
   "common_variants": [
-    "pendulum_swing_scripted_version",
-    "pendulum_swing_fully_simulated_version",
-    "network_synced_version",
-    "puzzle_variant"
+    "player_rope_swing",
+    "hanging_pendulum_hazard",
+    "swinging_platform",
+    "grappling_rope_swing",
+    "physics_puzzle_pendulum"
   ],
   "edge_cases": [
-    "Pendulum Swing is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Pendulum Swing overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Pendulum Swing runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The rope anchor moves, despawns, or becomes blocked while the player is attached.",
+    "The swinging body collides with walls or ceilings and the constraint solver injects unexpected energy.",
+    "Release occurs during a rollback correction, leaving client and server with different outgoing velocity.",
+    "The rope crosses a moving platform or one-way platform and needs a rule for snagging or ignoring it."
   ],
   "common_bugs": [
-    "Pendulum Swing state does not reset correctly after interruption or reload.",
-    "Feedback for Pendulum Swing plays even when the mechanic fails or is rejected.",
-    "Pendulum Swing produces different results between frame rates, platforms, or network clients."
+    "Input acceleration is applied in world axes instead of along the tangent, so pumping feels inconsistent.",
+    "Constraint length changes after collision correction and slowly stretches or shrinks the rope.",
+    "Release impulse uses the previous frame velocity and drops momentum at low frame rates.",
+    "Solver iteration count is too low for long ropes, causing visible jitter near the anchor."
   ],
   "balancing_notes": [
-    "Make Pendulum Swing strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Longer ropes create slower, wider arcs; shorter ropes demand faster release timing and tighter camera framing.",
+    "High input acceleration gives players control but can erase the pendulum feel if they can steer directly.",
+    "Release velocity should be capped or shaped when swings feed into combat, pits, or precision landings."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Pendulum Swing becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide generous attach windows, buffered release, or alternate routes when swing timing is mandatory.",
+    "Reduce camera roll or auto-camera lag during large arcs for players sensitive to sweeping motion."
   ],
   "implementation_notes": {
-    "unity": "Implement Pendulum Swing with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Pendulum Swing as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Pendulum Swing with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Pendulum Swing as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use HingeJoint, DistanceJoint2D, configurable joints, or a custom constraint depending on dimension and control needs. Store constraint_joint_id, anchor, rope length, and current tangential velocity; apply player input along the tangent and debug draw anchor, rope, and release vector.",
+    "godot": "PinJoint2D, DampedSpringJoint2D, Generic6DOFJoint3D, or custom CharacterBody constraints can model the swing. Keep rope_length_units stable after collision correction and resolve release after physics integration so outgoing velocity matches the final arc.",
+    "unreal": "Physics Constraint Components or custom CharacterMovement modes can own swing state. For player traversal, separate camera smoothing from physical arc calculation, replicate attach anchor and release timestamp, and validate anchors on the server.",
+    "web": "Matter.js constraints or a custom Verlet rope can drive browser swings. Use fixed-step integration, clamp constraint error, and store anchor id plus body velocity for rollback or replay because variable frame deltas quickly change arc height."
   },
   "related_mechanics": [
+    "traversal.rope_swing",
+    "traversal.grappling_hook",
     "physics.gravity",
-    "physics.low_gravity_zone",
-    "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "physics.wind_force"
   ],
   "combines_well_with": [
-    "physics.buoyancy",
-    "physics.wind_force",
-    "puzzle.physics_weight_puzzle",
-    "simulation.systemic_weather"
+    "platforming.coyote_time",
+    "traversal.wall_run",
+    "camera.smooth_follow_camera",
+    "time.slow_motion"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Bionic Commando",
+      "note": "Uses swinging traversal built around attachment and release timing."
+    },
+    {
+      "title": "Cut the Rope",
+      "note": "Uses pendulum-like motion as part of physics puzzle solving."
+    }
+  ],
   "tags": [
     "pendulum",
-    "physics",
-    "simulation",
-    "simulation_force"
+    "constraint",
+    "rope",
+    "momentum",
+    "traversal"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

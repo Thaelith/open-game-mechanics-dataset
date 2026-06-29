@@ -2,12 +2,12 @@
   "id": "time.timed_challenge",
   "name": "Timed Challenge",
   "aliases": [
-    "timed challenge mechanic",
-    "timed challenge system",
-    "timed challenge"
+    "countdown challenge",
+    "race timer",
+    "deadline objective"
   ],
   "category": "time",
-  "subcategory": "time",
+  "subcategory": "countdown_objective",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,96 +15,125 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
-    "implementation": "hard",
-    "tuning": "expert"
+    "design": "medium",
+    "implementation": "medium",
+    "tuning": "hard"
   },
   "genres": [
+    "platformer",
+    "racing",
     "puzzle",
-    "action",
-    "racing"
+    "action"
   ],
-  "description": "Timed Challenge is a temporal mechanic that changes speed, ordering, deadlines, cooldowns, or history.",
-  "design_notes": "Timed Challenge should be designed around a clear player promise, a readable trigger, and a predictable result. For time mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A challenge starts from a defined trigger and requires success before a visible deadline expires.",
+  "design_notes": "Timed challenges need a single authority for start, pause, checkpoint restoration, and failure. The player should know which event begins the countdown, whether menus or cutscenes suspend it, how grace windows are applied, and whether retries restore the original checkpoint_time_state or continue from the current world state.",
   "design_purpose": [
-    "Give the player a readable way to use timed challenge as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect timed challenge to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create urgency around traversal, puzzle solving, combat waves, or objective routing.",
+    "Measure mastery by asking players to execute a known route under pressure.",
+    "Turn otherwise safe content into a temporary commitment with readable stakes."
   ],
-  "player_fantasy": "The player feels they can manipulate urgency, sequence, or consequence.",
+  "player_fantasy": "The player feels the pressure of a deadline and the satisfaction of beating it cleanly.",
   "required_systems": [
-    "time_controller",
-    "state_history_or_clock",
-    "effect_system",
-    "feedback_system"
+    "objective_state_machine",
+    "gameplay_clock",
+    "checkpoint_system",
+    "ui_countdown",
+    "failure_resolution"
   ],
   "parameters": [
     {
-      "name": "time_scale",
-      "type": "float",
-      "typical_range": "0-2",
-      "description": "Multiplier applied to game time or affected systems."
+      "name": "timer_start_event_id",
+      "type": "string",
+      "typical_range": "enter_zone, press_switch, accept_contract, first_enemy_spawn",
+      "description": "Event that begins the countdown and records the start timestamp for objective validation."
     },
     {
-      "name": "duration",
-      "type": "float",
-      "typical_range": "0.1-30 seconds",
-      "description": "How long the temporal effect remains active."
+      "name": "challenge_limit_ms",
+      "type": "integer",
+      "typical_range": "5000-900000 ms",
+      "description": "Allowed countdown window before the challenge resolves as failed or moves to a penalty state."
     },
     {
-      "name": "recovery_or_cooldown",
-      "type": "float",
-      "typical_range": "0-120 seconds",
-      "description": "Delay before the mechanic can be used again."
+      "name": "grace_window_ms",
+      "type": "integer",
+      "typical_range": "0-2000 ms",
+      "description": "Small authority-side tolerance used to absorb latency, animation locks, or final-frame objective contact."
+    },
+    {
+      "name": "checkpoint_restore_policy_id",
+      "type": "string",
+      "typical_range": "restart_timer, keep_elapsed, restore_snapshot, abandon_objective",
+      "description": "Rule for what happens to countdown state when the player dies, reloads, or retries from a checkpoint."
+    },
+    {
+      "name": "failure_rule_id",
+      "type": "string",
+      "typical_range": "instant_fail, spawn_penalty, lower_reward, reset_room",
+      "description": "Outcome applied when the authority clock passes the deadline without a success event."
     }
   ],
   "common_variants": [
-    "timed_challenge_player_triggered",
-    "timed_challenge_zone_based",
-    "resource_limited",
-    "scripted_sequence"
+    "visible_countdown",
+    "hidden_gold_medal_timer",
+    "checkpoint_race",
+    "escape_sequence",
+    "server_verified_daily_challenge"
   ],
   "edge_cases": [
-    "Timed Challenge is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Timed Challenge overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Timed Challenge runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The player pauses, opens a dialogue, or triggers a cutscene while the challenge is already active.",
+    "A success event and expiry event occur in the same simulation tick or arrive in different orders over the network.",
+    "Checkpoint reload restores player position but not spawned enemies, doors, or collected objective items.",
+    "The countdown UI rounds up while the authority deadline has already passed."
   ],
   "common_bugs": [
-    "Timed Challenge state does not reset correctly after interruption or reload.",
-    "Feedback for Timed Challenge plays even when the mechanic fails or is rejected.",
-    "Timed Challenge produces different results between frame rates, platforms, or network clients."
+    "Start triggers fire multiple times and reset the countdown after the player has already begun the route.",
+    "Failure logic runs on the client and server, duplicating penalties, rewards, or reset effects.",
+    "The timer keeps advancing during loading screens because it reads a wall clock instead of the gameplay clock.",
+    "Countdown text, audio ticks, and objective state use different rounding rules near zero."
   ],
   "balancing_notes": [
-    "Make Timed Challenge strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "The best limit usually gives skilled players room for one small mistake while still rewarding route knowledge.",
+    "If the challenge is required for progression, provide retry speed and checkpoint placement that respects repeated attempts.",
+    "Optional medal tiers can be stricter than the completion deadline without blocking less precise players."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Timed Challenge becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Expose countdown information through text, icon state, and optional audio cues rather than relying only on color or flashing.",
+    "Offer relaxed limits or assist modes for players who need more planning or input execution time."
   ],
   "implementation_notes": {
-    "unity": "Implement Timed Challenge with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Timed Challenge as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Timed Challenge with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Timed Challenge as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store timer_start_event_id, started_at_ms, challenge_limit_ms, and checkpoint_restore_policy_id in the objective state. Use a gameplay clock for authority, unscaled UI only for display interpolation, and ensure OnTriggerEnter or input callbacks cannot restart an active challenge unless the state machine allows it.",
+    "godot": "Represent the challenge as a stateful Node or Resource with explicit start, success, expiry, and checkpoint restore transitions. Use _physics_process for authority ticks, emit countdown_changed for Control nodes, and serialize start tick plus remaining_ms for save/load.",
+    "unreal": "An Actor Component or Gameplay Ability task can own the countdown transaction. In networked play, record server timestamp at start, compare success and expiry on the server, replicate remaining time to UMG, and apply grace_window_ms before failing the objective.",
+    "web": "Keep countdown state in the simulation model and derive display text from remaining_ms. Browser pause, hidden tabs, and route changes should either suspend through pause_policy_id or restore from checkpoint_time_state rather than consuming wall-clock gaps."
   },
   "related_mechanics": [
-    "combat.invincibility_frames",
-    "time.slow_motion",
-    "time.time_rewind",
-    "ui_ux.cooldown_indicator"
+    "time.cooldown_time",
+    "time.day_night_schedule",
+    "puzzle.timed_door",
+    "ui_ux.checkpoint_notification"
   ],
   "combines_well_with": [
-    "combat.invincibility_frames",
-    "time.day_night_schedule",
-    "time.time_freeze",
-    "ui_ux.cooldown_indicator"
+    "platforming.coyote_time",
+    "traversal.zipline",
+    "ui_ux.quest_marker",
+    "time.slow_motion"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Super Mario Bros.",
+      "note": "Uses level timers to add pressure to platforming routes."
+    },
+    {
+      "title": "Spelunky",
+      "note": "Uses escalating pressure when players spend too long in a level."
+    }
+  ],
   "tags": [
-    "time",
-    "timed",
-    "timing"
+    "countdown",
+    "objective",
+    "deadline",
+    "checkpoint",
+    "pressure"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"
