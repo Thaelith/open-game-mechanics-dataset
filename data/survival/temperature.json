@@ -2,12 +2,12 @@
   "id": "survival.temperature",
   "name": "Temperature",
   "aliases": [
-    "temperature mechanic",
-    "temperature system",
-    "temperature"
+    "body temperature",
+    "exposure",
+    "heat and cold"
   ],
   "category": "survival",
-  "subcategory": "survival",
+  "subcategory": "environmental_exposure",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,96 +15,131 @@
     "3D"
   ],
   "difficulty": {
-    "design": "medium",
-    "implementation": "medium",
-    "tuning": "hard"
+    "design": "hard",
+    "implementation": "hard",
+    "tuning": "expert"
   },
   "genres": [
     "survival",
     "sandbox",
-    "horror"
+    "simulation",
+    "adventure"
   ],
-  "description": "Temperature is a pressure mechanic that asks the player to manage bodily, environmental, or resource constraints over time.",
-  "design_notes": "Temperature should be designed around a clear player promise, a readable trigger, and a predictable result. For survival mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Environmental heat, cold, wetness, shelter, and insulation affect player exposure and survival penalties.",
+  "design_notes": "Temperature works when players can read the exposure equation: temperature_zone_id, clothing insulation, wetness_state, wind or shelter modifiers, and threshold effects. The mechanic should explain why the player is cold, hot, protected, or recovering before health loss begins.",
   "design_purpose": [
-    "Give the player a readable way to use temperature as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect temperature to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Make biomes, weather, clothing, shelter, and campfires matter in route planning.",
+    "Create survival pressure that changes with location and preparation rather than only inventory stockpiles.",
+    "Encourage base building, crafting, and equipment choices through environmental risk."
   ],
-  "player_fantasy": "The player feels vulnerable but resourceful under ongoing pressure.",
+  "player_fantasy": "The player feels the environment itself is dangerous and learns to prepare for exposure.",
   "required_systems": [
-    "resource_system",
-    "status_effects",
-    "ui_feedback",
-    "save_state"
+    "temperature_zone_registry",
+    "equipment_modifiers",
+    "shelter_detection",
+    "weather_system",
+    "ui_warning_bands"
   ],
   "parameters": [
     {
-      "name": "max_value",
-      "type": "float",
-      "typical_range": "10-1000 units",
-      "description": "Maximum capacity of the survival resource."
+      "name": "temperature_zone_id",
+      "type": "string",
+      "typical_range": "snow_peak, desert_midday, cave_safe, storm_night",
+      "description": "Environmental zone identifier that provides ambient exposure values and weather modifiers."
     },
     {
-      "name": "decay_rate",
+      "name": "insulation_rating_points",
       "type": "float",
-      "typical_range": "0-10 units/minute",
-      "description": "How quickly the resource changes without player action."
+      "typical_range": "-50 to 100 points",
+      "description": "Combined protection from clothing, armor, shelter, buffs, or temporary heat sources."
     },
     {
-      "name": "critical_threshold",
-      "type": "float",
-      "typical_range": "5-30% of max",
-      "description": "Point at which warnings or penalties begin."
+      "name": "wetness_state_id",
+      "type": "string",
+      "typical_range": "dry, damp, soaked, freezing_wet",
+      "description": "Moisture state that modifies cold exposure, drying behavior, and warning messages."
+    },
+    {
+      "name": "shelter_volume_id",
+      "type": "string",
+      "typical_range": "cave_entrance, cabin_room, player_base_roofed",
+      "description": "Detected shelter area that reduces wind, rain, heat, or cold exposure."
+    },
+    {
+      "name": "exposure_threshold_id",
+      "type": "string",
+      "typical_range": "comfortable, chilly, freezing, overheating, heatstroke",
+      "description": "Threshold table that maps exposure score into warnings, penalties, and recovery states."
+    },
+    {
+      "name": "safe_zone_id",
+      "type": "string",
+      "typical_range": "campfire_radius, heated_room, shaded_shelter, none",
+      "description": "Area or source that suspends or reverses exposure buildup while the player remains inside it."
     }
   ],
   "common_variants": [
-    "temperature_soft_pressure",
-    "temperature_hard_failure",
-    "difficulty_scaled",
-    "environment_driven"
+    "cold_exposure",
+    "heat_exposure",
+    "wetness_and_wind_chill",
+    "shelter_based_temperature",
+    "biome_temperature_gates"
   ],
   "edge_cases": [
-    "Temperature is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Temperature overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Temperature runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The player crosses multiple temperature zones while inside a vehicle, cave, or player-built shelter.",
+    "Wetness from swimming or rain persists through fast travel, sleeping, or save/load restoration.",
+    "A heat source warms the player but does not protect food, water, or nearby crafting stations.",
+    "Multiplayer bases update shelter coverage while clients are standing inside partially built structures."
   ],
   "common_bugs": [
-    "Temperature state does not reset correctly after interruption or reload.",
-    "Feedback for Temperature plays even when the mechanic fails or is rejected.",
-    "Temperature produces different results between frame rates, platforms, or network clients."
+    "Exposure damage starts before UI warning thresholds appear because warning and penalty tables use different ids.",
+    "Shelter detection checks only roof collision and ignores open walls, wind direction, or structure ownership.",
+    "Insulation modifiers stack permanently when equipment is swapped quickly.",
+    "Wetness drying runs during pause or offline progress and removes intended survival pressure."
   ],
   "balancing_notes": [
-    "Make Temperature strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Exposure should ramp through warning, penalty, and danger bands rather than jumping directly to health loss.",
+    "Harsh zones work best when players have at least one clear preparation path: clothing, shelter, food, heat, or route timing.",
+    "Temperature can enrich exploration, but constant micro-management will compete with hunger, thirst, and combat."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Temperature becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Do not rely only on screen tint or particle effects; show exposure reason, severity, and recovery source in readable UI.",
+    "Offer reduced exposure severity or longer warning buffers for players who need more planning time."
   ],
   "implementation_notes": {
-    "unity": "Implement Temperature with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Temperature as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Temperature with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Temperature as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Compute exposure from temperature_zone_id, insulation_rating_points, wetness_state_id, and shelter_volume_id in a survival service. Use trigger volumes and structure queries for shelter, persist wetness and exposure stage, and keep UI warnings driven by the same threshold table as penalties.",
+    "godot": "Areas can provide temperature zones and shelter volumes, while a player survival node aggregates equipment and wetness modifiers. Save wetness, exposure accumulator, and active zone ids so reloading inside weather does not reset danger or duplicate penalties.",
+    "unreal": "Use volumes, Gameplay Tags, and replicated survival attributes for exposure state. Server authority should calculate zone, shelter, and equipment modifiers, then replicate warning bands to UMG so client presentation matches damage decisions.",
+    "web": "Keep exposure calculation in simulation state using zone ids and equipment metadata. Browser visibility changes should follow pause or offline policy; do not let wall-clock gaps silently freeze or over-advance exposure."
   },
   "related_mechanics": [
-    "crafting.recipe_crafting",
-    "survival.health",
-    "survival.stamina",
-    "ui_ux.cooldown_indicator"
-  ],
-  "combines_well_with": [
-    "crafting.recipe_crafting",
     "survival.hunger",
     "survival.thirst",
-    "ui_ux.cooldown_indicator"
+    "survival.base_building",
+    "time.day_night_schedule"
   ],
-  "example_games": [],
+  "combines_well_with": [
+    "survival.day_night_cycle",
+    "crafting.recipe_crafting",
+    "simulation.systemic_weather",
+    "survival.health"
+  ],
+  "example_games": [
+    {
+      "title": "The Long Dark",
+      "note": "Uses cold, clothing, shelter, and weather as major survival pressures."
+    },
+    {
+      "title": "The Legend of Zelda: Breath of the Wild",
+      "note": "Uses hot and cold regions with equipment and consumable counterplay."
+    }
+  ],
   "tags": [
-    "resource_management",
-    "survival",
-    "temperature"
+    "temperature",
+    "exposure",
+    "wetness",
+    "shelter",
+    "weather"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

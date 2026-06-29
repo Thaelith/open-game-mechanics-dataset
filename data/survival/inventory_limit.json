@@ -2,12 +2,12 @@
   "id": "survival.inventory_limit",
   "name": "Inventory Limit",
   "aliases": [
-    "inventory limit mechanic",
-    "inventory limit system",
-    "inventory limit"
+    "carry capacity",
+    "encumbrance",
+    "limited inventory"
   ],
   "category": "survival",
-  "subcategory": "survival",
+  "subcategory": "carrying_capacity",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -21,90 +21,125 @@
   },
   "genres": [
     "survival",
-    "sandbox",
-    "horror"
+    "rpg",
+    "horror",
+    "sandbox"
   ],
-  "description": "Inventory Limit is a pressure mechanic that asks the player to manage bodily, environmental, or resource constraints over time.",
-  "design_notes": "Inventory Limit should be designed around a clear player promise, a readable trigger, and a predictable result. For survival mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Inventory space, weight, slots, or containers limit how much the player can carry during survival play.",
+  "design_notes": "Inventory limits are strongest when they create choices rather than clerical cleanup. The design should define slot capacity, weight capacity, stack rules, overflow behavior, encumbrance thresholds, and how crafting or gathering transactions fail safely when storage is full.",
   "design_purpose": [
-    "Give the player a readable way to use inventory limit as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect inventory limit to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Force prioritization between food, water, tools, ammunition, materials, and valuables.",
+    "Make bases, containers, vehicles, companions, or upgrades valuable as storage solutions.",
+    "Connect gathering and crafting to route planning by limiting what can be carried at once."
   ],
-  "player_fantasy": "The player feels vulnerable but resourceful under ongoing pressure.",
+  "player_fantasy": "The player feels like every item has weight in their survival plan and must choose what matters.",
   "required_systems": [
-    "resource_system",
-    "status_effects",
-    "ui_feedback",
-    "save_state"
+    "inventory_system",
+    "item_instance_registry",
+    "container_system",
+    "ui_inventory_grid",
+    "transaction_validation"
   ],
   "parameters": [
     {
-      "name": "max_value",
-      "type": "float",
-      "typical_range": "10-1000 units",
-      "description": "Maximum capacity of the survival resource."
+      "name": "inventory_container_id",
+      "type": "string",
+      "typical_range": "player_backpack, chest_02, vehicle_trunk, companion_pack",
+      "description": "Container identifier used for capacity checks, ownership, persistence, and UI display."
     },
     {
-      "name": "decay_rate",
-      "type": "float",
-      "typical_range": "0-10 units/minute",
-      "description": "How quickly the resource changes without player action."
+      "name": "slot_capacity_count",
+      "type": "integer",
+      "typical_range": "4-200 slots",
+      "description": "Maximum occupied slots allowed in the container before slot-based transactions fail."
     },
     {
-      "name": "critical_threshold",
+      "name": "weight_capacity_kg",
       "type": "float",
-      "typical_range": "5-30% of max",
-      "description": "Point at which warnings or penalties begin."
+      "typical_range": "5-500 kg",
+      "description": "Maximum carried weight before encumbrance, rejection, or movement penalties apply."
+    },
+    {
+      "name": "stack_limit_rule_id",
+      "type": "string",
+      "typical_range": "per_item_definition, ammo_999, food_20, no_stack",
+      "description": "Rule that decides how identical or compatible item instances combine into stacks."
+    },
+    {
+      "name": "encumbrance_threshold_id",
+      "type": "string",
+      "typical_range": "warn_80, slow_100, block_sprint_120",
+      "description": "Threshold table that maps carried load into warnings and movement penalties."
+    },
+    {
+      "name": "overflow_policy_id",
+      "type": "string",
+      "typical_range": "reject_pickup, drop_to_ground, send_to_base, temporary_overflow",
+      "description": "Rule used when gathering, looting, or crafting would exceed container capacity."
     }
   ],
   "common_variants": [
-    "inventory_limit_soft_pressure",
-    "inventory_limit_hard_failure",
-    "difficulty_scaled",
-    "environment_driven"
+    "slot_inventory",
+    "weight_inventory",
+    "grid_inventory",
+    "container_based_storage",
+    "encumbrance_penalty"
   ],
   "edge_cases": [
-    "Inventory Limit is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Inventory Limit overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Inventory Limit runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Crafting consumes several ingredients and produces an output that no longer fits the container.",
+    "A player picks up a stackable item while another transaction splits or moves the same stack.",
+    "Weight modifiers from equipment, hunger, injuries, or companions update while inventory UI is open.",
+    "A container is destroyed, moved, or loses ownership while holding player items."
   ],
   "common_bugs": [
-    "Inventory Limit state does not reset correctly after interruption or reload.",
-    "Feedback for Inventory Limit plays even when the mechanic fails or is rejected.",
-    "Inventory Limit produces different results between frame rates, platforms, or network clients."
+    "Capacity validation runs after item pickup, creating negative slots or overweight states that cannot be resolved.",
+    "Stack splitting loses item_instance_id metadata such as durability, quality, or ownership.",
+    "Server and client sort inventory differently, causing drag transactions to move the wrong slot.",
+    "Encumbrance penalties apply from total item definitions but ignore per-instance stack counts."
   ],
   "balancing_notes": [
-    "Make Inventory Limit strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Strict limits make every expedition strategic, but excessive shuffling can become the dominant play activity.",
+    "Storage upgrades should reduce friction without eliminating the need to choose route goals.",
+    "Overflow behavior should be consistent; surprise item drops can feel like data loss."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Inventory Limit becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide sortable lists, readable capacity text, and controller-friendly slot navigation.",
+    "Use warnings before rejecting or dropping items so players understand capacity failures."
   ],
   "implementation_notes": {
-    "unity": "Implement Inventory Limit with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Inventory Limit as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Inventory Limit with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Inventory Limit as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use transaction validation for every pickup, craft, split, and move operation. Store inventory_container_id, slot coordinates, stack counts, item_instance_id metadata, and weight totals; never let UI drag state mutate inventory without service approval.",
+    "godot": "Keep inventory as data and let GridContainer or Control nodes render a snapshot. Slot moves should submit source, destination, expected item_instance_id, and stack count so stale UI cannot corrupt capacity state.",
+    "unreal": "A replicated inventory component should own slot and weight validation on the server. Client drag operations can predict visuals, but the server must confirm capacity, stack rules, ownership, and encumbrance before finalizing.",
+    "web": "Represent containers as arrays or maps with stable item_instance_id entries. For browser saves, persist slot positions, counts, and metadata together; for multiplayer, treat drag and stack split as versioned transactions."
   },
   "related_mechanics": [
+    "ui_ux.inventory_grid",
     "crafting.recipe_crafting",
-    "survival.health",
-    "survival.stamina",
-    "ui_ux.cooldown_indicator"
+    "economy.crafting_materials",
+    "survival.durability"
   ],
   "combines_well_with": [
-    "crafting.recipe_crafting",
-    "survival.hunger",
-    "survival.thirst",
-    "ui_ux.cooldown_indicator"
+    "survival.base_building",
+    "economy.trading",
+    "crafting.workbench",
+    "movement.stamina_movement"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Resident Evil 4",
+      "note": "Uses limited inventory space as a major planning and item-management constraint."
+    },
+    {
+      "title": "The Elder Scrolls V: Skyrim",
+      "note": "Uses carry weight to limit looting and travel decisions."
+    }
+  ],
   "tags": [
-    "inventory",
-    "resource_management",
-    "survival"
+    "inventory_limit",
+    "capacity",
+    "encumbrance",
+    "storage",
+    "item_instances"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

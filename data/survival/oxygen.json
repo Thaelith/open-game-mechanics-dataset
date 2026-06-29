@@ -2,12 +2,12 @@
   "id": "survival.oxygen",
   "name": "Oxygen",
   "aliases": [
-    "oxygen mechanic",
-    "oxygen system",
-    "oxygen"
+    "breath meter",
+    "air supply",
+    "oxygen timer"
   ],
   "category": "survival",
-  "subcategory": "survival",
+  "subcategory": "breathing_supply",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -21,90 +21,125 @@
   },
   "genres": [
     "survival",
-    "sandbox",
-    "horror"
+    "adventure",
+    "horror",
+    "sandbox"
   ],
-  "description": "Oxygen is a pressure mechanic that asks the player to manage bodily, environmental, or resource constraints over time.",
-  "design_notes": "Oxygen should be designed around a clear player promise, a readable trigger, and a predictable result. For survival mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A limited breathing supply depletes in unsafe volumes such as underwater, vacuum, smoke, or toxic air.",
+  "design_notes": "Oxygen is a deadline mechanic tied to volumes and recovery sources. Designers need clear breathable_volume_id rules, depletion while swimming or exerting, refill behavior at air pockets or tanks, and warning thresholds that leave time for recovery before drowning or suffocation damage begins.",
   "design_purpose": [
-    "Give the player a readable way to use oxygen as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect oxygen to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Add tension to underwater, space, smoke, or hazardous-air exploration.",
+    "Make equipment, routes, air pockets, and preparation matter in risky environments.",
+    "Create readable short-term pressure without permanently blocking exploration."
   ],
-  "player_fantasy": "The player feels vulnerable but resourceful under ongoing pressure.",
+  "player_fantasy": "The player feels the urgency of limited breath and the relief of reaching safe air in time.",
   "required_systems": [
-    "resource_system",
-    "status_effects",
-    "ui_feedback",
-    "save_state"
+    "volume_detection",
+    "survival_stat_system",
+    "movement_controller",
+    "ui_warning_bands",
+    "damage_system"
   ],
   "parameters": [
     {
-      "name": "max_value",
-      "type": "float",
-      "typical_range": "10-1000 units",
-      "description": "Maximum capacity of the survival resource."
+      "name": "oxygen_stat_id",
+      "type": "string",
+      "typical_range": "oxygen, breath, suit_air",
+      "description": "Stat identifier used by depletion, refill, warnings, and suffocation effects."
     },
     {
-      "name": "decay_rate",
-      "type": "float",
-      "typical_range": "0-10 units/minute",
-      "description": "How quickly the resource changes without player action."
+      "name": "oxygen_remaining_ms",
+      "type": "integer",
+      "typical_range": "3000-300000 ms",
+      "description": "Remaining safe breathing window before depletion effects begin."
     },
     {
-      "name": "critical_threshold",
+      "name": "breathable_volume_id",
+      "type": "string",
+      "typical_range": "surface_air, vehicle_cabin, air_pocket, oxygen_room",
+      "description": "Volume or state that refills or preserves oxygen instead of draining it."
+    },
+    {
+      "name": "oxygen_depletion_per_second",
       "type": "float",
-      "typical_range": "5-30% of max",
-      "description": "Point at which warnings or penalties begin."
+      "typical_range": "0.5-10 seconds of air per second",
+      "description": "Drain pace while the player is in a non-breathable volume."
+    },
+    {
+      "name": "refill_source_id",
+      "type": "string",
+      "typical_range": "surface, air_tank, base_oxygen, bubble_plant",
+      "description": "Source that restores oxygen or extends the breathing window."
+    },
+    {
+      "name": "suffocation_effect_id",
+      "type": "string",
+      "typical_range": "health_damage, panic_audio, blackout, instant_death",
+      "description": "Penalty applied after the oxygen window reaches depletion."
     }
   ],
   "common_variants": [
-    "oxygen_soft_pressure",
-    "oxygen_hard_failure",
-    "difficulty_scaled",
-    "environment_driven"
+    "underwater_breath_meter",
+    "space_suit_oxygen",
+    "toxic_air_filter",
+    "air_tank_extension",
+    "oxygen_safe_rooms"
   ],
   "edge_cases": [
-    "Oxygen is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Oxygen overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Oxygen runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The player crosses the waterline repeatedly and the oxygen UI flickers between drain and refill states.",
+    "A vehicle, base, or cave counts as breathable while the surrounding volume remains hazardous.",
+    "A cutscene, dialogue, or inventory menu opens while the player is already running out of oxygen.",
+    "Client prediction refills oxygen at the surface but the server still considers the player submerged."
   ],
   "common_bugs": [
-    "Oxygen state does not reset correctly after interruption or reload.",
-    "Feedback for Oxygen plays even when the mechanic fails or is rejected.",
-    "Oxygen produces different results between frame rates, platforms, or network clients."
+    "Oxygen drains while the player is paused or in loading screens because the unsafe volume state remains active.",
+    "Refill logic runs every frame and repeatedly plays warning-clear audio or particles.",
+    "Drowning damage begins before the zero-oxygen warning animation has completed.",
+    "Save/load restores oxygen points but not whether the current volume is breathable."
   ],
   "balancing_notes": [
-    "Make Oxygen strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Short oxygen windows create strong tension but need nearby readable recovery options.",
+    "Equipment upgrades can extend exploration range without removing the need to plan routes.",
+    "Damage after depletion should usually tick with a buffer rather than killing instantly unless the genre demands harsh failure."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Oxygen becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use numeric countdown, icon state, audio, and optional haptics for oxygen warnings.",
+    "Avoid relying only on muffled audio or vignette effects, and offer reduced panic effects for sensitive players."
   ],
   "implementation_notes": {
-    "unity": "Implement Oxygen with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Oxygen as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Oxygen with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Oxygen as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Track oxygen from volume enter and exit events plus a survival stat record. Store oxygen_remaining_ms, active breathable_volume_id, and suffocation_effect_id in save data, and let the server validate refill sources in multiplayer.",
+    "godot": "Area2D or Area3D nodes can mark breathable and hazardous volumes, but oxygen state should live on the player survival service. Use threshold crossing events for UI warnings so rapid waterline toggles do not spam cues.",
+    "unreal": "Use Physics Volumes, overlap components, or gameplay tags to determine breathing state. A replicated component should own depletion, refill, and suffocation damage, while clients display predicted warnings from server-corrected oxygen state.",
+    "web": "Keep oxygen volume checks in the fixed simulation step and debounce waterline transitions. Persist active volume id and remaining milliseconds so browser reloads do not reset a dangerous dive."
   },
   "related_mechanics": [
-    "crafting.recipe_crafting",
+    "movement.swimming",
+    "physics.buoyancy",
     "survival.health",
-    "survival.stamina",
     "ui_ux.cooldown_indicator"
   ],
   "combines_well_with": [
-    "crafting.recipe_crafting",
-    "survival.hunger",
-    "survival.thirst",
-    "ui_ux.cooldown_indicator"
+    "survival.temperature",
+    "time.timed_challenge",
+    "horror.limited_visibility",
+    "accessibility.toggle_hold_option"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Subnautica",
+      "note": "Uses oxygen supply to define underwater exploration range and risk."
+    },
+    {
+      "title": "Minecraft",
+      "note": "Uses an air meter when the player remains underwater."
+    }
+  ],
   "tags": [
     "oxygen",
-    "resource_management",
-    "survival"
+    "breath",
+    "underwater",
+    "hazard_volume",
+    "countdown"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

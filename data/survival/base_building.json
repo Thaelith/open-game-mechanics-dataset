@@ -2,12 +2,12 @@
   "id": "survival.base_building",
   "name": "Base Building",
   "aliases": [
-    "base building mechanic",
-    "base building system",
-    "base building"
+    "shelter building",
+    "base construction",
+    "settlement building"
   ],
   "category": "survival",
-  "subcategory": "survival",
+  "subcategory": "shelter_construction",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,96 +15,131 @@
     "3D"
   ],
   "difficulty": {
-    "design": "medium",
-    "implementation": "medium",
-    "tuning": "hard"
+    "design": "hard",
+    "implementation": "hard",
+    "tuning": "expert"
   },
   "genres": [
     "survival",
     "sandbox",
-    "horror"
+    "simulation",
+    "multiplayer"
   ],
-  "description": "Base Building is a pressure mechanic that asks the player to manage bodily, environmental, or resource constraints over time.",
-  "design_notes": "Base Building should be designed around a clear player promise, a readable trigger, and a predictable result. For survival mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Players place, upgrade, persist, and defend structures that provide storage, shelter, crafting, or territory control.",
+  "design_notes": "Base building touches placement validation, structural support, ownership, persistence, navmesh changes, and multiplayer permissions. Every base_structure_id should have rules for snapping, collision, terrain fit, support loss, repair, decay, and how shelter volumes affect survival systems.",
   "design_purpose": [
-    "Give the player a readable way to use base building as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect base building to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players a long-term home, storage hub, crafting center, and recovery space.",
+    "Turn gathered resources into visible world progress and strategic protection.",
+    "Create player-authored layouts that interact with weather, enemies, crafting, and multiplayer ownership."
   ],
-  "player_fantasy": "The player feels vulnerable but resourceful under ongoing pressure.",
+  "player_fantasy": "The player feels they can carve out a safe place in a hostile world and improve it over time.",
   "required_systems": [
-    "resource_system",
-    "status_effects",
-    "ui_feedback",
-    "save_state"
+    "placement_validation",
+    "structure_registry",
+    "ownership_permissions",
+    "save_load_state",
+    "collision_rebuild"
   ],
   "parameters": [
     {
-      "name": "max_value",
-      "type": "float",
-      "typical_range": "10-1000 units",
-      "description": "Maximum capacity of the survival resource."
+      "name": "base_structure_id",
+      "type": "string",
+      "typical_range": "wood_wall_a, stone_foundation_02, campfire_shelter",
+      "description": "Stable structure identifier used for placement, persistence, repair, ownership, and replication."
     },
     {
-      "name": "decay_rate",
-      "type": "float",
-      "typical_range": "0-10 units/minute",
-      "description": "How quickly the resource changes without player action."
+      "name": "placement_rule_id",
+      "type": "string",
+      "typical_range": "terrain_flat, snap_to_foundation, wall_socket, no_enemy_claim",
+      "description": "Rule set that validates terrain, collision, slope, sockets, permissions, and blocked zones."
     },
     {
-      "name": "critical_threshold",
-      "type": "float",
-      "typical_range": "5-30% of max",
-      "description": "Point at which warnings or penalties begin."
+      "name": "structural_support_id",
+      "type": "string",
+      "typical_range": "foundation_chain, pillar_support, ceiling_span_wood",
+      "description": "Support graph node or rule that decides whether a structure remains stable."
+    },
+    {
+      "name": "snap_socket_id",
+      "type": "string",
+      "typical_range": "wall_left, floor_corner, roof_peak, free_place",
+      "description": "Optional socket used to align new pieces to existing structures."
+    },
+    {
+      "name": "ownership_permission_id",
+      "type": "string",
+      "typical_range": "owner, clan, public, raid_allowed, decay_unclaimed",
+      "description": "Permission rule for building, editing, opening containers, repairing, or demolishing structures."
+    },
+    {
+      "name": "shelter_volume_id",
+      "type": "string",
+      "typical_range": "roofed_room_a, cave_claim, insulated_cabin",
+      "description": "Generated or authored volume that tells temperature, weather, and safety systems the player is sheltered."
     }
   ],
   "common_variants": [
-    "base_building_soft_pressure",
-    "base_building_hard_failure",
-    "difficulty_scaled",
-    "environment_driven"
+    "grid_based_building",
+    "snap_socket_building",
+    "freeform_placement",
+    "decaying_base",
+    "multiplayer_claimed_base"
   ],
   "edge_cases": [
-    "Base Building is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Base Building overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Base Building runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Destroying a foundation removes support for child structures that contain inventories, queues, or sleeping players.",
+    "A player places a structure while terrain, navmesh, or another player-built piece changes underneath it.",
+    "A shelter volume is partially enclosed and systems disagree whether rain, cold, enemies, or spawns are blocked.",
+    "A server restarts after placement resources were consumed but before the structure persistence record was committed."
   ],
   "common_bugs": [
-    "Base Building state does not reset correctly after interruption or reload.",
-    "Feedback for Base Building plays even when the mechanic fails or is rejected.",
-    "Base Building produces different results between frame rates, platforms, or network clients."
+    "Placement preview accepts a location but server validation rejects it due to different collision or slope checks.",
+    "Structures persist visually but ownership, inventory links, or crafting station queues are lost after load.",
+    "Navmesh and AI spawn blockers are not rebuilt after base edits, letting enemies spawn inside sealed rooms.",
+    "Support graph updates cascade in nondeterministic order and delete valid connected structures."
   ],
   "balancing_notes": [
-    "Make Base Building strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Base safety should reward planning without removing all survival pressure from weather, raids, or resource needs.",
+    "Upkeep and decay can control server clutter, but opaque decay feels punishing when players return after a break.",
+    "Placement restrictions should prevent exploits while still allowing creative layouts."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Base Building becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide clear placement previews with text reasons for blocked placement, support failure, or permission denial.",
+    "Support keyboard and controller placement nudging, rotation steps, and snap toggles for precise building."
   ],
   "implementation_notes": {
-    "unity": "Implement Base Building with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Base Building as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Base Building with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Base Building as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use a placement service that tests collision, slope, sockets, ownership, and structural_support_id before consuming materials. Commit base_structure_id, transform, owner, support links, shelter volume membership, and station or container references in one save transaction.",
+    "godot": "Represent structures as data-backed nodes with stable ids and placement rules stored in Resources. Rebuild collision, navigation regions, and shelter volumes after accepted edits, and persist support graph edges before spawning cosmetic construction effects.",
+    "unreal": "Server-authoritative building actors should validate placement using collision queries, sockets, gameplay tags, and ownership permissions. Replicate accepted structure ids and transforms, then update navmesh, shelter, and interaction components on clients.",
+    "web": "Keep base pieces in a spatial index keyed by base_structure_id. For Canvas or Three.js builders, separate preview rendering from authoritative placement and store support links plus ownership in compact save data."
   },
   "related_mechanics": [
-    "crafting.recipe_crafting",
-    "survival.health",
-    "survival.stamina",
-    "ui_ux.cooldown_indicator"
+    "crafting.workbench",
+    "survival.temperature",
+    "survival.inventory_limit",
+    "survival.day_night_cycle"
   ],
   "combines_well_with": [
-    "crafting.recipe_crafting",
-    "survival.hunger",
-    "survival.thirst",
-    "ui_ux.cooldown_indicator"
+    "crafting.crafting_queue",
+    "multiplayer.shared_resource_pool",
+    "strategy.territory_control",
+    "ai.enemy_spawn_director"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Valheim",
+      "note": "Uses structural support, crafting stations, and shelter as base-building concerns."
+    },
+    {
+      "title": "Rust",
+      "note": "Uses player bases for storage, ownership, defense, and multiplayer conflict."
+    }
+  ],
   "tags": [
-    "base",
-    "resource_management",
-    "survival"
+    "base_building",
+    "shelter",
+    "placement",
+    "ownership",
+    "persistence"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

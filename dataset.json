@@ -4,7 +4,7 @@
   "license": "CC0-1.0",
   "tool_license": "MIT",
   "total_mechanics": 223,
-  "last_generated": "2026-06-29T10:48:20+00:00",
+  "last_generated": "2026-06-29T11:08:31+00:00",
   "mechanics": [
     {
       "id": "accessibility.adjustable_difficulty",
@@ -1113,7 +1113,7 @@
       "id": "crafting.crafting_queue",
       "name": "Crafting Queue",
       "category": "crafting",
-      "subcategory": "crafting",
+      "subcategory": "queue_processing",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1122,12 +1122,16 @@
       ],
       "genres": [
         "survival",
+        "simulation",
         "rpg",
-        "sandbox"
+        "strategy"
       ],
       "tags": [
-        "crafting",
-        "inventory"
+        "crafting_queue",
+        "production",
+        "station",
+        "offline_progress",
+        "transaction"
       ],
       "path": "data/crafting/crafting_queue.json"
     },
@@ -1135,7 +1139,7 @@
       "id": "crafting.ingredient_quality",
       "name": "Ingredient Quality",
       "category": "crafting",
-      "subcategory": "crafting",
+      "subcategory": "ingredient_grading",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1145,12 +1149,15 @@
       "genres": [
         "survival",
         "rpg",
+        "simulation",
         "sandbox"
       ],
       "tags": [
+        "ingredient_quality",
+        "material_grade",
         "crafting",
-        "ingredient",
-        "inventory"
+        "item_metadata",
+        "preview"
       ],
       "path": "data/crafting/ingredient_quality.json"
     },
@@ -1158,7 +1165,7 @@
       "id": "crafting.recipe_crafting",
       "name": "Recipe Crafting",
       "category": "crafting",
-      "subcategory": "crafting",
+      "subcategory": "recipe_transaction",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1168,12 +1175,15 @@
       "genres": [
         "survival",
         "rpg",
-        "sandbox"
+        "sandbox",
+        "simulation"
       ],
       "tags": [
+        "recipe",
         "crafting",
         "inventory",
-        "recipe"
+        "transaction",
+        "item_instances"
       ],
       "path": "data/crafting/recipe_crafting.json"
     },
@@ -1181,7 +1191,7 @@
       "id": "crafting.workbench",
       "name": "Workbench",
       "category": "crafting",
-      "subcategory": "crafting",
+      "subcategory": "crafting_station",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1190,13 +1200,16 @@
       ],
       "genres": [
         "survival",
+        "sandbox",
         "rpg",
-        "sandbox"
+        "simulation"
       ],
       "tags": [
-        "crafting",
-        "inventory",
-        "workbench"
+        "workbench",
+        "crafting_station",
+        "station_tier",
+        "recipes",
+        "base_building"
       ],
       "path": "data/crafting/workbench.json"
     },
@@ -4209,7 +4222,7 @@
       "id": "survival.base_building",
       "name": "Base Building",
       "category": "survival",
-      "subcategory": "survival",
+      "subcategory": "shelter_construction",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4219,20 +4232,23 @@
       "genres": [
         "survival",
         "sandbox",
-        "horror"
+        "simulation",
+        "multiplayer"
       ],
       "tags": [
-        "base",
-        "resource_management",
-        "survival"
+        "base_building",
+        "shelter",
+        "placement",
+        "ownership",
+        "persistence"
       ],
       "path": "data/survival/base_building.json"
     },
     {
       "id": "survival.day_night_cycle",
-      "name": "Day/Night Cycle",
+      "name": "Day Night Cycle",
       "category": "survival",
-      "subcategory": "survival",
+      "subcategory": "survival_schedule",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4242,12 +4258,15 @@
       "genres": [
         "survival",
         "sandbox",
-        "horror"
+        "horror",
+        "simulation"
       ],
       "tags": [
-        "day",
-        "resource_management",
-        "survival"
+        "day_night",
+        "night_pressure",
+        "survival_schedule",
+        "safe_zone",
+        "world_clock"
       ],
       "path": "data/survival/day_night_cycle.json"
     },
@@ -4255,7 +4274,7 @@
       "id": "survival.durability",
       "name": "Durability",
       "category": "survival",
-      "subcategory": "survival",
+      "subcategory": "item_wear",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4264,13 +4283,16 @@
       ],
       "genres": [
         "survival",
+        "rpg",
         "sandbox",
-        "horror"
+        "action"
       ],
       "tags": [
         "durability",
-        "resource_management",
-        "survival"
+        "item_instance",
+        "repair",
+        "equipment",
+        "condition"
       ],
       "path": "data/survival/durability.json"
     },
@@ -4278,7 +4300,7 @@
       "id": "survival.health",
       "name": "Health",
       "category": "survival",
-      "subcategory": "survival",
+      "subcategory": "vital_state",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4287,13 +4309,16 @@
       ],
       "genres": [
         "survival",
-        "sandbox",
-        "horror"
+        "action",
+        "horror",
+        "rpg"
       ],
       "tags": [
         "health",
-        "resource_management",
-        "survival"
+        "vitality",
+        "damage_channel",
+        "recovery",
+        "survival_stat"
       ],
       "path": "data/survival/health.json"
     },
@@ -4301,7 +4326,7 @@
       "id": "survival.hunger",
       "name": "Hunger",
       "category": "survival",
-      "subcategory": "survival",
+      "subcategory": "metabolic_need",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4311,12 +4336,15 @@
       "genres": [
         "survival",
         "sandbox",
-        "horror"
+        "rpg",
+        "simulation"
       ],
       "tags": [
         "hunger",
-        "resource_management",
-        "survival"
+        "food",
+        "survival_stat",
+        "decay",
+        "consumable"
       ],
       "path": "data/survival/hunger.json"
     },
@@ -4324,7 +4352,7 @@
       "id": "survival.inventory_limit",
       "name": "Inventory Limit",
       "category": "survival",
-      "subcategory": "survival",
+      "subcategory": "carrying_capacity",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4333,13 +4361,16 @@
       ],
       "genres": [
         "survival",
-        "sandbox",
-        "horror"
+        "rpg",
+        "horror",
+        "sandbox"
       ],
       "tags": [
-        "inventory",
-        "resource_management",
-        "survival"
+        "inventory_limit",
+        "capacity",
+        "encumbrance",
+        "storage",
+        "item_instances"
       ],
       "path": "data/survival/inventory_limit.json"
     },
@@ -4347,7 +4378,7 @@
       "id": "survival.oxygen",
       "name": "Oxygen",
       "category": "survival",
-      "subcategory": "survival",
+      "subcategory": "breathing_supply",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4356,13 +4387,16 @@
       ],
       "genres": [
         "survival",
-        "sandbox",
-        "horror"
+        "adventure",
+        "horror",
+        "sandbox"
       ],
       "tags": [
         "oxygen",
-        "resource_management",
-        "survival"
+        "breath",
+        "underwater",
+        "hazard_volume",
+        "countdown"
       ],
       "path": "data/survival/oxygen.json"
     },
@@ -4370,7 +4404,7 @@
       "id": "survival.stamina",
       "name": "Stamina",
       "category": "survival",
-      "subcategory": "survival",
+      "subcategory": "exertion_pool",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4379,13 +4413,16 @@
       ],
       "genres": [
         "survival",
-        "sandbox",
-        "horror"
+        "action",
+        "rpg",
+        "adventure"
       ],
       "tags": [
-        "resource_management",
         "stamina",
-        "survival"
+        "exertion",
+        "regen_delay",
+        "action_cost",
+        "survival_stat"
       ],
       "path": "data/survival/stamina.json"
     },
@@ -4393,7 +4430,7 @@
       "id": "survival.temperature",
       "name": "Temperature",
       "category": "survival",
-      "subcategory": "survival",
+      "subcategory": "environmental_exposure",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4403,12 +4440,15 @@
       "genres": [
         "survival",
         "sandbox",
-        "horror"
+        "simulation",
+        "adventure"
       ],
       "tags": [
-        "resource_management",
-        "survival",
-        "temperature"
+        "temperature",
+        "exposure",
+        "wetness",
+        "shelter",
+        "weather"
       ],
       "path": "data/survival/temperature.json"
     },
@@ -4416,7 +4456,7 @@
       "id": "survival.thirst",
       "name": "Thirst",
       "category": "survival",
-      "subcategory": "survival",
+      "subcategory": "hydration_need",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4426,12 +4466,15 @@
       "genres": [
         "survival",
         "sandbox",
+        "simulation",
         "horror"
       ],
       "tags": [
-        "resource_management",
-        "survival",
-        "thirst"
+        "thirst",
+        "hydration",
+        "water",
+        "survival_stat",
+        "decay"
       ],
       "path": "data/survival/thirst.json"
     },
@@ -6352,6 +6395,7 @@
           "ai.utility_scoring",
           "combat.combo_chain",
           "combat.stealth_kill",
+          "crafting.ingredient_quality",
           "economy.coins",
           "economy.crafting_materials",
           "economy.dynamic_pricing",
@@ -6436,6 +6480,8 @@
           "strategy.tech_tree",
           "strategy.territory_control",
           "strategy.unit_counter_system",
+          "survival.base_building",
+          "survival.temperature",
           "time.rhythm_timing",
           "time.time_freeze",
           "traversal.wall_run"
@@ -6474,7 +6520,6 @@
           "combat.reload",
           "combat.shield",
           "crafting.crafting_queue",
-          "crafting.ingredient_quality",
           "crafting.recipe_crafting",
           "crafting.workbench",
           "meta.collection_log",
@@ -6504,7 +6549,6 @@
           "rhythm.note_lane",
           "rhythm.sync_window",
           "stealth.visibility_meter",
-          "survival.base_building",
           "survival.day_night_cycle",
           "survival.durability",
           "survival.health",
@@ -6512,7 +6556,6 @@
           "survival.inventory_limit",
           "survival.oxygen",
           "survival.stamina",
-          "survival.temperature",
           "survival.thirst",
           "time.cooldown_time",
           "time.day_night_schedule",
@@ -6589,6 +6632,7 @@
           "ai.line_of_sight_detection",
           "ai.utility_scoring",
           "combat.lock_on_targeting",
+          "crafting.crafting_queue",
           "physics.buoyancy",
           "physics.moving_platform",
           "physics.pendulum_swing",
@@ -6620,6 +6664,8 @@
           "strategy.tech_tree",
           "strategy.territory_control",
           "strategy.unit_counter_system",
+          "survival.base_building",
+          "survival.temperature",
           "time.rhythm_timing",
           "time.slow_motion",
           "time.time_freeze",
@@ -6677,7 +6723,6 @@
           "combat.reload",
           "combat.shield",
           "combat.stealth_kill",
-          "crafting.crafting_queue",
           "crafting.ingredient_quality",
           "crafting.recipe_crafting",
           "crafting.workbench",
@@ -6755,7 +6800,6 @@
           "roguelike.run_based_progression",
           "roguelike.shop_between_levels",
           "stealth.visibility_meter",
-          "survival.base_building",
           "survival.day_night_cycle",
           "survival.durability",
           "survival.health",
@@ -6763,7 +6807,6 @@
           "survival.inventory_limit",
           "survival.oxygen",
           "survival.stamina",
-          "survival.temperature",
           "survival.thirst",
           "time.cooldown_time",
           "time.day_night_schedule",
@@ -6788,6 +6831,7 @@
         "expert": [
           "ai.utility_scoring",
           "combat.combo_chain",
+          "crafting.ingredient_quality",
           "economy.coins",
           "economy.crafting_materials",
           "economy.dynamic_pricing",
@@ -6839,6 +6883,8 @@
           "strategy.tech_tree",
           "strategy.territory_control",
           "strategy.unit_counter_system",
+          "survival.base_building",
+          "survival.temperature",
           "time.rhythm_timing",
           "time.time_freeze",
           "time.time_rewind"
@@ -6870,6 +6916,9 @@
           "combat.ranged_attack",
           "combat.shield",
           "combat.stealth_kill",
+          "crafting.crafting_queue",
+          "crafting.recipe_crafting",
+          "crafting.workbench",
           "horror.hiding",
           "horror.jump_scare_trigger",
           "horror.light_resource",
@@ -6929,7 +6978,6 @@
           "stealth.noise_meter",
           "stealth.shadow_cover",
           "stealth.visibility_meter",
-          "survival.base_building",
           "survival.day_night_cycle",
           "survival.durability",
           "survival.health",
@@ -6937,7 +6985,6 @@
           "survival.inventory_limit",
           "survival.oxygen",
           "survival.stamina",
-          "survival.temperature",
           "survival.thirst",
           "time.cooldown_time",
           "time.day_night_schedule",
@@ -6980,10 +7027,6 @@
           "camera.third_person_camera",
           "camera.top_down_camera",
           "combat.reload",
-          "crafting.crafting_queue",
-          "crafting.ingredient_quality",
-          "crafting.recipe_crafting",
-          "crafting.workbench",
           "movement.climbing",
           "movement.crouch",
           "movement.dash",
@@ -7115,6 +7158,9 @@
         "stealth.last_known_position_search",
         "stealth.noise_meter",
         "stealth.shadow_cover",
+        "survival.durability",
+        "survival.health",
+        "survival.stamina",
         "time.cooldown_time",
         "time.rhythm_timing",
         "time.slow_motion",
@@ -7187,6 +7233,9 @@
         "puzzle.sequence_memory",
         "puzzle.sliding_block",
         "puzzle.timed_door",
+        "survival.oxygen",
+        "survival.stamina",
+        "survival.temperature",
         "time.day_night_schedule",
         "time.time_freeze",
         "time.time_rewind",
@@ -7301,15 +7350,10 @@
         "physics.ragdoll",
         "stealth.last_known_position_search",
         "stealth.visibility_meter",
-        "survival.base_building",
         "survival.day_night_cycle",
-        "survival.durability",
         "survival.health",
-        "survival.hunger",
         "survival.inventory_limit",
         "survival.oxygen",
-        "survival.stamina",
-        "survival.temperature",
         "survival.thirst"
       ],
       "immersive_sim": [
@@ -7350,6 +7394,9 @@
         "platforming.variable_jump_height",
         "platforming.wall_jump",
         "platforming.wall_slide"
+      ],
+      "multiplayer": [
+        "survival.base_building"
       ],
       "music": [
         "rhythm.beat_matching",
@@ -7576,6 +7623,11 @@
         "progression.skill_tree",
         "progression.unlockable_abilities",
         "progression.upgrade_shop",
+        "survival.durability",
+        "survival.health",
+        "survival.hunger",
+        "survival.inventory_limit",
+        "survival.stamina",
         "time.cooldown_time",
         "time.day_night_schedule",
         "ui_ux.accessibility_remap_controls",
@@ -7592,7 +7644,6 @@
         "ui_ux.tutorial_prompt"
       ],
       "sandbox": [
-        "crafting.crafting_queue",
         "crafting.ingredient_quality",
         "crafting.recipe_crafting",
         "crafting.workbench",
@@ -7616,11 +7667,9 @@
         "survival.base_building",
         "survival.day_night_cycle",
         "survival.durability",
-        "survival.health",
         "survival.hunger",
         "survival.inventory_limit",
         "survival.oxygen",
-        "survival.stamina",
         "survival.temperature",
         "survival.thirst"
       ],
@@ -7668,6 +7717,10 @@
         "camera.split_screen",
         "camera.third_person_camera",
         "camera.top_down_camera",
+        "crafting.crafting_queue",
+        "crafting.ingredient_quality",
+        "crafting.recipe_crafting",
+        "crafting.workbench",
         "economy.coins",
         "economy.crafting_materials",
         "economy.dynamic_pricing",
@@ -7689,6 +7742,11 @@
         "simulation.population_model",
         "simulation.systemic_weather",
         "simulation.traffic_flow",
+        "survival.base_building",
+        "survival.day_night_cycle",
+        "survival.hunger",
+        "survival.temperature",
+        "survival.thirst",
         "time.day_night_schedule",
         "ui_ux.interaction_prompt",
         "vehicles.drifting",
@@ -7730,6 +7788,7 @@
         "ai.patrol",
         "ai.utility_scoring",
         "combat.damage_over_time",
+        "crafting.crafting_queue",
         "economy.coins",
         "economy.crafting_materials",
         "economy.dynamic_pricing",
@@ -8069,6 +8128,9 @@
       "achievement": [
         "progression.achievement_system"
       ],
+      "action_cost": [
+        "survival.stamina"
+      ],
       "adjustable": [
         "accessibility.adjustable_difficulty"
       ],
@@ -8131,7 +8193,8 @@
       "audio_sync": [
         "time.rhythm_timing"
       ],
-      "base": [
+      "base_building": [
+        "crafting.workbench",
         "survival.base_building"
       ],
       "beat": [
@@ -8159,6 +8222,9 @@
       ],
       "breakable": [
         "physics.breakable_object"
+      ],
+      "breath": [
+        "survival.oxygen"
       ],
       "buildcraft": [
         "progression.respec",
@@ -8189,6 +8255,9 @@
       ],
       "cancel": [
         "combat.combo_chain"
+      ],
+      "capacity": [
+        "survival.inventory_limit"
       ],
       "charge": [
         "combat.charged_attack"
@@ -8286,9 +8355,15 @@
       "companion": [
         "ai.companion_follow"
       ],
+      "condition": [
+        "survival.durability"
+      ],
       "constraint": [
         "physics.pendulum_swing",
         "physics.physics_push_pull"
+      ],
+      "consumable": [
+        "survival.hunger"
       ],
       "contact_filter": [
         "physics.one_way_platform"
@@ -8339,6 +8414,7 @@
         "multiplayer.team_objective"
       ],
       "countdown": [
+        "survival.oxygen",
         "time.timed_challenge"
       ],
       "counterplay": [
@@ -8348,12 +8424,16 @@
         "ai.cover_seeking"
       ],
       "crafting": [
-        "crafting.crafting_queue",
         "crafting.ingredient_quality",
         "crafting.recipe_crafting",
-        "crafting.workbench",
         "economy.crafting_materials",
         "progression.crafting_unlocks"
+      ],
+      "crafting_queue": [
+        "crafting.crafting_queue"
+      ],
+      "crafting_station": [
+        "crafting.workbench"
       ],
       "critical": [
         "combat.critical_hit"
@@ -8368,6 +8448,9 @@
         "combat.damage_over_time",
         "ui_ux.damage_numbers"
       ],
+      "damage_channel": [
+        "survival.health"
+      ],
       "damage_modifier": [
         "combat.critical_hit"
       ],
@@ -8377,10 +8460,8 @@
       "dash": [
         "movement.air_dash"
       ],
-      "day": [
-        "survival.day_night_cycle"
-      ],
       "day_night": [
+        "survival.day_night_cycle",
         "time.day_night_schedule"
       ],
       "deadline": [
@@ -8392,6 +8473,10 @@
       ],
       "debugging": [
         "ai.utility_scoring"
+      ],
+      "decay": [
+        "survival.hunger",
+        "survival.thirst"
       ],
       "decision_model": [
         "ai.utility_scoring"
@@ -8455,6 +8540,9 @@
         "economy.shop",
         "economy.trading"
       ],
+      "encumbrance": [
+        "survival.inventory_limit"
+      ],
       "enemy": [
         "ai.enemy_spawn_director"
       ],
@@ -8469,10 +8557,17 @@
         "movement.swimming"
       ],
       "equipment": [
-        "progression.equipment_rarity"
+        "progression.equipment_rarity",
+        "survival.durability"
+      ],
+      "exertion": [
+        "survival.stamina"
       ],
       "experience": [
         "progression.experience_points"
+      ],
+      "exposure": [
+        "survival.temperature"
       ],
       "fall_control": [
         "platforming.wall_slide"
@@ -8502,6 +8597,9 @@
       ],
       "fog": [
         "strategy.fog_of_war"
+      ],
+      "food": [
+        "survival.hunger"
       ],
       "forgiveness": [
         "platforming.coyote_time",
@@ -8548,6 +8646,9 @@
       "gust": [
         "physics.wind_force"
       ],
+      "hazard_volume": [
+        "survival.oxygen"
+      ],
       "health": [
         "survival.health"
       ],
@@ -8580,6 +8681,9 @@
       "hunger": [
         "survival.hunger"
       ],
+      "hydration": [
+        "survival.thirst"
+      ],
       "i_frames": [
         "movement.dash"
       ],
@@ -8592,7 +8696,7 @@
       "impact": [
         "camera.screen_shake"
       ],
-      "ingredient": [
+      "ingredient_quality": [
         "crafting.ingredient_quality"
       ],
       "input": [
@@ -8622,18 +8726,27 @@
         "ui_ux.checkpoint_notification"
       ],
       "inventory": [
-        "crafting.crafting_queue",
-        "crafting.ingredient_quality",
         "crafting.recipe_crafting",
-        "crafting.workbench",
-        "survival.inventory_limit",
         "ui_ux.inventory_grid"
+      ],
+      "inventory_limit": [
+        "survival.inventory_limit"
       ],
       "investigate": [
         "ai.investigate_noise"
       ],
       "invincibility": [
         "combat.invincibility_frames"
+      ],
+      "item_instance": [
+        "survival.durability"
+      ],
+      "item_instances": [
+        "crafting.recipe_crafting",
+        "survival.inventory_limit"
+      ],
+      "item_metadata": [
+        "crafting.ingredient_quality"
       ],
       "items": [
         "ui_ux.inventory_grid"
@@ -8731,6 +8844,9 @@
       ],
       "matchmaking": [
         "multiplayer.matchmaking_lobby"
+      ],
+      "material_grade": [
+        "crafting.ingredient_quality"
       ],
       "melee": [
         "combat.melee_attack"
@@ -8838,6 +8954,9 @@
       "new": [
         "meta.new_game_plus"
       ],
+      "night_pressure": [
+        "survival.day_night_cycle"
+      ],
       "noise": [
         "movement.sprint",
         "stealth.noise_meter"
@@ -8854,11 +8973,17 @@
       "objective": [
         "time.timed_challenge"
       ],
+      "offline_progress": [
+        "crafting.crafting_queue"
+      ],
       "onboarding": [
         "ui_ux.tutorial_prompt"
       ],
       "online": [
         "multiplayer.online_coop"
+      ],
+      "ownership": [
+        "survival.base_building"
       ],
       "oxygen": [
         "movement.swimming",
@@ -8889,7 +9014,8 @@
         "roguelike.permadeath"
       ],
       "persistence": [
-        "physics.destructible_environment"
+        "physics.destructible_environment",
+        "survival.base_building"
       ],
       "phase_transition": [
         "time.day_night_schedule"
@@ -8904,6 +9030,9 @@
       ],
       "ping": [
         "multiplayer.ping_system"
+      ],
+      "placement": [
+        "survival.base_building"
       ],
       "planning": [
         "strategy.fog_of_war",
@@ -8962,6 +9091,9 @@
       "prestige": [
         "progression.prestige_reset"
       ],
+      "preview": [
+        "crafting.ingredient_quality"
+      ],
       "procedural": [
         "procedural_generation.biome_generation",
         "procedural_generation.loot_generation",
@@ -8973,6 +9105,9 @@
         "procedural_generation.seeded_generation",
         "procedural_generation.wave_generation",
         "roguelike.procedural_floor"
+      ],
+      "production": [
+        "crafting.crafting_queue"
       ],
       "progression": [
         "progression.achievement_system",
@@ -9062,11 +9197,20 @@
       "recipe": [
         "crafting.recipe_crafting"
       ],
+      "recipes": [
+        "crafting.workbench"
+      ],
+      "recovery": [
+        "survival.health"
+      ],
       "reflection": [
         "combat.projectile_reflection"
       ],
       "refund": [
         "progression.respec"
+      ],
+      "regen_delay": [
+        "survival.stamina"
       ],
       "relic": [
         "roguelike.relic_synergy"
@@ -9075,7 +9219,8 @@
         "combat.reload"
       ],
       "repair": [
-        "economy.repair_cost"
+        "economy.repair_cost",
+        "survival.durability"
       ],
       "replayability": [
         "procedural_generation.biome_generation",
@@ -9094,18 +9239,6 @@
         "combat.reload",
         "combat.shield",
         "economy.resource_conversion"
-      ],
-      "resource_management": [
-        "survival.base_building",
-        "survival.day_night_cycle",
-        "survival.durability",
-        "survival.health",
-        "survival.hunger",
-        "survival.inventory_limit",
-        "survival.oxygen",
-        "survival.stamina",
-        "survival.temperature",
-        "survival.thirst"
       ],
       "respec": [
         "progression.respec",
@@ -9198,6 +9331,9 @@
       "safe": [
         "horror.safe_room"
       ],
+      "safe_zone": [
+        "survival.day_night_cycle"
+      ],
       "sanity": [
         "horror.sanity_meter"
       ],
@@ -9232,6 +9368,10 @@
       ],
       "shared": [
         "multiplayer.shared_resource_pool"
+      ],
+      "shelter": [
+        "survival.base_building",
+        "survival.temperature"
       ],
       "shield": [
         "combat.shield"
@@ -9329,6 +9469,12 @@
         "puzzle.sliding_block",
         "puzzle.timed_door"
       ],
+      "station": [
+        "crafting.crafting_queue"
+      ],
+      "station_tier": [
+        "crafting.workbench"
+      ],
       "status_effect": [
         "combat.damage_over_time"
       ],
@@ -9343,6 +9489,9 @@
         "stealth.shadow_cover",
         "stealth.visibility_meter"
       ],
+      "storage": [
+        "survival.inventory_limit"
+      ],
       "strategy": [
         "strategy.fog_of_war",
         "strategy.tech_tree",
@@ -9353,16 +9502,15 @@
         "physics.buoyancy"
       ],
       "survival": [
-        "movement.swimming",
-        "survival.base_building",
-        "survival.day_night_cycle",
-        "survival.durability",
+        "movement.swimming"
+      ],
+      "survival_schedule": [
+        "survival.day_night_cycle"
+      ],
+      "survival_stat": [
         "survival.health",
         "survival.hunger",
-        "survival.inventory_limit",
-        "survival.oxygen",
         "survival.stamina",
-        "survival.temperature",
         "survival.thirst"
       ],
       "suspension": [
@@ -9459,6 +9607,10 @@
       "traffic": [
         "simulation.traffic_flow"
       ],
+      "transaction": [
+        "crafting.crafting_queue",
+        "crafting.recipe_crafting"
+      ],
       "traversal": [
         "physics.pendulum_swing",
         "traversal.wall_run"
@@ -9489,6 +9641,9 @@
       "ui_ux": [
         "ui_ux.accessibility_remap_controls",
         "ui_ux.checkpoint_notification"
+      ],
+      "underwater": [
+        "survival.oxygen"
       ],
       "unit": [
         "strategy.unit_counter_system"
@@ -9567,6 +9722,9 @@
       "visibility": [
         "stealth.visibility_meter"
       ],
+      "vitality": [
+        "survival.health"
+      ],
       "walk": [
         "movement.walk"
       ],
@@ -9576,13 +9734,20 @@
         "traversal.wall_run"
       ],
       "water": [
-        "movement.swimming"
+        "movement.swimming",
+        "survival.thirst"
       ],
       "wave": [
         "procedural_generation.wave_generation"
       ],
+      "weather": [
+        "survival.temperature"
+      ],
       "weight": [
         "puzzle.pressure_plate"
+      ],
+      "wetness": [
+        "survival.temperature"
       ],
       "wind": [
         "physics.wind_force"
@@ -9591,6 +9756,7 @@
         "crafting.workbench"
       ],
       "world_clock": [
+        "survival.day_night_cycle",
         "time.day_night_schedule"
       ],
       "zipline": [

@@ -2,12 +2,12 @@
   "id": "crafting.ingredient_quality",
   "name": "Ingredient Quality",
   "aliases": [
-    "ingredient quality mechanic",
-    "ingredient quality system",
-    "ingredient quality"
+    "material grade",
+    "ingredient tier",
+    "crafting quality"
   ],
   "category": "crafting",
-  "subcategory": "crafting",
+  "subcategory": "ingredient_grading",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,95 +15,125 @@
     "3D"
   ],
   "difficulty": {
-    "design": "medium",
+    "design": "hard",
     "implementation": "medium",
-    "tuning": "medium"
+    "tuning": "expert"
   },
   "genres": [
     "survival",
     "rpg",
+    "simulation",
     "sandbox"
   ],
-  "description": "Ingredient Quality is a production mechanic that turns resources, recipes, or stations into usable items or upgrades.",
-  "design_notes": "Ingredient Quality should be designed around a clear player promise, a readable trigger, and a predictable result. For crafting mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Ingredients carry grade metadata that can affect recipe eligibility, output stats, yield, failure, or rarity.",
+  "design_notes": "Ingredient quality adds depth only when the grade affects decisions players can understand. Recipes need compatibility tags, substitution rules, quality weight curves, deterministic roll seeds, and accurate UI previews so players know whether rare ingredients improve output or are being wasted.",
   "design_purpose": [
-    "Give the player a readable way to use ingredient quality as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect ingredient quality to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give gathered materials different value without requiring entirely separate recipe lists.",
+    "Let players choose between saving rare ingredients, improving output, or substituting lower-grade materials.",
+    "Create a bridge between gathering, economy, crafting, and progression systems."
   ],
-  "player_fantasy": "The player feels prepared by turning gathered resources into useful capability.",
+  "player_fantasy": "The player feels that better ingredients matter and can deliberately craft superior results.",
   "required_systems": [
-    "inventory_system",
+    "item_metadata",
     "recipe_database",
-    "resource_validation",
-    "ui_feedback"
+    "output_stat_builder",
+    "ui_preview",
+    "deterministic_rng"
   ],
   "parameters": [
     {
-      "name": "ingredient_count",
-      "type": "integer",
-      "typical_range": "1-8",
-      "description": "Number of input resources required."
+      "name": "ingredient_quality_tier",
+      "type": "string",
+      "typical_range": "crude, common, fine, superior, pristine",
+      "description": "Grade label stored on ingredient item instances and checked by recipe compatibility rules."
     },
     {
-      "name": "craft_time",
-      "type": "float",
-      "typical_range": "0-300 seconds",
-      "description": "Time before the crafted output becomes available."
+      "name": "quality_weight_curve_id",
+      "type": "string",
+      "typical_range": "average_inputs, best_input_dominates, lowest_input_caps",
+      "description": "Curve that converts ingredient grade mix into output quality or stat modifiers."
     },
     {
-      "name": "output_quantity",
+      "name": "material_substitution_rule_id",
+      "type": "string",
+      "typical_range": "same_family_only, any_wood, no_substitution, higher_tier_allowed",
+      "description": "Rule that decides which alternate ingredient ids may satisfy a recipe slot."
+    },
+    {
+      "name": "output_quality_seed",
       "type": "integer",
-      "typical_range": "1-99",
-      "description": "Number of items produced by one craft action."
+      "typical_range": "transaction rng seed",
+      "description": "Deterministic seed used when output grade includes a bounded random roll."
+    },
+    {
+      "name": "recipe_compatibility_tag",
+      "type": "string",
+      "typical_range": "metal, hardwood, medicinal, cloth",
+      "description": "Tag matched between ingredient instances and recipe slots before preview or confirmation."
     }
   ],
   "common_variants": [
-    "ingredient_quality_instant_crafting",
-    "ingredient_quality_station_required",
-    "quality_based",
-    "batch_crafting"
+    "tiered_materials",
+    "best_ingredient_sets_output",
+    "weighted_average_output",
+    "substitution_with_penalty",
+    "random_quality_roll"
   ],
   "edge_cases": [
-    "Ingredient Quality is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Ingredient Quality overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Ingredient Quality runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A stack contains mixed item_instance_id quality tiers but the UI treats it as one uniform ingredient.",
+    "Preview uses the highest possible output while server validation uses the actual selected ingredients.",
+    "A recipe accepts substitutions but the output name, stats, or icon still assume the default material.",
+    "Content migration changes tier names and old saved ingredients no longer match compatibility tags."
   ],
   "common_bugs": [
-    "Ingredient Quality state does not reset correctly after interruption or reload.",
-    "Feedback for Ingredient Quality plays even when the mechanic fails or is rejected.",
-    "Ingredient Quality produces different results between frame rates, platforms, or network clients."
+    "Ingredient quality is stored only on item definitions, so every instance of the material has the same grade.",
+    "Random output rolls are not seeded by transaction_id and produce different results on client and server.",
+    "The crafting UI auto-selects rare ingredients for low-value recipes without warning the player.",
+    "Stack splitting drops quality metadata and converts superior materials into default-grade items."
   ],
   "balancing_notes": [
-    "Make Ingredient Quality strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Quality tiers are most useful when they change meaningful stats or yields, not only item color.",
+    "Low-tier materials should remain useful through bulk recipes, repairs, or substitutions so gathering stays rewarding.",
+    "If output improvement is random, publish the expected result or range so players can make informed choices."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Ingredient Quality becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Represent quality with text labels and icons, not color alone.",
+    "Warn clearly before consuming high-grade ingredients in recipes where grade has little or no effect."
   ],
   "implementation_notes": {
-    "unity": "Implement Ingredient Quality with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Ingredient Quality as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Ingredient Quality with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Ingredient Quality as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store ingredient_quality_tier on item_instance_id records, not only ScriptableObject item definitions. The recipe preview and confirm transaction should call the same quality_weight_curve_id code path and include selected instance ids in any server request.",
+    "godot": "Use Resources for tier rules and item metadata, but keep per-instance quality in inventory save data. Control UI should preview substitution and output grade from the exact selected stack entries, then lock those entries during confirmation.",
+    "unreal": "Use Gameplay Tags or data assets for compatibility tags, with per-instance inventory metadata for grade. Server crafting should resolve substitution, deterministic output_quality_seed, and output stat generation before replicating the new item instance.",
+    "web": "Represent ingredient stacks as arrays or grouped records that preserve grade counts. Avoid client-only grade rolls; use transaction_id plus output_quality_seed so previews, saves, and multiplayer confirmations stay reproducible."
   },
   "related_mechanics": [
     "crafting.recipe_crafting",
-    "crafting.workbench",
     "economy.crafting_materials",
-    "progression.crafting_unlocks"
+    "economy.loot_table",
+    "progression.equipment_rarity"
   ],
   "combines_well_with": [
-    "crafting.crafting_queue",
-    "economy.crafting_materials",
-    "progression.crafting_unlocks"
+    "survival.durability",
+    "economy.trading",
+    "progression.upgrade_shop",
+    "ui_ux.inventory_grid"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Monster Hunter: World",
+      "note": "Uses gathered monster parts as valued ingredients for equipment crafting."
+    },
+    {
+      "title": "The Elder Scrolls V: Skyrim",
+      "note": "Uses ingredient properties and crafting inputs as part of alchemy and equipment loops."
+    }
+  ],
   "tags": [
+    "ingredient_quality",
+    "material_grade",
     "crafting",
-    "ingredient",
-    "inventory"
+    "item_metadata",
+    "preview"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

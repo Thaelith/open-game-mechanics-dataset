@@ -2,12 +2,12 @@
   "id": "crafting.recipe_crafting",
   "name": "Recipe Crafting",
   "aliases": [
-    "recipe crafting mechanic",
-    "recipe crafting system",
-    "recipe crafting"
+    "recipe-based crafting",
+    "item crafting",
+    "craft recipe"
   ],
   "category": "crafting",
-  "subcategory": "crafting",
+  "subcategory": "recipe_transaction",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -17,93 +17,129 @@
   "difficulty": {
     "design": "medium",
     "implementation": "medium",
-    "tuning": "medium"
+    "tuning": "hard"
   },
   "genres": [
     "survival",
     "rpg",
-    "sandbox"
+    "sandbox",
+    "simulation"
   ],
-  "description": "Recipe Crafting is a production mechanic that turns resources, recipes, or stations into usable items or upgrades.",
-  "design_notes": "Recipe Crafting should be designed around a clear player promise, a readable trigger, and a predictable result. For crafting mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A player converts specific ingredients into defined outputs by executing a validated recipe transaction.",
+  "design_notes": "Recipe crafting is a transaction boundary between recipe data, item instances, inventory capacity, unlocks, and output grants. The useful design work is deciding which recipe_id is available, which ingredient_item_id entries are consumed, what happens when storage is full, and how failed or canceled transactions avoid duplicating outputs.",
   "design_purpose": [
-    "Give the player a readable way to use recipe crafting as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect recipe crafting to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Turn gathered materials into useful tools, consumables, structures, or progression items.",
+    "Give players planning goals by making ingredients, stations, and unlocks visible before they craft.",
+    "Provide a deterministic conversion rule that economies, quests, and survival loops can depend on."
   ],
-  "player_fantasy": "The player feels prepared by turning gathered resources into useful capability.",
+  "player_fantasy": "The player feels resourceful when collected parts become a chosen item through a reliable process.",
   "required_systems": [
     "inventory_system",
     "recipe_database",
-    "resource_validation",
-    "ui_feedback"
+    "item_instance_registry",
+    "unlock_system",
+    "transaction_log"
   ],
   "parameters": [
     {
-      "name": "ingredient_count",
-      "type": "integer",
-      "typical_range": "1-8",
-      "description": "Number of input resources required."
+      "name": "recipe_id",
+      "type": "string",
+      "typical_range": "bandage_basic, iron_pickaxe, campfire_kit",
+      "description": "Stable recipe identifier used for lookup, migration, analytics, and UI preview."
     },
     {
-      "name": "craft_time",
-      "type": "float",
-      "typical_range": "0-300 seconds",
-      "description": "Time before the crafted output becomes available."
+      "name": "ingredient_item_ids",
+      "type": "array",
+      "typical_range": "wood_log, cloth_strip, iron_ingot",
+      "description": "Item identifiers and counts required before the transaction can consume inventory entries."
+    },
+    {
+      "name": "output_item_id",
+      "type": "string",
+      "typical_range": "bandage, pickaxe_iron, campfire",
+      "description": "Item identifier granted when validation, consumption, and capacity checks all succeed."
     },
     {
       "name": "output_quantity",
       "type": "integer",
       "typical_range": "1-99",
-      "description": "Number of items produced by one craft action."
+      "description": "Stack count or number of item instances produced by a single successful recipe transaction."
+    },
+    {
+      "name": "required_unlock_id",
+      "type": "string",
+      "typical_range": "none, recipe_known, skill_survival_2, quest_blacksmith",
+      "description": "Progression gate that must be satisfied before the recipe appears or can be confirmed."
+    },
+    {
+      "name": "capacity_policy_id",
+      "type": "string",
+      "typical_range": "fail_if_full, overflow_to_mailbox, drop_near_player",
+      "description": "Rule for handling successful recipes when the target inventory lacks room for the output."
     }
   ],
   "common_variants": [
-    "recipe_crafting_instant_crafting",
-    "recipe_crafting_station_required",
-    "quality_based",
-    "batch_crafting"
+    "instant_recipe_crafting",
+    "station_required_recipe",
+    "batch_recipe_crafting",
+    "server_authoritative_recipe",
+    "recipe_with_substitution"
   ],
   "edge_cases": [
-    "Recipe Crafting is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Recipe Crafting overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Recipe Crafting runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The player confirms a recipe while another transaction removes one required ingredient from the inventory.",
+    "The recipe is migrated between content versions and old save data references an obsolete recipe_id.",
+    "The output stack cannot fit after ingredients have already been reserved for consumption.",
+    "A multiplayer client predicts the craft locally but the server rejects the unlock or station requirement."
   ],
   "common_bugs": [
-    "Recipe Crafting state does not reset correctly after interruption or reload.",
-    "Feedback for Recipe Crafting plays even when the mechanic fails or is rejected.",
-    "Recipe Crafting produces different results between frame rates, platforms, or network clients."
+    "Ingredients are consumed but the output is not granted because capacity validation runs after deletion.",
+    "Rapid double-clicks submit two transaction_id values and produce duplicate outputs from one ingredient set.",
+    "Recipe previews use display-only substitution rules that do not match server validation.",
+    "Crafted item instances miss durability, quality tier, ownership, or binding metadata during creation."
   ],
   "balancing_notes": [
-    "Make Recipe Crafting strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Recipe costs should create meaningful gathering goals without forcing players into repetitive low-value collection.",
+    "Recipes that unlock core survival tools should be discoverable early and not depend on rare random drops.",
+    "Batch crafting can reduce friction, but large batches may bypass storage pressure or economy sinks."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Recipe Crafting becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show missing ingredients, station requirements, and inventory capacity failures in text as well as icons.",
+    "Allow confirmation flows that do not require repeated rapid clicks for large batches."
   ],
   "implementation_notes": {
-    "unity": "Implement Recipe Crafting with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Recipe Crafting as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Recipe Crafting with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Recipe Crafting as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Keep recipe_id data in ScriptableObjects or Addressable data, but execute crafting through a transaction service that reserves ingredient item_instance_id entries, checks capacity_policy_id, grants output_item_id, then commits or rolls back as one operation.",
+    "godot": "Store recipe definitions as Resources and run confirmations through an inventory service instead of UI nodes. The transaction should validate required_unlock_id, consume ingredient_item_ids, create output instances, and emit one result event for Control UI refresh.",
+    "unreal": "Data Tables or Primary Data Assets can hold recipe definitions, while an inventory component owns the server-authoritative transaction. Validate recipe_id, station access, unlock tags, capacity, and output metadata on the server before replicating item grants.",
+    "web": "Represent recipes as immutable data and inventory entries as item_instance_id records. In Phaser or custom JavaScript, keep UI preview read-only; the confirm handler should submit one transaction_id and reject duplicate pending submissions."
   },
   "related_mechanics": [
-    "crafting.ingredient_quality",
-    "crafting.workbench",
     "economy.crafting_materials",
+    "crafting.workbench",
+    "crafting.ingredient_quality",
     "progression.crafting_unlocks"
   ],
   "combines_well_with": [
+    "survival.inventory_limit",
+    "economy.loot_table",
     "crafting.crafting_queue",
-    "economy.crafting_materials",
-    "progression.crafting_unlocks"
+    "progression.skill_tree"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Minecraft",
+      "note": "Uses recipe-based material conversion for tools, blocks, and survival items."
+    },
+    {
+      "title": "Subnautica",
+      "note": "Uses recipes to turn gathered materials into equipment and base components."
+    }
+  ],
   "tags": [
+    "recipe",
     "crafting",
     "inventory",
-    "recipe"
+    "transaction",
+    "item_instances"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

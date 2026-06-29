@@ -1,13 +1,13 @@
 {
   "id": "survival.day_night_cycle",
-  "name": "Day/Night Cycle",
+  "name": "Day Night Cycle",
   "aliases": [
-    "day night cycle mechanic",
-    "day night cycle system",
-    "day/night cycle"
+    "survival day cycle",
+    "night pressure",
+    "world day rhythm"
   ],
   "category": "survival",
-  "subcategory": "survival",
+  "subcategory": "survival_schedule",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -22,89 +22,124 @@
   "genres": [
     "survival",
     "sandbox",
-    "horror"
+    "horror",
+    "simulation"
   ],
-  "description": "Day/Night Cycle is a pressure mechanic that asks the player to manage bodily, environmental, or resource constraints over time.",
-  "design_notes": "Day/Night Cycle should be designed around a clear player promise, a readable trigger, and a predictable result. For survival mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A day and night rhythm changes survival pressure through visibility, enemy activity, temperature, and safety.",
+  "design_notes": "In survival games, day/night is not only lighting; it is a pressure schedule. Designers should define survival_phase_id values, night escalation, safe zones, sleep or skip rules, and how temperature, hunger, thirst, AI spawning, and crafting availability react to phase changes.",
   "design_purpose": [
-    "Give the player a readable way to use day/night cycle as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect day/night cycle to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create a preparation loop where players gather by day and manage risk by night.",
+    "Make shelter, light, sleep, base defense, and route timing valuable.",
+    "Give survival pressure a predictable rhythm instead of constant uniform danger."
   ],
-  "player_fantasy": "The player feels vulnerable but resourceful under ongoing pressure.",
+  "player_fantasy": "The player feels time passing in the world and plans around the danger that night brings.",
   "required_systems": [
-    "resource_system",
-    "status_effects",
-    "ui_feedback",
-    "save_state"
+    "world_schedule_clock",
+    "lighting_controller",
+    "ai_spawn_director",
+    "safe_zone_detection",
+    "ui_warning_bands"
   ],
   "parameters": [
     {
-      "name": "max_value",
-      "type": "float",
-      "typical_range": "10-1000 units",
-      "description": "Maximum capacity of the survival resource."
+      "name": "survival_phase_id",
+      "type": "string",
+      "typical_range": "dawn, day, dusk, night, blood_moon",
+      "description": "Current schedule phase used by survival, AI, lighting, audio, and objective systems."
     },
     {
-      "name": "decay_rate",
-      "type": "float",
-      "typical_range": "0-10 units/minute",
-      "description": "How quickly the resource changes without player action."
+      "name": "night_pressure_table_id",
+      "type": "string",
+      "typical_range": "standard_night, storm_night, horde_night, safe_night",
+      "description": "Table that defines enemy activity, visibility, temperature, and hazard modifiers for night phases."
     },
     {
-      "name": "critical_threshold",
-      "type": "float",
-      "typical_range": "5-30% of max",
-      "description": "Point at which warnings or penalties begin."
+      "name": "phase_warning_offset_ms",
+      "type": "integer",
+      "typical_range": "5000-300000 ms",
+      "description": "Advance warning window before a phase changes and survival pressure shifts."
+    },
+    {
+      "name": "safe_zone_id",
+      "type": "string",
+      "typical_range": "player_base, lit_camp, town_boundary, none",
+      "description": "Area that changes or suppresses night pressure while the player remains inside it."
+    },
+    {
+      "name": "spawn_escalation_rule_id",
+      "type": "string",
+      "typical_range": "none, more_patrols, horde_spawn, predator_roam",
+      "description": "AI director rule applied when night or special phases begin."
+    },
+    {
+      "name": "sleep_skip_policy_id",
+      "type": "string",
+      "typical_range": "allow_safe_bed, require_all_players, disable_during_horde",
+      "description": "Rule that decides whether players can skip or accelerate risky phases."
     }
   ],
   "common_variants": [
-    "day_night_cycle_soft_pressure",
-    "day_night_cycle_hard_failure",
-    "difficulty_scaled",
-    "environment_driven"
+    "safe_day_dangerous_night",
+    "horde_night_cycle",
+    "sleep_to_skip_night",
+    "temperature_shift_cycle",
+    "server_world_cycle"
   ],
   "edge_cases": [
-    "Day/Night Cycle is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Day/Night Cycle overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Day/Night Cycle runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A player enters a dungeon, cave, or base where world lighting changes should not fully apply.",
+    "Multiplayer players disagree on sleeping, skipping, or accelerating the night phase.",
+    "Night starts while crafting queues, raids, or AI spawn groups are already pending.",
+    "A save loads at dusk and phase-change warning events need to resume without firing twice."
   ],
   "common_bugs": [
-    "Day/Night Cycle state does not reset correctly after interruption or reload.",
-    "Feedback for Day/Night Cycle plays even when the mechanic fails or is rejected.",
-    "Day/Night Cycle produces different results between frame rates, platforms, or network clients."
+    "Lighting phase changes but AI and temperature still use the previous survival_phase_id.",
+    "Sleep skip advances the world clock but does not advance hunger, thirst, crafting queues, or enemy despawn rules consistently.",
+    "Night warnings repeat after load because the previous warning timestamp was not persisted.",
+    "Safe-zone checks use visual base bounds rather than actual shelter or claim volumes."
   ],
   "balancing_notes": [
-    "Make Day/Night Cycle strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Night should be threatening enough to change behavior, but not so punishing that players simply wait through it.",
+    "If sleeping skips danger, require preparation or tradeoffs such as bed safety, hunger, or multiplayer agreement.",
+    "Special nights can refresh survival tension, but predictable warning beats are important for fairness."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Day/Night Cycle becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Communicate phase and incoming danger through text, icons, audio, and lighting, not darkness alone.",
+    "Offer visibility, contrast, or reduced-night-danger settings for players who struggle with dark scenes."
   ],
   "implementation_notes": {
-    "unity": "Implement Day/Night Cycle with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Day/Night Cycle as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Day/Night Cycle with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Day/Night Cycle as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use the same world_schedule_clock and survival_phase_id for lighting, AI, temperature, and UI warnings. Persist phase fraction, previous warning id, and safe-zone state, then route sleep skip through a service that advances dependent survival systems consistently.",
+    "godot": "A schedule autoload can emit phase change and pre-warning signals to lighting, AI, and survival services. Save phase progress and warning state so reloads at dawn or dusk do not duplicate spawn escalation or skip events.",
+    "unreal": "A replicated world state actor or subsystem should own the phase clock and sleep policy. The server applies phase changes, AI director rules, and safe-zone modifiers, while clients interpolate lighting and display UMG warnings from replicated phase data.",
+    "web": "Keep the cycle in simulation state and derive presentation from survival_phase_id. For multiplayer or persistent worlds, base phase on server timestamp and content version rather than each client integrating its own schedule."
   },
   "related_mechanics": [
-    "crafting.recipe_crafting",
-    "survival.health",
-    "survival.stamina",
-    "ui_ux.cooldown_indicator"
+    "time.day_night_schedule",
+    "survival.temperature",
+    "survival.hunger",
+    "survival.thirst"
   ],
   "combines_well_with": [
-    "crafting.recipe_crafting",
-    "survival.hunger",
-    "survival.thirst",
-    "ui_ux.cooldown_indicator"
+    "horror.limited_visibility",
+    "survival.base_building",
+    "ai.enemy_spawn_director",
+    "survival.health"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Minecraft",
+      "note": "Uses night to change enemy threat and shelter value."
+    },
+    {
+      "title": "Don't Starve",
+      "note": "Uses day phases to structure survival planning and night danger."
+    }
+  ],
   "tags": [
-    "day",
-    "resource_management",
-    "survival"
+    "day_night",
+    "night_pressure",
+    "survival_schedule",
+    "safe_zone",
+    "world_clock"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

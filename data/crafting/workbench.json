@@ -2,12 +2,12 @@
   "id": "crafting.workbench",
   "name": "Workbench",
   "aliases": [
-    "workbench mechanic",
-    "workbench system",
-    "workbench"
+    "crafting station",
+    "production station",
+    "workstation"
   ],
   "category": "crafting",
-  "subcategory": "crafting",
+  "subcategory": "crafting_station",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -17,93 +17,129 @@
   "difficulty": {
     "design": "medium",
     "implementation": "medium",
-    "tuning": "medium"
+    "tuning": "hard"
   },
   "genres": [
     "survival",
+    "sandbox",
     "rpg",
-    "sandbox"
+    "simulation"
   ],
-  "description": "Workbench is a production mechanic that turns resources, recipes, or stations into usable items or upgrades.",
-  "design_notes": "Workbench should be designed around a clear player promise, a readable trigger, and a predictable result. For crafting mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A placed or discovered station grants access to recipes, queues, upgrades, or crafting rules tied to its tier and location.",
+  "design_notes": "A workbench is an access validator, not just a menu opener. The station needs crafting_station_id, tier, proximity or ownership checks, recipe availability, queue state, fuel or tool requirements, and multiplayer access rules so the UI never offers crafts that the station cannot actually complete.",
   "design_purpose": [
-    "Give the player a readable way to use workbench as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect workbench to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create spatial commitment around crafting by tying advanced recipes to specific places or structures.",
+    "Give base building and progression clear upgrade targets through station tiers.",
+    "Separate field crafting, specialized production, repair, and high-tier crafting into readable roles."
   ],
-  "player_fantasy": "The player feels prepared by turning gathered resources into useful capability.",
+  "player_fantasy": "The player feels they have built or found a capable workspace that expands what they can make.",
   "required_systems": [
-    "inventory_system",
+    "station_registry",
     "recipe_database",
-    "resource_validation",
-    "ui_feedback"
+    "interaction_system",
+    "crafting_queue",
+    "ownership_permissions"
   ],
   "parameters": [
     {
-      "name": "ingredient_count",
-      "type": "integer",
-      "typical_range": "1-8",
-      "description": "Number of input resources required."
+      "name": "crafting_station_id",
+      "type": "string",
+      "typical_range": "campfire_01, forge_town, player_workbench_a",
+      "description": "Stable station identifier used for interaction, persistence, queue ownership, and multiplayer permissions."
     },
     {
-      "name": "craft_time",
+      "name": "crafting_station_tier",
+      "type": "integer",
+      "typical_range": "1-5",
+      "description": "Station upgrade tier used by recipes, queue slots, repair rules, and UI filtering."
+    },
+    {
+      "name": "interaction_radius_units",
       "type": "float",
-      "typical_range": "0-300 seconds",
-      "description": "Time before the crafted output becomes available."
+      "typical_range": "1-6 world units",
+      "description": "Maximum distance from which a player can open, maintain, or confirm station crafting."
     },
     {
-      "name": "output_quantity",
-      "type": "integer",
-      "typical_range": "1-99",
-      "description": "Number of items produced by one craft action."
+      "name": "required_tool_id",
+      "type": "string",
+      "typical_range": "none, hammer, wrench, cooking_pot",
+      "description": "Tool or attachment required before the station can execute certain recipes."
+    },
+    {
+      "name": "station_recipe_filter_id",
+      "type": "string",
+      "typical_range": "cooking_only, metalwork_tier_2, medical_station",
+      "description": "Recipe filter used to decide which recipe_id entries are available at the station."
+    },
+    {
+      "name": "access_permission_id",
+      "type": "string",
+      "typical_range": "owner_only, clan_shared, public, quest_locked",
+      "description": "Permission rule for opening the station, editing queues, or claiming outputs."
     }
   ],
   "common_variants": [
-    "workbench_instant_crafting",
-    "workbench_station_required",
-    "quality_based",
-    "batch_crafting"
+    "portable_workbench",
+    "base_station",
+    "upgradeable_station",
+    "fuel_required_station",
+    "shared_multiplayer_station"
   ],
   "edge_cases": [
-    "Workbench is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Workbench overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Workbench runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The player moves out of interaction_radius_units while a confirmation dialog or queue edit is open.",
+    "A station is upgraded, destroyed, or claimed by another player while a craft is pending.",
+    "Recipes are visible because of player unlocks but blocked by station tier, missing tool, or fuel requirements.",
+    "A save file restores station queues before the station's base structure or ownership data exists."
   ],
   "common_bugs": [
-    "Workbench state does not reset correctly after interruption or reload.",
-    "Feedback for Workbench plays even when the mechanic fails or is rejected.",
-    "Workbench produces different results between frame rates, platforms, or network clients."
+    "UI caches a recipe list from the previous station and allows invalid crafting at a lower-tier workbench.",
+    "Queue outputs are claimable by players without access_permission_id rights.",
+    "Station upgrades change tier but do not migrate existing queue entries or recipe filters.",
+    "Interaction prompts remain active after the station is destroyed, moved, or unloaded."
   ],
   "balancing_notes": [
-    "Make Workbench strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Station tiers should unlock distinct capabilities, not only small percentage improvements.",
+    "Portable stations reduce friction but can weaken exploration, base defense, and settlement progression.",
+    "Shared stations need ownership rules that support cooperation without enabling easy griefing."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Workbench becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show station tier, blocked requirements, and access permissions in text within the crafting UI.",
+    "Keep station interaction prompts stable and remappable for players using controller or assistive input."
   ],
   "implementation_notes": {
-    "unity": "Implement Workbench with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Workbench as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Workbench with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Workbench as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Model each workbench as a station component with crafting_station_id, tier, recipe filter, queue reference, and permission data. Interaction should revalidate proximity, station existence, tier, and access before every confirm or queue mutation, not only when opening the UI.",
+    "godot": "Use a station node with exported Resource references for recipe filters and tier rules. The UI should query station state through a service, and save/load should restore station id, tier, ownership, fuel, and queue entries in a deterministic order.",
+    "unreal": "An Actor with replicated station component can own recipe filters, queue entries, and permissions. Server RPCs should validate access_permission_id, player proximity, required tools, and station tier before accepting craft, cancel, or claim actions.",
+    "web": "Keep station state as data keyed by crafting_station_id, even if the station is rendered as a sprite or DOM panel. Confirm actions should include station id and expected version so stale UI cannot mutate a moved or upgraded station."
   },
   "related_mechanics": [
-    "crafting.ingredient_quality",
     "crafting.recipe_crafting",
-    "economy.crafting_materials",
+    "crafting.crafting_queue",
+    "survival.base_building",
     "progression.crafting_unlocks"
   ],
   "combines_well_with": [
-    "crafting.crafting_queue",
-    "economy.crafting_materials",
-    "progression.crafting_unlocks"
+    "survival.durability",
+    "economy.shop",
+    "ui_ux.interaction_prompt",
+    "multiplayer.shared_resource_pool"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Terraria",
+      "note": "Uses crafting stations to unlock different recipe sets."
+    },
+    {
+      "title": "Valheim",
+      "note": "Uses upgradeable workbenches and stations as base progression anchors."
+    }
+  ],
   "tags": [
-    "crafting",
-    "inventory",
-    "workbench"
+    "workbench",
+    "crafting_station",
+    "station_tier",
+    "recipes",
+    "base_building"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

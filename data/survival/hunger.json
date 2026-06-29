@@ -2,12 +2,12 @@
   "id": "survival.hunger",
   "name": "Hunger",
   "aliases": [
-    "hunger mechanic",
-    "hunger system",
-    "hunger"
+    "food meter",
+    "satiety",
+    "nutrition need"
   ],
   "category": "survival",
-  "subcategory": "survival",
+  "subcategory": "metabolic_need",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -22,98 +22,124 @@
   "genres": [
     "survival",
     "sandbox",
-    "horror"
+    "rpg",
+    "simulation"
   ],
-  "description": "Hunger is a pressure mechanic that asks the player to manage bodily, environmental, or resource constraints over time.",
-  "design_notes": "Hunger should be designed around a clear player promise, a readable trigger, and a predictable result. For survival mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A food-related survival stat decays over play and applies thresholds, recovery, or penalties based on nutrition state.",
+  "design_notes": "Hunger should create planning pressure without becoming constant menu maintenance. The important decisions are which survival_stat_id decays, how activity changes hunger_decay_per_minute, which food recovery sources are safe, and whether low hunger reduces stamina, healing, maximum health, or eventually causes starvation damage.",
   "design_purpose": [
-    "Give the player a readable way to use hunger as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect hunger to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Encourage food gathering, cooking, farming, trading, or route planning.",
+    "Connect exploration length to preparation and inventory decisions.",
+    "Create long-term survival pressure that is readable before it becomes lethal."
   ],
-  "player_fantasy": "The player feels vulnerable but resourceful under ongoing pressure.",
+  "player_fantasy": "The player feels like food matters because preparation lets them stay active, heal, and travel farther.",
   "required_systems": [
-    "resource_system",
-    "status_effects",
-    "ui_feedback",
-    "save_state"
+    "survival_stat_system",
+    "consumable_items",
+    "ui_warning_bands",
+    "save_load_state",
+    "status_effects"
   ],
   "parameters": [
     {
-      "name": "max_value",
-      "type": "float",
-      "typical_range": "10-1000 units",
-      "description": "Maximum capacity of the survival resource."
+      "name": "survival_stat_id",
+      "type": "string",
+      "typical_range": "hunger, calories, satiety",
+      "description": "Stat identifier used by decay, UI, recovery, save data, and status-effect rules."
     },
     {
-      "name": "decay_rate",
+      "name": "hunger_decay_per_minute",
       "type": "float",
-      "typical_range": "0-10 units/minute",
-      "description": "How quickly the resource changes without player action."
+      "typical_range": "0.1-5 points per minute",
+      "description": "Baseline hunger drain while the survival clock is advancing under normal activity."
     },
     {
-      "name": "critical_threshold",
+      "name": "activity_decay_multiplier",
       "type": "float",
-      "typical_range": "5-30% of max",
-      "description": "Point at which warnings or penalties begin."
+      "typical_range": "0.5-4.0",
+      "description": "Multiplier applied during sprinting, combat, cold exposure, crafting, or resting states."
+    },
+    {
+      "name": "food_recovery_source_id",
+      "type": "string",
+      "typical_range": "berries_raw, cooked_meat, ration_pack, stew_large",
+      "description": "Consumable or meal source that restores hunger through an inventory transaction."
+    },
+    {
+      "name": "starvation_effect_id",
+      "type": "string",
+      "typical_range": "stamina_regen_penalty, health_loss, max_health_cap",
+      "description": "Penalty applied when the hunger stat crosses its depletion threshold."
+    },
+    {
+      "name": "overfill_policy_id",
+      "type": "string",
+      "typical_range": "cap_at_max, temporary_well_fed, reject_consumption",
+      "description": "Rule for consuming food when the hunger stat is already near its maximum."
     }
   ],
   "common_variants": [
-    "hunger_soft_pressure",
-    "hunger_hard_failure",
-    "difficulty_scaled",
-    "environment_driven"
+    "simple_food_meter",
+    "calorie_based_hunger",
+    "well_fed_bonus",
+    "starvation_damage",
+    "offline_decay_disabled"
   ],
   "edge_cases": [
-    "Hunger is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Hunger overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Hunger runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A player consumes food while taking starvation damage in the same simulation tick.",
+    "Offline decay, sleeping, or fast travel advances hunger without giving the player a chance to respond.",
+    "Food restores hunger but also applies poison, spoilage, warmth, or hydration effects.",
+    "Multiplayer authority rejects food consumption after the client already played the eating animation."
   ],
   "common_bugs": [
-    "Hunger state does not reset correctly after interruption or reload.",
-    "Feedback for Hunger plays even when the mechanic fails or is rejected.",
-    "Hunger produces different results between frame rates, platforms, or network clients."
+    "Hunger decay runs during paused menus or loading screens because it reads a wall clock instead of survival clock state.",
+    "Food is removed from inventory but recovery is not applied when a capacity or status-effect transaction fails.",
+    "UI warning bands display stale hunger after server correction or save-load restoration.",
+    "Starvation damage stacks every frame instead of on a controlled tick interval."
   ],
   "balancing_notes": [
-    "Make Hunger strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Fast decay can make survival tense, but it quickly becomes busywork if food sources are common and decisions are shallow.",
+    "Low hunger penalties are usually easier to tune than instant death because they give players recovery space.",
+    "Cooking and food preservation should reduce friction if hunger is a persistent long-session pressure."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Hunger becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide clear warning bands, optional numeric display, and non-color cues before hunger becomes dangerous.",
+    "Offer relaxed decay settings or assist modes for players who prefer exploration over resource upkeep."
   ],
   "implementation_notes": {
-    "unity": "Implement Hunger with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Hunger as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Hunger with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Hunger as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store hunger as a survival_stat_id record with current points, last_decay_tick, and active modifiers. Consumables should execute through one inventory transaction that removes item_instance_id, applies recovery, clamps overfill_policy_id, and logs the recovery_source_id.",
+    "godot": "Use an autoload survival service or Resource-backed stat model that advances from the gameplay clock, not UI process callbacks. Consumable scenes should request recovery through the service so save/load, warning bands, and status effects update together.",
+    "unreal": "A replicated survival component can own hunger, thresholds, and effects. The server should validate food use, apply recovery and poison or spoilage tags, then replicate the new stat and UI warning threshold to clients.",
+    "web": "Keep hunger decay in the simulation model with explicit pause and offline policies. Persist current points, last authority tick, and active starvation_effect_id so reloads do not duplicate damage or lose recent food recovery."
   },
   "related_mechanics": [
-    "crafting.recipe_crafting",
-    "survival.health",
+    "survival.thirst",
     "survival.stamina",
-    "ui_ux.cooldown_indicator"
+    "economy.crafting_materials",
+    "crafting.recipe_crafting"
   ],
   "combines_well_with": [
-    "crafting.recipe_crafting",
-    "survival.temperature",
-    "survival.thirst",
-    "ui_ux.cooldown_indicator"
+    "survival.day_night_cycle",
+    "survival.inventory_limit",
+    "crafting.workbench",
+    "survival.temperature"
   ],
   "example_games": [
     {
       "title": "Don't Starve",
-      "note": "Uses hunger as constant survival pressure."
+      "note": "Uses food pressure as a central survival planning loop."
     },
     {
       "title": "Minecraft",
-      "note": "Uses food to regulate exploration and recovery."
+      "note": "Uses hunger to affect sprinting, healing, and food preparation."
     }
   ],
   "tags": [
     "hunger",
-    "resource_management",
-    "survival"
+    "food",
+    "survival_stat",
+    "decay",
+    "consumable"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

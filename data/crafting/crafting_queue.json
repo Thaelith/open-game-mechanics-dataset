@@ -2,12 +2,12 @@
   "id": "crafting.crafting_queue",
   "name": "Crafting Queue",
   "aliases": [
-    "crafting queue mechanic",
-    "crafting queue system",
-    "crafting queue"
+    "production queue",
+    "craft queue",
+    "queued crafting"
   ],
   "category": "crafting",
-  "subcategory": "crafting",
+  "subcategory": "queue_processing",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,93 +16,130 @@
   ],
   "difficulty": {
     "design": "medium",
-    "implementation": "medium",
-    "tuning": "medium"
+    "implementation": "hard",
+    "tuning": "hard"
   },
   "genres": [
     "survival",
+    "simulation",
     "rpg",
-    "sandbox"
+    "strategy"
   ],
-  "description": "Crafting Queue is a production mechanic that turns resources, recipes, or stations into usable items or upgrades.",
-  "design_notes": "Crafting Queue should be designed around a clear player promise, a readable trigger, and a predictable result. For crafting mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Crafting jobs are placed into ordered slots and complete after station, recipe, and progress rules are satisfied.",
+  "design_notes": "A crafting queue turns crafting into scheduled production. It needs queue_slot_index ownership, craft_started_at_ms, station availability, cancellation policy, offline progress rules, and duplicate completion protection so jobs cannot be lost, accelerated accidentally, or claimed more than once.",
   "design_purpose": [
-    "Give the player a readable way to use crafting queue as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect crafting queue to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let long-running crafting happen without forcing the player to wait inside a menu.",
+    "Create capacity and prioritization decisions around station slots, batch sizes, and materials.",
+    "Support survival and base loops where production continues while the player explores or manages threats."
   ],
-  "player_fantasy": "The player feels prepared by turning gathered resources into useful capability.",
+  "player_fantasy": "The player feels like they are managing a workshop that keeps producing planned items over time.",
   "required_systems": [
+    "crafting_station_registry",
+    "queue_scheduler",
     "inventory_system",
-    "recipe_database",
-    "resource_validation",
-    "ui_feedback"
+    "save_load_state",
+    "notification_system"
   ],
   "parameters": [
     {
-      "name": "ingredient_count",
-      "type": "integer",
-      "typical_range": "1-8",
-      "description": "Number of input resources required."
+      "name": "crafting_queue_id",
+      "type": "string",
+      "typical_range": "campfire_queue, forge_queue_02, player_personal_queue",
+      "description": "Stable queue identifier used for station ownership, persistence, multiplayer access, and UI selection."
     },
     {
-      "name": "craft_time",
-      "type": "float",
-      "typical_range": "0-300 seconds",
-      "description": "Time before the crafted output becomes available."
+      "name": "queue_slot_index",
+      "type": "integer",
+      "typical_range": "0-15",
+      "description": "Ordered slot that controls processing order, cancellation behavior, and drag-reorder operations."
     },
     {
-      "name": "output_quantity",
+      "name": "craft_started_at_ms",
       "type": "integer",
-      "typical_range": "1-99",
-      "description": "Number of items produced by one craft action."
+      "typical_range": "server timestamp or simulation tick",
+      "description": "Authority timestamp captured when the queue job begins active processing."
+    },
+    {
+      "name": "crafting_work_ms",
+      "type": "integer",
+      "typical_range": "1000-86400000 ms",
+      "description": "Required processing window for the job after recipe, station, and queue-slot validation."
+    },
+    {
+      "name": "batch_size",
+      "type": "integer",
+      "typical_range": "1-999",
+      "description": "Number of recipe executions represented by the queued job and completed output grant."
+    },
+    {
+      "name": "cancellation_refund_policy_id",
+      "type": "string",
+      "typical_range": "full_before_start, partial_after_start, no_refund, return_to_station",
+      "description": "Rule used when the player cancels a queued job before completion."
     }
   ],
   "common_variants": [
-    "crafting_queue_instant_crafting",
-    "crafting_queue_station_required",
-    "quality_based",
-    "batch_crafting"
+    "single_station_queue",
+    "parallel_slot_queue",
+    "offline_progress_queue",
+    "batch_production_queue",
+    "multiplayer_station_queue"
   ],
   "edge_cases": [
-    "Crafting Queue is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Crafting Queue overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Crafting Queue runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A station is destroyed, moved, or loses fuel while it has active and pending queue slots.",
+    "The player cancels a job on the same tick that completion is being claimed.",
+    "Offline progress completes several jobs while the output inventory is full.",
+    "Two players reorder the same station queue from different clients."
   ],
   "common_bugs": [
-    "Crafting Queue state does not reset correctly after interruption or reload.",
-    "Feedback for Crafting Queue plays even when the mechanic fails or is rejected.",
-    "Crafting Queue produces different results between frame rates, platforms, or network clients."
+    "Completed jobs grant output every login because completion_claimed is not persisted.",
+    "Cancellation refunds ingredients after the output has already been produced by the server.",
+    "Queue sorting changes queue_slot_index without updating UI selection, causing cancellation of the wrong job.",
+    "Offline progress uses local device clock and can be exploited by changing system time."
   ],
   "balancing_notes": [
-    "Make Crafting Queue strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Queue length controls production scale; too many slots can remove meaningful station and storage decisions.",
+    "Long jobs work best when players can plan, cancel, or reprioritize without losing opaque amounts of progress.",
+    "Offline progress should respect game economy pacing and may need caps, fuel checks, or server timestamps."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Crafting Queue becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show job order, remaining progress, cancellation outcome, and blocked output state in readable text.",
+    "Support keyboard and controller queue reordering without requiring precise drag gestures."
   ],
   "implementation_notes": {
-    "unity": "Implement Crafting Queue with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Crafting Queue as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Crafting Queue with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Crafting Queue as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Represent each queue entry as data with crafting_queue_id, queue_slot_index, recipe_id, batch_size, craft_started_at_ms, and completion_claimed. The scheduler should compute progress from an authority clock, then claim output through the same inventory transaction used by recipe crafting.",
+    "godot": "Keep queue state in a Resource or autoload service rather than in the crafting UI scene. Save queue entries with station id, slot index, start tick, and claim state; Control nodes should render projected progress without mutating the queue.",
+    "unreal": "A station Actor Component can own replicated queue entries while the server validates reorder, cancel, and claim requests. Use server timestamps for offline or asynchronous progress, and replicate completion events separately from cosmetic UI notifications.",
+    "web": "Store queue entries as plain records and process them through a deterministic scheduler. Browser clients should not trust local wall-clock completion for authoritative saves; use server timestamps or capped simulated offline progress."
   },
   "related_mechanics": [
     "crafting.recipe_crafting",
     "crafting.workbench",
-    "economy.crafting_materials",
-    "progression.crafting_unlocks"
+    "survival.base_building",
+    "economy.crafting_materials"
   ],
   "combines_well_with": [
-    "crafting.ingredient_quality",
-    "economy.crafting_materials",
-    "progression.crafting_unlocks"
+    "survival.inventory_limit",
+    "ui_ux.cooldown_indicator",
+    "progression.crafting_unlocks",
+    "economy.idle_income"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Factorio",
+      "note": "Uses production queues and machines to process recipes over time."
+    },
+    {
+      "title": "Don't Starve",
+      "note": "Uses timed crafting and station-driven survival production."
+    }
+  ],
   "tags": [
-    "crafting",
-    "inventory"
+    "crafting_queue",
+    "production",
+    "station",
+    "offline_progress",
+    "transaction"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

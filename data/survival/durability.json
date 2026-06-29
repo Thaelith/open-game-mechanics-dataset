@@ -2,12 +2,12 @@
   "id": "survival.durability",
   "name": "Durability",
   "aliases": [
-    "durability mechanic",
-    "durability system",
-    "durability"
+    "item wear",
+    "equipment condition",
+    "breakable gear"
   ],
   "category": "survival",
-  "subcategory": "survival",
+  "subcategory": "item_wear",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -21,90 +21,125 @@
   },
   "genres": [
     "survival",
+    "rpg",
     "sandbox",
-    "horror"
+    "action"
   ],
-  "description": "Durability is a pressure mechanic that asks the player to manage bodily, environmental, or resource constraints over time.",
-  "design_notes": "Durability should be designed around a clear player promise, a readable trigger, and a predictable result. For survival mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Items track condition and lose durability through use, damage, or environment until they require repair or break.",
+  "design_notes": "Durability is item-instance metadata, not a property that can live only on an item definition. Designers should decide which durability_loss_rule applies to each action, what the broken state prevents, how repair recipes work, and how UI preview helps players avoid losing critical tools unexpectedly.",
   "design_purpose": [
-    "Give the player a readable way to use durability as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect durability to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create long-term resource pressure through maintenance, repair, replacement, and tool choice.",
+    "Prevent one early item from solving every future survival or combat problem.",
+    "Connect crafting materials, gathering tools, economy sinks, and exploration readiness."
   ],
-  "player_fantasy": "The player feels vulnerable but resourceful under ongoing pressure.",
+  "player_fantasy": "The player feels their gear is valuable and must be maintained to survive longer journeys.",
   "required_systems": [
-    "resource_system",
-    "status_effects",
-    "ui_feedback",
-    "save_state"
+    "item_instance_registry",
+    "equipment_system",
+    "repair_system",
+    "inventory_system",
+    "ui_preview"
   ],
   "parameters": [
     {
-      "name": "max_value",
-      "type": "float",
-      "typical_range": "10-1000 units",
-      "description": "Maximum capacity of the survival resource."
+      "name": "durability_item_id",
+      "type": "string",
+      "typical_range": "stone_axe_instance, rifle_102, climbing_hook_a",
+      "description": "Item instance identifier that owns current condition and repair metadata."
     },
     {
-      "name": "decay_rate",
+      "name": "durability_points_max",
       "type": "float",
-      "typical_range": "0-10 units/minute",
-      "description": "How quickly the resource changes without player action."
+      "typical_range": "10-1000 points",
+      "description": "Maximum condition points stored on each instance before wear modifiers."
     },
     {
-      "name": "critical_threshold",
-      "type": "float",
-      "typical_range": "5-30% of max",
-      "description": "Point at which warnings or penalties begin."
+      "name": "durability_loss_rule_id",
+      "type": "string",
+      "typical_range": "per_hit, per_blocked_damage, per_harvest_swing, environmental_decay",
+      "description": "Rule that maps actions, impacts, or exposure events into condition loss."
+    },
+    {
+      "name": "repair_recipe_id",
+      "type": "string",
+      "typical_range": "repair_wood_tool, sharpen_blade, patch_armor",
+      "description": "Recipe used to restore condition, often with station, material, or skill requirements."
+    },
+    {
+      "name": "broken_state_id",
+      "type": "string",
+      "typical_range": "disabled, reduced_stats, unusable_until_repaired, destroyed",
+      "description": "State applied when current condition crosses the broken threshold."
+    },
+    {
+      "name": "condition_warning_threshold_id",
+      "type": "string",
+      "typical_range": "warn_25, warn_10, critical_next_use",
+      "description": "UI warning table used to notify players before important gear fails."
     }
   ],
   "common_variants": [
-    "durability_soft_pressure",
-    "durability_hard_failure",
-    "difficulty_scaled",
-    "environment_driven"
+    "tool_durability",
+    "weapon_condition",
+    "armor_wear",
+    "repairable_equipment",
+    "permanent_breakage"
   ],
   "edge_cases": [
-    "Durability is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Durability overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Durability runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "An item breaks during the same action that gathers resources, deals damage, or blocks an attack.",
+    "Repair materials are consumed but the item instance is moved, traded, or destroyed during the transaction.",
+    "Stacked items share one icon but contain different durability_item_id values and condition states.",
+    "Server correction changes durability after the client already displayed the item as usable."
   ],
   "common_bugs": [
-    "Durability state does not reset correctly after interruption or reload.",
-    "Feedback for Durability plays even when the mechanic fails or is rejected.",
-    "Durability produces different results between frame rates, platforms, or network clients."
+    "Durability is stored on the item definition, so all copies of the tool lose condition together.",
+    "Broken items still pass action validation because only UI checks condition thresholds.",
+    "Repair preview and repair transaction use different material costs or restored condition rules.",
+    "Condition loss is applied on both client prediction and server authority, doubling wear."
   ],
   "balancing_notes": [
-    "Make Durability strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Fast gear wear can add survival tension, but it becomes frustrating if repair materials are scarce or unclear.",
+    "Durability works best when players can choose between cheap disposable tools and costly reliable equipment.",
+    "Critical gear should warn before breaking unless sudden failure is a deliberate high-stakes design choice."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Durability becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show durability with numbers or labels in addition to bars or color.",
+    "Provide repair prompts or warning reminders before players enter long routes with nearly broken key gear."
   ],
   "implementation_notes": {
-    "unity": "Implement Durability with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Durability as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Durability with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Durability as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store condition on item_instance_id records and route all wear through durability_loss_rule_id events. Repair should reserve the item and materials, validate repair_recipe_id, mutate condition, and commit through one inventory transaction.",
+    "godot": "Keep durability metadata in inventory Resources or dictionaries per instance. Tool use should ask the durability service to apply loss before or after the action according to rule data, then emit UI updates from threshold crossings.",
+    "unreal": "Use replicated item instance structs or inventory components to own condition. The server should validate wear and repair, while clients can preview condition changes and receive authoritative correction for broken_state_id.",
+    "web": "Represent each durable item as an instance record with current condition, max points, and broken state. Keep repair and wear transactions deterministic so local saves, multiplayer, and replay do not diverge."
   },
   "related_mechanics": [
     "crafting.recipe_crafting",
-    "survival.health",
-    "survival.stamina",
-    "ui_ux.cooldown_indicator"
+    "crafting.workbench",
+    "economy.repair_cost",
+    "progression.equipment_rarity"
   ],
   "combines_well_with": [
-    "crafting.recipe_crafting",
-    "survival.hunger",
-    "survival.thirst",
-    "ui_ux.cooldown_indicator"
+    "survival.inventory_limit",
+    "economy.crafting_materials",
+    "survival.base_building",
+    "ui_ux.inventory_grid"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Minecraft",
+      "note": "Uses tool and armor durability as part of crafting and resource planning."
+    },
+    {
+      "title": "The Legend of Zelda: Breath of the Wild",
+      "note": "Uses weapon durability to encourage varied equipment use."
+    }
+  ],
   "tags": [
     "durability",
-    "resource_management",
-    "survival"
+    "item_instance",
+    "repair",
+    "equipment",
+    "condition"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

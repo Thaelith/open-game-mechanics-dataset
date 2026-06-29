@@ -2,12 +2,12 @@
   "id": "survival.stamina",
   "name": "Stamina",
   "aliases": [
-    "stamina mechanic",
-    "stamina system",
-    "stamina"
+    "endurance",
+    "fatigue meter",
+    "exertion pool"
   ],
   "category": "survival",
-  "subcategory": "survival",
+  "subcategory": "exertion_pool",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -21,90 +21,125 @@
   },
   "genres": [
     "survival",
-    "sandbox",
-    "horror"
+    "action",
+    "rpg",
+    "adventure"
   ],
-  "description": "Stamina is a pressure mechanic that asks the player to manage bodily, environmental, or resource constraints over time.",
-  "design_notes": "Stamina should be designed around a clear player promise, a readable trigger, and a predictable result. For survival mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A regenerating exertion pool limits repeated movement, attacks, blocks, climbs, or survival actions.",
+  "design_notes": "Stamina is an action gate, so every stamina_cost_event_id needs a clear purpose and recovery rule. Designers should decide which actions spend stamina, how stamina_regen_delay_ms interacts with input buffering, and what exhaustion_state_id prevents without making the player feel arbitrarily locked out.",
   "design_purpose": [
-    "Give the player a readable way to use stamina as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect stamina to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Limit repeated high-output actions such as sprinting, climbing, blocking, dodging, or harvesting.",
+    "Create tactical pacing by asking players to alternate exertion and recovery.",
+    "Connect hunger, thirst, temperature, equipment load, and injury into moment-to-moment survival decisions."
   ],
-  "player_fantasy": "The player feels vulnerable but resourceful under ongoing pressure.",
+  "player_fantasy": "The player feels capable but mortal, managing bursts of effort instead of acting without limits.",
   "required_systems": [
-    "resource_system",
-    "status_effects",
-    "ui_feedback",
-    "save_state"
+    "survival_stat_system",
+    "action_cost_events",
+    "movement_controller",
+    "input_buffer",
+    "ui_warning_bands"
   ],
   "parameters": [
     {
-      "name": "max_value",
+      "name": "stamina_capacity_points",
       "type": "float",
-      "typical_range": "10-1000 units",
-      "description": "Maximum capacity of the survival resource."
+      "typical_range": "50-250 points",
+      "description": "Maximum exertion pool available before modifiers from hunger, equipment, injury, or upgrades."
     },
     {
-      "name": "decay_rate",
-      "type": "float",
-      "typical_range": "0-10 units/minute",
-      "description": "How quickly the resource changes without player action."
+      "name": "stamina_cost_event_id",
+      "type": "string",
+      "typical_range": "sprint_tick, dodge_roll, heavy_attack, climb_step",
+      "description": "Action event that spends stamina and can be audited for balance or networking."
     },
     {
-      "name": "critical_threshold",
+      "name": "stamina_regen_delay_ms",
+      "type": "integer",
+      "typical_range": "250-3000 ms",
+      "description": "Delay after the last stamina spend before recovery begins."
+    },
+    {
+      "name": "regen_points_per_second",
       "type": "float",
-      "typical_range": "5-30% of max",
-      "description": "Point at which warnings or penalties begin."
+      "typical_range": "5-80 points per second",
+      "description": "Recovery pace while no blocking exhaustion, injury, or activity modifier is active."
+    },
+    {
+      "name": "exhaustion_state_id",
+      "type": "string",
+      "typical_range": "no_sprint, slow_walk, action_lockout, heavy_breathing",
+      "description": "State applied when stamina falls below the minimum threshold for major actions."
+    },
+    {
+      "name": "minimum_action_stamina_points",
+      "type": "float",
+      "typical_range": "1-50 points",
+      "description": "Required pool level before a stamina-spending action can begin."
     }
   ],
   "common_variants": [
-    "stamina_soft_pressure",
-    "stamina_hard_failure",
-    "difficulty_scaled",
-    "environment_driven"
+    "sprint_stamina",
+    "combat_stamina",
+    "climbing_stamina",
+    "shared_survival_stamina",
+    "equipment_weight_stamina"
   ],
   "edge_cases": [
-    "Stamina is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Stamina overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Stamina runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A buffered dodge, attack, or jump becomes valid on the same frame stamina recovers above the action threshold.",
+    "Sprinting spends stamina while climbing, swimming, or carrying weight also applies modifiers.",
+    "A server correction rewinds stamina after the client already played an accepted action animation.",
+    "Stamina reaches zero while the player is over a pit, underwater, or midway through a ladder transition."
   ],
   "common_bugs": [
-    "Stamina state does not reset correctly after interruption or reload.",
-    "Feedback for Stamina plays even when the mechanic fails or is rejected.",
-    "Stamina produces different results between frame rates, platforms, or network clients."
+    "Regeneration starts immediately after a spend because stamina_regen_delay_ms is checked against render frames.",
+    "Failed actions still spend stamina when validation order is input, cost, then collision or state rejection.",
+    "Exhaustion state never clears after save/load because last spend tick or regen lockout was not persisted.",
+    "UI shows enough stamina due to prediction but the server rejects the action and leaves input feeling dropped."
   ],
   "balancing_notes": [
-    "Make Stamina strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Low stamina capacity makes route planning tense, but too much restriction can make basic traversal feel punitive.",
+    "Separate combat and traversal costs if one loop is starving the other of player agency.",
+    "Exhaustion should usually reduce options before fully removing control."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Stamina becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide optional stamina assist, wider input buffering, or slower depletion for players who cannot sustain rapid inputs.",
+    "Use clear UI and audio states for exhaustion without relying only on heavy camera sway or breathing effects."
   ],
   "implementation_notes": {
-    "unity": "Implement Stamina with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Stamina as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Stamina with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Stamina as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Keep stamina in a stat component with spend transactions keyed by stamina_cost_event_id. Character and combat controllers should request spends before starting actions, then update UI from predicted values while server authority can correct capacity, spend, and regen delay.",
+    "godot": "Drive stamina recovery from a fixed gameplay tick in an autoload survival service or player component. Input buffers should query minimum_action_stamina_points during action resolution, and exhaustion_state_id should be saved with current pool and last spend tick.",
+    "unreal": "A replicated attribute set or character component can own stamina capacity, spends, and regen delay. Gameplay Ability activation should commit stamina on the server after validation, while client prediction displays pending spends and correction feedback.",
+    "web": "Model stamina as simulation state with explicit spend events and recovery ticks. Phaser or custom controllers should avoid mutating stamina from animation callbacks alone; replay and rollback need spend event ids plus current pool."
   },
   "related_mechanics": [
-    "crafting.recipe_crafting",
-    "survival.health",
+    "movement.sprint",
+    "movement.stamina_movement",
     "survival.hunger",
-    "ui_ux.cooldown_indicator"
+    "survival.thirst"
   ],
   "combines_well_with": [
-    "crafting.recipe_crafting",
-    "survival.temperature",
-    "survival.thirst",
-    "ui_ux.cooldown_indicator"
+    "combat.block",
+    "movement.dodge_roll",
+    "movement.climbing",
+    "survival.temperature"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Dark Souls",
+      "note": "Uses stamina to pace attacks, blocking, dodging, and recovery."
+    },
+    {
+      "title": "The Legend of Zelda: Breath of the Wild",
+      "note": "Uses stamina for climbing, sprinting, gliding, and swimming limits."
+    }
+  ],
   "tags": [
-    "resource_management",
     "stamina",
-    "survival"
+    "exertion",
+    "regen_delay",
+    "action_cost",
+    "survival_stat"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

@@ -2,12 +2,12 @@
   "id": "survival.health",
   "name": "Health",
   "aliases": [
-    "health mechanic",
-    "health system",
-    "health"
+    "hit points",
+    "vitality",
+    "survival health"
   ],
   "category": "survival",
-  "subcategory": "survival",
+  "subcategory": "vital_state",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -21,90 +21,125 @@
   },
   "genres": [
     "survival",
-    "sandbox",
-    "horror"
+    "action",
+    "horror",
+    "rpg"
   ],
-  "description": "Health is a pressure mechanic that asks the player to manage bodily, environmental, or resource constraints over time.",
-  "design_notes": "Health should be designed around a clear player promise, a readable trigger, and a predictable result. For survival mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A core vitality stat absorbs damage from combat, hazards, disease, starvation, dehydration, and exposure.",
+  "design_notes": "Survival health is the final consequence layer for many systems, so damage channels and recovery sources must be traceable. Designers should decide how hunger, thirst, temperature, poison, injuries, armor, and healing transactions feed health without hiding why the player is losing vitality.",
   "design_purpose": [
-    "Give the player a readable way to use health as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect health to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Represent survivability and make damage or neglect carry meaningful stakes.",
+    "Connect combat, environment, status effects, medicine, rest, and food systems.",
+    "Provide a recoverable failure buffer before death, downed state, or respawn."
   ],
-  "player_fantasy": "The player feels vulnerable but resourceful under ongoing pressure.",
+  "player_fantasy": "The player feels fragile enough to respect danger but capable of recovering through preparation.",
   "required_systems": [
-    "resource_system",
+    "damage_system",
+    "survival_stat_system",
     "status_effects",
-    "ui_feedback",
-    "save_state"
+    "healing_items",
+    "death_or_downed_state"
   ],
   "parameters": [
     {
-      "name": "max_value",
-      "type": "float",
-      "typical_range": "10-1000 units",
-      "description": "Maximum capacity of the survival resource."
+      "name": "health_stat_id",
+      "type": "string",
+      "typical_range": "health, vitality, body_condition",
+      "description": "Vitality stat identifier used by damage, recovery, UI, saves, and death logic."
     },
     {
-      "name": "decay_rate",
+      "name": "max_health_points",
       "type": "float",
-      "typical_range": "0-10 units/minute",
-      "description": "How quickly the resource changes without player action."
+      "typical_range": "1-500 points",
+      "description": "Maximum vitality before equipment, difficulty, injury, or progression modifiers."
     },
     {
-      "name": "critical_threshold",
-      "type": "float",
-      "typical_range": "5-30% of max",
-      "description": "Point at which warnings or penalties begin."
+      "name": "damage_channel_id",
+      "type": "string",
+      "typical_range": "bleed, starvation, cold, melee, poison, fall",
+      "description": "Source channel used for resistance, logging, UI explanation, and effect routing."
+    },
+    {
+      "name": "recovery_source_id",
+      "type": "string",
+      "typical_range": "bandage, medkit, cooked_meal, sleep, regen_aura",
+      "description": "Item, rest state, or ability that restores health through a validated recovery transaction."
+    },
+    {
+      "name": "downed_state_threshold_id",
+      "type": "string",
+      "typical_range": "zero_health, bleedout_10s, revive_window",
+      "description": "Rule that decides whether depletion causes death, downed state, or a revival window."
+    },
+    {
+      "name": "anti_burst_buffer_ms",
+      "type": "integer",
+      "typical_range": "0-2000 ms",
+      "description": "Short grace window used to prevent multiple survival damage ticks from instantly stacking."
     }
   ],
   "common_variants": [
-    "health_soft_pressure",
-    "health_hard_failure",
-    "difficulty_scaled",
-    "environment_driven"
+    "simple_health_pool",
+    "injury_based_health",
+    "downed_and_revive",
+    "survival_regeneration",
+    "permanent_wound_system"
   ],
   "edge_cases": [
-    "Health is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Health overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Health runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Starvation, dehydration, cold, poison, and combat damage resolve on the same tick.",
+    "A healing item is used while the player is entering a downed or death transition.",
+    "Temporary max-health reduction changes current health and UI warnings after save/load.",
+    "Client prediction shows recovery but server authority rejects the item or downed-state transition."
   ],
   "common_bugs": [
-    "Health state does not reset correctly after interruption or reload.",
-    "Feedback for Health plays even when the mechanic fails or is rejected.",
-    "Health produces different results between frame rates, platforms, or network clients."
+    "Damage over time stacks every frame because survival ticks are not rate-limited by damage_channel_id.",
+    "Healing consumes items but fails when max health modifiers update during the same transaction.",
+    "Death logic fires twice and creates duplicate drops, ragdolls, or respawn prompts.",
+    "UI health bars hide the source of survival damage, making hunger or temperature feel like random health loss."
   ],
   "balancing_notes": [
-    "Make Health strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Health should give players enough buffer to diagnose survival problems before dying.",
+    "Passive regeneration can reduce frustration but may weaken hunger, thirst, and medicine loops.",
+    "Multiple survival penalties should compound carefully; simultaneous systems can create sudden failure spirals."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Health becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show damage source text or icons when health is lost from survival systems, not only combat.",
+    "Offer reduced screen blood, pulse effects, or low-health audio intensity while preserving readable danger cues."
   ],
   "implementation_notes": {
-    "unity": "Implement Health with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Health as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Health with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Health as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Route all health changes through a damage and recovery service keyed by damage_channel_id or recovery_source_id. Apply anti_burst_buffer_ms before stacking survival ticks, and store health, modifiers, downed state, and pending bleedout in save data.",
+    "godot": "Keep health in a survival stat node or autoload service that receives typed damage events. Healing items should request a recovery transaction that consumes inventory, clamps max health modifiers, and emits one UI update.",
+    "unreal": "Use a replicated attribute set or component for health and survival damage channels. The server should own death, downed, and recovery transactions, while clients display predicted healing only until authority confirms.",
+    "web": "Model health changes as events in the simulation layer with source ids and tick ids. This makes local saves, replay, and browser reloads less likely to duplicate damage or recovery effects."
   },
   "related_mechanics": [
-    "crafting.recipe_crafting",
     "survival.hunger",
-    "survival.stamina",
-    "ui_ux.cooldown_indicator"
+    "survival.thirst",
+    "survival.temperature",
+    "combat.hit_stun"
   ],
   "combines_well_with": [
-    "crafting.recipe_crafting",
-    "survival.temperature",
-    "survival.thirst",
-    "ui_ux.cooldown_indicator"
+    "ui_ux.damage_numbers",
+    "ui_ux.checkpoint_notification",
+    "survival.stamina",
+    "combat.invincibility_frames"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Resident Evil 4",
+      "note": "Uses health recovery items and danger states as part of survival pressure."
+    },
+    {
+      "title": "The Long Dark",
+      "note": "Connects health loss to exposure, starvation, dehydration, and injuries."
+    }
+  ],
   "tags": [
     "health",
-    "resource_management",
-    "survival"
+    "vitality",
+    "damage_channel",
+    "recovery",
+    "survival_stat"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"
