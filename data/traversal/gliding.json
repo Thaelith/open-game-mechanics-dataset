@@ -7,7 +7,7 @@
     "gliding"
   ],
   "category": "traversal",
-  "subcategory": "locomotion",
+  "subcategory": "aerial_traversal",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,113 +24,121 @@
     "platformer",
     "open_world"
   ],
-  "description": "An airborne traversal state that reduces descent and allows steering after a jump, fall, or launch.",
-  "design_notes": "Gliding changes the cost of height. It can be exploration freedom, a landing safety tool, or an aerial route puzzle. The design should define deployment conditions, stamina or durability costs, wind interaction, steering authority, and how the player exits safely.",
+  "description": "A controlled aerial traversal state that reduces fall velocity and uses lift, drag, stamina, wind, or pitch input to extend airborne travel.",
+  "design_notes": "Gliding changes how players read height, distance, wind, and landing risk. Define how gliding starts, which fall states permit it, how lift and drag are applied, what resource drains, and how landing transitions restore grounded locomotion. Camera comfort is central because gliding often combines vertical motion, long sightlines, and steering corrections.",
   "design_purpose": [
-    "Let players convert height into horizontal travel and landing control.",
-    "Expand exploration routes without giving full flight.",
-    "Create aerial decisions around stamina, wind, hazards, and landing zones."
+    "Let players convert height into distance and route planning.",
+    "Make vertical level design feel expansive without requiring flight everywhere.",
+    "Create skill expression through pitch, wind, stamina, and landing choices."
   ],
-  "player_fantasy": "The player feels graceful and resourceful, stretching a fall into controlled travel.",
+  "player_fantasy": "The player feels light and controlled, stretching a fall into a deliberate path across open space.",
   "required_systems": [
-    "airborne_state",
-    "input_handling",
-    "gravity_modifier",
-    "stamina_system",
-    "wind_or_volume_forces"
+    "airborne_state_machine",
+    "gravity_controller",
+    "stamina_resource",
+    "wind_sampling",
+    "landing_detection"
   ],
   "parameters": [
     {
-      "name": "glide_fall_speed_cap",
+      "name": "glide_lift_coefficient",
       "type": "float",
-      "typical_range": "1-12 world units/second",
+      "typical_range": "0.2-1.5",
+      "description": "Lift multiplier applied while glide state is active."
+    },
+    {
+      "name": "fall_velocity_cap",
+      "type": "float",
+      "typical_range": "3-18 world units/second",
       "description": "Maximum downward velocity while gliding."
     },
     {
-      "name": "glide_forward_lift_ratio",
+      "name": "glide_stamina_drain_units_per_second",
       "type": "float",
-      "typical_range": "0-1.5",
-      "description": "Lift or descent reduction gained from forward movement."
+      "typical_range": "0-15 units/second",
+      "description": "Resource drain applied during sustained glide."
     },
     {
-      "name": "glide_turn_degrees_per_second",
+      "name": "glide_pitch_limit_degrees",
       "type": "float",
-      "typical_range": "30-240 degrees/second",
-      "description": "Maximum steering rate while deployed."
+      "typical_range": "10-60 degrees",
+      "description": "Allowed nose-up or nose-down steering angle."
     },
     {
-      "name": "glide_stamina_drain_per_second",
-      "type": "float",
-      "typical_range": "0-20 units",
-      "description": "Resource cost while gliding."
+      "name": "landing_flare_window_ms",
+      "type": "integer",
+      "typical_range": "120-600 ms",
+      "description": "Input window that softens landing or cancels glide cleanly."
     },
     {
-      "name": "minimum_deploy_height",
-      "type": "float",
-      "typical_range": "0-10 world units",
-      "description": "Minimum height above ground required to start gliding."
+      "name": "wind_response_curve_id",
+      "type": "string",
+      "typical_range": "none, mild, strong, gusty",
+      "description": "Curve used when wind zones push or lift the glider."
     }
   ],
   "common_variants": [
-    "paraglider",
-    "cape_glide",
-    "wing_glide",
     "stamina_glide",
-    "wind_boosted_glide"
+    "paraglider",
+    "wingsuit",
+    "hover_glide",
+    "wind_boost_glide"
   ],
   "edge_cases": [
-    "Deploying near the ground, ceiling, water, ladders, or ledges should not trap the player in glide state.",
-    "Wind volumes and moving platforms need rules for adding velocity without overriding steering.",
-    "Taking damage or entering hit stun should define whether glide collapses, continues, or becomes uncontrolled.",
-    "Camera pitch and landing prediction should remain readable over long descents."
+    "Glide activation near a ceiling or wall needs a blocked-start result instead of clipping the character upward.",
+    "Landing on moving platforms, slopes, or water needs a clear transition into grounded, sliding, or swimming states.",
+    "Wind zones should not stack into infinite lift unless the level is authored for it.",
+    "Networked gliding needs server validation for altitude, stamina, and wind samples used by the client."
   ],
   "common_bugs": [
-    "Fall speed cap remains active after landing and makes ground movement floaty.",
-    "Stamina reaches zero but glide state does not detach until the next input event.",
-    "Forward lift is applied in camera direction rather than character or glider direction.",
-    "Collision with walls repeatedly toggles glide and creates vertical climbing exploits."
+    "Fall velocity cap applies after collision and lets the player sink through thin floors.",
+    "Stamina drains while glide input is held even after landing.",
+    "Camera pitch follows the glider too aggressively and creates motion discomfort.",
+    "Wind zones use render-order sampling and produce different paths across clients."
   ],
   "balancing_notes": [
-    "Low fall speed and high turn authority approach flight; stamina or deployment height can preserve route design.",
-    "Wind boosts create spectacle but should have readable entry, exit, and recovery spaces."
+    "Glide availability changes how every high point functions as a route start.",
+    "Resource drain and fall velocity cap determine whether gliding is exploration, escape, or precision traversal.",
+    "Strong wind interaction can make authored landing targets unreliable unless telegraphed."
   ],
   "accessibility_notes": [
-    "Use clear stamina, landing, and wind feedback so players can plan without relying only on camera pitch.",
-    "Offer camera stabilization or reduced bobbing during long glides for motion-sensitive players."
+    "Provide camera comfort options for pitch lock, reduced sway, and toned-down field-of-view shifts.",
+    "Offer aim or steering assists for long glides that require sustained fine analog control."
   ],
   "implementation_notes": {
-    "unity": "Apply a glide movement state that caps downward velocity, adds steering acceleration, and clears modifiers on landing, damage, or stamina exhaustion.",
-    "godot": "In CharacterBody movement, clamp vertical velocity while glide is active and process wind Areas as additive forces after player steering.",
-    "unreal": "Use a custom movement mode or Gameplay Ability that modifies falling physics, replicates stamina drain, and exits through every landing or interruption path.",
-    "web": "Store glide_active, stamina, and air_velocity in actor state, clamp descent in the fixed update, and resolve collision before checking landing exit."
+    "unity": "Use an explicit airborne glide state and apply lift, drag, and fall_velocity_cap in FixedUpdate before CharacterController or Rigidbody collision. Landing detection should atomically clear glide flags and stamina drain.",
+    "godot": "Update glide velocity inside _physics_process and sample Area-based wind volumes deterministically. Use move_and_slide collision results to choose landing, water entry, or continued airborne state.",
+    "unreal": "Use a custom CharacterMovement mode for glide so gravity scale, air control, and replicated movement stay coherent. Server authority should validate glide start height, stamina, and wind volume membership.",
+    "web": "Store glide_state with pitch input, lift coefficient, wind zone id, and stamina ledger. Resolve vertical velocity in the fixed simulation loop, then render wing or cape animation from committed state."
   },
   "related_mechanics": [
-    "camera.dynamic_fov",
-    "platforming.ledge_grab",
-    "traversal.grappling_hook",
-    "traversal.rope_swing"
+    "movement.stamina_movement",
+    "physics.wind_force",
+    "traversal.jetpack",
+    "time.slow_motion"
   ],
   "combines_well_with": [
+    "traversal.grappling_hook",
+    "traversal.wall_run",
     "camera.dynamic_fov",
-    "platforming.ledge_grab",
-    "traversal.teleport_blink",
-    "traversal.zipline"
+    "survival.stamina"
   ],
   "example_games": [
     {
       "title": "The Legend of Zelda: Breath of the Wild",
-      "note": "Uses a paraglider to convert height into long-distance traversal."
+      "note": "Uses gliding to convert altitude into travel routes."
     },
     {
-      "title": "Batman: Arkham City",
-      "note": "Uses cape gliding for aerial traversal through open spaces."
+      "title": "Just Cause 3",
+      "note": "Uses wingsuit-style gliding for aerial traversal."
     }
   ],
   "tags": [
     "gliding",
-    "locomotion",
-    "mobility",
-    "navigation"
+    "aerial_traversal",
+    "fall_velocity",
+    "lift",
+    "camera_comfort"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

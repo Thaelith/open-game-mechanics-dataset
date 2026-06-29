@@ -7,7 +7,7 @@
     "swing hook"
   ],
   "category": "traversal",
-  "subcategory": "locomotion",
+  "subcategory": "anchor_traversal",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,14 +24,14 @@
     "platformer",
     "open_world"
   ],
-  "description": "A traversal tool that attaches to a valid anchor and pulls, reels, or swings the player toward it.",
-  "design_notes": "Grappling hook design hinges on anchor readability and commitment. Decide whether the tool is a point-to-point pull, a physics rope, a combat repositioning move, or an aim-skill challenge. Collision, release rules, and moving anchors must be solved before level design can trust it.",
+  "description": "A traversal tool that validates a distant anchor, attaches the player to it, then pulls, reels, swings, or redirects momentum through explicit detach rules.",
+  "design_notes": "Grappling hook quality comes from anchor trust. Designers need to define grappling_anchor_id visibility, target selection, attachment ownership, rope length, collision handling, moving-anchor behavior, and release velocity before building levels around it. The mechanic should make distant space feel reachable without turning every surface into an unintended shortcut.",
   "design_purpose": [
-    "Let players cross gaps, gain height, or rapidly reposition using authored anchors.",
-    "Turn level geometry into traversal opportunities through aiming and timing.",
-    "Create expressive movement routes that combine attachment, swing, release, and landing."
+    "Let players cross gaps, gain height, or rapidly reposition using readable anchors.",
+    "Turn level geometry into traversal opportunities through aiming, commitment, and release timing.",
+    "Create expressive routes that combine attachment, swing arcs, detach inputs, and landing recovery."
   ],
-  "player_fantasy": "The player feels like they can seize distant space and turn it into momentum.",
+  "player_fantasy": "The player feels able to seize a distant point and convert it into motion, height, or combat repositioning.",
   "required_systems": [
     "anchor_query",
     "aiming_system",
@@ -41,34 +41,40 @@
   ],
   "parameters": [
     {
-      "name": "max_grapple_distance",
+      "name": "grapple_anchor_distance_max",
       "type": "float",
       "typical_range": "6-60 world units",
-      "description": "Maximum distance from player to valid anchor."
+      "description": "Maximum distance from player origin to a valid grapple anchor."
     },
     {
-      "name": "anchor_snap_radius",
+      "name": "anchor_snap_radius_units",
       "type": "float",
       "typical_range": "0.1-3 world units",
-      "description": "Aim-assist radius around valid anchors."
+      "description": "Aim assist radius around eligible anchor points."
     },
     {
-      "name": "reel_velocity",
+      "name": "grapple_reel_velocity",
       "type": "float",
       "typical_range": "5-35 world units/second",
-      "description": "Pull or reel speed toward the anchor."
+      "description": "Pull velocity used when reeling toward the anchor."
     },
     {
-      "name": "rope_length_min",
+      "name": "rope_length_min_units",
       "type": "float",
       "typical_range": "1-10 world units",
-      "description": "Minimum rope length allowed before detaching or stopping pull."
+      "description": "Shortest allowed rope length before stopping or detaching."
     },
     {
-      "name": "detach_input_buffer_ms",
+      "name": "grapple_detach_buffer_ms",
       "type": "integer",
       "typical_range": "50-250 ms",
-      "description": "Buffered release window used during attach, pull, or swing states."
+      "description": "Buffered release input accepted during attach, pull, or swing states."
+    },
+    {
+      "name": "anchor_validation_layers_id",
+      "type": "string",
+      "typical_range": "grapple_only, climbable, enemy_anchor",
+      "description": "Collision or tag filter used for anchor selection."
     }
   ],
   "common_variants": [
@@ -79,9 +85,9 @@
     "auto_anchor_grapple"
   ],
   "edge_cases": [
-    "Moving anchors must define whether the player inherits anchor velocity and what happens if the anchor is destroyed.",
+    "Moving anchors must define whether the player inherits anchor velocity and what happens when the anchor is destroyed.",
     "Rope paths around corners need wrapping, collision shortening, or detachment rules.",
-    "A grapple that ends inside geometry needs a safe landing or rollback point.",
+    "A grapple that ends inside geometry needs a safe landing probe or rollback point.",
     "Networked grapples need prediction for aim confirmation and reconciliation for attachment position."
   ],
   "common_bugs": [
@@ -91,18 +97,19 @@
     "Moving anchors desync because the client stores a world point while the server stores an anchor entity."
   ],
   "balancing_notes": [
-    "Long range and strong aim assist make grapple a navigation default; limited anchors make it a route puzzle.",
-    "Pull speed, detach freedom, and fall recovery determine whether grapple is traversal, combat escape, or both."
+    "Long anchor distance and strong snap assist make grapple a navigation default; limited anchors make it a route puzzle.",
+    "Reel velocity, detach freedom, and fall recovery determine whether grapple is traversal, combat escape, or both.",
+    "Moving anchors and enemy anchors need stricter validation because they expand both traversal and encounter solutions."
   ],
   "accessibility_notes": [
     "Use strong anchor highlighting and optional snap assist so players can identify valid targets quickly.",
     "Provide input buffering for release and avoid requiring tiny moving-target aim unless alternate controls exist."
   ],
   "implementation_notes": {
-    "unity": "Raycast or spherecast for anchor candidates, store anchor entity plus local offset, then drive pull or rope simulation from FixedUpdate with swept collision.",
-    "godot": "Use direct space-state queries for anchor selection, store attachment state on the character, and update reel or swing velocity in _physics_process.",
-    "unreal": "Use trace channels or Gameplay Tags for anchors, replicate the chosen anchor and local offset, and run pull movement through CharacterMovement or a custom movement mode.",
-    "web": "Store grapple_state with anchor_id, anchor_local_point, rope_length, and phase, then resolve pull velocity and collision in the fixed simulation step."
+    "unity": "Raycast or spherecast for anchor candidates, store grappling_anchor_id plus local offset, then drive pull or rope simulation from FixedUpdate with swept collision. Replicated play should send the chosen anchor entity rather than only a world position.",
+    "godot": "Use direct space-state queries for anchor selection, store attachment state on the character, and update reel or swing velocity in _physics_process. Detach should restore gravity, collision layers, and ordinary input in one state transition.",
+    "unreal": "Use trace channels or Gameplay Tags for anchors, replicate the chosen anchor and local offset, and run pull movement through CharacterMovement or a custom movement mode. Prediction should reconcile attach point and rope length together.",
+    "web": "Store grapple_state with anchor_id, anchor_local_point, rope_length, and phase, then resolve pull velocity and collision in the fixed simulation step before rendering rope visuals."
   },
   "related_mechanics": [
     "camera.dynamic_fov",
@@ -128,9 +135,10 @@
   ],
   "tags": [
     "grappling",
-    "locomotion",
-    "mobility",
-    "navigation"
+    "anchor_traversal",
+    "attachment_state",
+    "rope_length",
+    "mobility"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

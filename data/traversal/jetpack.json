@@ -7,7 +7,7 @@
     "jetpack"
   ],
   "category": "traversal",
-  "subcategory": "locomotion",
+  "subcategory": "powered_flight",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,121 @@
     "platformer",
     "open_world"
   ],
-  "description": "Jetpack is a locomotion tool that helps the player cross space, reach anchors, or move through level structures.",
-  "design_notes": "Jetpack should be designed around a clear player promise, a readable trigger, and a predictable result. For traversal mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A powered traversal state that spends fuel or heat capacity to apply controllable lift and steering while airborne.",
+  "design_notes": "Jetpack traversal needs a resource boundary and a flight envelope. Define fuel drain, thrust vector, heat or overuse state, fall velocity cap, landing recovery, camera profile, and whether hover is allowed. The mechanic should give short bursts of vertical freedom without invalidating climbing, gliding, elevators, or level boundaries.",
   "design_purpose": [
-    "Give the player a readable way to use jetpack as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect jetpack to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players gain height, correct falls, or cross gaps using a limited powered movement resource.",
+    "Create vertical route planning through fuel, heat, landing spots, and recharge opportunities.",
+    "Support science-fiction or mobility fantasies without turning every obstacle into empty airspace."
   ],
-  "player_fantasy": "The player feels capable of crossing spaces that first appeared unreachable.",
+  "player_fantasy": "The player feels briefly airborne and powerful, managing fuel while steering through vertical space.",
   "required_systems": [
-    "character_controller",
-    "targeting_or_anchor_system",
-    "collision_detection",
-    "state_machine"
+    "airborne_state_machine",
+    "fuel_resource",
+    "thrust_controller",
+    "landing_detection",
+    "camera_follow"
   ],
   "parameters": [
     {
-      "name": "travel_speed",
-      "type": "float",
-      "typical_range": "6-30 world units/second",
-      "description": "Movement speed while using the traversal mechanic."
+      "name": "jetpack_fuel_capacity_ms",
+      "type": "integer",
+      "typical_range": "800-6000 ms",
+      "description": "Total powered-flight budget available before recharge or refill."
     },
     {
-      "name": "activation_range",
+      "name": "jetpack_fuel_drain_units_per_second",
       "type": "float",
-      "typical_range": "3-50 world units",
-      "description": "Maximum distance to a valid anchor, target, or route."
+      "typical_range": "10-60 units/second",
+      "description": "Fuel ledger drain applied while thrust input is accepted."
     },
     {
-      "name": "cancel_window",
+      "name": "thrust_vector_units",
+      "type": "vector",
+      "typical_range": "upward plus optional forward component",
+      "description": "Lift and steering vector applied during powered movement."
+    },
+    {
+      "name": "jetpack_heat_limit_units",
       "type": "float",
-      "typical_range": "0-1.0 seconds",
-      "description": "Time during which the player can safely cancel or redirect the action."
+      "typical_range": "50-200 units",
+      "description": "Overuse threshold that blocks continued thrust until cooled."
+    },
+    {
+      "name": "fall_velocity_cap",
+      "type": "float",
+      "typical_range": "4-20 world units/second",
+      "description": "Maximum downward velocity while thrust assist is active."
+    },
+    {
+      "name": "landing_recovery_ms",
+      "type": "integer",
+      "typical_range": "100-600 ms",
+      "description": "Recovery window after powered landing before full control returns."
     }
   ],
   "common_variants": [
-    "jetpack_manual_targeting",
-    "jetpack_auto_targeting",
-    "limited_use",
-    "upgrade_extended"
+    "fuel_jetpack",
+    "heat_jetpack",
+    "hover_pack",
+    "double_burst_pack",
+    "combat_jetpack"
   ],
   "edge_cases": [
-    "Jetpack is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Jetpack overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Jetpack runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Fuel can expire over a lethal pit, requiring a clear fall, glide, or ledge recovery path.",
+    "Ceiling collision while thrusting must stop lift without trapping the player in powered state.",
+    "Water volumes, low-gravity zones, and wind zones need explicit interaction rules with thrust_vector_units.",
+    "Networked jetpacks need server validation for fuel, altitude, and client-predicted thrust."
   ],
   "common_bugs": [
-    "Jetpack state does not reset correctly after interruption or reload.",
-    "Feedback for Jetpack plays even when the mechanic fails or is rejected.",
-    "Jetpack produces different results between frame rates, platforms, or network clients."
+    "Thrust is applied in render update and becomes stronger at high frame rates.",
+    "Fuel drains after landing because airborne_state_machine does not clear jetpack input ownership.",
+    "Heat lockout clears on client but not server, causing repeated correction snaps.",
+    "Camera field-of-view changes stack with sprint or glide profiles and create motion discomfort."
   ],
   "balancing_notes": [
-    "Make Jetpack strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Fuel capacity controls whether jetpack is a correction tool, route tool, or full movement mode.",
+    "Hover makes aiming and platforming easier but can trivialize hazards unless fuel drain rises sharply.",
+    "Recharge placement determines whether players use jetpack expressively or hoard it for emergencies."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Jetpack becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer reduced camera shake, field-of-view, and vertical bob while powered movement is active.",
+    "Allow hold or toggle thrust settings and readable fuel warnings that do not rely only on color."
   ],
   "implementation_notes": {
-    "unity": "Implement Jetpack with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Jetpack as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Jetpack with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Jetpack as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Keep jetpack_state with fuel, heat, and thrust vector on the character. Apply lift in FixedUpdate through the same collision owner as other airborne movement, and let the server validate fuel ticks before accepting predicted altitude changes.",
+    "godot": "Update jetpack velocity inside _physics_process, sampling fuel_resource before applying upward acceleration. Use Area membership for water or wind modifiers and clear thrust state through landing detection.",
+    "unreal": "Use a custom CharacterMovement mode or Gameplay Ability that commits fuel, applies vertical acceleration, and replicates heat_or_overuse_state. CameraManager should read a dedicated jetpack camera profile rather than stacking arbitrary shakes.",
+    "web": "Represent fuel, heat, input vector, and airborne state in the fixed simulation loop. Resolve thrust before collision, clamp fall_velocity_cap, and reconcile authoritative fuel when networking is enabled."
   },
   "related_mechanics": [
-    "camera.dynamic_fov",
-    "platforming.ledge_grab",
-    "traversal.grappling_hook",
-    "traversal.rope_swing"
+    "traversal.gliding",
+    "movement.stamina_movement",
+    "physics.gravity",
+    "camera.dynamic_fov"
   ],
   "combines_well_with": [
-    "camera.dynamic_fov",
-    "platforming.ledge_grab",
-    "traversal.teleport_blink",
-    "traversal.zipline"
+    "survival.oxygen",
+    "vehicles.fuel",
+    "progression.upgrade_shop",
+    "ui_ux.cooldown_indicator"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Jetpack Joyride",
+      "note": "Uses jetpack thrust as the primary movement verb."
+    },
+    {
+      "title": "No Man's Sky",
+      "note": "Uses jetpack bursts for traversal and fall correction."
+    }
+  ],
   "tags": [
     "jetpack",
-    "locomotion",
-    "mobility",
-    "navigation"
+    "powered_flight",
+    "fuel_resource",
+    "thrust_vector",
+    "camera_comfort"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

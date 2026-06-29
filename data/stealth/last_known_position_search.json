@@ -24,97 +24,121 @@
     "action",
     "horror"
   ],
-  "description": "An AI search behavior that investigates where the player was last seen or heard after contact is lost.",
-  "design_notes": "Last-known-position search makes stealth recovery more believable than instant forgetfulness. It should define memory decay, search pattern, communication to allies, and when AI returns to patrol.",
+  "description": "An AI search behavior that stores the player location from the latest credible perception event and investigates it after direct detection is lost.",
+  "design_notes": "Last-known-position search gives stealth recovery texture after detection. Define update sources, stale timers, search pattern, investigation radius, false clue handling, and checkpoint restore rules. The behavior should make enemies feel observant without granting perfect knowledge after the player breaks line of sight.",
   "design_purpose": [
-    "Let players break line of sight without instantly resetting danger.",
-    "Create readable search pressure after detection.",
-    "Bridge chase and patrol states with believable investigation."
+    "Let AI pursue plausible information instead of instantly forgetting or omnisciently tracking the player.",
+    "Create recovery play where players can break sight, misdirect, and leave the search area.",
+    "Give designers debug traces for why an AI searched a point and when it gave up."
   ],
-  "player_fantasy": "The player feels hunted but able to outsmart searchers by relocating and hiding.",
+  "player_fantasy": "The player feels hunted but not cheated, watching enemies investigate the place they were last confirmed.",
   "required_systems": [
-    "ai_memory",
-    "navigation",
-    "perception_system",
-    "ai_state_machine"
+    "ai_perception",
+    "blackboard",
+    "navmesh_query",
+    "search_behavior",
+    "debug_tools"
   ],
   "parameters": [
     {
-      "name": "memory_confidence_decay",
-      "type": "float",
-      "typical_range": "0.01-1 per second",
-      "description": "Decay applied to confidence in the last-known position."
+      "name": "last_known_player_position",
+      "type": "vector",
+      "typical_range": "world or grid coordinate",
+      "description": "Stored position from the latest credible sight, sound, or clue event."
     },
     {
-      "name": "search_radius_growth_per_second",
-      "type": "float",
-      "typical_range": "0-5 world units",
-      "description": "Expansion of search area while the player remains unseen."
-    },
-    {
-      "name": "search_waypoint_count",
+      "name": "position_stale_after_ms",
       "type": "integer",
-      "typical_range": "1-12 points",
-      "description": "Number of positions sampled during the search pattern."
+      "typical_range": "2000-20000 ms",
+      "description": "Interval after which the remembered position loses priority."
     },
     {
-      "name": "patrol_resume_confidence",
+      "name": "search_timeout_ms",
+      "type": "integer",
+      "typical_range": "5000-45000 ms",
+      "description": "Search behavior interval before de-escalation."
+    },
+    {
+      "name": "investigation_radius_units",
       "type": "float",
-      "typical_range": "0-0.5",
-      "description": "Confidence threshold below which AI returns to patrol."
+      "typical_range": "2-20 world units",
+      "description": "Area around the stored position used for search points."
+    },
+    {
+      "name": "search_pattern_id",
+      "type": "string",
+      "typical_range": "spiral, room_sweep, cover_check, squad_split",
+      "description": "Pattern used to choose investigation waypoints."
+    },
+    {
+      "name": "false_clue_weight_points",
+      "type": "float",
+      "typical_range": "0-100 points",
+      "description": "Priority bonus or penalty for decoy clues versus confirmed player sightings."
     }
   ],
   "common_variants": [
-    "last_seen_search",
-    "last_heard_search",
+    "single_guard_search",
     "squad_search",
-    "sweep_search"
+    "room_sweep",
+    "false_clue_search",
+    "breadcrumb_search"
   ],
   "edge_cases": [
-    "The player entering a vent, elevator, or water should update or hide search clues consistently.",
-    "Multiple AI sharing memory can create unfair perfect knowledge.",
-    "Search should not path into unreachable positions caused by navmesh gaps."
+    "The last known point is inside a locked room, off navmesh, or behind a door the AI cannot open.",
+    "A newer noise event and older visual sighting compete for the same AI search slot.",
+    "Checkpoint restore during search needs to restore or intentionally clear search state consistently.",
+    "Multiple squad members need different cover checks rather than all pathing to the exact same point."
   ],
   "common_bugs": [
-    "AI searches the player's current hidden position because memory stores a live transform reference.",
-    "Confidence never decays after losing line of sight.",
-    "Returning to patrol clears alert state before allies finish searching."
+    "AI updates last_known_player_position every frame through walls because line-of-sight grace never expires.",
+    "Search path fails when the remembered point is unreachable and the behavior tree has no fallback.",
+    "False clues overwrite confirmed visual contact without priority comparison.",
+    "Debug overlays show the current target but not the perception_event_id that created it."
   ],
   "balancing_notes": [
-    "Long memory sustains tension; short memory supports forgiving stealth resets.",
-    "Search radius should create escape routes, not omniscient coverage."
+    "Long stale intervals make AI feel persistent; short intervals make stealth recovery easier.",
+    "Search radius should match level room size and cover density so investigation feels believable.",
+    "False clues are powerful only when AI priority rules let them compete without erasing confirmed sightings."
   ],
   "accessibility_notes": [
-    "Communicate search state through barks, icons, or posture so players understand they are not fully safe yet."
+    "Provide readable non-audio indicators when enemies begin searching the last known position.",
+    "Avoid hidden omniscience; players should see or infer why a search moved to a specific area."
   ],
   "implementation_notes": {
-    "unity": "Write immutable stimulus records with position, timestamp, confidence, and source into an AI blackboard, then sample NavMesh search points around that stored position.",
-    "godot": "Keep remembered_position and confidence on the AI state, generate NavigationAgent targets from reachable points near that memory, and decay confidence during search.",
-    "unreal": "Use AI Perception to update Blackboard keys for last seen/heard location, then run Behavior Tree or StateTree search tasks until confidence reaches the patrol threshold.",
-    "web": "Store last-known position as data, not a live player reference, and sample reachable graph nodes around it while confidence decay controls when patrol resumes."
+    "unity": "Store last_known_player_position, perception_event_id, stale tick, and debug_reason_trace in an AI blackboard. NavMesh queries should clamp unreachable positions to valid investigation points before the behavior tree starts searching.",
+    "godot": "Use NavigationServer queries to validate stored search targets and keep the perception source id on the AI state. Search patterns should generate waypoints deterministically so debugging is reproducible.",
+    "unreal": "Use Blackboard keys for LastKnownPosition, PerceptionEventId, and SearchPatternId. Behavior tree services should refresh or expire the key using line-of-sight grace, while EQS can choose cover or room-sweep points.",
+    "web": "Represent last-known search as AI state with event source, position, stale tick, and waypoint queue. Sort perception updates deterministically and record debug_reason_trace for replayable bug reports."
   },
   "related_mechanics": [
     "ai.investigate_noise",
-    "ai.patrol",
-    "stealth.visibility_meter"
+    "ai.line_of_sight_detection",
+    "stealth.alert_state",
+    "stealth.distraction_throw"
   ],
   "combines_well_with": [
-    "combat.stealth_kill",
-    "horror.monster_patrol",
-    "ui_ux.minimap"
+    "stealth.noise_meter",
+    "stealth.shadow_cover",
+    "ai.patrol",
+    "combat.stealth_kill"
   ],
   "example_games": [
     {
-      "title": "Metal Gear Solid V: The Phantom Pain",
-      "note": "Uses enemy search behavior after guards lose direct contact with the player."
+      "title": "Metal Gear Solid V",
+      "note": "Uses enemy search behavior after guards lose direct sight of the player."
+    },
+    {
+      "title": "Alien: Isolation",
+      "note": "Uses last-known and investigation behavior to sustain stealth pressure."
     }
   ],
   "tags": [
-    "stealth",
-    "ai",
-    "search",
-    "memory",
-    "perception"
+    "last_known_position",
+    "ai_search",
+    "perception_event",
+    "debug_reason_trace",
+    "stealth_recovery"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

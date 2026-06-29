@@ -7,7 +7,7 @@
     "run"
   ],
   "category": "movement",
-  "subcategory": "locomotion",
+  "subcategory": "ground_locomotion",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,121 @@
     "action",
     "adventure"
   ],
-  "description": "A faster sustained movement state that makes traversal feel responsive.",
-  "design_notes": "Run should be designed around a clear player promise, a readable trigger, and a predictable result. For movement mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Default faster ground locomotion that converts directional input into responsive travel while preserving collision, animation, and camera readability.",
+  "design_notes": "Run usually becomes the main locomotion state, so it must support repeated use without hiding important environment reads. Decide how quickly characters reach full pace, how they stop, how they rotate, and how slopes or surface materials alter the movement response. It should be fast enough for traversal but restrained enough that sprint, dash, mounts, and traversal tools still matter.",
   "design_purpose": [
-    "Give the player a readable way to use run as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect run to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Make ordinary navigation efficient across combat arenas, hubs, and exploration spaces.",
+    "Provide a default locomotion state that remains readable for animation, camera, and collision.",
+    "Create a stable base for modifiers such as sprint, crouch, stamina drain, or aiming movement."
   ],
-  "player_fantasy": "The player feels directly connected to the avatar and able to express intent through motion.",
+  "player_fantasy": "The player feels capable and responsive, moving through the world with confidence rather than waiting on the avatar.",
   "required_systems": [
     "character_controller",
-    "input_handling",
-    "collision_detection",
-    "animation_state_machine"
+    "input_processing",
+    "ground_detection",
+    "animation_blend_tree",
+    "network_prediction"
   ],
   "parameters": [
     {
-      "name": "movement_speed",
+      "name": "run_pace_units_per_second",
       "type": "float",
-      "typical_range": "2-12 world units/second",
-      "description": "Baseline travel speed while the mechanic is active."
+      "typical_range": "4-9 world units/second",
+      "description": "Target horizontal velocity for the default run state."
     },
     {
-      "name": "acceleration",
-      "type": "float",
-      "typical_range": "10-80 world units/second^2",
-      "description": "How quickly the actor reaches target speed."
+      "name": "run_acceleration_curve_id",
+      "type": "string",
+      "typical_range": "snappy, weighty, analog_weighted",
+      "description": "Curve used when entering run from idle or walk."
     },
     {
-      "name": "turn_response",
+      "name": "run_deceleration_curve_id",
+      "type": "string",
+      "typical_range": "brake, coast, surface_weighted",
+      "description": "Curve used when input_vector drops or reverses."
+    },
+    {
+      "name": "run_turn_degrees_per_second",
       "type": "float",
-      "typical_range": "0.05-0.35 seconds",
-      "description": "How quickly movement direction updates after input changes."
+      "typical_range": "360-1080 degrees/second",
+      "description": "Facing rotation budget while running under player control."
+    },
+    {
+      "name": "run_slope_limit_degrees",
+      "type": "float",
+      "typical_range": "35-55 degrees",
+      "description": "Ground incline accepted before run changes to slide, climb, or blocked movement."
+    },
+    {
+      "name": "run_prediction_window_ms",
+      "type": "integer",
+      "typical_range": "80-180 ms",
+      "description": "Client-side movement window reconciled against server_tick in networked games."
     }
   ],
   "common_variants": [
-    "run_grounded_version",
-    "run_airborne_version",
-    "stamina_limited_version",
-    "contextual_version"
+    "hold_to_run",
+    "always_run",
+    "tank_run",
+    "aim_limited_run",
+    "analog_run"
   ],
   "edge_cases": [
-    "Run is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Run overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Run runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Run should not preserve full velocity when stepping from ground into a ladder, ledge grab, or scripted traversal state.",
+    "Sharp input reversal near thin collision can create oscillation if deceleration and collision projection fight each other.",
+    "Camera-relative input must update correctly when lock-on or cinematic camera changes orientation mid-run.",
+    "Server correction can snap a running player backward if client_input_sequence ordering is not deterministic."
   ],
   "common_bugs": [
-    "Run state does not reset correctly after interruption or reload.",
-    "Feedback for Run plays even when the mechanic fails or is rejected.",
-    "Run produces different results between frame rates, platforms, or network clients."
+    "Run pace is applied directly to transform position and bypasses collision sweeps on fast frames.",
+    "Animation blend trees use raw stick magnitude and never match resolved ground velocity on slopes.",
+    "Surface material modifiers stack permanently after crossing mud, ice, or moving platforms.",
+    "Input buffering from dodge, slide, or sprint leaves run state active after stun or menu focus."
   ],
   "balancing_notes": [
-    "Make Run strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Run pace sets the expected density of levels; increasing it may require wider lanes and earlier enemy telegraphs.",
+    "Strong acceleration feels responsive but reduces the difference between run, dash, and dodge roll.",
+    "Networked action games often benefit from slightly lower maximum run pace to reduce correction severity."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Run becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer always-run or toggle-run options when holding a modifier would be fatiguing.",
+    "Keep camera sway, field-of-view shifts, and head bob optional or adjustable during sustained running."
   ],
   "implementation_notes": {
-    "unity": "Implement Run with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Run as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Run with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Run as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Resolve run state before movement integration, then apply acceleration curves inside FixedUpdate. Use CharacterController.Move or Rigidbody motion with collision sweeps, keep Animator parameters tied to post-collision velocity, and include server_tick plus client_input_sequence for network reconciliation.",
+    "godot": "Use CharacterBody velocity as the source of truth. Apply run acceleration in _physics_process, pass floor normals into slope checks, and update AnimationTree after move_and_slide returns collision information.",
+    "unreal": "Configure CharacterMovement for running but keep sprint, aim, root motion, and traversal overrides as explicit state transitions. In replicated play, let the server validate movement mode changes and reconcile predicted run inputs.",
+    "web": "Update run in a fixed-step controller using input_vector, acceleration_curve_id, and collision layer masks. Render interpolation should never feed back into simulation position, especially when prediction_window_ms is active."
   },
   "related_mechanics": [
-    "camera.smooth_follow_camera",
-    "movement.sprint",
     "movement.walk",
-    "ui_ux.cooldown_indicator"
+    "movement.sprint",
+    "movement.slide",
+    "movement.stamina_movement"
   ],
   "combines_well_with": [
+    "camera.dynamic_fov",
     "camera.smooth_follow_camera",
-    "movement.crouch",
-    "movement.slide",
-    "ui_ux.cooldown_indicator"
+    "traversal.parkour_vault",
+    "survival.stamina"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Super Mario Odyssey",
+      "note": "Uses responsive running as a baseline for jumps, captures, and traversal."
+    },
+    {
+      "title": "Hollow Knight",
+      "note": "Uses a consistent run pace as the base for combat and platforming movement."
+    }
+  ],
   "tags": [
-    "controls",
-    "locomotion",
-    "mobility",
-    "run"
+    "ground_locomotion",
+    "input_processing",
+    "acceleration_curve",
+    "network_prediction",
+    "animation_blend"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

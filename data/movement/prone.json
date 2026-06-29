@@ -7,7 +7,7 @@
     "prone"
   ],
   "category": "movement",
-  "subcategory": "locomotion",
+  "subcategory": "stance",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,121 @@
     "action",
     "adventure"
   ],
-  "description": "Prone is a character action that changes how the player moves through space.",
-  "design_notes": "Prone should be designed around a clear player promise, a readable trigger, and a predictable result. For movement mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A very low stance that changes collision height, movement pace, visibility, aiming profile, and the rules for standing back up.",
+  "design_notes": "Prone is a stance with strong systemic consequences. It should define capsule dimensions, enter and exit windows, blocked stand-up behavior, camera offset, noise output, aiming limits, and interactions with stealth or cover. Because it can trap players under geometry, clearance checks and recovery options are more important than animation length.",
   "design_purpose": [
-    "Give the player a readable way to use prone as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect prone to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players reduce their profile for stealth, cover, traversal under obstacles, or weapon stability.",
+    "Create a high-commitment stance with stronger concealment and lower mobility.",
+    "Support levels with crawlspaces, low cover, and deliberate infiltration pacing."
   ],
-  "player_fantasy": "The player feels directly connected to the avatar and able to express intent through motion.",
+  "player_fantasy": "The player feels hidden and deliberate, sacrificing mobility to become harder to see or hit.",
   "required_systems": [
-    "character_controller",
-    "input_handling",
-    "collision_detection",
-    "animation_state_machine"
+    "stance_state_machine",
+    "collision_capsule",
+    "clearance_query",
+    "camera_offset",
+    "stealth_visibility"
   ],
   "parameters": [
     {
-      "name": "movement_speed",
+      "name": "prone_pace_units_per_second",
       "type": "float",
-      "typical_range": "2-12 world units/second",
-      "description": "Baseline travel speed while the mechanic is active."
+      "typical_range": "0.5-2.5 world units/second",
+      "description": "Horizontal crawl velocity while prone is active."
     },
     {
-      "name": "acceleration",
+      "name": "prone_height_multiplier",
       "type": "float",
-      "typical_range": "10-80 world units/second^2",
-      "description": "How quickly the actor reaches target speed."
+      "typical_range": "0.2-0.45",
+      "description": "Collision capsule height multiplier for prone stance."
     },
     {
-      "name": "turn_response",
+      "name": "prone_enter_window_ms",
+      "type": "integer",
+      "typical_range": "250-900 ms",
+      "description": "Committed transition interval when entering prone."
+    },
+    {
+      "name": "prone_exit_window_ms",
+      "type": "integer",
+      "typical_range": "300-1100 ms",
+      "description": "Committed transition interval when leaving prone."
+    },
+    {
+      "name": "stand_clearance_margin_units",
       "type": "float",
-      "typical_range": "0.05-0.35 seconds",
-      "description": "How quickly movement direction updates after input changes."
+      "typical_range": "0.05-0.3 world units",
+      "description": "Extra headroom required before returning to crouch or stand."
+    },
+    {
+      "name": "prone_noise_multiplier",
+      "type": "float",
+      "typical_range": "0.1-0.6",
+      "description": "Noise reduction multiplier applied to movement sound events."
     }
   ],
   "common_variants": [
-    "prone_grounded_version",
-    "prone_airborne_version",
-    "stamina_limited_version",
-    "contextual_version"
+    "combat_prone",
+    "stealth_prone",
+    "crawlspace_prone",
+    "manual_prone",
+    "auto_prone"
   ],
   "edge_cases": [
-    "Prone is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Prone overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Prone runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A player trying to stand under a low obstacle needs a blocked stand-up state rather than collision penetration.",
+    "Weapon aiming, camera pitch, and interaction prompts may need different offsets while prone_height_multiplier is active.",
+    "Moving platforms and slopes can invalidate prone clearance after the player entered safely.",
+    "AI visibility and projectile hitboxes must agree on whether prone changes target height."
   ],
   "common_bugs": [
-    "Prone state does not reset correctly after interruption or reload.",
-    "Feedback for Prone plays even when the mechanic fails or is rejected.",
-    "Prone produces different results between frame rates, platforms, or network clients."
+    "Capsule height changes but camera and aim origin remain at standing height.",
+    "Stand-up clearance checks ignore dynamic blockers and pop the player into another character.",
+    "Prone movement uses standing friction and slides down gentle slopes unexpectedly.",
+    "Animation cancellation exits prone visually while collision_capsule_height remains low."
   ],
   "balancing_notes": [
-    "Make Prone strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Prone concealment should be strong only where level geometry and AI sightlines support it.",
+    "Very slow prone pacing works for infiltration but becomes tedious if crawlspaces are long or repeated.",
+    "Allowing full weapon accuracy while prone can make it a dominant combat stance unless countered by exposure or setup cost."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Prone becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide toggle prone and clear blocked-stand messaging so players do not have to hold a button while crawling.",
+    "Avoid camera positions that create nausea or obscure exit visibility in tight spaces."
   ],
   "implementation_notes": {
-    "unity": "Implement Prone with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Prone as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Prone with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Prone as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store stance_state_id separately from animation_state_id. Change capsule height and center together, run Physics.CheckCapsule for stand_clearance_margin_units before exit, and update camera offset from stance state rather than animation pose.",
+    "godot": "Swap collision shape profiles through a stance controller and validate stand-up with shape queries before changing back. Move prone crawl in _physics_process so slopes and moving platforms use the same ground_contact_state as other locomotion.",
+    "unreal": "Use a crouch-like custom stance when standard crouch is insufficient. Server validates prone entry and exit, while animation montages, camera offsets, and stealth tags read the replicated stance_state_id.",
+    "web": "Represent prone as a collision profile plus movement modifier in the fixed loop. Test stand clearance against dynamic bodies before applying exit, then update render skeleton and camera after simulation state commits."
   },
   "related_mechanics": [
-    "camera.smooth_follow_camera",
-    "movement.run",
-    "movement.walk",
-    "ui_ux.cooldown_indicator"
+    "movement.crouch",
+    "stealth.shadow_cover",
+    "stealth.visibility_meter",
+    "combat.ranged_attack"
   ],
   "combines_well_with": [
-    "camera.smooth_follow_camera",
-    "movement.crouch",
-    "movement.sprint",
-    "ui_ux.cooldown_indicator"
+    "stealth.noise_meter",
+    "ai.line_of_sight_detection",
+    "camera.first_person_camera",
+    "ui_ux.interaction_prompt"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Metal Gear Solid V",
+      "note": "Uses prone movement for stealth approach and concealment."
+    },
+    {
+      "title": "ARMA 3",
+      "note": "Uses prone stance for low-profile movement and weapon handling."
+    }
+  ],
   "tags": [
-    "controls",
-    "locomotion",
-    "mobility",
-    "prone"
+    "stance",
+    "prone",
+    "capsule_height",
+    "stealth",
+    "clearance_check"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

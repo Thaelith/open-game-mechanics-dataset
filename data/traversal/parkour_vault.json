@@ -7,7 +7,7 @@
     "parkour vault"
   ],
   "category": "traversal",
-  "subcategory": "locomotion",
+  "subcategory": "obstacle_traversal",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,121 @@
     "platformer",
     "open_world"
   ],
-  "description": "Parkour Vault is a locomotion tool that helps the player cross space, reach anchors, or move through level structures.",
-  "design_notes": "Parkour Vault should be designed around a clear player promise, a readable trigger, and a predictable result. For traversal mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A committed traversal action that detects a low obstacle, validates approach and clearance, then moves the character over it through scripted or root-motion movement.",
+  "design_notes": "Parkour vault depends on obstacle classification and player intent. Define vault_obstacle_id, approach angle, clearance height, landing probe, animation or scripted motion ownership, cancel points, and camera transition. It should make movement over authored obstacles fluid without causing accidental vaults during combat, stealth, or precision positioning.",
   "design_purpose": [
-    "Give the player a readable way to use parkour vault as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect parkour vault to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players cross low obstacles without breaking movement flow.",
+    "Give level designers readable waist-high traversal affordances.",
+    "Connect sprinting, sliding, mantling, and combat movement through obstacle-specific actions."
   ],
-  "player_fantasy": "The player feels capable of crossing spaces that first appeared unreachable.",
+  "player_fantasy": "The player feels athletic and fluid, turning a barrier into a movement beat rather than a stop sign.",
   "required_systems": [
-    "character_controller",
-    "targeting_or_anchor_system",
-    "collision_detection",
-    "state_machine"
+    "obstacle_query",
+    "clearance_query",
+    "animation_montage",
+    "root_motion_policy",
+    "camera_transition"
   ],
   "parameters": [
     {
-      "name": "travel_speed",
+      "name": "vault_obstacle_height_min",
       "type": "float",
-      "typical_range": "6-30 world units/second",
-      "description": "Movement speed while using the traversal mechanic."
+      "typical_range": "0.4-0.8 world units",
+      "description": "Lowest obstacle height that can trigger a vault."
     },
     {
-      "name": "activation_range",
+      "name": "vault_obstacle_height_max",
       "type": "float",
-      "typical_range": "3-50 world units",
-      "description": "Maximum distance to a valid anchor, target, or route."
+      "typical_range": "1.0-1.6 world units",
+      "description": "Tallest obstacle height accepted before mantle or climb is used."
     },
     {
-      "name": "cancel_window",
+      "name": "vault_approach_angle_degrees",
       "type": "float",
-      "typical_range": "0-1.0 seconds",
-      "description": "Time during which the player can safely cancel or redirect the action."
+      "typical_range": "15-70 degrees",
+      "description": "Allowed angle between movement direction and obstacle normal."
+    },
+    {
+      "name": "vault_clearance_height_units",
+      "type": "float",
+      "typical_range": "standing capsule height",
+      "description": "Required empty space over and beyond the obstacle."
+    },
+    {
+      "name": "vault_motion_profile_id",
+      "type": "string",
+      "typical_range": "quick, long, combat, cinematic",
+      "description": "Movement and animation profile selected for the obstacle shape."
+    },
+    {
+      "name": "vault_landing_probe_units",
+      "type": "float",
+      "typical_range": "0.3-2 world units",
+      "description": "Forward landing probe used before committing to vault placement."
     }
   ],
   "common_variants": [
-    "parkour_vault_manual_targeting",
-    "parkour_vault_auto_targeting",
-    "limited_use",
-    "upgrade_extended"
+    "auto_vault",
+    "manual_vault",
+    "sprint_vault",
+    "combat_vault",
+    "slide_to_vault"
   ],
   "edge_cases": [
-    "Parkour Vault is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Parkour Vault overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Parkour Vault runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The obstacle is valid but the landing side becomes blocked by another actor or moving object.",
+    "Vault activation near interact prompts, cover, or ledges needs a priority rule so intent is not misread.",
+    "Root motion vaults must handle moving platforms or doors that shift under the animation.",
+    "Networked vaults need server validation for obstacle id and landing clearance before clients commit."
   ],
   "common_bugs": [
-    "Parkour Vault state does not reset correctly after interruption or reload.",
-    "Feedback for Parkour Vault plays even when the mechanic fails or is rejected.",
-    "Parkour Vault produces different results between frame rates, platforms, or network clients."
+    "Vault casts detect decorative trim and launch the player over unintended geometry.",
+    "The animation moves through collision because collision sweeps are disabled during the montage.",
+    "Camera transition collides with walls and hides the landing point.",
+    "Canceling vault leaves movement input locked after the character lands."
   ],
   "balancing_notes": [
-    "Make Parkour Vault strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Generous auto-vault improves flow but can remove tactical cover if every low wall becomes pass-through.",
+    "Long vault animations are cinematic but risky in combat unless protected or cancelable.",
+    "Vault height bands should not overlap confusingly with mantle, jump, or climb prompts."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Parkour Vault becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide manual-vault or auto-vault options depending on how often obstacles appear.",
+    "Keep camera changes subtle and include clear affordance markings for vaultable obstacles."
   ],
   "implementation_notes": {
-    "unity": "Implement Parkour Vault with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Parkour Vault as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Parkour Vault with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Parkour Vault as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use shape casts to produce vault_obstacle_id, top clearance, and landing probe results before entering vault state. If root motion drives the visual, still sweep the collision capsule along the committed path and abort to a safe fallback on obstruction.",
+    "godot": "Use ShapeCast or direct space-state queries to validate obstacle height, approach angle, and landing space. During vault, lock traversal_state_id and move the character through deterministic positions in _physics_process.",
+    "unreal": "Use trace profiles, Motion Warping, or Smart Objects to select a vault target. Server should approve obstacle id and landing transform, while clients play the montage and reconcile through CharacterMovement.",
+    "web": "Store vault_state with obstacle id, motion profile, start transform, and landing transform. Advance scripted movement in fixed ticks, sweeping collision each segment before rendering animation."
   },
   "related_mechanics": [
-    "camera.dynamic_fov",
-    "platforming.ledge_grab",
-    "traversal.grappling_hook",
-    "traversal.rope_swing"
+    "movement.slide",
+    "movement.run",
+    "traversal.mantling",
+    "platforming.ledge_grab"
   ],
   "combines_well_with": [
     "camera.dynamic_fov",
-    "platforming.ledge_grab",
-    "traversal.teleport_blink",
-    "traversal.zipline"
+    "ai.cover_seeking",
+    "combat.melee_attack",
+    "ui_ux.interaction_prompt"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Mirror's Edge",
+      "note": "Uses vaulting as part of continuous parkour traversal."
+    },
+    {
+      "title": "Assassin's Creed Unity",
+      "note": "Uses obstacle traversal to maintain movement flow through urban spaces."
+    }
+  ],
   "tags": [
-    "locomotion",
-    "mobility",
-    "navigation",
-    "parkour"
+    "parkour_vault",
+    "obstacle_traversal",
+    "clearance_check",
+    "root_motion",
+    "camera_transition"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

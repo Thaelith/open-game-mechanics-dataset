@@ -7,7 +7,7 @@
     "walk"
   ],
   "category": "movement",
-  "subcategory": "locomotion",
+  "subcategory": "ground_locomotion",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,121 @@
     "action",
     "adventure"
   ],
-  "description": "A controlled baseline movement state used for precise positioning.",
-  "design_notes": "Walk should be designed around a clear player promise, a readable trigger, and a predictable result. For movement mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Controlled low-commitment ground locomotion that lets the player position precisely without entering a faster run, sprint, or evasive state.",
+  "design_notes": "Walk is the baseline for readable locomotion. Define how input_vector becomes character motion, how acceleration and deceleration curves feel on different surface materials, how slope limits clamp movement, and which animation blend states own foot placement. It should be dependable enough for precision positioning, stealth pacing, and interaction alignment without stealing the role of run or sprint.",
   "design_purpose": [
-    "Give the player a readable way to use walk as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect walk to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players precise positioning for exploration, stealth, platform setup, and interaction alignment.",
+    "Provide a predictable baseline for comparing faster or more committed locomotion states.",
+    "Support animation readability, camera framing, and low-pressure navigation through dense spaces."
   ],
-  "player_fantasy": "The player feels directly connected to the avatar and able to express intent through motion.",
+  "player_fantasy": "The player feels fully in control of the character, able to approach, line up, and stop exactly where intended.",
   "required_systems": [
     "character_controller",
-    "input_handling",
-    "collision_detection",
-    "animation_state_machine"
+    "input_processing",
+    "ground_detection",
+    "animation_blend_tree",
+    "camera_follow"
   ],
   "parameters": [
     {
-      "name": "movement_speed",
+      "name": "walk_pace_units_per_second",
       "type": "float",
-      "typical_range": "2-12 world units/second",
-      "description": "Baseline travel speed while the mechanic is active."
+      "typical_range": "1.5-4.5 world units/second",
+      "description": "Target ground velocity used by the walk locomotion state."
     },
     {
-      "name": "acceleration",
-      "type": "float",
-      "typical_range": "10-80 world units/second^2",
-      "description": "How quickly the actor reaches target speed."
+      "name": "walk_acceleration_curve_id",
+      "type": "string",
+      "typical_range": "linear, eased, analog_weighted",
+      "description": "Curve used when input_vector moves from idle into walking."
     },
     {
-      "name": "turn_response",
+      "name": "walk_deceleration_curve_id",
+      "type": "string",
+      "typical_range": "snappy, eased, surface_weighted",
+      "description": "Curve used when the player releases or reverses movement input."
+    },
+    {
+      "name": "walk_turn_degrees_per_second",
       "type": "float",
-      "typical_range": "0.05-0.35 seconds",
-      "description": "How quickly movement direction updates after input changes."
+      "typical_range": "360-1440 degrees/second",
+      "description": "Maximum facing rotation while grounded and not locked by animation."
+    },
+    {
+      "name": "walk_slope_limit_degrees",
+      "type": "float",
+      "typical_range": "35-60 degrees",
+      "description": "Steepest walkable ground angle before sliding or blocking movement."
+    },
+    {
+      "name": "walk_camera_profile_id",
+      "type": "string",
+      "typical_range": "exploration, stealth, precision",
+      "description": "Camera follow profile used while the character is in walk state."
     }
   ],
   "common_variants": [
-    "walk_grounded_version",
-    "walk_airborne_version",
-    "stamina_limited_version",
-    "contextual_version"
+    "analog_walk",
+    "hold_to_walk",
+    "stealth_walk",
+    "tank_walk",
+    "grid_walk"
   ],
   "edge_cases": [
-    "Walk is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Walk overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Walk runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Tiny analog stick drift should not move character_id unless it passes the dead-zone policy.",
+    "Slope transitions need a consistent ground_contact_state when the character crosses edges or stairs.",
+    "Walk should choose a clear priority when aim lock, dialogue focus, or interact prompts also consume input_vector.",
+    "Networked walking needs client_input_sequence reconciliation without visible foot sliding after correction."
   ],
   "common_bugs": [
-    "Walk state does not reset correctly after interruption or reload.",
-    "Feedback for Walk plays even when the mechanic fails or is rejected.",
-    "Walk produces different results between frame rates, platforms, or network clients."
+    "Movement uses render delta instead of fixed-step simulation and becomes inconsistent at unusual frame rates.",
+    "Acceleration resets every frame because input_vector is normalized after applying analog magnitude.",
+    "Animation blend thresholds do not match walk_pace_units_per_second, causing foot skating.",
+    "Ground detection sticks to steep collision and lets characters walk up surfaces beyond walk_slope_limit_degrees."
   ],
   "balancing_notes": [
-    "Make Walk strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Walk pace defines the scale of rooms, interaction spacing, patrol avoidance, and camera comfort.",
+    "If walk is too fast, run and sprint lose identity; if too slow, basic traversal feels padded.",
+    "High turn rates help accessibility and precision, but can make weighty characters feel frictionless."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Walk becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Support analog input, remappable hold-to-walk, and optional toggle-to-walk for players who cannot hold a modifier.",
+    "Avoid tying precise walking to narrow stick angles without calibration and dead-zone settings."
   ],
   "implementation_notes": {
-    "unity": "Implement Walk with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Walk as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Walk with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Walk as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store movement_state_id as walk and resolve input_vector before FixedUpdate motion. Feed target velocity through CharacterController.Move or Rigidbody.MovePosition, apply slope checks from contact normals, and drive Animator blend parameters from the resolved walk pace rather than raw input.",
+    "godot": "Keep walk as an explicit locomotion_mode_id on CharacterBody2D or CharacterBody3D. In _physics_process, apply acceleration and deceleration curves to velocity, call move_and_slide with floor limits, and update AnimationTree blend values after collision resolution.",
+    "unreal": "Use CharacterMovement walking mode with custom run data separated from animation. For multiplayer, send client_input_sequence and reconcile server corrections without letting animation root motion override correction frames.",
+    "web": "Represent walk state in the fixed simulation loop with input_vector, ground_contact_state, and surface_material_id. Resolve collision before render interpolation, then pass the final velocity into Canvas, Phaser, Three.js, or a custom animation layer."
   },
   "related_mechanics": [
-    "camera.smooth_follow_camera",
     "movement.run",
     "movement.sprint",
-    "ui_ux.cooldown_indicator"
+    "movement.crouch",
+    "stealth.noise_meter"
   ],
   "combines_well_with": [
     "camera.smooth_follow_camera",
-    "movement.crouch",
-    "movement.slide",
-    "ui_ux.cooldown_indicator"
+    "ui_ux.interaction_prompt",
+    "stealth.visibility_meter",
+    "platforming.coyote_time"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Last of Us",
+      "note": "Uses controlled walking for exploration, stealth approach, and close interaction spaces."
+    },
+    {
+      "title": "Resident Evil 2",
+      "note": "Uses deliberate walking pace to support aiming, tension, and room navigation."
+    }
+  ],
   "tags": [
-    "controls",
-    "locomotion",
-    "mobility",
-    "walk"
+    "ground_locomotion",
+    "input_vector",
+    "animation_blend",
+    "precision_movement",
+    "camera_comfort"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

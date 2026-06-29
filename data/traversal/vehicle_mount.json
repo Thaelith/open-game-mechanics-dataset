@@ -7,7 +7,7 @@
     "vehicle mount"
   ],
   "category": "traversal",
-  "subcategory": "locomotion",
+  "subcategory": "vehicle_access",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,121 @@
     "platformer",
     "open_world"
   ],
-  "description": "Vehicle Mount is a locomotion tool that helps the player cross space, reach anchors, or move through level structures.",
-  "design_notes": "Vehicle Mount should be designed around a clear player promise, a readable trigger, and a predictable result. For traversal mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "An interaction that transfers a character into a vehicle seat, assigns driver or passenger authority, and validates safe exit when leaving.",
+  "design_notes": "Vehicle mount is a state transfer, not only an interaction prompt. Define mount_interaction_id, seat_id, ownership, driver and passenger authority, animation sync, collision handoff, exit position rules, disconnect behavior, and anti-grief constraints. The mechanic should feel immediate while preventing seat theft, duplicate drivers, and unsafe exits.",
   "design_purpose": [
-    "Give the player a readable way to use vehicle mount as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect vehicle mount to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players enter and leave vehicles through a readable, validated interaction.",
+    "Assign driver, passenger, camera, and input authority without desync or ownership exploits.",
+    "Connect traversal, combat, multiplayer, and vehicle systems through a safe state handoff."
   ],
-  "player_fantasy": "The player feels capable of crossing spaces that first appeared unreachable.",
+  "player_fantasy": "The player feels they can confidently board a vehicle, take control or ride along, and exit without losing agency.",
   "required_systems": [
-    "character_controller",
-    "targeting_or_anchor_system",
-    "collision_detection",
-    "state_machine"
+    "interaction_prompt",
+    "vehicle_seat_system",
+    "authority_transfer",
+    "animation_sync",
+    "exit_position_validation"
   ],
   "parameters": [
     {
-      "name": "travel_speed",
+      "name": "mount_prompt_radius_units",
       "type": "float",
-      "typical_range": "6-30 world units/second",
-      "description": "Movement speed while using the traversal mechanic."
+      "typical_range": "1-4 world units",
+      "description": "Interaction radius around eligible vehicle seats."
     },
     {
-      "name": "activation_range",
-      "type": "float",
-      "typical_range": "3-50 world units",
-      "description": "Maximum distance to a valid anchor, target, or route."
+      "name": "mount_enter_window_ms",
+      "type": "integer",
+      "typical_range": "300-1200 ms",
+      "description": "Committed entry interval before seat authority is granted."
     },
     {
-      "name": "cancel_window",
-      "type": "float",
-      "typical_range": "0-1.0 seconds",
-      "description": "Time during which the player can safely cancel or redirect the action."
+      "name": "seat_authority_policy_id",
+      "type": "string",
+      "typical_range": "driver_only, passenger, owner_locked, team_locked",
+      "description": "Policy that decides who can occupy and control each seat."
+    },
+    {
+      "name": "exit_position_rule",
+      "type": "string",
+      "typical_range": "nearest_safe, side_preferred, last_door, teleport_safe",
+      "description": "Rule used to choose a safe world position on exit."
+    },
+    {
+      "name": "mount_cancel_window_ms",
+      "type": "integer",
+      "typical_range": "100-500 ms",
+      "description": "Early cancellation window before collision and authority handoff commit."
+    },
+    {
+      "name": "disconnect_restore_policy_id",
+      "type": "string",
+      "typical_range": "keep_seat, eject_safe, transfer_to_ai",
+      "description": "Behavior when a mounted player disconnects or host migration occurs."
     }
   ],
   "common_variants": [
-    "vehicle_mount_manual_targeting",
-    "vehicle_mount_auto_targeting",
-    "limited_use",
-    "upgrade_extended"
+    "driver_mount",
+    "passenger_mount",
+    "turret_mount",
+    "instant_mount",
+    "animated_mount"
   ],
   "edge_cases": [
-    "Vehicle Mount is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Vehicle Mount overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Vehicle Mount runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Two players request the same seat in the same server tick and need deterministic tie-breaking.",
+    "The vehicle moves during the entry animation and changes the mount transform.",
+    "Exit positions can be blocked by walls, hazards, water, or enemy bodies.",
+    "Disconnect or host migration while mounted needs seat ownership and vehicle state restoration."
   ],
   "common_bugs": [
-    "Vehicle Mount state does not reset correctly after interruption or reload.",
-    "Feedback for Vehicle Mount plays even when the mechanic fails or is rejected.",
-    "Vehicle Mount produces different results between frame rates, platforms, or network clients."
+    "Client grants driver control before the server approves seat_id ownership.",
+    "Entry animation completes but collision handoff leaves the character capsule active inside the vehicle.",
+    "Exit validation places the player under the vehicle or inside a nearby wall.",
+    "Passenger camera remains attached after dismount because camera_transition_profile_id is not cleared."
   ],
   "balancing_notes": [
-    "Make Vehicle Mount strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Long entry windows create vulnerability; instant entry improves usability but can enable escape exploits.",
+    "Seat ownership rules matter in co-op and PvP because players can grief by stealing driver seats.",
+    "Exit safety should protect players from geometry without allowing teleport shortcuts through locked spaces."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Vehicle Mount becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use clear seat prompts with driver/passenger labels and remappable interaction input.",
+    "Avoid rapid camera snaps on mount or dismount; provide comfort settings for vehicle camera transitions."
   ],
   "implementation_notes": {
-    "unity": "Implement Vehicle Mount with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Vehicle Mount as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Vehicle Mount with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Vehicle Mount as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Represent mount_interaction_id as a transaction: reserve seat_id, disable or park the character controller, transfer input_authority_id to the vehicle, and validate exit_position_rule before restoring the player capsule. Netcode should replicate seat occupancy from the server.",
+    "godot": "Use Area prompts around seat anchors, then commit mount state through a vehicle_seat_system node. On exit, run shape queries for candidate positions before re-enabling the player collision body.",
+    "unreal": "Use possess or attach flows only after the server validates seat ownership. Replicate seat_id, driver_player_id, and passenger states; use animation montages for entry while collision and authority transfer remain gameplay-owned.",
+    "web": "Store vehicle_mount_state with vehicle_id, seat_id, player_id, authority_owner_id, and pending exit rule. Apply the seat transaction atomically in the simulation loop so clients cannot create duplicate drivers."
   },
   "related_mechanics": [
-    "camera.dynamic_fov",
-    "platforming.ledge_grab",
-    "traversal.grappling_hook",
-    "traversal.rope_swing"
+    "vehicles.vehicle_acceleration",
+    "vehicles.vehicle_damage",
+    "multiplayer.local_coop",
+    "ui_ux.interaction_prompt"
   ],
   "combines_well_with": [
-    "camera.dynamic_fov",
-    "platforming.ledge_grab",
-    "traversal.teleport_blink",
-    "traversal.zipline"
+    "vehicles.vehicle_braking",
+    "vehicles.fuel",
+    "multiplayer.asymmetric_roles",
+    "camera.third_person_camera"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Halo: Combat Evolved",
+      "note": "Uses driver and passenger vehicle seats as a combat traversal layer."
+    },
+    {
+      "title": "Grand Theft Auto V",
+      "note": "Uses vehicle entry and exit interactions across many vehicle types."
+    }
+  ],
   "tags": [
-    "locomotion",
-    "mobility",
-    "navigation",
-    "vehicle"
+    "vehicle_mount",
+    "seat_id",
+    "authority_transfer",
+    "exit_validation",
+    "anti_grief"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

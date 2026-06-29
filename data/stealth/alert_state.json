@@ -7,7 +7,7 @@
     "alert state"
   ],
   "category": "stealth",
-  "subcategory": "stealth",
+  "subcategory": "ai_alertness",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,86 +24,121 @@
     "immersive_sim",
     "action"
   ],
-  "description": "Alert State is a concealment or detection mechanic that lets players manage information, sound, sight, and risk.",
-  "design_notes": "Alert State should be designed around a clear player promise, a readable trigger, and a predictable result. For stealth mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "An AI perception state machine that moves agents between unaware, suspicious, searching, alerted, and combat-ready behavior based on perception events.",
+  "design_notes": "Alert state must define how perception_event_id, suspicion score, last_known_player_position, line-of-sight grace, and transition hysteresis interact. The system should explain why an AI changed state through debug_reason_trace and avoid instant binary detection unless the game intentionally wants harsh stealth failure.",
   "design_purpose": [
-    "Give the player a readable way to use alert state as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect alert state to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create readable escalation between hidden play, investigation, search, and combat.",
+    "Give designers control over how sound, sight, damage, and scripted events compete for AI priority.",
+    "Support stealth recovery by letting suspicion decay or move into search rather than permanent combat."
   ],
-  "player_fantasy": "The player feels observant and controlled while avoiding or manipulating threats.",
+  "player_fantasy": "The player feels watched but not instantly doomed, reading enemy suspicion and exploiting recovery windows.",
   "required_systems": [
-    "perception_system",
-    "ai_state_machine",
-    "noise_or_visibility_model",
-    "feedback_ui"
+    "ai_perception",
+    "behavior_state_machine",
+    "blackboard",
+    "awareness_ui",
+    "debug_tools"
   ],
   "parameters": [
     {
-      "name": "detection_threshold",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "Amount of suspicion required before AI reacts."
+      "name": "alert_state_id",
+      "type": "string",
+      "typical_range": "unaware, suspicious, search, combat",
+      "description": "Current AI awareness state for the agent."
     },
     {
-      "name": "decay_rate",
+      "name": "suspicion_threshold_points",
       "type": "float",
-      "typical_range": "0.01-1 per second",
-      "description": "How quickly suspicion or noise fades."
+      "typical_range": "25-100 points",
+      "description": "Suspicion score required before escalating to a higher alert state."
     },
     {
-      "name": "feedback_delay",
+      "name": "suspicion_decay_points_per_second",
       "type": "float",
-      "typical_range": "0-1 seconds",
-      "description": "Delay before the player receives detection feedback."
+      "typical_range": "1-20 points/second",
+      "description": "Decay applied when no reinforcing perception events arrive."
+    },
+    {
+      "name": "line_of_sight_grace_ms",
+      "type": "integer",
+      "typical_range": "100-800 ms",
+      "description": "Grace interval before losing sight clears the current visual confirmation."
+    },
+    {
+      "name": "search_timeout_ms",
+      "type": "integer",
+      "typical_range": "3000-30000 ms",
+      "description": "Search interval before returning toward a lower awareness state."
+    },
+    {
+      "name": "alert_hysteresis_margin_points",
+      "type": "float",
+      "typical_range": "5-25 points",
+      "description": "Margin that prevents rapid state flipping near thresholds."
     }
   ],
   "common_variants": [
-    "alert_state_forgiving_variant",
-    "alert_state_hardcore_variant",
-    "enemy_specific_variant",
-    "environmental_variant"
+    "tiered_alertness",
+    "shared_group_alert",
+    "instant_alarm",
+    "decaying_suspicion",
+    "scripted_lockdown"
   ],
   "edge_cases": [
-    "Alert State is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Alert State overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Alert State runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A guard hears a noise and sees the player in the same decision tick, requiring deterministic perception priority.",
+    "The player breaks line of sight during the grace interval and leaves a last_known_player_position for search.",
+    "Checkpoint restore should not resurrect a combat alert unless that state was intentionally saved.",
+    "Multiple AI agents sharing alert data need squad_id rules for propagation and cooldown."
   ],
   "common_bugs": [
-    "Alert State state does not reset correctly after interruption or reload.",
-    "Feedback for Alert State plays even when the mechanic fails or is rejected.",
-    "Alert State produces different results between frame rates, platforms, or network clients."
+    "Suspicion oscillates every tick because threshold and decay have no hysteresis margin.",
+    "AI enters combat without storing the perception_event_id that caused the transition.",
+    "Awareness UI shows suspicious while behavior tree already selected attack actions.",
+    "Save/load restores alert_state_id but not last_known_player_position or search timer."
   ],
   "balancing_notes": [
-    "Make Alert State strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Long grace windows make stealth more forgiving; short windows favor strict line-of-sight play.",
+    "Group alert propagation can make a single mistake cascade, so squads need distance or communication limits.",
+    "Suspicion decay should be tuned with patrol density and hiding opportunities, not in isolation."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Alert State becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Represent alert state with shape, text, or meter changes in addition to color.",
+    "Provide non-audio cues for suspicion gain caused by sound events so deaf or low-volume players can read the system."
   ],
   "implementation_notes": {
-    "unity": "Implement Alert State with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Alert State as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Alert State with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Alert State as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store alert_state_id, suspicion points, last_known_player_position, and debug_reason_trace on an AI blackboard component. Perception events should enqueue with priority, then one deterministic decision step updates state before behavior tree or animation transitions run.",
+    "godot": "Use an AI state node or Resource-backed blackboard with suspicion score and perception_event_id fields. Update transitions in _physics_process or a fixed AI tick, and expose debug_reason_trace in editor overlays for patrol testing.",
+    "unreal": "Use AI Perception plus Blackboard keys for alert_state_id, target_id, and last known position. Decorators should use hysteresis thresholds, while replicated or networked AI keeps authority on the server.",
+    "web": "Represent alert transitions as deterministic data in the AI update loop. Sort perception events by priority and stable id, update suspicion and search timers, then render awareness UI from committed state."
   },
   "related_mechanics": [
     "ai.line_of_sight_detection",
-    "horror.limited_visibility",
-    "stealth.distraction_throw",
-    "stealth.shadow_cover"
+    "ai.investigate_noise",
+    "ai.chase",
+    "stealth.last_known_position_search"
   ],
   "combines_well_with": [
-    "ai.line_of_sight_detection",
-    "horror.limited_visibility",
-    "stealth.noise_meter"
+    "stealth.visibility_meter",
+    "stealth.noise_meter",
+    "stealth.distraction_throw",
+    "ui_ux.damage_numbers"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Metal Gear Solid V",
+      "note": "Uses escalating enemy awareness and search behavior in stealth encounters."
+    },
+    {
+      "title": "Dishonored",
+      "note": "Uses guard alertness states to move from suspicion to combat."
+    }
+  ],
   "tags": [
-    "alert",
-    "detection",
-    "stealth"
+    "alert_state",
+    "suspicion",
+    "ai_perception",
+    "last_known_position",
+    "debug_reason_trace"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

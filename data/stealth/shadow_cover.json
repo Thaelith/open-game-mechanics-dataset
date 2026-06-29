@@ -7,7 +7,7 @@
     "shadow cover"
   ],
   "category": "stealth",
-  "subcategory": "stealth",
+  "subcategory": "light_visibility",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,85 +24,120 @@
     "immersive_sim",
     "action"
   ],
-  "description": "Shadow Cover is a concealment or detection mechanic that lets players manage information, sound, sight, and risk.",
-  "design_notes": "Shadow Cover should be designed around a clear player promise, a readable trigger, and a predictable result. For stealth mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A stealth modifier where darkness, cover volumes, and light sampling reduce how easily AI vision systems detect the player.",
+  "design_notes": "Shadow cover depends on lighting data being legible to both player and AI. Define shadow_cover_id, light_level_sample points, moving light updates, cover volume modifiers, enemy vision cone interaction, and camera exposure. The mechanic should reward reading light and silhouette without making detection feel arbitrary.",
   "design_purpose": [
-    "Give the player a readable way to use shadow cover as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect shadow cover to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players use darkness and occlusion as positional stealth tools.",
+    "Connect lighting, level design, AI vision, and player stance into one readable detection model.",
+    "Create movement choices around lit paths, dark routes, moving lights, and cover volumes."
   ],
-  "player_fantasy": "The player feels observant and controlled while avoiding or manipulating threats.",
+  "player_fantasy": "The player feels hidden in darkness, using light and silhouette as part of their tactical route.",
   "required_systems": [
-    "perception_system",
-    "ai_state_machine",
-    "noise_or_visibility_model",
-    "feedback_ui"
+    "lighting_sampling",
+    "ai_vision",
+    "cover_volumes",
+    "visibility_meter",
+    "debug_visualization"
   ],
   "parameters": [
     {
-      "name": "detection_threshold",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "Amount of suspicion required before AI reacts."
+      "name": "shadow_cover_id",
+      "type": "string",
+      "typical_range": "volume id or sampled zone id",
+      "description": "Identifier for the darkness or cover region affecting visibility."
     },
     {
-      "name": "decay_rate",
+      "name": "light_sample_radius_units",
       "type": "float",
-      "typical_range": "0.01-1 per second",
-      "description": "How quickly suspicion or noise fades."
+      "typical_range": "0.2-1.5 world units",
+      "description": "Radius around the character used for light-level sampling."
     },
     {
-      "name": "feedback_delay",
+      "name": "visibility_modifier_curve_id",
+      "type": "string",
+      "typical_range": "linear, stepped, exposure_weighted",
+      "description": "Curve mapping sampled light to AI visibility modifiers."
+    },
+    {
+      "name": "moving_light_refresh_ms",
+      "type": "integer",
+      "typical_range": "50-250 ms",
+      "description": "Refresh interval for flickering, moving, or scripted light sources."
+    },
+    {
+      "name": "enemy_vision_cone_multiplier",
       "type": "float",
-      "typical_range": "0-1 seconds",
-      "description": "Delay before the player receives detection feedback."
+      "typical_range": "0.2-1.0",
+      "description": "Detection multiplier applied while the player is in valid shadow cover."
+    },
+    {
+      "name": "exposure_probe_count",
+      "type": "integer",
+      "typical_range": "1-8 probes",
+      "description": "Number of body probes sampled for silhouette exposure."
     }
   ],
   "common_variants": [
-    "shadow_cover_forgiving_variant",
-    "shadow_cover_hardcore_variant",
-    "enemy_specific_variant",
-    "environmental_variant"
+    "binary_shadow_cover",
+    "graded_light_meter",
+    "cover_volume_shadow",
+    "moving_light_stealth",
+    "camouflage_shadow"
   ],
   "edge_cases": [
-    "Shadow Cover is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Shadow Cover overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Shadow Cover runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Dynamic lights can move over the player while AI vision is between decision ticks.",
+    "Camera auto-exposure may make an area look dark to the player while AI light sampling reads it as bright.",
+    "Particles, muzzle flashes, or flashlights need rules for temporary visibility spikes.",
+    "Multiplayer stealth needs authority over light sampling so clients cannot hide by changing local graphics settings."
   ],
   "common_bugs": [
-    "Shadow Cover state does not reset correctly after interruption or reload.",
-    "Feedback for Shadow Cover plays even when the mechanic fails or is rejected.",
-    "Shadow Cover produces different results between frame rates, platforms, or network clients."
+    "Light sampling reads only one foot point and misses the upper body in bright light.",
+    "Shadow cover volume remains active after a door opens or object moves away.",
+    "AI and UI use different visibility curves and disagree about whether the player is hidden.",
+    "Baked lighting data is used for moving lights, so detection never changes during patrol sweeps."
   ],
   "balancing_notes": [
-    "Make Shadow Cover strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Strong shadow protection supports classic stealth but can trivialize AI unless patrol routes include light pressure.",
+    "Graded visibility gives designers more tuning room than binary hidden/exposed states.",
+    "Readable light language matters more than photorealistic darkness for fair stealth."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Shadow Cover becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use UI state, outline strength, or icons in addition to subtle brightness differences.",
+    "Avoid requiring players to distinguish very dark tones without contrast, gamma, or visibility assists."
   ],
   "implementation_notes": {
-    "unity": "Implement Shadow Cover with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Shadow Cover as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Shadow Cover with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Shadow Cover as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Sample light_level at multiple body probes or author cover volumes with shadow_cover_id. AI vision should read the same resolved visibility modifier as the player UI, and debug overlays should show probe results and active light sources.",
+    "godot": "Use Area volumes, light masks, or sampled probes to calculate a visibility modifier. Update moving lights on a fixed interval and write the result into both visibility meter UI and AI perception state.",
+    "unreal": "Combine cover volumes, light probes, or Gameplay Tags with AI sight checks. Server-side detection should own visibility modifiers, while debug drawing shows probe positions, cone checks, and active shadow_cover_id.",
+    "web": "Represent shadow cover as sampled zones or tile/volume data rather than renderer brightness. The simulation computes visibility modifiers from light sources and cover volumes before AI detection runs."
   },
   "related_mechanics": [
+    "stealth.visibility_meter",
     "ai.line_of_sight_detection",
-    "horror.limited_visibility",
-    "stealth.alert_state",
-    "stealth.distraction_throw"
+    "movement.prone",
+    "horror.limited_visibility"
   ],
   "combines_well_with": [
-    "ai.line_of_sight_detection",
-    "horror.limited_visibility",
-    "stealth.noise_meter"
+    "stealth.noise_meter",
+    "stealth.alert_state",
+    "camera.top_down_camera",
+    "ui_ux.minimap"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Thief: The Dark Project",
+      "note": "Uses darkness as a major stealth readability layer."
+    },
+    {
+      "title": "Splinter Cell",
+      "note": "Uses light and shadow as core stealth information."
+    }
+  ],
   "tags": [
-    "detection",
-    "shadow",
+    "shadow_cover",
+    "light_sampling",
+    "visibility_modifier",
+    "ai_vision",
     "stealth"
   ],
   "source_confidence": "medium",

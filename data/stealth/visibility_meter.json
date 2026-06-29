@@ -24,96 +24,120 @@
     "immersive_sim",
     "horror"
   ],
-  "description": "A player-facing indicator that communicates how visible the player is to observers.",
-  "design_notes": "A visibility meter translates lighting, stance, cover, distance, movement, and enemy perception into readable feedback. It should inform without revealing more than the game wants the player to know.",
+  "description": "A player-facing and AI-facing measure of how detectable the character is based on light, stance, movement, distance, cover, and enemy perception rules.",
+  "design_notes": "Visibility meter should expose the same detection ingredients that AI actually uses. Define visibility_score_points, light samples, stance modifiers, movement visibility multipliers, cover volumes, distance falloff, and detection thresholds. The meter should help players plan stealth routes without revealing so much precision that tension disappears.",
   "design_purpose": [
-    "Help players understand stealth exposure.",
-    "Connect lighting, stance, and movement to AI detection.",
-    "Reduce confusion when detection rules are systemic."
+    "Make hidden detection math readable enough for players to trust stealth failures.",
+    "Connect stance, light, cover, movement, and AI sightlines into one practical signal.",
+    "Help designers tune stealth encounters using the same score that appears in debug tools."
   ],
-  "player_fantasy": "The player feels able to read shadows and exposure like a skilled infiltrator.",
+  "player_fantasy": "The player feels able to read how exposed they are and adjust posture, route, or timing before being detected.",
   "required_systems": [
-    "visibility_model",
-    "ai_perception",
-    "ui_framework",
-    "lighting_queries"
+    "visibility_scoring",
+    "ai_vision",
+    "lighting_sampling",
+    "cover_volumes",
+    "awareness_ui"
   ],
   "parameters": [
     {
-      "name": "visibility_sample_points",
-      "type": "integer",
-      "typical_range": "1-12 points",
-      "description": "Body points sampled for exposure calculations."
-    },
-    {
-      "name": "light_exposure_weight",
+      "name": "visibility_score_points",
       "type": "float",
-      "typical_range": "0-1",
-      "description": "Weight assigned to lighting in the meter score."
+      "typical_range": "0-100 points",
+      "description": "Current exposure score after stance, light, cover, and distance modifiers."
     },
     {
-      "name": "movement_exposure_multiplier",
+      "name": "light_sample_radius_units",
       "type": "float",
-      "typical_range": "1-5",
-      "description": "Multiplier applied while moving quickly or loudly."
+      "typical_range": "0.2-1.5 world units",
+      "description": "Radius used to sample lighting around the character body."
     },
     {
-      "name": "meter_smoothing_ms",
-      "type": "integer",
-      "typical_range": "50-700 ms",
-      "description": "Smoothing window before UI changes reach the displayed score."
+      "name": "movement_visibility_multiplier",
+      "type": "float",
+      "typical_range": "0.5-2.5",
+      "description": "Exposure modifier applied by walking, sprinting, crouching, or crawling."
+    },
+    {
+      "name": "cover_volume_modifier",
+      "type": "float",
+      "typical_range": "0.1-1.0",
+      "description": "Exposure reduction from authored cover or concealment volumes."
+    },
+    {
+      "name": "detection_threshold_points",
+      "type": "float",
+      "typical_range": "40-100 points",
+      "description": "Score where AI starts suspicion or direct detection."
+    },
+    {
+      "name": "awareness_ui_state",
+      "type": "string",
+      "typical_range": "hidden, exposed, watched, detected",
+      "description": "Player-facing display state derived from the exposure score."
     }
   ],
   "common_variants": [
     "binary_hidden_icon",
-    "continuous_visibility_bar",
+    "graded_visibility_meter",
     "enemy_specific_meter",
-    "diegetic_light_gem"
+    "cover_exposure_meter",
+    "light_gem"
   ],
   "edge_cases": [
-    "Multiple enemies can perceive different visibility scores from different angles.",
-    "Flashing lights or moving shadows can create noisy meter updates.",
-    "Crouch, prone, and cover states must agree with AI perception."
+    "Different enemies may see the player from different distances or angles while one global meter is shown.",
+    "The player can be hidden from sight but loud enough to trigger hearing, requiring separate noise messaging.",
+    "Camera occlusion can make the player feel covered even when AI vision rays have a clear line.",
+    "Checkpoint restore should not show a stale detected state after AI perception has reset."
   ],
   "common_bugs": [
-    "UI meter uses lighting only while AI detects by line of sight and distance.",
-    "Smoothing hides sudden exposure and makes detection feel unfair.",
-    "Meter remains hidden during tutorials where players need it most."
+    "The UI meter uses player camera exposure while AI uses world light samples.",
+    "Movement visibility multiplier remains applied after sprinting stops.",
+    "Cover volumes overlap and multiply into near-zero visibility when only the strongest modifier was intended.",
+    "Detection threshold differs between UI and AI blackboard data, causing false trust."
   ],
   "balancing_notes": [
-    "Precise meters reduce uncertainty; vague indicators preserve tension.",
-    "Visibility should be useful but not so exact that stealth becomes spreadsheet play."
+    "Precise meters support fair stealth but can reduce uncertainty; vague meters preserve tension but need strong feedback on failure.",
+    "Visibility scoring must be tuned with level lighting and patrol sightlines, not only character stance.",
+    "Enemy-specific meters are more accurate but can overwhelm players in crowded encounters."
   ],
   "accessibility_notes": [
-    "Avoid color-only hidden/detected states and allow meter scaling or alternate icon modes."
+    "Use text, icons, or shape changes alongside color to represent hidden, watched, and detected states.",
+    "Allow meter size and contrast adjustments because stealth relies heavily on reading this signal."
   ],
   "implementation_notes": {
-    "unity": "Compute visibility from sampled body points, authored shadow volumes, stance, and movement noise, then feed the same score into AI perception and the UI meter where possible.",
-    "godot": "Combine Area-based light or shadow volumes with ray visibility checks and stance state, smoothing the displayed meter separately from the AI detection threshold.",
-    "unreal": "Use perception data, Gameplay Tags, or stealth volumes to compute exposure on the authoritative actor state, then replicate only the score category needed by UI.",
-    "web": "Calculate exposure from tile lighting, cover masks, movement state, and observer angles in the simulation model, then bind the result to a UI meter with smoothing."
+    "unity": "Compute visibility_score_points from shared visibility components before AI sight decisions and UI rendering. Use body probes, cover_volume_id, stance state, and enemy distance; debug views should show each contribution and the final detection threshold.",
+    "godot": "Store visibility data on a player stealth profile Resource and update it on a fixed perception tick. Area cover volumes, light probes, and movement_state_id feed the score before AI agents read it.",
+    "unreal": "Use Blackboard or replicated stealth components for visibility score, cover modifier, and UI state. AI sight decorators should read server-owned values rather than client display settings.",
+    "web": "Represent visibility as deterministic simulation data, not CSS or render brightness. Compute exposure from light zones, cover volumes, stance, and listener-specific distance before writing awareness UI state."
   },
   "related_mechanics": [
-    "ai.line_of_sight_detection",
     "stealth.shadow_cover",
+    "stealth.noise_meter",
+    "ai.line_of_sight_detection",
     "movement.crouch"
   ],
   "combines_well_with": [
-    "combat.stealth_kill",
-    "stealth.last_known_position_search",
-    "ui_ux.interaction_prompt"
+    "stealth.alert_state",
+    "movement.prone",
+    "ui_ux.minimap",
+    "accessibility.colorblind_modes"
   ],
   "example_games": [
     {
       "title": "Thief: The Dark Project",
-      "note": "Uses a light gem to communicate how visible the player is."
+      "note": "Uses a light-based visibility indicator for stealth readability."
+    },
+    {
+      "title": "Mark of the Ninja",
+      "note": "Uses clear visual stealth information to show detection risk."
     }
   ],
   "tags": [
-    "stealth",
-    "visibility",
-    "ui",
-    "perception",
+    "visibility_meter",
+    "exposure_score",
+    "ai_vision",
+    "awareness_ui",
     "accessibility"
   ],
   "source_confidence": "medium",

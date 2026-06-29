@@ -7,7 +7,7 @@
     "noise meter"
   ],
   "category": "stealth",
-  "subcategory": "stealth",
+  "subcategory": "acoustic_visibility",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,86 +24,121 @@
     "immersive_sim",
     "action"
   ],
-  "description": "Noise Meter is a concealment or detection mechanic that lets players manage information, sound, sight, and risk.",
-  "design_notes": "Noise Meter should be designed around a clear player promise, a readable trigger, and a predictable result. For stealth mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A player- or AI-facing model of how much sound the player generates, how far it propagates, and which agents can hear it.",
+  "design_notes": "Noise meter turns movement, surfaces, actions, and equipment into AI hearing signals. Define noise_event_id generation, surface material modifiers, crouch multipliers, occlusion policy, AI hearing thresholds, UI display, and decay. The meter should teach players how sound affects stealth without requiring them to memorize hidden numbers.",
   "design_purpose": [
-    "Give the player a readable way to use noise meter as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect noise meter to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Make sound a readable stealth resource alongside visibility and cover.",
+    "Let players trade pace, stance, surface choice, and action noise against AI hearing risk.",
+    "Give designers a debug-friendly way to tune detection without changing every AI individually."
   ],
-  "player_fantasy": "The player feels observant and controlled while avoiding or manipulating threats.",
+  "player_fantasy": "The player feels tense and deliberate, listening to their own actions and choosing when silence matters.",
   "required_systems": [
-    "perception_system",
-    "ai_state_machine",
-    "noise_or_visibility_model",
-    "feedback_ui"
+    "audio_event_bus",
+    "ai_hearing",
+    "surface_materials",
+    "awareness_ui",
+    "debug_visualization"
   ],
   "parameters": [
     {
-      "name": "detection_threshold",
+      "name": "noise_loudness_db",
       "type": "float",
-      "typical_range": "0-1",
-      "description": "Amount of suspicion required before AI reacts."
+      "typical_range": "20-100 dB",
+      "description": "Sound loudness assigned to the current player action."
     },
     {
-      "name": "decay_rate",
+      "name": "noise_radius_units",
       "type": "float",
-      "typical_range": "0.01-1 per second",
-      "description": "How quickly suspicion or noise fades."
+      "typical_range": "1-40 world units",
+      "description": "World-space propagation radius for AI hearing tests."
     },
     {
-      "name": "feedback_delay",
+      "name": "surface_material_noise_multiplier",
       "type": "float",
-      "typical_range": "0-1 seconds",
-      "description": "Delay before the player receives detection feedback."
+      "typical_range": "0.2-2.5",
+      "description": "Modifier from grass, metal, water, glass, or carpet surfaces."
+    },
+    {
+      "name": "crouch_noise_multiplier",
+      "type": "float",
+      "typical_range": "0.1-0.8",
+      "description": "Noise modifier applied while crouched or otherwise stealth-walking."
+    },
+    {
+      "name": "ai_hearing_threshold_db",
+      "type": "float",
+      "typical_range": "25-80 dB",
+      "description": "Minimum loudness required before an AI agent reacts."
+    },
+    {
+      "name": "meter_decay_points_per_second",
+      "type": "float",
+      "typical_range": "10-80 points/second",
+      "description": "UI decay used after the latest noise event. "
     }
   ],
   "common_variants": [
-    "noise_meter_forgiving_variant",
-    "noise_meter_hardcore_variant",
-    "enemy_specific_variant",
-    "environmental_variant"
+    "player_noise_meter",
+    "surface_noise_meter",
+    "enemy_hearing_meter",
+    "radial_noise_preview",
+    "silent_step_meter"
   ],
   "edge_cases": [
-    "Noise Meter is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Noise Meter overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Noise Meter runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A loud action in another room should account for sound_occlusion_policy_id instead of alerting every nearby AI equally.",
+    "Stacked actions such as sprinting while reloading need a rule for combining or prioritizing noise events.",
+    "Moving platforms and vehicles may contribute their own noise source separate from player footsteps.",
+    "Checkpoint restore should clear transient noise events but preserve persistent alarms or broken glass."
   ],
   "common_bugs": [
-    "Noise Meter state does not reset correctly after interruption or reload.",
-    "Feedback for Noise Meter plays even when the mechanic fails or is rejected.",
-    "Noise Meter produces different results between frame rates, platforms, or network clients."
+    "Noise UI displays raw loudness while AI uses occluded loudness, making player feedback misleading.",
+    "Surface material lookup samples the wrong foot position and changes loudness every step unpredictably.",
+    "Crouch noise multiplier stacks repeatedly after stance transitions.",
+    "AI hearing checks use render frames and miss short noise events at low frame rates."
   ],
   "balancing_notes": [
-    "Make Noise Meter strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "High surface contrast makes route choice meaningful; low contrast turns noise into a decorative meter.",
+    "Hearing thresholds should be tuned with patrol spacing and ambient audio cover, not only action loudness.",
+    "Showing exact radius is powerful assistance; hiding it creates more uncertainty and tension."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Noise Meter becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide visual noise indicators and subtitles or icons for sound-based AI reactions.",
+    "Avoid relying only on stereo audio direction when noise placement is part of stealth problem solving."
   ],
   "implementation_notes": {
-    "unity": "Implement Noise Meter with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Noise Meter as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Noise Meter with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Noise Meter as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Emit noise_event_id through a central perception service with loudness, radius, surface_material_id, and source position. AI agents query occluded loudness in fixed AI ticks, while UI reads the same resolved event data for consistency.",
+    "godot": "Route player actions through a noise bus that records loudness, radius, and material multiplier. Navigation or physics queries can apply wall occlusion before AI blackboards receive hearing events.",
+    "unreal": "Use AI Perception hearing stimuli or Gameplay Tags for action categories. Server-side AI should own hearing decisions, and debug drawing should show noise radius, occlusion hits, and receiving agents.",
+    "web": "Store noise events with source id, loudness, radius, and expiry tick. A spatial query finds candidate listeners, applies surface and occlusion modifiers, then writes perception_event_id into AI decision state."
   },
   "related_mechanics": [
-    "ai.line_of_sight_detection",
-    "horror.limited_visibility",
     "stealth.distraction_throw",
-    "stealth.shadow_cover"
-  ],
-  "combines_well_with": [
-    "ai.line_of_sight_detection",
-    "horror.limited_visibility",
+    "ai.investigate_noise",
+    "movement.crouch",
     "stealth.alert_state"
   ],
-  "example_games": [],
+  "combines_well_with": [
+    "movement.prone",
+    "stealth.visibility_meter",
+    "ai.patrol",
+    "ui_ux.damage_numbers"
+  ],
+  "example_games": [
+    {
+      "title": "Thief: The Dark Project",
+      "note": "Uses surface sound and movement noise as stealth concerns."
+    },
+    {
+      "title": "Mark of the Ninja",
+      "note": "Uses readable sound indicators for stealth planning."
+    }
+  ],
   "tags": [
-    "detection",
-    "noise",
-    "stealth"
+    "noise_meter",
+    "ai_hearing",
+    "surface_material",
+    "sound_occlusion",
+    "stealth_feedback"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

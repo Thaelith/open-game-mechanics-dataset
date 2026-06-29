@@ -24,88 +24,121 @@
     "action",
     "adventure"
   ],
-  "description": "Slide is a character action that changes how the player moves through space.",
-  "design_notes": "Slide should be designed around a clear player promise, a readable trigger, and a predictable result. For movement mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A low-profile committed movement state that carries the character forward under a slide friction curve, often passing under hazards or extending momentum.",
+  "design_notes": "Slide needs a clear start condition, body shape change, friction model, and recovery rule. Decide whether it is a movement shortcut, combat evasion, slope interaction, or traversal gate. Collision capsule edits and camera offset must be authored carefully because the player often commits to a slide before seeing the full obstacle outcome.",
   "design_purpose": [
-    "Give the player a readable way to use slide as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect slide to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players convert momentum into a low-profile traversal or evasion action.",
+    "Create readable gates under obstacles, projectiles, vents, or closing doors.",
+    "Add commitment and style to high-mobility movement without making dash redundant."
   ],
-  "player_fantasy": "The player feels directly connected to the avatar and able to express intent through motion.",
+  "player_fantasy": "The player feels quick and daring, slipping beneath danger while carrying momentum forward.",
   "required_systems": [
-    "character_controller",
-    "input_handling",
-    "collision_detection",
-    "animation_state_machine"
+    "movement_state_machine",
+    "collision_capsule",
+    "ground_detection",
+    "animation_state_machine",
+    "camera_follow"
   ],
   "parameters": [
     {
-      "name": "movement_speed",
+      "name": "slide_entry_velocity_min",
       "type": "float",
-      "typical_range": "2-12 world units/second",
-      "description": "Baseline travel speed while the mechanic is active."
+      "typical_range": "3-8 world units/second",
+      "description": "Minimum horizontal velocity required before slide activation."
     },
     {
-      "name": "acceleration",
-      "type": "float",
-      "typical_range": "10-80 world units/second^2",
-      "description": "How quickly the actor reaches target speed."
+      "name": "slide_window_ms",
+      "type": "integer",
+      "typical_range": "250-900 ms",
+      "description": "Committed slide interval before automatic recovery can begin."
     },
     {
-      "name": "turn_response",
+      "name": "slide_friction_curve_id",
+      "type": "string",
+      "typical_range": "flat, fast_decay, slope_boost",
+      "description": "Curve that reduces or preserves forward slide velocity."
+    },
+    {
+      "name": "slide_capsule_height_multiplier",
       "type": "float",
-      "typical_range": "0.05-0.35 seconds",
-      "description": "How quickly movement direction updates after input changes."
+      "typical_range": "0.35-0.7",
+      "description": "Temporary collision height multiplier while sliding."
+    },
+    {
+      "name": "slide_exit_clearance_height",
+      "type": "float",
+      "typical_range": "standing capsule height",
+      "description": "Vertical clearance required before returning to stand or run."
+    },
+    {
+      "name": "slide_cancel_after_ms",
+      "type": "integer",
+      "typical_range": "120-500 ms",
+      "description": "Earliest point where jump, crouch, roll, or attack cancel is allowed."
     }
   ],
   "common_variants": [
-    "slide_grounded_version",
-    "slide_airborne_version",
-    "stamina_limited_version",
-    "contextual_version"
+    "crouch_slide",
+    "slope_slide",
+    "combat_slide",
+    "knee_slide",
+    "slide_attack"
   ],
   "edge_cases": [
-    "Slide is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Slide overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Slide runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The player reaches slide_exit_clearance_height failure under a low ceiling and must stay crouched or prone.",
+    "Sliding from a moving platform needs parent velocity transfer without launching after detach.",
+    "Slope transitions can either accelerate, clamp, or cancel slide depending on slide_friction_curve_id.",
+    "A slide started before stun, knockback, or cutscene control must restore collision_capsule_height exactly once."
   ],
   "common_bugs": [
-    "Slide state does not reset correctly after interruption or reload.",
-    "Feedback for Slide plays even when the mechanic fails or is rejected.",
-    "Slide produces different results between frame rates, platforms, or network clients."
+    "Capsule height shrinks without moving the capsule center, causing feet or head collision penetration.",
+    "Slide friction is applied in render update and differs by frame rate.",
+    "Exit clearance checks ignore triggers or dynamic obstacles and stand the player inside geometry.",
+    "Animation events re-enable standing before movement_state_id has left slide."
   ],
   "balancing_notes": [
-    "Make Slide strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Low entry requirements make slide a default movement habit; stricter requirements make it an authored traversal tool.",
+    "Allowing attacks, reloads, or invulnerability during slide changes it from locomotion into combat defense.",
+    "Long slide windows need enough steering or cancel options to avoid frustrating forced commitments."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Slide becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer hold, toggle, or auto-slide options for games with frequent low obstacles.",
+    "Limit camera dip, motion blur, and sudden field-of-view changes, or expose comfort settings."
   ],
   "implementation_notes": {
-    "unity": "Implement Slide with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Slide as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Slide with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Slide as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "On activation, store previous capsule dimensions, set movement_state_id to slide, and move capsule center and height together. Apply slide_friction_curve_id in FixedUpdate, sweep against collision, and run exit clearance checks before restoring stand dimensions.",
+    "godot": "Use a dedicated slide state on CharacterBody. Change CollisionShape height through a stored profile, update velocity in _physics_process, and only exit when a ShapeCast or test_move confirms standing clearance.",
+    "unreal": "Use a custom movement state or crouch-derived mode with explicit capsule half-height changes. Animation montage notifies may mark cancel windows, but CharacterMovement should own collision and floor projection.",
+    "web": "Store slide_state with window ticks, capsule profile, and friction curve. Resolve collision sweeps against the low capsule first, then test stand-up clearance before returning to run."
   },
   "related_mechanics": [
-    "camera.smooth_follow_camera",
+    "movement.crouch",
     "movement.run",
-    "movement.walk",
-    "ui_ux.cooldown_indicator"
+    "movement.dodge_roll",
+    "platforming.drop_through_platform"
   ],
   "combines_well_with": [
-    "camera.smooth_follow_camera",
-    "movement.crouch",
-    "movement.sprint",
-    "ui_ux.cooldown_indicator"
+    "camera.dynamic_fov",
+    "combat.knockback",
+    "stealth.noise_meter",
+    "traversal.parkour_vault"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Titanfall 2",
+      "note": "Uses sliding to preserve momentum across traversal routes."
+    },
+    {
+      "title": "Apex Legends",
+      "note": "Uses slide movement as a mobility and positioning action."
+    }
+  ],
   "tags": [
-    "burst_movement",
-    "controls",
-    "mobility",
-    "slide"
+    "slide_state",
+    "capsule_height",
+    "friction_curve",
+    "momentum",
+    "camera_comfort"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

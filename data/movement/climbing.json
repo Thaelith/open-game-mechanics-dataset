@@ -7,7 +7,7 @@
     "climbing"
   ],
   "category": "movement",
-  "subcategory": "vertical_mobility",
+  "subcategory": "vertical_locomotion",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,121 @@
     "action",
     "adventure"
   ],
-  "description": "Climbing is a character action that changes how the player moves through space.",
-  "design_notes": "Climbing should be designed around a clear player promise, a readable trigger, and a predictable result. For movement mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A controlled movement state for ascending, descending, or moving across climbable surfaces using surface validation, snap points, stamina, and animation alignment.",
+  "design_notes": "Climbing depends on trustworthy surfaces and interruption rules. Define climbable_surface_id selection, contact normals, handhold or ledge snap positions, stamina drain, camera framing, detach behavior, and invalid-surface recovery. It should make vertical spaces playable without letting players bypass every authored boundary.",
   "design_purpose": [
-    "Give the player a readable way to use climbing as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect climbing to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Turn vertical surfaces into navigable routes with readable commitment and recovery.",
+    "Create route planning through stamina, handholds, surface tags, or exposed positions.",
+    "Support exploration and level design without relying only on stairs, ladders, or jump chains."
   ],
-  "player_fantasy": "The player feels directly connected to the avatar and able to express intent through motion.",
+  "player_fantasy": "The player feels capable of reading a surface, committing to it, and physically pulling through vertical space.",
   "required_systems": [
-    "character_controller",
-    "input_handling",
-    "collision_detection",
-    "animation_state_machine"
+    "climbable_surface_query",
+    "movement_state_machine",
+    "stamina_resource",
+    "ik_or_snap_points",
+    "camera_follow"
   ],
   "parameters": [
     {
-      "name": "movement_speed",
+      "name": "climb_pace_units_per_second",
       "type": "float",
-      "typical_range": "2-12 world units/second",
-      "description": "Baseline travel speed while the mechanic is active."
+      "typical_range": "1-4 world units/second",
+      "description": "Travel velocity along the validated climb surface."
     },
     {
-      "name": "acceleration",
+      "name": "climb_stamina_drain_units_per_meter",
       "type": "float",
-      "typical_range": "10-80 world units/second^2",
-      "description": "How quickly the actor reaches target speed."
+      "typical_range": "0-8 units/meter",
+      "description": "Stamina consumed while moving along climbable surfaces."
     },
     {
-      "name": "turn_response",
+      "name": "climb_snap_distance_units",
       "type": "float",
-      "typical_range": "0.05-0.35 seconds",
-      "description": "How quickly movement direction updates after input changes."
+      "typical_range": "0.1-1.2 world units",
+      "description": "Maximum correction distance from character to accepted surface anchor."
+    },
+    {
+      "name": "climb_surface_angle_min_degrees",
+      "type": "float",
+      "typical_range": "45-80 degrees",
+      "description": "Minimum steepness required before the surface is climbable."
+    },
+    {
+      "name": "ledge_detach_buffer_ms",
+      "type": "integer",
+      "typical_range": "80-220 ms",
+      "description": "Buffered jump, drop, or mantle input accepted near ledge transitions."
+    },
+    {
+      "name": "climb_camera_profile_id",
+      "type": "string",
+      "typical_range": "close_wall, side_view, free_orbit",
+      "description": "Camera profile used while the player is attached to a climb surface."
     }
   ],
   "common_variants": [
-    "climbing_grounded_version",
-    "climbing_airborne_version",
-    "stamina_limited_version",
-    "contextual_version"
+    "free_climb",
+    "handhold_climb",
+    "wall_climb",
+    "stamina_climb",
+    "ladder_like_climb"
   ],
   "edge_cases": [
-    "Climbing is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Climbing overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Climbing runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A climbable surface can end abruptly, curve inward, or move while the character is attached.",
+    "Stamina may deplete while the player is above lethal fall height and needs a readable failure state.",
+    "Camera collision can hide the next handhold when the character is close to concave geometry.",
+    "Networked climbing needs a shared climbable_surface_id and snap position rather than only client-local ray hits."
   ],
   "common_bugs": [
-    "Climbing state does not reset correctly after interruption or reload.",
-    "Feedback for Climbing plays even when the mechanic fails or is rejected.",
-    "Climbing produces different results between frame rates, platforms, or network clients."
+    "Surface validation uses a forward ray only and fails when the character is slightly offset or rotated.",
+    "Root motion moves the character away from the stored surface anchor and breaks collision alignment.",
+    "Detach leaves gravity disabled or input locked after ledge transition cancellation.",
+    "Climb stamina drains during pause, dialogue, or blocked movement because state ownership is split."
   ],
   "balancing_notes": [
-    "Make Climbing strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Unlimited free climbing changes world boundary design; tagged surfaces keep routes authored and readable.",
+    "Stamina drain should reflect route length and available rest points, not only vertical distance.",
+    "Fast climbing supports action pacing, while slower climbing emphasizes exposure and planning."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Climbing becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer visible climbable-surface highlights or texture language instead of relying on subtle material differences.",
+    "Consider climb assists, reduced stamina drain, or forgiving ledge input buffers for long vertical routes."
   ],
   "implementation_notes": {
-    "unity": "Implement Climbing with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Climbing as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Climbing with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Climbing as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use spherecasts or shape casts to select climbable_surface_id and store the surface normal plus snap position. While climbing, disable ordinary ground locomotion, drive motion along the surface in FixedUpdate, and let IK or animation match the committed body position.",
+    "godot": "Query climbable areas with physics shape tests or Area nodes tagged by surface id. Keep traversal_state_id, surface normal, and snap offset on the character, then update climb velocity in _physics_process before applying detach or ledge transitions.",
+    "unreal": "Use trace channels, Gameplay Tags, or Smart Objects to validate climbable surfaces. A custom movement mode should own gravity, input projection, stamina cost, and replicated snap transforms while animation montages handle visuals.",
+    "web": "Store climb state with surface id, anchor position, normal, and stamina ledger. Resolve movement along the surface in fixed ticks, then handle detach, fall, or mantle as explicit state transitions."
   },
   "related_mechanics": [
-    "camera.smooth_follow_camera",
-    "movement.run",
-    "movement.walk",
-    "ui_ux.cooldown_indicator"
+    "movement.stamina_movement",
+    "platforming.ledge_grab",
+    "traversal.mantling",
+    "traversal.ladder_climb"
   ],
   "combines_well_with": [
-    "camera.smooth_follow_camera",
-    "movement.crouch",
-    "movement.sprint",
-    "ui_ux.cooldown_indicator"
+    "survival.stamina",
+    "camera.third_person_camera",
+    "platforming.coyote_time",
+    "ui_ux.interaction_prompt"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Legend of Zelda: Breath of the Wild",
+      "note": "Uses stamina-gated climbing across many outdoor surfaces."
+    },
+    {
+      "title": "Uncharted 4",
+      "note": "Uses authored climbing routes with ledges and handholds."
+    }
+  ],
   "tags": [
     "climbing",
-    "controls",
-    "mobility",
-    "vertical_mobility"
+    "vertical_locomotion",
+    "surface_anchor",
+    "stamina",
+    "ledge_transition"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

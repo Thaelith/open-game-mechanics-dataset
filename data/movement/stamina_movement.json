@@ -7,7 +7,7 @@
     "stamina movement"
   ],
   "category": "movement",
-  "subcategory": "locomotion",
+  "subcategory": "endurance_locomotion",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,88 +24,121 @@
     "action",
     "adventure"
   ],
-  "description": "Stamina Movement is a character action that changes how the player moves through space.",
-  "design_notes": "Stamina Movement should be designed around a clear player promise, a readable trigger, and a predictable result. For movement mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A locomotion layer that spends and restores stamina to gate sprinting, climbing, swimming, dodging, or other high-output movement actions.",
+  "design_notes": "Stamina movement is a resource contract layered over locomotion. Define exactly which movement_state_id spends stamina, when regeneration begins, how exhaustion blocks actions, and whether stamina is restored by resting, items, terrain, or checkpoints. The mechanic should create route and risk decisions without turning basic navigation into a meter-watching chore.",
   "design_purpose": [
-    "Give the player a readable way to use stamina movement as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect stamina movement to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Limit sustained high-output movement without disabling basic navigation.",
+    "Create meaningful route planning, escape timing, and recovery decisions.",
+    "Connect traversal, survival, combat, and progression through one readable endurance budget."
   ],
-  "player_fantasy": "The player feels directly connected to the avatar and able to express intent through motion.",
+  "player_fantasy": "The player feels physically committed, pushing their character hard and choosing when to recover before the next demand.",
   "required_systems": [
-    "character_controller",
-    "input_handling",
-    "collision_detection",
-    "animation_state_machine"
+    "stamina_resource",
+    "movement_state_machine",
+    "ui_warning_thresholds",
+    "save_system",
+    "input_gating"
   ],
   "parameters": [
     {
-      "name": "movement_speed",
+      "name": "stamina_pool_units",
       "type": "float",
-      "typical_range": "2-12 world units/second",
-      "description": "Baseline travel speed while the mechanic is active."
+      "typical_range": "50-200 units",
+      "description": "Total endurance budget available for movement actions."
     },
     {
-      "name": "acceleration",
+      "name": "sprint_drain_units_per_second",
       "type": "float",
-      "typical_range": "10-80 world units/second^2",
-      "description": "How quickly the actor reaches target speed."
+      "typical_range": "5-25 units/second",
+      "description": "Drain applied while sprint movement is accepted."
     },
     {
-      "name": "turn_response",
+      "name": "climb_drain_units_per_meter",
       "type": "float",
-      "typical_range": "0.05-0.35 seconds",
-      "description": "How quickly movement direction updates after input changes."
+      "typical_range": "1-8 units/meter",
+      "description": "Drain applied from vertical traversal distance during climbing."
+    },
+    {
+      "name": "stamina_regen_delay_ms",
+      "type": "integer",
+      "typical_range": "300-2000 ms",
+      "description": "Delay after last spend before recovery begins."
+    },
+    {
+      "name": "exhaustion_lockout_ms",
+      "type": "integer",
+      "typical_range": "500-3000 ms",
+      "description": "Action-gating window after stamina reaches zero."
+    },
+    {
+      "name": "warning_threshold_units",
+      "type": "float",
+      "typical_range": "10-35 units",
+      "description": "UI and audio warning threshold before exhaustion."
     }
   ],
   "common_variants": [
-    "stamina_movement_grounded_version",
-    "stamina_movement_airborne_version",
-    "stamina_limited_version",
-    "contextual_version"
+    "sprint_stamina",
+    "climb_stamina",
+    "swim_stamina",
+    "shared_combat_stamina",
+    "breath_meter"
   ],
   "edge_cases": [
-    "Stamina Movement is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Stamina Movement overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Stamina Movement runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Stamina can reach zero while the player is airborne, climbing, swimming, or inside an uninterruptible animation.",
+    "Pause menus, cutscenes, and dialogue need a timer_pause_policy so drain and recovery do not continue invisibly.",
+    "Save/load should restore stamina_resource and exhaustion_state without granting repeated recovery bursts.",
+    "Multiplayer clients must not spend stamina locally and then keep unauthorized movement after server correction."
   ],
   "common_bugs": [
-    "Stamina Movement state does not reset correctly after interruption or reload.",
-    "Feedback for Stamina Movement plays even when the mechanic fails or is rejected.",
-    "Stamina Movement produces different results between frame rates, platforms, or network clients."
+    "Drain is applied twice because both movement state and animation event spend stamina_resource.",
+    "Regeneration starts immediately after every frame with no accepted input due to missing stamina_regen_delay_ms.",
+    "Exhaustion blocks UI, camera, or ordinary walking instead of only the intended high-output actions.",
+    "Save migration changes max stamina but does not clamp existing profile values."
   ],
   "balancing_notes": [
-    "Make Stamina Movement strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Shared stamina across sprint, dodge, block, and climb creates strong tradeoffs but can make one dominant action starve the others.",
+    "Regeneration delay matters as much as pool size; long delays create stop-start pacing even with large pools.",
+    "Expose enough recovery opportunities that stamina creates planning pressure rather than repeated dead ends."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Stamina Movement becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer assist settings for reduced drain, longer exhaustion warnings, or less severe lockout in traversal-heavy games.",
+    "Do not communicate low stamina only through color or controller vibration; include text, shape, or audio alternatives."
   ],
   "implementation_notes": {
-    "unity": "Implement Stamina Movement with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Stamina Movement as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Stamina Movement with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Stamina Movement as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Keep stamina_resource as data owned by the character, not by individual MonoBehaviours. Movement states request spends with a transaction result, UI reads warning_threshold_units, and FixedUpdate applies accepted locomotion only after stamina gating succeeds.",
+    "godot": "Store stamina and exhaustion_state on the player node or Resource. In _physics_process, movement modes request drain and receive accepted or rejected state before velocity changes; save stamina_resource with checkpoint data.",
+    "unreal": "Model stamina through an AttributeSet or replicated component. Gameplay Abilities should commit costs before sprint, dodge, or climb activation, while the server validates exhaustion and clients predict only within the allowed movement window.",
+    "web": "Use one deterministic stamina ledger in the simulation loop. Apply spend requests before movement integration, record recovery start ticks, and reconcile server-approved stamina_resource when networking is present."
   },
   "related_mechanics": [
-    "camera.smooth_follow_camera",
-    "movement.run",
-    "movement.walk",
-    "ui_ux.cooldown_indicator"
+    "movement.sprint",
+    "movement.climbing",
+    "movement.dodge_roll",
+    "survival.stamina"
   ],
   "combines_well_with": [
-    "camera.smooth_follow_camera",
-    "movement.crouch",
-    "movement.sprint",
-    "ui_ux.cooldown_indicator"
+    "ui_ux.cooldown_indicator",
+    "progression.upgrade_shop",
+    "survival.temperature",
+    "traversal.gliding"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Legend of Zelda: Breath of the Wild",
+      "note": "Uses stamina to gate climbing, gliding, and sprinting."
+    },
+    {
+      "title": "Dark Souls",
+      "note": "Uses stamina to constrain movement, blocking, and attacks."
+    }
+  ],
   "tags": [
-    "controls",
-    "locomotion",
-    "mobility",
-    "stamina"
+    "stamina_resource",
+    "endurance",
+    "movement_gating",
+    "exhaustion",
+    "accessibility_assist"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

@@ -4,7 +4,7 @@
   "license": "CC0-1.0",
   "tool_license": "MIT",
   "total_mechanics": 223,
-  "last_generated": "2026-06-29T15:13:23+00:00",
+  "last_generated": "2026-06-29T15:50:42+00:00",
   "mechanics": [
     {
       "id": "accessibility.adjustable_difficulty",
@@ -1783,7 +1783,7 @@
       "id": "movement.climbing",
       "name": "Climbing",
       "category": "movement",
-      "subcategory": "vertical_mobility",
+      "subcategory": "vertical_locomotion",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1797,9 +1797,10 @@
       ],
       "tags": [
         "climbing",
-        "controls",
-        "mobility",
-        "vertical_mobility"
+        "vertical_locomotion",
+        "surface_anchor",
+        "stamina",
+        "ledge_transition"
       ],
       "path": "data/movement/climbing.json"
     },
@@ -1872,10 +1873,11 @@
         "adventure"
       ],
       "tags": [
-        "burst_movement",
-        "controls",
-        "dodge",
-        "mobility"
+        "dodge_roll",
+        "i_frames",
+        "recovery_frames",
+        "stamina",
+        "evasion"
       ],
       "path": "data/movement/dodge_roll.json"
     },
@@ -1883,7 +1885,7 @@
       "id": "movement.prone",
       "name": "Prone",
       "category": "movement",
-      "subcategory": "locomotion",
+      "subcategory": "stance",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1896,10 +1898,11 @@
         "adventure"
       ],
       "tags": [
-        "controls",
-        "locomotion",
-        "mobility",
-        "prone"
+        "stance",
+        "prone",
+        "capsule_height",
+        "stealth",
+        "clearance_check"
       ],
       "path": "data/movement/prone.json"
     },
@@ -1907,7 +1910,7 @@
       "id": "movement.run",
       "name": "Run",
       "category": "movement",
-      "subcategory": "locomotion",
+      "subcategory": "ground_locomotion",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1920,10 +1923,11 @@
         "adventure"
       ],
       "tags": [
-        "controls",
-        "locomotion",
-        "mobility",
-        "run"
+        "ground_locomotion",
+        "input_processing",
+        "acceleration_curve",
+        "network_prediction",
+        "animation_blend"
       ],
       "path": "data/movement/run.json"
     },
@@ -1944,10 +1948,11 @@
         "adventure"
       ],
       "tags": [
-        "burst_movement",
-        "controls",
-        "mobility",
-        "slide"
+        "slide_state",
+        "capsule_height",
+        "friction_curve",
+        "momentum",
+        "camera_comfort"
       ],
       "path": "data/movement/slide.json"
     },
@@ -1981,7 +1986,7 @@
       "id": "movement.stamina_movement",
       "name": "Stamina Movement",
       "category": "movement",
-      "subcategory": "locomotion",
+      "subcategory": "endurance_locomotion",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1994,10 +1999,11 @@
         "adventure"
       ],
       "tags": [
-        "controls",
-        "locomotion",
-        "mobility",
-        "stamina"
+        "stamina_resource",
+        "endurance",
+        "movement_gating",
+        "exhaustion",
+        "accessibility_assist"
       ],
       "path": "data/movement/stamina_movement.json"
     },
@@ -2031,7 +2037,7 @@
       "id": "movement.walk",
       "name": "Walk",
       "category": "movement",
-      "subcategory": "locomotion",
+      "subcategory": "ground_locomotion",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -2044,10 +2050,11 @@
         "adventure"
       ],
       "tags": [
-        "controls",
-        "locomotion",
-        "mobility",
-        "walk"
+        "ground_locomotion",
+        "input_vector",
+        "animation_blend",
+        "precision_movement",
+        "camera_comfort"
       ],
       "path": "data/movement/walk.json"
     },
@@ -4107,7 +4114,7 @@
       "id": "stealth.alert_state",
       "name": "Alert State",
       "category": "stealth",
-      "subcategory": "stealth",
+      "subcategory": "ai_alertness",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4120,9 +4127,11 @@
         "action"
       ],
       "tags": [
-        "alert",
-        "detection",
-        "stealth"
+        "alert_state",
+        "suspicion",
+        "ai_perception",
+        "last_known_position",
+        "debug_reason_trace"
       ],
       "path": "data/stealth/alert_state.json"
     },
@@ -4130,7 +4139,7 @@
       "id": "stealth.distraction_throw",
       "name": "Distraction Throw",
       "category": "stealth",
-      "subcategory": "stealth",
+      "subcategory": "sound_lure",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4143,9 +4152,11 @@
         "action"
       ],
       "tags": [
-        "detection",
         "distraction",
-        "stealth"
+        "noise_event",
+        "ai_hearing",
+        "investigation_target",
+        "sound_lure"
       ],
       "path": "data/stealth/distraction_throw.json"
     },
@@ -4166,11 +4177,11 @@
         "horror"
       ],
       "tags": [
-        "stealth",
-        "ai",
-        "search",
-        "memory",
-        "perception"
+        "last_known_position",
+        "ai_search",
+        "perception_event",
+        "debug_reason_trace",
+        "stealth_recovery"
       ],
       "path": "data/stealth/last_known_position_search.json"
     },
@@ -4178,7 +4189,7 @@
       "id": "stealth.noise_meter",
       "name": "Noise Meter",
       "category": "stealth",
-      "subcategory": "stealth",
+      "subcategory": "acoustic_visibility",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4191,9 +4202,11 @@
         "action"
       ],
       "tags": [
-        "detection",
-        "noise",
-        "stealth"
+        "noise_meter",
+        "ai_hearing",
+        "surface_material",
+        "sound_occlusion",
+        "stealth_feedback"
       ],
       "path": "data/stealth/noise_meter.json"
     },
@@ -4201,7 +4214,7 @@
       "id": "stealth.shadow_cover",
       "name": "Shadow Cover",
       "category": "stealth",
-      "subcategory": "stealth",
+      "subcategory": "light_visibility",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4214,8 +4227,10 @@
         "action"
       ],
       "tags": [
-        "detection",
-        "shadow",
+        "shadow_cover",
+        "light_sampling",
+        "visibility_modifier",
+        "ai_vision",
         "stealth"
       ],
       "path": "data/stealth/shadow_cover.json"
@@ -4237,10 +4252,10 @@
         "horror"
       ],
       "tags": [
-        "stealth",
-        "visibility",
-        "ui",
-        "perception",
+        "visibility_meter",
+        "exposure_score",
+        "ai_vision",
+        "awareness_ui",
         "accessibility"
       ],
       "path": "data/stealth/visibility_meter.json"
@@ -4795,7 +4810,7 @@
       "id": "traversal.gliding",
       "name": "Gliding",
       "category": "traversal",
-      "subcategory": "locomotion",
+      "subcategory": "aerial_traversal",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4809,9 +4824,10 @@
       ],
       "tags": [
         "gliding",
-        "locomotion",
-        "mobility",
-        "navigation"
+        "aerial_traversal",
+        "fall_velocity",
+        "lift",
+        "camera_comfort"
       ],
       "path": "data/traversal/gliding.json"
     },
@@ -4819,7 +4835,7 @@
       "id": "traversal.grappling_hook",
       "name": "Grappling Hook",
       "category": "traversal",
-      "subcategory": "locomotion",
+      "subcategory": "anchor_traversal",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4833,9 +4849,10 @@
       ],
       "tags": [
         "grappling",
-        "locomotion",
-        "mobility",
-        "navigation"
+        "anchor_traversal",
+        "attachment_state",
+        "rope_length",
+        "mobility"
       ],
       "path": "data/traversal/grappling_hook.json"
     },
@@ -4843,7 +4860,7 @@
       "id": "traversal.jetpack",
       "name": "Jetpack",
       "category": "traversal",
-      "subcategory": "locomotion",
+      "subcategory": "powered_flight",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4857,9 +4874,10 @@
       ],
       "tags": [
         "jetpack",
-        "locomotion",
-        "mobility",
-        "navigation"
+        "powered_flight",
+        "fuel_resource",
+        "thrust_vector",
+        "camera_comfort"
       ],
       "path": "data/traversal/jetpack.json"
     },
@@ -4880,10 +4898,11 @@
         "open_world"
       ],
       "tags": [
-        "ladder",
-        "mobility",
-        "navigation",
-        "vertical_mobility"
+        "ladder_id",
+        "vertical_mobility",
+        "attach_detach",
+        "rung_index",
+        "exit_clearance"
       ],
       "path": "data/traversal/ladder_climb.json"
     },
@@ -4891,7 +4910,7 @@
       "id": "traversal.mantling",
       "name": "Mantling",
       "category": "traversal",
-      "subcategory": "vertical_mobility",
+      "subcategory": "ledge_traversal",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4905,9 +4924,10 @@
       ],
       "tags": [
         "mantling",
-        "mobility",
-        "navigation",
-        "vertical_mobility"
+        "ledge_id",
+        "clearance_check",
+        "root_motion",
+        "snap_position"
       ],
       "path": "data/traversal/mantling.json"
     },
@@ -4915,7 +4935,7 @@
       "id": "traversal.parkour_vault",
       "name": "Parkour Vault",
       "category": "traversal",
-      "subcategory": "locomotion",
+      "subcategory": "obstacle_traversal",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4928,10 +4948,11 @@
         "open_world"
       ],
       "tags": [
-        "locomotion",
-        "mobility",
-        "navigation",
-        "parkour"
+        "parkour_vault",
+        "obstacle_traversal",
+        "clearance_check",
+        "root_motion",
+        "camera_transition"
       ],
       "path": "data/traversal/parkour_vault.json"
     },
@@ -4987,7 +5008,7 @@
       "id": "traversal.vehicle_mount",
       "name": "Vehicle Mount",
       "category": "traversal",
-      "subcategory": "locomotion",
+      "subcategory": "vehicle_access",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -5000,10 +5021,11 @@
         "open_world"
       ],
       "tags": [
-        "locomotion",
-        "mobility",
-        "navigation",
-        "vehicle"
+        "vehicle_mount",
+        "seat_id",
+        "authority_transfer",
+        "exit_validation",
+        "anti_grief"
       ],
       "path": "data/traversal/vehicle_mount.json"
     },
@@ -8312,6 +8334,9 @@
       "acceleration": [
         "physics.gravity"
       ],
+      "acceleration_curve": [
+        "movement.run"
+      ],
       "accessibility": [
         "accessibility.adjustable_difficulty",
         "accessibility.assist_mode",
@@ -8341,6 +8366,9 @@
         "ui_ux.radial_menu",
         "ui_ux.tutorial_prompt"
       ],
+      "accessibility_assist": [
+        "movement.stamina_movement"
+      ],
       "accessibility_brightness": [
         "horror.limited_visibility"
       ],
@@ -8365,6 +8393,9 @@
       ],
       "adjustable": [
         "accessibility.adjustable_difficulty"
+      ],
+      "aerial_traversal": [
+        "traversal.gliding"
       ],
       "agent_behavior": [
         "ai.boss_phase_transition",
@@ -8394,14 +8425,25 @@
         "ai.investigate_noise",
         "ai.line_of_sight_detection",
         "ai.patrol",
-        "ai.utility_scoring",
-        "stealth.last_known_position_search"
+        "ai.utility_scoring"
       ],
       "ai_awareness": [
         "combat.stealth_kill"
       ],
+      "ai_hearing": [
+        "stealth.distraction_throw",
+        "stealth.noise_meter"
+      ],
       "ai_perception": [
-        "horror.sound_lure"
+        "horror.sound_lure",
+        "stealth.alert_state"
+      ],
+      "ai_search": [
+        "stealth.last_known_position_search"
+      ],
+      "ai_vision": [
+        "stealth.shadow_cover",
+        "stealth.visibility_meter"
       ],
       "aiming": [
         "combat.aim_down_sights",
@@ -8412,18 +8454,24 @@
         "movement.air_dash",
         "platforming.double_jump"
       ],
-      "alert": [
+      "alert_state": [
         "stealth.alert_state"
       ],
       "ammo": [
         "combat.ranged_attack",
         "combat.reload"
       ],
+      "anchor_traversal": [
+        "traversal.grappling_hook"
+      ],
       "animation_blend": [
+        "movement.run",
+        "movement.walk",
         "physics.ragdoll"
       ],
       "anti_grief": [
-        "multiplayer.shared_resource_pool"
+        "multiplayer.shared_resource_pool",
+        "traversal.vehicle_mount"
       ],
       "aoe": [
         "combat.area_of_effect_attack"
@@ -8434,6 +8482,12 @@
       ],
       "asymmetric_roles": [
         "multiplayer.asymmetric_roles"
+      ],
+      "attach_detach": [
+        "traversal.ladder_climb"
+      ],
+      "attachment_state": [
+        "traversal.grappling_hook"
       ],
       "attribution": [
         "multiplayer.friendly_fire"
@@ -8447,6 +8501,12 @@
       "authority": [
         "multiplayer.online_coop",
         "multiplayer.revive_teammate"
+      ],
+      "authority_transfer": [
+        "traversal.vehicle_mount"
+      ],
+      "awareness_ui": [
+        "stealth.visibility_meter"
       ],
       "base_building": [
         "crafting.workbench",
@@ -8500,9 +8560,7 @@
         "vehicles.vehicle_boost"
       ],
       "burst_movement": [
-        "movement.dash",
-        "movement.dodge_roll",
-        "movement.slide"
+        "movement.dash"
       ],
       "camera": [
         "camera.camera_lock_on",
@@ -8518,12 +8576,25 @@
         "combat.aim_down_sights",
         "combat.lock_on_targeting"
       ],
+      "camera_comfort": [
+        "movement.slide",
+        "movement.walk",
+        "traversal.gliding",
+        "traversal.jetpack"
+      ],
+      "camera_transition": [
+        "traversal.parkour_vault"
+      ],
       "cancel": [
         "combat.combo_chain"
       ],
       "capacity": [
         "simulation.population_model",
         "survival.inventory_limit"
+      ],
+      "capsule_height": [
+        "movement.prone",
+        "movement.slide"
       ],
       "capture_progress": [
         "strategy.territory_control"
@@ -8565,6 +8636,11 @@
       "cinematic": [
         "camera.cinematic_camera",
         "time.slow_motion"
+      ],
+      "clearance_check": [
+        "movement.prone",
+        "traversal.mantling",
+        "traversal.parkour_vault"
       ],
       "climbing": [
         "movement.climbing"
@@ -8683,15 +8759,6 @@
       "contribution": [
         "multiplayer.team_objective"
       ],
-      "controls": [
-        "movement.climbing",
-        "movement.dodge_roll",
-        "movement.prone",
-        "movement.run",
-        "movement.slide",
-        "movement.stamina_movement",
-        "movement.walk"
-      ],
       "cooldown": [
         "movement.dash",
         "time.cooldown_time",
@@ -8784,6 +8851,10 @@
       "debug_overlay": [
         "simulation.traffic_flow"
       ],
+      "debug_reason_trace": [
+        "stealth.alert_state",
+        "stealth.last_known_position_search"
+      ],
       "debug_trace": [
         "roguelike.relic_synergy"
       ],
@@ -8813,12 +8884,6 @@
       "destruction": [
         "physics.destructible_environment"
       ],
-      "detection": [
-        "stealth.alert_state",
-        "stealth.distraction_throw",
-        "stealth.noise_meter",
-        "stealth.shadow_cover"
-      ],
       "determinism": [
         "time.time_rewind"
       ],
@@ -8834,7 +8899,7 @@
       "distraction": [
         "stealth.distraction_throw"
       ],
-      "dodge": [
+      "dodge_roll": [
         "movement.dodge_roll"
       ],
       "door_state": [
@@ -8881,6 +8946,9 @@
       "encumbrance": [
         "survival.inventory_limit"
       ],
+      "endurance": [
+        "movement.stamina_movement"
+      ],
       "enemy": [
         "ai.enemy_spawn_director"
       ],
@@ -8901,6 +8969,9 @@
       "escape": [
         "horror.hiding"
       ],
+      "evasion": [
+        "movement.dodge_roll"
+      ],
       "event_log": [
         "roguelike.run_based_progression"
       ],
@@ -8910,14 +8981,29 @@
       "exertion": [
         "survival.stamina"
       ],
+      "exhaustion": [
+        "movement.stamina_movement"
+      ],
+      "exit_clearance": [
+        "traversal.ladder_climb"
+      ],
+      "exit_validation": [
+        "traversal.vehicle_mount"
+      ],
       "experience": [
         "progression.experience_points"
       ],
       "exposure": [
         "survival.temperature"
       ],
+      "exposure_score": [
+        "stealth.visibility_meter"
+      ],
       "fall_control": [
         "platforming.wall_slide"
+      ],
+      "fall_velocity": [
+        "traversal.gliding"
       ],
       "falling": [
         "physics.gravity"
@@ -8961,12 +9047,18 @@
       "freeze": [
         "time.time_freeze"
       ],
+      "friction_curve": [
+        "movement.slide"
+      ],
       "friendly_fire": [
         "multiplayer.friendly_fire"
       ],
       "fuel": [
         "horror.light_resource",
         "vehicles.fuel"
+      ],
+      "fuel_resource": [
+        "traversal.jetpack"
       ],
       "gacha": [
         "economy.gacha_pull"
@@ -8998,6 +9090,10 @@
       ],
       "grief_prevention": [
         "multiplayer.friendly_fire"
+      ],
+      "ground_locomotion": [
+        "movement.run",
+        "movement.walk"
       ],
       "guard": [
         "combat.block",
@@ -9047,7 +9143,8 @@
         "survival.thirst"
       ],
       "i_frames": [
-        "movement.dash"
+        "movement.dash",
+        "movement.dodge_roll"
       ],
       "icons": [
         "ui_ux.minimap"
@@ -9083,8 +9180,14 @@
       "input_navigation": [
         "ui_ux.inventory_grid"
       ],
+      "input_processing": [
+        "movement.run"
+      ],
       "input_timing": [
         "platforming.coyote_time"
+      ],
+      "input_vector": [
+        "movement.walk"
       ],
       "intensity_setting": [
         "horror.jump_scare_trigger"
@@ -9115,6 +9218,9 @@
       ],
       "investigate": [
         "ai.investigate_noise"
+      ],
+      "investigation_target": [
+        "stealth.distraction_throw"
       ],
       "invincibility": [
         "combat.invincibility_frames"
@@ -9160,14 +9266,16 @@
       "knockdown": [
         "physics.ragdoll"
       ],
-      "ladder": [
+      "ladder_id": [
         "traversal.ladder_climb"
       ],
       "lane_input": [
         "rhythm.note_lane"
       ],
       "last_known_position": [
-        "horror.monster_patrol"
+        "horror.monster_patrol",
+        "stealth.alert_state",
+        "stealth.last_known_position_search"
       ],
       "late_join": [
         "multiplayer.team_objective"
@@ -9194,6 +9302,12 @@
         "platforming.ledge_climb",
         "platforming.ledge_grab"
       ],
+      "ledge_id": [
+        "traversal.mantling"
+      ],
+      "ledge_transition": [
+        "movement.climbing"
+      ],
       "level": [
         "progression.level_up"
       ],
@@ -9203,11 +9317,17 @@
       "lever": [
         "puzzle.lever_switch"
       ],
+      "lift": [
+        "traversal.gliding"
+      ],
       "light_reflection": [
         "puzzle.mirror_light_reflection"
       ],
       "light_resource": [
         "horror.light_resource"
+      ],
+      "light_sampling": [
+        "stealth.shadow_cover"
       ],
       "limited_visibility": [
         "horror.limited_visibility"
@@ -9231,18 +9351,9 @@
         "ui_ux.dialogue_choice"
       ],
       "locomotion": [
-        "movement.prone",
-        "movement.run",
         "movement.sprint",
-        "movement.stamina_movement",
-        "movement.walk",
-        "traversal.gliding",
-        "traversal.grappling_hook",
-        "traversal.jetpack",
-        "traversal.parkour_vault",
         "traversal.rope_swing",
         "traversal.teleport_blink",
-        "traversal.vehicle_mount",
         "traversal.zipline"
       ],
       "loop_prevention": [
@@ -9290,8 +9401,7 @@
         "combat.melee_attack"
       ],
       "memory": [
-        "puzzle.sequence_memory",
-        "stealth.last_known_position_search"
+        "puzzle.sequence_memory"
       ],
       "meta": [
         "progression.meta_progression"
@@ -9306,34 +9416,22 @@
         "puzzle.mirror_light_reflection"
       ],
       "mobility": [
-        "movement.climbing",
         "movement.dash",
-        "movement.dodge_roll",
-        "movement.prone",
-        "movement.run",
-        "movement.slide",
-        "movement.stamina_movement",
-        "movement.walk",
         "platforming.double_jump",
         "platforming.ledge_climb",
         "platforming.ledge_grab",
         "platforming.variable_jump_height",
         "platforming.wall_jump",
-        "traversal.gliding",
         "traversal.grappling_hook",
-        "traversal.jetpack",
-        "traversal.ladder_climb",
-        "traversal.mantling",
-        "traversal.parkour_vault",
         "traversal.rope_swing",
         "traversal.teleport_blink",
-        "traversal.vehicle_mount",
         "traversal.zipline"
       ],
       "modifier_pipeline": [
         "roguelike.relic_synergy"
       ],
       "momentum": [
+        "movement.slide",
         "physics.pendulum_swing",
         "traversal.wall_run"
       ],
@@ -9360,6 +9458,9 @@
       "movement_feel": [
         "physics.gravity"
       ],
+      "movement_gating": [
+        "movement.stamina_movement"
+      ],
       "moving_platform": [
         "physics.moving_platform"
       ],
@@ -9376,15 +9477,8 @@
       ],
       "navigation": [
         "ai.patrol",
-        "traversal.gliding",
-        "traversal.grappling_hook",
-        "traversal.jetpack",
-        "traversal.ladder_climb",
-        "traversal.mantling",
-        "traversal.parkour_vault",
         "traversal.rope_swing",
         "traversal.teleport_blink",
-        "traversal.vehicle_mount",
         "traversal.zipline",
         "ui_ux.minimap",
         "ui_ux.quest_marker"
@@ -9396,6 +9490,7 @@
         "simulation.needs_simulation"
       ],
       "network_prediction": [
+        "movement.run",
         "ui_ux.hit_marker"
       ],
       "network_simulation": [
@@ -9411,11 +9506,14 @@
         "vehicles.vehicle_boost"
       ],
       "noise": [
-        "movement.sprint",
-        "stealth.noise_meter"
+        "movement.sprint"
       ],
       "noise_event": [
-        "horror.sound_lure"
+        "horror.sound_lure",
+        "stealth.distraction_throw"
+      ],
+      "noise_meter": [
+        "stealth.noise_meter"
       ],
       "note_lane": [
         "rhythm.note_lane"
@@ -9432,6 +9530,9 @@
       ],
       "objective": [
         "time.timed_challenge"
+      ],
+      "obstacle_traversal": [
+        "traversal.parkour_vault"
       ],
       "occlusion": [
         "horror.sound_lure"
@@ -9468,8 +9569,10 @@
         "horror.jump_scare_trigger"
       ],
       "parkour": [
-        "traversal.parkour_vault",
         "traversal.wall_run"
+      ],
+      "parkour_vault": [
+        "traversal.parkour_vault"
       ],
       "part_health": [
         "vehicles.vehicle_damage"
@@ -9492,9 +9595,10 @@
       ],
       "perception": [
         "ai.patrol",
-        "horror.monster_patrol",
-        "stealth.last_known_position_search",
-        "stealth.visibility_meter"
+        "horror.monster_patrol"
+      ],
+      "perception_event": [
+        "stealth.last_known_position_search"
       ],
       "permadeath": [
         "roguelike.permadeath"
@@ -9551,12 +9655,18 @@
       "positioning": [
         "combat.stealth_kill"
       ],
+      "powered_flight": [
+        "traversal.jetpack"
+      ],
       "precision": [
         "platforming.ledge_climb",
         "platforming.ledge_grab",
         "platforming.variable_jump_height",
         "platforming.wall_jump",
         "platforming.wall_slide"
+      ],
+      "precision_movement": [
+        "movement.walk"
       ],
       "prediction": [
         "multiplayer.online_coop",
@@ -9728,6 +9838,9 @@
         "horror.safe_room",
         "survival.health"
       ],
+      "recovery_frames": [
+        "movement.dodge_roll"
+      ],
       "refill": [
         "vehicles.fuel"
       ],
@@ -9867,15 +9980,19 @@
       "rooms": [
         "procedural_generation.room_connection_graph"
       ],
+      "root_motion": [
+        "traversal.mantling",
+        "traversal.parkour_vault"
+      ],
       "rope": [
         "physics.pendulum_swing",
         "traversal.rope_swing"
       ],
+      "rope_length": [
+        "traversal.grappling_hook"
+      ],
       "rotation_seed": [
         "meta.daily_challenge"
-      ],
-      "run": [
-        "movement.run"
       ],
       "run_build": [
         "roguelike.pick_one_upgrade_choice",
@@ -9899,6 +10016,9 @@
       "run_state": [
         "roguelike.permadeath",
         "roguelike.run_based_progression"
+      ],
+      "rung_index": [
+        "traversal.ladder_climb"
       ],
       "safe_room": [
         "horror.safe_room"
@@ -9924,11 +10044,11 @@
       "scroll_profile": [
         "rhythm.note_lane"
       ],
-      "search": [
-        "stealth.last_known_position_search"
-      ],
       "search_state": [
         "horror.monster_patrol"
+      ],
+      "seat_id": [
+        "traversal.vehicle_mount"
       ],
       "seed_logging": [
         "roguelike.permadeath"
@@ -9957,7 +10077,7 @@
         "accessibility.text_scaling",
         "accessibility.toggle_hold_option"
       ],
-      "shadow": [
+      "shadow_cover": [
         "stealth.shadow_cover"
       ],
       "shared_camera": [
@@ -9996,7 +10116,7 @@
         "combat.combo_chain",
         "movement.dash"
       ],
-      "slide": [
+      "slide_state": [
         "movement.slide"
       ],
       "sliding_block": [
@@ -10010,6 +10130,9 @@
       ],
       "smooth": [
         "camera.smooth_follow_camera"
+      ],
+      "snap_position": [
+        "traversal.mantling"
       ],
       "snapshot": [
         "time.time_rewind"
@@ -10027,7 +10150,11 @@
         "puzzle.sliding_block"
       ],
       "sound_lure": [
-        "horror.sound_lure"
+        "horror.sound_lure",
+        "stealth.distraction_throw"
+      ],
+      "sound_occlusion": [
+        "stealth.noise_meter"
       ],
       "space_control": [
         "combat.area_of_effect_attack"
@@ -10055,12 +10182,17 @@
       ],
       "stamina": [
         "combat.block",
+        "movement.climbing",
+        "movement.dodge_roll",
         "movement.sprint",
-        "movement.stamina_movement",
         "survival.stamina"
       ],
+      "stamina_resource": [
+        "movement.stamina_movement"
+      ],
       "stance": [
-        "movement.crouch"
+        "movement.crouch",
+        "movement.prone"
       ],
       "stasis": [
         "time.time_freeze"
@@ -10084,12 +10216,14 @@
         "ai.patrol",
         "combat.stealth_kill",
         "movement.crouch",
-        "stealth.alert_state",
-        "stealth.distraction_throw",
-        "stealth.last_known_position_search",
-        "stealth.noise_meter",
-        "stealth.shadow_cover",
-        "stealth.visibility_meter"
+        "movement.prone",
+        "stealth.shadow_cover"
+      ],
+      "stealth_feedback": [
+        "stealth.noise_meter"
+      ],
+      "stealth_recovery": [
+        "stealth.last_known_position_search"
       ],
       "stealth_state": [
         "horror.hiding"
@@ -10109,6 +10243,12 @@
       "submerged_state": [
         "physics.buoyancy"
       ],
+      "surface_anchor": [
+        "movement.climbing"
+      ],
+      "surface_material": [
+        "stealth.noise_meter"
+      ],
       "surface_response": [
         "vehicles.suspension_physics"
       ],
@@ -10127,6 +10267,9 @@
       ],
       "suspension": [
         "vehicles.suspension_physics"
+      ],
+      "suspicion": [
+        "stealth.alert_state"
       ],
       "switch_state": [
         "puzzle.lever_switch"
@@ -10200,6 +10343,9 @@
       "throttle": [
         "vehicles.vehicle_acceleration"
       ],
+      "thrust_vector": [
+        "traversal.jetpack"
+      ],
       "time_scale": [
         "time.slow_motion"
       ],
@@ -10262,7 +10408,6 @@
         "ui_ux.tutorial_prompt"
       ],
       "ui": [
-        "stealth.visibility_meter",
         "time.cooldown_time",
         "ui_ux.cooldown_indicator",
         "ui_ux.damage_numbers",
@@ -10320,9 +10465,6 @@
       "vector_field": [
         "physics.wind_force"
       ],
-      "vehicle": [
-        "traversal.vehicle_mount"
-      ],
       "vehicle_acceleration": [
         "vehicles.vehicle_acceleration"
       ],
@@ -10335,6 +10477,9 @@
       "vehicle_feedback": [
         "vehicles.vehicle_boost"
       ],
+      "vehicle_mount": [
+        "traversal.vehicle_mount"
+      ],
       "vehicle_physics": [
         "vehicles.suspension_physics"
       ],
@@ -10344,13 +10489,14 @@
       "vehicle_upgrades": [
         "vehicles.upgradeable_vehicle"
       ],
+      "vertical_locomotion": [
+        "movement.climbing"
+      ],
       "vertical_mobility": [
-        "movement.climbing",
         "platforming.ledge_climb",
         "platforming.ledge_grab",
         "platforming.variable_jump_height",
-        "traversal.ladder_climb",
-        "traversal.mantling"
+        "traversal.ladder_climb"
       ],
       "vertical_navigation": [
         "platforming.drop_through_platform"
@@ -10371,14 +10517,16 @@
       ],
       "visibility": [
         "horror.light_resource",
-        "stealth.visibility_meter",
         "strategy.fog_of_war"
+      ],
+      "visibility_meter": [
+        "stealth.visibility_meter"
+      ],
+      "visibility_modifier": [
+        "stealth.shadow_cover"
       ],
       "vitality": [
         "survival.health"
-      ],
-      "walk": [
-        "movement.walk"
       ],
       "wall_interaction": [
         "platforming.wall_jump",

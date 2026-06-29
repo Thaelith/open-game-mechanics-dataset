@@ -24,88 +24,121 @@
     "action",
     "adventure"
   ],
-  "description": "Dodge Roll is a character action that changes how the player moves through space.",
-  "design_notes": "Dodge Roll should be designed around a clear player promise, a readable trigger, and a predictable result. For movement mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A committed evasive movement action that briefly changes position, hit reaction rules, and recovery timing, often with invulnerability frames.",
+  "design_notes": "Dodge roll sits between movement and defense. Define the active invulnerability window, recovery frames, direction capture, collision shape, and cancel rules before tuning displacement. It should reward anticipation and positioning without becoming a universal answer to every attack pattern.",
   "design_purpose": [
-    "Give the player a readable way to use dodge roll as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect dodge roll to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players a defensive repositioning tool with readable commitment and recovery.",
+    "Create timing skill around attack telegraphs, invulnerability, and spacing.",
+    "Connect movement, stamina, combat, and animation locks through one evasive action."
   ],
-  "player_fantasy": "The player feels directly connected to the avatar and able to express intent through motion.",
+  "player_fantasy": "The player feels nimble under pressure, narrowly avoiding danger while committing to a visible recovery.",
   "required_systems": [
-    "character_controller",
-    "input_handling",
-    "collision_detection",
-    "animation_state_machine"
+    "movement_state_machine",
+    "damage_immunity",
+    "animation_events",
+    "collision_capsule",
+    "input_buffer"
   ],
   "parameters": [
     {
-      "name": "movement_speed",
+      "name": "roll_displacement_units",
       "type": "float",
-      "typical_range": "2-12 world units/second",
-      "description": "Baseline travel speed while the mechanic is active."
+      "typical_range": "2-6 world units",
+      "description": "Horizontal displacement target before collision truncation."
     },
     {
-      "name": "acceleration",
-      "type": "float",
-      "typical_range": "10-80 world units/second^2",
-      "description": "How quickly the actor reaches target speed."
+      "name": "dodge_roll_i_frames_ms",
+      "type": "integer",
+      "typical_range": "80-300 ms",
+      "description": "Milliseconds of eligible damage immunity inside the roll."
     },
     {
-      "name": "turn_response",
+      "name": "dodge_roll_recovery_ms",
+      "type": "integer",
+      "typical_range": "150-600 ms",
+      "description": "Post-movement lockout before ordinary actions resume."
+    },
+    {
+      "name": "roll_input_buffer_ms",
+      "type": "integer",
+      "typical_range": "50-180 ms",
+      "description": "Queued input window before roll activation becomes legal."
+    },
+    {
+      "name": "roll_stamina_drain_units",
       "type": "float",
-      "typical_range": "0.05-0.35 seconds",
-      "description": "How quickly movement direction updates after input changes."
+      "typical_range": "10-35 units",
+      "description": "Stamina resource consumed on accepted roll activation."
+    },
+    {
+      "name": "roll_capsule_profile_id",
+      "type": "string",
+      "typical_range": "standing, compact, prone_like",
+      "description": "Collision profile used during active roll frames."
     }
   ],
   "common_variants": [
-    "dodge_roll_grounded_version",
-    "dodge_roll_airborne_version",
-    "stamina_limited_version",
-    "contextual_version"
+    "i_frame_roll",
+    "directional_roll",
+    "fat_roll",
+    "quickstep",
+    "stamina_roll"
   ],
   "edge_cases": [
-    "Dodge Roll is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Dodge Roll overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Dodge Roll runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Roll direction should be captured at activation, not drift when lock-on target or camera heading changes mid-roll.",
+    "Incoming damage during the first or last roll frame needs consistent inclusive or exclusive immunity rules.",
+    "Rolling into stairs, ledges, or narrow doors must not leave the character inside collision after recovery.",
+    "Networked rolls need server authority for immunity and correction for predicted displacement."
   ],
   "common_bugs": [
-    "Dodge Roll state does not reset correctly after interruption or reload.",
-    "Feedback for Dodge Roll plays even when the mechanic fails or is rejected.",
-    "Dodge Roll produces different results between frame rates, platforms, or network clients."
+    "Invulnerability is tied to animation events and desyncs when animation playback rate changes.",
+    "Roll hits the same hazard twice because damage immunity and hurtbox state are not updated atomically.",
+    "Input buffering triggers a roll after stun recovery even though the player released the button long ago.",
+    "Capsule profile changes are not restored after interrupt, leaving the character permanently compact."
   ],
   "balancing_notes": [
-    "Make Dodge Roll strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Long i-frame windows make roll a timing solution; long displacement makes it a spacing solution.",
+    "Recovery frames are the main counterweight when roll is used in combat, especially against repeated attacks.",
+    "Stamina cost should reflect how often encounters require rolling rather than only the roll displacement."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Dodge Roll becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use generous input buffering and readable attack telegraphs if roll timing is central to survival.",
+    "Consider assist settings that widen dodge_roll_i_frames_ms or reduce repeated-button strain."
   ],
   "implementation_notes": {
-    "unity": "Implement Dodge Roll with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Dodge Roll as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Dodge Roll with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Dodge Roll as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Create a roll state with activation tick, captured direction, immunity interval, and recovery interval. Drive displacement from FixedUpdate with swept collision; damage queries should read dodge_roll_i_frames_ms from state, not from Animator timing alone.",
+    "godot": "Store roll_state on the character and update velocity in _physics_process. Use animation callbacks only to request visual transitions; collision profile and invulnerability should be changed by deterministic state ticks.",
+    "unreal": "Implement roll as a Gameplay Ability or custom CharacterMovement state. Server validates stamina and immunity windows, while predicted clients play the montage and reconcile displacement when authoritative movement arrives.",
+    "web": "Represent roll as an immutable action instance with activation_tick, direction, displacement, and recovery. Resolve per-target damage immunity before collision and animation rendering."
   },
   "related_mechanics": [
-    "camera.smooth_follow_camera",
-    "movement.run",
-    "movement.walk",
-    "ui_ux.cooldown_indicator"
+    "combat.invincibility_frames",
+    "movement.dash",
+    "movement.stamina_movement",
+    "combat.hit_stun"
   ],
   "combines_well_with": [
-    "camera.smooth_follow_camera",
-    "movement.crouch",
-    "movement.sprint",
-    "ui_ux.cooldown_indicator"
+    "combat.parry",
+    "ui_ux.cooldown_indicator",
+    "camera.screen_shake",
+    "survival.stamina"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Dark Souls",
+      "note": "Uses dodge rolling as a core defensive timing and positioning action."
+    },
+    {
+      "title": "Enter the Gungeon",
+      "note": "Uses dodge roll for projectile evasion with committed recovery."
+    }
+  ],
   "tags": [
-    "burst_movement",
-    "controls",
-    "dodge",
-    "mobility"
+    "dodge_roll",
+    "i_frames",
+    "recovery_frames",
+    "stamina",
+    "evasion"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

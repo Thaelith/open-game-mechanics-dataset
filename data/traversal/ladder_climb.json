@@ -24,88 +24,121 @@
     "platformer",
     "open_world"
   ],
-  "description": "Ladder Climb is a locomotion tool that helps the player cross space, reach anchors, or move through level structures.",
-  "design_notes": "Ladder Climb should be designed around a clear player promise, a readable trigger, and a predictable result. For traversal mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A constrained vertical traversal state that attaches the character to a ladder, maps input to rung movement, and handles safe entry and exit points.",
+  "design_notes": "Ladder climb is simple only if attach and detach rules are explicit. Define ladder_id, top and bottom attach points, rung indexing, input axis ownership, collision mask changes, animation sync, blocked exits, and how the camera behaves when the player is constrained to a vertical path.",
   "design_purpose": [
-    "Give the player a readable way to use ladder climb as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect ladder climb to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Provide reliable vertical traversal in narrow or authored spaces.",
+    "Give level designers a constrained climb route with clear entry and exit points.",
+    "Bridge ground movement, ledge traversal, and platforming without requiring jump precision."
   ],
-  "player_fantasy": "The player feels capable of crossing spaces that first appeared unreachable.",
+  "player_fantasy": "The player feels attached to a clear climb path, safely moving up or down while still choosing when to exit.",
   "required_systems": [
-    "character_controller",
-    "targeting_or_anchor_system",
-    "collision_detection",
-    "state_machine"
+    "ladder_volume",
+    "attachment_state",
+    "input_axis_mapping",
+    "animation_state_machine",
+    "exit_clearance_query"
   ],
   "parameters": [
     {
-      "name": "travel_speed",
+      "name": "ladder_axis_velocity",
       "type": "float",
-      "typical_range": "6-30 world units/second",
-      "description": "Movement speed while using the traversal mechanic."
+      "typical_range": "1-4 world units/second",
+      "description": "Movement velocity along the ladder axis while attached."
     },
     {
-      "name": "activation_range",
+      "name": "ladder_attach_margin_units",
       "type": "float",
-      "typical_range": "3-50 world units",
-      "description": "Maximum distance to a valid anchor, target, or route."
+      "typical_range": "0.2-1.0 world units",
+      "description": "Distance from ladder volume accepted for attachment."
     },
     {
-      "name": "cancel_window",
+      "name": "ladder_rung_spacing_units",
       "type": "float",
-      "typical_range": "0-1.0 seconds",
-      "description": "Time during which the player can safely cancel or redirect the action."
+      "typical_range": "0.2-0.6 world units",
+      "description": "Spacing used for animation foot and hand alignment."
+    },
+    {
+      "name": "ladder_exit_probe_height_units",
+      "type": "float",
+      "typical_range": "standing capsule height",
+      "description": "Vertical clearance checked before leaving at top or bottom."
+    },
+    {
+      "name": "ladder_detach_buffer_ms",
+      "type": "integer",
+      "typical_range": "80-220 ms",
+      "description": "Buffered jump, drop, or exit input while attached."
+    },
+    {
+      "name": "ladder_camera_profile_id",
+      "type": "string",
+      "typical_range": "locked, side, free_orbit",
+      "description": "Camera behavior while the character is constrained to ladder movement."
     }
   ],
   "common_variants": [
-    "ladder_climb_manual_targeting",
-    "ladder_climb_auto_targeting",
-    "limited_use",
-    "upgrade_extended"
+    "manual_ladder",
+    "auto_attach_ladder",
+    "combat_ladder",
+    "one_way_ladder",
+    "moving_ladder"
   ],
   "edge_cases": [
-    "Ladder Climb is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Ladder Climb overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Ladder Climb runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The top exit can be blocked after the player starts climbing, requiring a hold, drop, or retry state.",
+    "Two players or AI agents can attach to the same ladder segment in multiplayer or crowd scenes.",
+    "Jumping off a ladder needs a clear impulse vector and restored collision layers.",
+    "Moving ladders need attach transforms relative to ladder_id rather than world-only positions."
   ],
   "common_bugs": [
-    "Ladder Climb state does not reset correctly after interruption or reload.",
-    "Feedback for Ladder Climb plays even when the mechanic fails or is rejected.",
-    "Ladder Climb produces different results between frame rates, platforms, or network clients."
+    "The character remains in no-gravity mode after detaching from ladder_id.",
+    "Input axis mapping flips when camera direction crosses behind the ladder.",
+    "Exit placement ignores capsule clearance and clips the player into the floor above.",
+    "Animation rung alignment drifts because rung index is derived from render position instead of climb distance."
   ],
   "balancing_notes": [
-    "Make Ladder Climb strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Fast ladders reduce frustration but make vertical exposure and combat risk less meaningful.",
+    "Auto-attach is useful in tight spaces but can steal control near ledges or interactables.",
+    "Ladder exits should be readable enough that players know whether to climb, jump, or drop."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Ladder Climb becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Allow simple up/down input and avoid requiring held diagonal inputs to stay attached.",
+    "Use distinct visual and audio cues for valid exit points, not only camera angle or controller vibration."
   ],
   "implementation_notes": {
-    "unity": "Implement Ladder Climb with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Ladder Climb as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Ladder Climb with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Ladder Climb as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use trigger volumes tagged with ladder_id and explicit attach points. On attach, switch movement_state_id to ladder, disable ordinary ground acceleration, project input onto the ladder axis, and run capsule clearance before top or bottom exit.",
+    "godot": "Model ladders as Area nodes with exported attach transforms. While attached, update character position along the ladder axis in _physics_process and restore collision masks through one detach function.",
+    "unreal": "Use a ladder interaction component or Smart Object that grants a custom movement mode. Replicate ladder_id and normalized rung position so clients and server agree on exit checks and animation sync.",
+    "web": "Store ladder_state with ladder id, normalized position, rung index, and pending detach input. Resolve axis movement in fixed ticks and re-enable normal collision only after exit validation succeeds."
   },
   "related_mechanics": [
-    "camera.dynamic_fov",
-    "platforming.ledge_grab",
-    "traversal.grappling_hook",
-    "traversal.rope_swing"
+    "movement.climbing",
+    "platforming.ledge_climb",
+    "traversal.mantling",
+    "movement.stamina_movement"
   ],
   "combines_well_with": [
-    "camera.dynamic_fov",
-    "platforming.ledge_grab",
-    "traversal.teleport_blink",
-    "traversal.zipline"
+    "ui_ux.interaction_prompt",
+    "camera.third_person_camera",
+    "stealth.visibility_meter",
+    "survival.stamina"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Spelunky",
+      "note": "Uses ladders as clear vertical routes in platforming spaces."
+    },
+    {
+      "title": "Half-Life 2",
+      "note": "Uses ladders for constrained vertical traversal in first-person levels."
+    }
+  ],
   "tags": [
-    "ladder",
-    "mobility",
-    "navigation",
-    "vertical_mobility"
+    "ladder_id",
+    "vertical_mobility",
+    "attach_detach",
+    "rung_index",
+    "exit_clearance"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

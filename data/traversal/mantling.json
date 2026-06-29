@@ -7,7 +7,7 @@
     "mantling"
   ],
   "category": "traversal",
-  "subcategory": "vertical_mobility",
+  "subcategory": "ledge_traversal",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -24,113 +24,121 @@
     "platformer",
     "open_world"
   ],
-  "description": "A traversal action where the player climbs or vaults onto a ledge after detecting a reachable surface.",
-  "design_notes": "Mantling is a contract between collision probes, animation, and player intent. It must identify a valid ledge, reserve a safe target position, and restore control cleanly. If probes are too permissive, players mantle through geometry; if too strict, obvious ledges feel broken.",
+  "description": "A ledge recovery action that detects a valid edge, snaps the character to it, and moves them onto the upper surface through scripted or root-motion alignment.",
+  "design_notes": "Mantling is a reliability mechanic: it turns almost-made jumps into readable recoveries. Define ledge_id detection, approach angle, clearance height, snap position, hand placement, camera transition, and cancellation rules. It should rescue intended traversal without letting players climb every decorative lip or bypass locked paths.",
   "design_purpose": [
-    "Let players recover onto ledges or low obstacles without requiring a full jump arc.",
-    "Support parkour routes, cover traversal, and forgiving vertical movement.",
-    "Make level geometry feel tactile and climbable where designers intend it."
+    "Smooth out ledge recovery when jumps, vaults, or climbs reach a valid upper surface.",
+    "Let level designers author readable vertical routes without requiring perfect landing precision.",
+    "Bridge movement systems such as jumping, climbing, parkour vaults, and crouch spaces."
   ],
-  "player_fantasy": "The player feels capable of catching and climbing over reachable edges with physical intent.",
+  "player_fantasy": "The player feels physically capable of catching a ledge and pulling over it instead of bouncing off geometry.",
   "required_systems": [
     "ledge_detection",
-    "collision_detection",
-    "animation_state_machine",
-    "root_motion_or_warping",
-    "state_reset_rules"
+    "clearance_query",
+    "animation_montage",
+    "root_motion_policy",
+    "collision_sweep"
   ],
   "parameters": [
     {
-      "name": "mantle_probe_height",
+      "name": "mantle_snap_distance_units",
       "type": "float",
-      "typical_range": "0.4-2.5 world units",
-      "description": "Vertical search band for detecting reachable ledges."
+      "typical_range": "0.1-1.5 world units",
+      "description": "Maximum correction distance from character to ledge snap position."
     },
     {
-      "name": "mantle_forward_probe_distance",
+      "name": "mantle_clearance_height_units",
       "type": "float",
-      "typical_range": "0.3-2.0 world units",
-      "description": "Forward distance used to find ledge fronts."
+      "typical_range": "0.8-2.2 world units",
+      "description": "Required empty space above the ledge landing position."
     },
     {
-      "name": "mantle_target_clearance_height",
+      "name": "mantle_approach_angle_degrees",
       "type": "float",
-      "typical_range": "1-2.5 world units",
-      "description": "Clear space required at the final standing position."
+      "typical_range": "20-75 degrees",
+      "description": "Allowed angle between character movement and ledge normal."
     },
     {
-      "name": "mantle_duration_ms",
+      "name": "mantle_window_ms",
       "type": "integer",
-      "typical_range": "180-900 ms",
-      "description": "Time spent in the mantle animation or movement warp."
+      "typical_range": "300-900 ms",
+      "description": "Committed motion interval for the mantle transition."
     },
     {
-      "name": "mantle_cancel_after_ms",
-      "type": "integer",
-      "typical_range": "0-500 ms",
-      "description": "Earliest point where damage, jump, or drop can cancel the action."
+      "name": "mantle_motion_profile_id",
+      "type": "string",
+      "typical_range": "low, high, quick, cinematic",
+      "description": "Animation or scripted movement profile selected for the ledge height."
+    },
+    {
+      "name": "mantle_exit_probe_units",
+      "type": "float",
+      "typical_range": "0.2-1.0 world units",
+      "description": "Forward clearance probe used before placing the character on top."
     }
   ],
   "common_variants": [
-    "ledge_mantle",
-    "vault_mantle",
-    "combat_mantle",
-    "assisted_mantle",
-    "parkour_mantle"
+    "auto_mantle",
+    "manual_mantle",
+    "low_mantle",
+    "high_mantle",
+    "combat_mantle"
   ],
   "edge_cases": [
-    "Moving ledges, elevators, and vehicles need target positions relative to the moving surface.",
-    "Crouch-height spaces above the ledge should choose crouched finish, reject, or crawl transition.",
-    "Mantle probes should reject thin railings, decorative trim, hazards, and one-way collision unless tagged.",
-    "Multiplayer mantling needs reservation or overlap handling at the landing position."
+    "The ledge can be valid from the camera ray but blocked by collision at the landing point.",
+    "Moving platforms need ledge_snap_position relative to the platform, not only world coordinates.",
+    "A player may request mantle while carrying objects, aiming, knocked back, or under stamina exhaustion.",
+    "Networked mantle requires the same ledge_id and root_motion_policy_id on client and server."
   ],
   "common_bugs": [
-    "The final target point is valid during detection but occupied by another actor before the animation finishes.",
-    "Root motion moves the character through walls because collision is disabled for the whole animation.",
-    "Mantle state is interrupted by damage and never restores input, gravity, or collision masks.",
-    "Probe order picks a high ledge behind a low ledge and causes a teleport-like climb."
+    "Mantle starts from a decorative edge with no safe landing surface.",
+    "Root motion pushes the character through collision because the sweep is disabled during the montage.",
+    "Camera clips into the ledge when vertical correction is large.",
+    "Canceling mantle leaves input disabled or character gravity off."
   ],
   "balancing_notes": [
-    "Fast mantles support flow and parkour; slow mantles create commitment in combat or stealth spaces.",
-    "Generous mantle detection can make routes forgiving but may invalidate jump skill and level gates."
+    "Wide snap distance makes traversal forgiving but can feel magnetic around unintended ledges.",
+    "Auto-mantle improves flow in action games but can steal player control near hazards or stealth cover.",
+    "High ledges should communicate whether mantle, climb, or wall jump is expected."
   ],
   "accessibility_notes": [
-    "Use clear ledge affordances and input buffering so players do not need exact jump-and-grab timing.",
-    "Avoid camera snaps during mantle animation, or provide reduced camera motion during automated traversal."
+    "Expose optional auto-mantle or extended input buffering for players who struggle with precise ledge timing.",
+    "Avoid sudden camera lifts during mantle, or provide reduced camera motion settings."
   ],
   "implementation_notes": {
-    "unity": "Use staged probes for wall, top surface, and final clearance, reserve the target point, then move with root motion or scripted interpolation while still checking collision.",
-    "godot": "Run ray or shape casts for ledge front and top clearance, store the mantle target relative to moving bodies, and blend movement in _physics_process.",
-    "unreal": "Use motion warping or root motion with ledge traces, target reservation, and a custom movement state that restores collision and input on every exit path.",
-    "web": "Perform ledge detection with collision queries, store target_position and target_surface_id, and interpolate through a mantle state while validating final clearance."
+    "unity": "Use forward and downward shape casts to produce ledge_id, ledge_snap_position, and mantle_clearance_height_units. During mantle, scripted motion or root motion should still sweep the capsule and abort to a safe fallback if landing clearance changes.",
+    "godot": "Use RayCast or ShapeCast nodes for ledge and exit probes, then lock traversal_state_id while applying a deterministic mantle motion profile in _physics_process. Restore gravity and input through a single exit function.",
+    "unreal": "Use trace profiles, Motion Warping, or root motion sources with a validated target transform. Server should approve ledge_id and landing clearance before clients commit to the mantle montage.",
+    "web": "Store mantle_state with ledge id, snap position, motion profile, and remaining ticks. Move the capsule through swept segments and revalidate exit space before returning to normal locomotion."
   },
   "related_mechanics": [
-    "camera.dynamic_fov",
+    "movement.climbing",
+    "platforming.ledge_climb",
     "platforming.ledge_grab",
-    "traversal.grappling_hook",
-    "traversal.rope_swing"
+    "traversal.parkour_vault"
   ],
   "combines_well_with": [
-    "camera.dynamic_fov",
-    "platforming.ledge_grab",
-    "traversal.teleport_blink",
-    "traversal.zipline"
+    "movement.slide",
+    "traversal.wall_run",
+    "camera.third_person_camera",
+    "ui_ux.interaction_prompt"
   ],
   "example_games": [
     {
-      "title": "Uncharted 4: A Thief's End",
-      "note": "Uses ledge mantling as a core traversal action."
+      "title": "Uncharted 4",
+      "note": "Uses mantle-style ledge recovery during authored traversal routes."
     },
     {
       "title": "Assassin's Creed II",
-      "note": "Uses climb and mantle interactions across authored architecture."
+      "note": "Uses ledge traversal and climb-over actions as a core navigation layer."
     }
   ],
   "tags": [
     "mantling",
-    "mobility",
-    "navigation",
-    "vertical_mobility"
+    "ledge_id",
+    "clearance_check",
+    "root_motion",
+    "snap_position"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"
