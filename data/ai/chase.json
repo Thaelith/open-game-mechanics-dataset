@@ -2,9 +2,9 @@
   "id": "ai.chase",
   "name": "Chase",
   "aliases": [
-    "chase mechanic",
-    "chase system",
-    "chase"
+    "pursuit",
+    "enemy chase",
+    "target pursuit"
   ],
   "category": "ai",
   "subcategory": "agent_behavior",
@@ -24,83 +24,109 @@
     "strategy",
     "simulation"
   ],
-  "description": "Chase is a non-player behavior mechanic that controls sensing, intention, movement, and response.",
-  "design_notes": "Chase should be designed around a clear player promise, a readable trigger, and a predictable result. For ai mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "An AI pursuit behavior where an agent moves toward a target or last known position until it catches, loses, or abandons the target.",
+  "design_notes": "Chase is a contract about pressure and escape. The behavior needs target_id, last_known_position, line_of_sight_grace_ms, path_replan_interval_ms, pursuit timeout, and clear transitions back to search or patrol so players understand when they have escaped.",
   "design_purpose": [
-    "Give the player a readable way to use chase as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect chase to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Convert detection into immediate spatial pressure.",
+    "Create readable escape, kiting, or repositioning scenarios.",
+    "Connect perception, navigation, combat range, and alert systems into one high-priority AI state."
   ],
-  "player_fantasy": "The player feels the world responds with believable intent instead of static scripting.",
+  "player_fantasy": "The player feels hunted and rewarded for breaking sightlines, using terrain, or reaching safety at the right moment.",
   "required_systems": [
-    "ai_state_machine",
+    "perception_system",
     "navigation",
-    "sensing",
-    "decision_rules"
+    "target_tracking",
+    "ai_state_machine",
+    "animation_controller"
   ],
   "parameters": [
     {
-      "name": "sense_radius",
-      "type": "float",
-      "typical_range": "1-100 world units",
-      "description": "Area within which the AI can consider stimuli."
+      "name": "target_id",
+      "type": "string",
+      "typical_range": "player, decoy, companion, threat_actor",
+      "description": "Current actor or stimulus source the AI is pursuing."
     },
     {
-      "name": "decision_interval",
-      "type": "float",
-      "typical_range": "0.05-2 seconds",
-      "description": "How often the AI re-evaluates the behavior."
+      "name": "last_known_position",
+      "type": "vector",
+      "typical_range": "world-space coordinate",
+      "description": "Most recent validated location used when direct perception is lost."
     },
     {
-      "name": "priority_weight",
-      "type": "float",
-      "typical_range": "0-10",
-      "description": "Relative importance compared with competing AI goals."
+      "name": "line_of_sight_grace_ms",
+      "type": "integer",
+      "typical_range": "100-3000 ms",
+      "description": "Grace window after sight breaks before switching to search or giving up."
+    },
+    {
+      "name": "path_replan_interval_ms",
+      "type": "integer",
+      "typical_range": "100-1500 ms",
+      "description": "Minimum interval between navigation path recalculations during pursuit."
+    },
+    {
+      "name": "pursuit_timeout_ms",
+      "type": "integer",
+      "typical_range": "1000-60000 ms",
+      "description": "Maximum time the AI remains in chase without reacquiring the target or reaching last_known_position."
     }
   ],
   "common_variants": [
-    "chase_scripted_behavior",
-    "chase_utility_behavior",
-    "behavior_tree_variant",
-    "director_controlled"
+    "direct_chase",
+    "predictive_chase",
+    "pack_chase",
+    "ranged_pressure_chase",
+    "search_after_chase"
   ],
   "edge_cases": [
-    "Chase is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Chase overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Chase runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The target teleports, climbs, enters a vehicle, or crosses an off-navmesh link the chaser cannot use.",
+    "A navmesh_query fails repeatedly and the AI must decide whether to wait, switch route, search, or abandon pursuit.",
+    "Target_id ownership changes in multiplayer and chase authority must remain server-side.",
+    "The target becomes hidden or invulnerable while still inside attack range."
   ],
   "common_bugs": [
-    "Chase state does not reset correctly after interruption or reload.",
-    "Feedback for Chase plays even when the mechanic fails or is rejected.",
-    "Chase produces different results between frame rates, platforms, or network clients."
+    "Path replans every frame and tanks performance when many agents chase the same target.",
+    "last_known_position updates through walls because perception_event filtering does not require visibility or valid sound propagation.",
+    "Chase animation speed and navigation velocity desynchronize, causing sliding or unfair reach.",
+    "line_of_sight_grace_ms is missing hysteresis, so the AI flickers between chase and patrol at doorway edges."
   ],
   "balancing_notes": [
-    "Make Chase strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Short grace windows make stealth resets easy; long windows create pressure but need cover and escape routes.",
+    "Pursuit speed should be tuned against player stamina, traversal tools, and level geometry, not in isolation.",
+    "Groups of chasers need coordination or spawn budgets; many perfect pursuers can remove player agency."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Chase becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show chase state with redundant cues such as music, UI alert markers, enemy barks, or camera-safe indicators.",
+    "Avoid chase sequences that require perfect audio localization unless visual route and threat cues are also available."
   ],
   "implementation_notes": {
-    "unity": "Implement Chase with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Chase as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Chase with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Chase as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use NavMeshAgent path queries at path_replan_interval_ms, store target_id and last_known_position in AI state, and draw debug lines for current path, perception_event source, and give-up timer.",
+    "godot": "Use NavigationAgent2D/3D with a chase state that only refreshes paths on a timer; keep last_known_position and line_of_sight_grace_ms separate from animation playback.",
+    "unreal": "Use AI Perception plus Behavior Tree/StateTree Blackboard keys for TargetActor, LastKnownPosition, and PursuitTimeout; server authority should own target selection in networked play.",
+    "web": "Run chase decisions on fixed simulation ticks with deterministic target_id selection and throttled pathfinding; keep animation interpolation separate from authoritative movement state."
   },
   "related_mechanics": [
-    "ai.flee",
     "ai.patrol",
-    "combat.hit_stun",
-    "stealth.alert_state"
+    "ai.line_of_sight_detection",
+    "ai.investigate_noise",
+    "ai.flee"
   ],
   "combines_well_with": [
-    "ai.investigate_noise",
-    "ai.line_of_sight_detection",
+    "stealth.last_known_position_search",
+    "horror.monster_patrol",
     "combat.hit_stun",
-    "stealth.alert_state"
+    "ui_ux.minimap"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Pac-Man",
+      "note": "Uses enemy pursuit as a core pressure mechanic."
+    },
+    {
+      "title": "Left 4 Dead",
+      "note": "Uses pursuit and horde pressure around player position."
+    }
+  ],
   "tags": [
     "agent_behavior",
     "ai",

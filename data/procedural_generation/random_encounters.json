@@ -2,9 +2,9 @@
   "id": "procedural_generation.random_encounters",
   "name": "Random Encounters",
   "aliases": [
-    "random encounters mechanic",
-    "random encounters system",
-    "random encounters"
+    "encounter generation",
+    "random events",
+    "spawned encounters"
   ],
   "category": "procedural_generation",
   "subcategory": "content_generation",
@@ -24,83 +24,109 @@
     "sandbox",
     "survival"
   ],
-  "description": "Random Encounters is a content-generation mechanic that creates spaces, events, rewards, or structures from rules and seeds.",
-  "design_notes": "Random Encounters should be designed around a clear player promise, a readable trigger, and a predictable result. For procedural generation mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A generation system that selects and places encounter content such as enemies, events, hazards, or rewards from contextual rules.",
+  "design_notes": "Random encounters should feel contextual, not arbitrary. The system needs encounter_budget, encounter_tag filters, spawn safety checks, progression gates, cooldowns, and telemetry about accepted and rejected candidates.",
   "design_purpose": [
-    "Give the player a readable way to use random encounters as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect random encounters to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Add replayable variation to travel, exploration, or mission routes.",
+    "Match encounter pressure to player progress, biome, resources, and current objectives.",
+    "Create surprises while protecting pacing, safety, and progression requirements."
   ],
-  "player_fantasy": "The player feels each run or world can surprise them while still following understandable rules.",
+  "player_fantasy": "The player feels the world can surprise them with events that still belong to the place and moment.",
   "required_systems": [
-    "random_number_generator",
-    "content_rules",
-    "validation_pass",
-    "seed_storage"
+    "encounter_tables",
+    "spawn_validation",
+    "player_progression_state",
+    "navigation",
+    "telemetry"
   ],
   "parameters": [
     {
-      "name": "seed_value",
+      "name": "encounter_budget",
       "type": "integer",
-      "typical_range": "0-2^32",
-      "description": "Seed used to make generation reproducible."
+      "typical_range": "1-200 points",
+      "description": "Budget used to choose enemy groups, hazards, or reward events."
     },
     {
-      "name": "generation_depth",
-      "type": "integer",
-      "typical_range": "1-20 passes",
-      "description": "Number of passes used to construct and validate output."
+      "name": "encounter_tag_filter",
+      "type": "array",
+      "typical_range": "biome, faction, difficulty, story tags",
+      "description": "Tags that constrain eligible encounter templates."
     },
     {
-      "name": "content_budget",
+      "name": "safe_spawn_radius_min",
+      "type": "float",
+      "typical_range": "5-80 world units",
+      "description": "Minimum distance from the player, camera, or protected area for placement."
+    },
+    {
+      "name": "cooldown_group_id",
+      "type": "string",
+      "typical_range": "ambush, merchant, elite_patrol",
+      "description": "Group key that prevents similar encounters from repeating too soon."
+    },
+    {
+      "name": "validation_retries",
       "type": "integer",
-      "typical_range": "1-10000 items",
-      "description": "Maximum number of pieces, rooms, encounters, or rewards generated."
+      "typical_range": "0-50 attempts",
+      "description": "Attempts to find a valid template and placement before no encounter or fallback occurs."
     }
   ],
   "common_variants": [
-    "random_encounters_fully_random",
-    "random_encounters_seeded_random",
-    "grammar_based",
-    "hand_authored_chunks"
+    "travel_encounter",
+    "ambush_encounter",
+    "wandering_merchant",
+    "elite_patrol",
+    "environmental_event"
   ],
   "edge_cases": [
-    "Random Encounters is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Random Encounters overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Random Encounters runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "All eligible encounter templates fail because player progression, biome, and safe spawn rules conflict.",
+    "An encounter spawns behind a one-way gate or inside a cleared safe zone.",
+    "Cooldowns and story flags can block every event in a small region.",
+    "A generated encounter must not kill a quest NPC, block an exit, or consume a required resource."
   ],
   "common_bugs": [
-    "Random Encounters state does not reset correctly after interruption or reload.",
-    "Feedback for Random Encounters plays even when the mechanic fails or is rejected.",
-    "Random Encounters produces different results between frame rates, platforms, or network clients."
+    "Encounter selection ignores current biome_id and spawns enemies that cannot navigate the terrain.",
+    "Rejection reasons are not logged, making empty travel segments impossible to tune.",
+    "Random encounters repeat because cooldown_group_id is saved per scene instead of per world/account scope.",
+    "Server and client choose different encounter templates because candidate ordering is nondeterministic."
   ],
   "balancing_notes": [
-    "Make Random Encounters strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Encounter frequency should respect recovery resources and travel distance, not only enemy difficulty.",
+    "Surprise encounters need fairness constraints such as sightline, warning, or escape space.",
+    "Track encounter acceptance rate, player damage, and time-to-contact to tune pacing."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Random Encounters becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Avoid unavoidable surprise attacks without warning cues, especially from behind the camera.",
+    "Offer difficulty or assist options that adjust encounter_budget and frequency rather than only health values."
   ],
   "implementation_notes": {
-    "unity": "Implement Random Encounters with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Random Encounters as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Random Encounters with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Random Encounters as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Select encounter templates from data by encounter_tag_filter, validate spawn points with NavMesh and camera checks, and log accepted/rejected candidates with seed and content_version.",
+    "godot": "Keep encounter tables as Resources or JSON and run placement validation before instancing scenes; save cooldown_group_id timestamps with world or account state.",
+    "unreal": "Use EQS or PCG queries for safe spawn validation and server authority for multiplayer encounter commits; Visual Logger should capture budget, selected template, and rejection reasons.",
+    "web": "Use deterministic template ordering and seeded RNG streams; represent encounter commits as events so replay and bug reports can reproduce spawn choices."
   },
   "related_mechanics": [
-    "economy.loot_table",
-    "procedural_generation.procedural_level_rooms",
-    "procedural_generation.procedural_terrain",
-    "roguelike.procedural_floor"
+    "ai.enemy_spawn_director",
+    "procedural_generation.seeded_generation",
+    "procedural_generation.biome_generation",
+    "procedural_generation.loot_generation"
   ],
   "combines_well_with": [
+    "survival.day_night_cycle",
     "economy.loot_table",
-    "procedural_generation.biome_generation",
-    "procedural_generation.seeded_generation",
-    "roguelike.procedural_floor"
+    "horror.monster_patrol",
+    "ui_ux.quest_marker"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Fallout",
+      "note": "Uses travel and world encounters as part of exploration."
+    },
+    {
+      "title": "Darkest Dungeon",
+      "note": "Uses encounter composition and pacing as a major run structure."
+    }
+  ],
   "tags": [
     "content_generation",
     "procedural",

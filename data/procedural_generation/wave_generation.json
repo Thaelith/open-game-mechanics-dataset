@@ -2,9 +2,9 @@
   "id": "procedural_generation.wave_generation",
   "name": "Wave Generation",
   "aliases": [
-    "wave generation mechanic",
-    "wave generation system",
-    "wave generation"
+    "wave spawning",
+    "enemy wave generation",
+    "horde waves"
   ],
   "category": "procedural_generation",
   "subcategory": "content_generation",
@@ -24,83 +24,109 @@
     "sandbox",
     "survival"
   ],
-  "description": "Wave Generation is a content-generation mechanic that creates spaces, events, rewards, or structures from rules and seeds.",
-  "design_notes": "Wave Generation should be designed around a clear player promise, a readable trigger, and a predictable result. For procedural generation mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A procedural pacing system that builds timed enemy or challenge waves from budgets, spawn groups, difficulty curves, and validation rules.",
+  "design_notes": "Wave generation is structured pressure. It needs wave_index, encounter_budget, spawn_group_id, difficulty_curve_id, cooldowns, player distance constraints, and failure telemetry so waves escalate without spawning unfair or unplayable combinations.",
   "design_purpose": [
-    "Give the player a readable way to use wave generation as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect wave generation to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create scalable combat or survival encounters without hand-authoring every wave.",
+    "Vary enemy composition while preserving a readable pacing curve.",
+    "Support arena, horde, tower defense, roguelike, or co-op escalation loops."
   ],
-  "player_fantasy": "The player feels each run or world can surprise them while still following understandable rules.",
+  "player_fantasy": "The player feels waves building in intensity and adapts to changing enemy mixes, resources, and terrain pressure.",
   "required_systems": [
-    "random_number_generator",
-    "content_rules",
-    "validation_pass",
-    "seed_storage"
+    "spawn_director",
+    "enemy_catalog",
+    "difficulty_curve",
+    "spawn_validation",
+    "encounter_telemetry"
   ],
   "parameters": [
     {
-      "name": "seed_value",
+      "name": "wave_index",
       "type": "integer",
-      "typical_range": "0-2^32",
-      "description": "Seed used to make generation reproducible."
+      "typical_range": "0-999 waves",
+      "description": "Current wave number used for budget, composition, and reward scaling."
     },
     {
-      "name": "generation_depth",
+      "name": "encounter_budget",
       "type": "integer",
-      "typical_range": "1-20 passes",
-      "description": "Number of passes used to construct and validate output."
+      "typical_range": "1-500 points",
+      "description": "Budget spent on enemy groups, hazards, or special events in the wave."
     },
     {
-      "name": "content_budget",
+      "name": "spawn_group_id",
+      "type": "string",
+      "typical_range": "melee_pack, ranged_support, elite_mix",
+      "description": "Composition group selected for the wave."
+    },
+    {
+      "name": "difficulty_curve_id",
+      "type": "string",
+      "typical_range": "linear, step, director_pressure, endless",
+      "description": "Curve that maps wave_index and player state to budget and modifiers."
+    },
+    {
+      "name": "inter_wave_cooldown_ms",
       "type": "integer",
-      "typical_range": "1-10000 items",
-      "description": "Maximum number of pieces, rooms, encounters, or rewards generated."
+      "typical_range": "0-120000 ms",
+      "description": "Rest or preparation time before the next wave begins."
     }
   ],
   "common_variants": [
-    "wave_generation_fully_random",
-    "wave_generation_seeded_random",
-    "grammar_based",
-    "hand_authored_chunks"
+    "fixed_wave_table",
+    "budgeted_wave",
+    "endless_wave",
+    "adaptive_wave",
+    "boss_add_wave"
   ],
   "edge_cases": [
-    "Wave Generation is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Wave Generation overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Wave Generation runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Spawn validation rejects all candidates because the arena is full, blocked, or visible to the player.",
+    "A previous wave has stuck enemies, summons, or offscreen units that prevent wave completion.",
+    "Difficulty scaling outpaces resource drops and creates unwinnable attrition.",
+    "Multiplayer join/leave changes player count during wave generation."
   ],
   "common_bugs": [
-    "Wave Generation state does not reset correctly after interruption or reload.",
-    "Feedback for Wave Generation plays even when the mechanic fails or is rejected.",
-    "Wave Generation produces different results between frame rates, platforms, or network clients."
+    "Wave completion checks only spawned count and ignores enemies converted, despawned, or stuck outside the arena.",
+    "Budget rounding always favors cheap enemies and never selects elites.",
+    "Spawn groups are selected client-side and desync in networked co-op.",
+    "Inter-wave timers continue during pause or cutscenes and start the next wave early."
   ],
   "balancing_notes": [
-    "Make Wave Generation strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Wave intensity should be tuned through spawn timing, composition, and recovery windows, not only enemy health.",
+    "Use telemetry for time-to-clear, damage taken, and resource remaining to tune difficulty_curve_id.",
+    "Endless waves need caps or rotation rules so the optimal strategy does not become repetitive farming."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Wave Generation becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide clear wave counters, preparation cues, and remaining-enemy indicators when waves gate progress.",
+    "Allow reduced intensity or longer inter-wave cooldowns in accessibility or difficulty settings."
   ],
   "implementation_notes": {
-    "unity": "Implement Wave Generation with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Wave Generation as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Wave Generation with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Wave Generation as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Generate wave plans from wave_index and difficulty_curve_id, validate spawn points with NavMesh/camera rules, and track active enemy IDs until completion or cleanup.",
+    "godot": "Keep wave definitions as Resources or JSON and use a director node to commit spawn_group_id plans, cooldowns, and completion conditions from deterministic state.",
+    "unreal": "Use GameMode or an encounter subsystem as authority for wave plans; EQS can validate spawn positions and Visual Logger should capture budget, group, and rejection reasons.",
+    "web": "Represent waves as scheduled events with stable IDs, seeded composition, and active entity tracking so pause, replay, and reconnect preserve wave state."
   },
   "related_mechanics": [
-    "economy.loot_table",
-    "procedural_generation.procedural_level_rooms",
-    "procedural_generation.procedural_terrain",
-    "roguelike.procedural_floor"
+    "ai.enemy_spawn_director",
+    "procedural_generation.random_encounters",
+    "combat.area_of_effect_attack",
+    "multiplayer.team_objective"
   ],
   "combines_well_with": [
+    "survival.base_building",
+    "roguelike.risk_reward_room",
     "economy.loot_table",
-    "procedural_generation.random_encounters",
-    "procedural_generation.seeded_generation",
-    "roguelike.procedural_floor"
+    "ui_ux.cooldown_indicator"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Vampire Survivors",
+      "note": "Uses time-based enemy waves and escalating pressure."
+    },
+    {
+      "title": "Gears of War 3 Horde",
+      "note": "Uses wave-based enemy combat as a mode structure."
+    }
+  ],
   "tags": [
     "content_generation",
     "procedural",

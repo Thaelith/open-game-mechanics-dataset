@@ -2,9 +2,9 @@
   "id": "procedural_generation.loot_generation",
   "name": "Loot Generation",
   "aliases": [
-    "loot generation mechanic",
-    "loot generation system",
-    "loot generation"
+    "generated loot",
+    "loot roll generation",
+    "reward generation"
   ],
   "category": "procedural_generation",
   "subcategory": "content_generation",
@@ -24,83 +24,109 @@
     "sandbox",
     "survival"
   ],
-  "description": "Loot Generation is a content-generation mechanic that creates spaces, events, rewards, or structures from rules and seeds.",
-  "design_notes": "Loot Generation should be designed around a clear player promise, a readable trigger, and a predictable result. For procedural generation mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A procedural reward process that selects, rolls, filters, and grants loot from tables, context, rarity, and player state.",
+  "design_notes": "Loot generation sits between randomization and economy balance. It needs generation_seed, loot_table_id, rng_stream_id, rarity_tier, duplicate_rule, pity_counter, inventory validation, and transaction logging so rewards are exciting, fair, and debuggable.",
   "design_purpose": [
-    "Give the player a readable way to use loot generation as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect loot generation to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create varied rewards from encounters, containers, rooms, or runs.",
+    "Control scarcity and progression through rarity, eligibility, and duplicate handling.",
+    "Support reproducible reward bugs and balance simulations."
   ],
-  "player_fantasy": "The player feels each run or world can surprise them while still following understandable rules.",
+  "player_fantasy": "The player feels that rewards can surprise them while still fitting the activity, difficulty, and progression state.",
   "required_systems": [
+    "loot_tables",
     "random_number_generator",
-    "content_rules",
-    "validation_pass",
-    "seed_storage"
+    "inventory_system",
+    "progression_state",
+    "reward_transactions"
   ],
   "parameters": [
     {
-      "name": "seed_value",
-      "type": "integer",
-      "typical_range": "0-2^32",
-      "description": "Seed used to make generation reproducible."
+      "name": "loot_table_id",
+      "type": "string",
+      "typical_range": "chest_common, boss_drop, biome_forest",
+      "description": "Reward table selected for the current context."
     },
     {
-      "name": "generation_depth",
-      "type": "integer",
-      "typical_range": "1-20 passes",
-      "description": "Number of passes used to construct and validate output."
+      "name": "rng_stream_id",
+      "type": "string",
+      "typical_range": "loot, bonus_loot, pity_roll",
+      "description": "Named RNG stream used so loot rolls do not alter terrain or encounter generation."
     },
     {
-      "name": "content_budget",
-      "type": "integer",
-      "typical_range": "1-10000 items",
-      "description": "Maximum number of pieces, rooms, encounters, or rewards generated."
+      "name": "rarity_tier",
+      "type": "string",
+      "typical_range": "common, uncommon, rare, epic, legendary",
+      "description": "Selected or filtered reward tier before item choice and duplicate handling."
+    },
+    {
+      "name": "duplicate_rule",
+      "type": "string",
+      "typical_range": "allow, suppress, convert, reroll",
+      "description": "Rule applied when the selected reward is already owned or cannot be granted."
+    },
+    {
+      "name": "reward_transaction_id",
+      "type": "string",
+      "typical_range": "unique grant identifier",
+      "description": "Identifier used to prevent duplicate reward grants after retries or reconnects."
     }
   ],
   "common_variants": [
-    "loot_generation_fully_random",
-    "loot_generation_seeded_random",
-    "grammar_based",
-    "hand_authored_chunks"
+    "container_loot",
+    "enemy_drop",
+    "boss_reward",
+    "smart_loot",
+    "pity_loot"
   ],
   "edge_cases": [
-    "Loot Generation is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Loot Generation overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Loot Generation runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The selected item cannot be granted because inventory is full, item definition is missing, or duplicate_rule rejects it.",
+    "A deterministic run needs loot rolls to reproduce even when optional containers are skipped.",
+    "Player level, biome_id, and quest flags filter out every table entry.",
+    "A reward transaction succeeds but reveal UI or network response fails and is retried."
   ],
   "common_bugs": [
-    "Loot Generation state does not reset correctly after interruption or reload.",
-    "Feedback for Loot Generation plays even when the mechanic fails or is rejected.",
-    "Loot Generation produces different results between frame rates, platforms, or network clients."
+    "Loot rolls happen on both client and server and grant two different rewards.",
+    "Duplicate conversion grants currency but does not suppress the original item_instance_id.",
+    "Rarity filters are applied after item selection, making published odds inaccurate.",
+    "Reward_transaction_id is generated per UI retry instead of per committed reward."
   ],
   "balancing_notes": [
-    "Make Loot Generation strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Balance expected value over many rolls and track actual drop distributions by loot_table_id.",
+    "Smart loot improves relevance but can reduce excitement if every reward is too predictable.",
+    "Pity and duplicate rules should reduce frustration without flooding the economy with high-tier rewards."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Loot Generation becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show reward names, rarity labels, and duplicate conversion results in text as well as color or animation.",
+    "Allow reveal animations to be skipped, paused, or reduced for repeated loot drops."
   ],
   "implementation_notes": {
-    "unity": "Implement Loot Generation with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Loot Generation as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Loot Generation with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Loot Generation as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Resolve loot_table_id with a deterministic RNG stream, validate inventory capacity and duplicate_rule, then commit reward_transaction_id before playing pickup or reveal effects.",
+    "godot": "Represent loot tables as Resources or JSON and run roll, filter, duplicate conversion, and inventory grant in one service so UI cannot duplicate rewards.",
+    "unreal": "Use server authority for multiplayer loot generation; log seed, table ID, selected entry, rarity_tier, and transaction ID for support and balance telemetry.",
+    "web": "Keep loot generation as a pure function of seed, table, context, and inventory snapshot, then commit a reward transaction diff before rendering results."
   },
   "related_mechanics": [
     "economy.loot_table",
-    "procedural_generation.procedural_level_rooms",
-    "procedural_generation.procedural_terrain",
-    "roguelike.procedural_floor"
+    "economy.gacha_pull",
+    "progression.equipment_rarity",
+    "procedural_generation.seeded_generation"
   ],
   "combines_well_with": [
-    "economy.loot_table",
     "procedural_generation.random_encounters",
-    "procedural_generation.seeded_generation",
-    "roguelike.procedural_floor"
+    "procedural_generation.room_connection_graph",
+    "roguelike.relic_synergy",
+    "ui_ux.inventory_grid"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Diablo",
+      "note": "Uses randomized loot drops as a major progression loop."
+    },
+    {
+      "title": "Borderlands",
+      "note": "Uses generated weapon and loot rewards with rarity presentation."
+    }
+  ],
   "tags": [
     "content_generation",
     "loot",

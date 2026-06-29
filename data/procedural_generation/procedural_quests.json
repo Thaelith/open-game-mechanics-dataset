@@ -2,9 +2,9 @@
   "id": "procedural_generation.procedural_quests",
   "name": "Procedural Quests",
   "aliases": [
-    "procedural quests mechanic",
-    "procedural quests system",
-    "procedural quests"
+    "generated quests",
+    "quest generation",
+    "dynamic objectives"
   ],
   "category": "procedural_generation",
   "subcategory": "content_generation",
@@ -24,83 +24,109 @@
     "sandbox",
     "survival"
   ],
-  "description": "Procedural Quests is a content-generation mechanic that creates spaces, events, rewards, or structures from rules and seeds.",
-  "design_notes": "Procedural Quests should be designed around a clear player promise, a readable trigger, and a predictable result. For procedural generation mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A system that assembles quest objectives, targets, locations, rewards, and text from templates and world state.",
+  "design_notes": "Procedural quests need more validation than random objective lists. They should track quest_template_id, objective_node_id, target_id, location constraints, reward rules, narrative tags, and soft-lock checks so generated tasks are possible and coherent.",
   "design_purpose": [
-    "Give the player a readable way to use procedural quests as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect procedural quests to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create repeatable goals for large worlds, live systems, or sandbox play.",
+    "Reuse quest structures while adapting targets, locations, rewards, or factions to current state.",
+    "Give players direction without hand-authoring every possible task."
   ],
-  "player_fantasy": "The player feels each run or world can surprise them while still following understandable rules.",
+  "player_fantasy": "The player feels the world can produce new errands, contracts, rumors, or opportunities that fit their current journey.",
   "required_systems": [
-    "random_number_generator",
-    "content_rules",
-    "validation_pass",
-    "seed_storage"
+    "quest_templates",
+    "world_state",
+    "objective_validation",
+    "reward_tables",
+    "text_generation_rules"
   ],
   "parameters": [
     {
-      "name": "seed_value",
-      "type": "integer",
-      "typical_range": "0-2^32",
-      "description": "Seed used to make generation reproducible."
+      "name": "quest_template_id",
+      "type": "string",
+      "typical_range": "fetch, hunt, escort, delivery, investigate",
+      "description": "Template that defines objective slots, validation rules, and reward expectations."
     },
     {
-      "name": "generation_depth",
-      "type": "integer",
-      "typical_range": "1-20 passes",
-      "description": "Number of passes used to construct and validate output."
+      "name": "objective_node_id",
+      "type": "string",
+      "typical_range": "go_to_location, collect_item, defeat_target",
+      "description": "Stable identifier for each generated objective step."
     },
     {
-      "name": "content_budget",
+      "name": "target_id",
+      "type": "string",
+      "typical_range": "npc, item, enemy_group, location",
+      "description": "Actor, item, group, or place assigned to an objective."
+    },
+    {
+      "name": "placement_rule_id",
+      "type": "string",
+      "typical_range": "near_player, faction_zone, unexplored_biome",
+      "description": "Rule used to choose valid quest locations and targets."
+    },
+    {
+      "name": "validation_retries",
       "type": "integer",
-      "typical_range": "1-10000 items",
-      "description": "Maximum number of pieces, rooms, encounters, or rewards generated."
+      "typical_range": "0-100 attempts",
+      "description": "Attempts to assemble a valid quest before using fallback or no quest."
     }
   ],
   "common_variants": [
-    "procedural_quests_fully_random",
-    "procedural_quests_seeded_random",
-    "grammar_based",
-    "hand_authored_chunks"
+    "bounty_quest",
+    "fetch_quest",
+    "delivery_contract",
+    "escort_request",
+    "rumor_chain"
   ],
   "edge_cases": [
-    "Procedural Quests is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Procedural Quests overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Procedural Quests runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Generated target_id is killed, looted, moved, or despawned before the quest is accepted or completed.",
+    "Objective order sends players through locked areas, missing traversal abilities, or invalid biomes.",
+    "Generated text references a faction, item, or location that validation later replaces.",
+    "Rewards are invalid for the player's level or economy state after quest generation but before turn-in."
   ],
   "common_bugs": [
-    "Procedural Quests state does not reset correctly after interruption or reload.",
-    "Feedback for Procedural Quests plays even when the mechanic fails or is rejected.",
-    "Procedural Quests produces different results between frame rates, platforms, or network clients."
+    "Quest generator validates location reachability but not whether the required item or NPC can spawn there.",
+    "Template variables are replaced in UI text but not in tracking markers or save data.",
+    "validation_retries eventually accept a quest with missing objective_node_id because fallback checks are weaker.",
+    "Generated quests duplicate the same target_id and conflict with each other."
   ],
   "balancing_notes": [
-    "Make Procedural Quests strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Procedural quests need caps and cooldowns so generated chores do not overwhelm authored goals.",
+    "Reward value should account for travel distance, risk, required items, and expected time.",
+    "A few strong templates with good validation are usually better than many shallow objective combinations."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Procedural Quests becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Quest text should clearly name target, location, reward, and next step; avoid vague generated phrasing.",
+    "Markers, logs, and map filters should support players who cannot memorize generated names or routes."
   ],
   "implementation_notes": {
-    "unity": "Implement Procedural Quests with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Procedural Quests as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Procedural Quests with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Procedural Quests as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Build quests from quest_template_id data, validate objective_node_id reachability and target existence, then persist the generated quest payload before showing UI or markers.",
+    "godot": "Use Resource or JSON quest templates with explicit slots; run world-state validation and text binding after target selection, then save stable target IDs and objective IDs.",
+    "unreal": "Use DataAssets for templates and a quest subsystem for generation/validation; server or authoritative save logic should own generated quest IDs in shared worlds.",
+    "web": "Represent generated quests as serialized data with template ID, filled slots, content_version, and validation trace so bug reports can reproduce bad quest rolls."
   },
   "related_mechanics": [
-    "economy.loot_table",
-    "procedural_generation.procedural_level_rooms",
-    "procedural_generation.procedural_terrain",
-    "roguelike.procedural_floor"
+    "ui_ux.quest_marker",
+    "narrative.reputation_gating",
+    "procedural_generation.random_encounters",
+    "economy.loot_table"
   ],
   "combines_well_with": [
-    "economy.loot_table",
-    "procedural_generation.random_encounters",
-    "procedural_generation.seeded_generation",
-    "roguelike.procedural_floor"
+    "procedural_generation.biome_generation",
+    "progression.achievement_system",
+    "economy.dynamic_pricing",
+    "ai.patrol"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Elder Scrolls V: Skyrim",
+      "note": "Uses radiant-style quests to create repeatable objectives."
+    },
+    {
+      "title": "No Man's Sky",
+      "note": "Uses generated missions and objectives in a procedural universe."
+    }
+  ],
   "tags": [
     "content_generation",
     "procedural",

@@ -25,14 +25,14 @@
     "simulation",
     "open_world"
   ],
-  "description": "A rule-driven system that generates playable landforms, surfaces, or height fields from seeds and constraints.",
-  "design_notes": "Procedural terrain is useful only when generated spaces support the intended play. Terrain generation should be judged by navigation, resource placement, biome readability, performance budgets, and failure recovery, not just visual variety. A validation pass is essential because rare bad terrain can ruin long sessions.",
+  "description": "A generation system that builds playable landforms, chunks, surfaces, or height fields from seeds, noise, biome rules, and validation passes.",
+  "design_notes": "Procedural terrain is useful only when generated spaces support the intended play. Terrain should track chunk_coordinate, noise layers, biome masks, seam stitching, collision/navmesh rebuilds, streaming budgets, and validation failures, not only visual variety.",
   "design_purpose": [
     "Create large or replayable spaces without hand-authoring every surface.",
-    "Support exploration through varied landforms, biomes, resources, and landmarks.",
-    "Produce deterministic worlds when seeds, sharing, or debugging require reproducibility."
+    "Support exploration through varied landforms, biomes, resources, routes, and landmarks.",
+    "Produce deterministic terrain for seeds, sharing, save/load reconstruction, and debugging."
   ],
-  "player_fantasy": "The player feels they are exploring a world with scale, variety, and discoverable structure.",
+  "player_fantasy": "The player feels they are exploring a vast world with natural variety, readable routes, and discoverable structure.",
   "required_systems": [
     "random_number_generator",
     "terrain_chunk_streaming",
@@ -41,6 +41,12 @@
     "validation_pass"
   ],
   "parameters": [
+    {
+      "name": "chunk_coordinate",
+      "type": "vector",
+      "typical_range": "integer x,z or x,y chunk coordinate",
+      "description": "Chunk identity used for deterministic generation, streaming, saving, and debug reports."
+    },
     {
       "name": "chunk_size",
       "type": "integer",
@@ -51,25 +57,19 @@
       "name": "noise_scale",
       "type": "float",
       "typical_range": "0.001-2.0",
-      "description": "Sampling scale used by the main terrain noise function."
+      "description": "Sampling scale used by the main terrain noise layer."
     },
     {
-      "name": "octave_count",
-      "type": "integer",
-      "typical_range": "1-12 octaves",
-      "description": "Number of layered noise samples used for terrain detail."
-    },
-    {
-      "name": "height_quantization_step",
-      "type": "float",
-      "typical_range": "0-5 world units",
-      "description": "Optional step size for terraced or tile-friendly height output."
+      "name": "biome_id",
+      "type": "string",
+      "typical_range": "forest, desert, tundra, swamp",
+      "description": "Biome rule set selected or blended for terrain, decoration, hazards, and resources."
     },
     {
       "name": "validation_retries",
       "type": "integer",
       "typical_range": "0-50 attempts",
-      "description": "Attempts to regenerate or repair a chunk that fails playability checks."
+      "description": "Attempts to regenerate or repair terrain that fails playability checks."
     }
   ],
   "common_variants": [
@@ -80,36 +80,37 @@
     "erosion_simulated_terrain"
   ],
   "edge_cases": [
-    "Spawn positions can appear inside water, cliffs, caves, or unreachable terrain unless validated.",
-    "Chunk boundaries must align height, collision, resources, and nav data without visible seams.",
-    "Changing generation rules after release can break existing world seeds and player bases.",
+    "Spawn positions can appear inside water, cliffs, caves, or unreachable terrain unless validated against traversal rules.",
+    "Chunk boundaries must align height, collision, resources, roads, rivers, and nav data without visible seams.",
+    "Changing generation rules after release can break existing world seeds, saved bases, or player-made structures.",
     "Floating-point differences across platforms can desync deterministic terrain if noise functions are not stable."
   ],
   "common_bugs": [
-    "Visual mesh and collision mesh are generated from different samples and do not line up.",
+    "Visual mesh and collision mesh are generated from different samples and no longer line up.",
     "Biome blending creates thin invalid strips that trap players or pathfinding agents.",
     "Generation runs on the render thread and stalls when the player crosses chunk boundaries.",
-    "Validation checks only local chunks and misses roads, rivers, or caves that fail across chunk edges."
+    "Validation checks only local chunks and misses roads, rivers, caves, or navmesh links that fail across chunk edges."
   ],
   "balancing_notes": [
     "Terrain variety should serve navigation and goals; pure noise often creates fatigue rather than exploration.",
-    "Resource and enemy placement need to be balanced against terrain difficulty and travel cost."
+    "Resource, enemy, and landmark placement need to be balanced against terrain difficulty and travel cost.",
+    "Streaming budgets should be treated as design constraints because late chunk generation can break pacing and traversal."
   ],
   "accessibility_notes": [
     "Avoid relying only on subtle color changes to distinguish traversal-safe terrain from hazards.",
     "Provide map, marker, or pathing support if generated terrain can create visually dense navigation problems."
   ],
   "implementation_notes": {
-    "unity": "Generate height, biome, collision, and decoration data from a deterministic chunk seed; use jobs or background tasks for expensive passes where possible.",
-    "godot": "Build chunk data in worker threads when safe, then apply TileMap, MeshInstance, or collision updates on the main thread with deterministic seed inputs.",
-    "unreal": "Use World Partition, Procedural Content Generation tools, or custom runtime components with explicit seed/version metadata for generated chunks.",
-    "web": "Generate chunks as typed arrays or mesh buffers off the main thread with Web Workers when available; keep seed and generator version in save data."
+    "unity": "Generate height, biome, collision, and decoration from deterministic chunk_coordinate seeds; use Jobs/Burst or background workers for heavy passes, then rebuild meshes/colliders on safe main-thread boundaries.",
+    "godot": "Build chunk data in worker threads when safe, then apply TileMap, MeshInstance, NavigationRegion, or collision updates on the main thread with seed and content_version metadata.",
+    "unreal": "Use World Partition, PCG tools, or runtime components with explicit seed/version metadata; validate landscape, foliage, navmesh, and spawn rules per chunk before activation.",
+    "web": "Generate chunks as typed arrays or mesh buffers off the main thread with Web Workers when available; keep generation_seed, content_version, and chunk_coordinate in save data."
   },
   "related_mechanics": [
     "procedural_generation.seeded_generation",
     "procedural_generation.biome_generation",
     "procedural_generation.room_connection_graph",
-    "simulation.systemic_weather"
+    "procedural_generation.random_encounters"
   ],
   "combines_well_with": [
     "survival.base_building",
@@ -121,6 +122,10 @@
     {
       "title": "Minecraft",
       "note": "Uses generated terrain and world seeds for large explorable worlds."
+    },
+    {
+      "title": "No Man's Sky",
+      "note": "Uses procedural planets and terrain as a major exploration feature."
     }
   ],
   "tags": [

@@ -2,9 +2,9 @@
   "id": "ai.companion_follow",
   "name": "Companion Follow",
   "aliases": [
-    "companion follow mechanic",
-    "companion follow system",
-    "companion follow"
+    "follower AI",
+    "companion navigation",
+    "ally follow"
   ],
   "category": "ai",
   "subcategory": "agent_behavior",
@@ -24,83 +24,109 @@
     "strategy",
     "simulation"
   ],
-  "description": "Companion Follow is a non-player behavior mechanic that controls sensing, intention, movement, and response.",
-  "design_notes": "Companion Follow should be designed around a clear player promise, a readable trigger, and a predictable result. For ai mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "An allied AI behavior where a companion maintains useful proximity to the player while avoiding obstruction, hazards, and unwanted combat mistakes.",
+  "design_notes": "Companion follow is judged by how rarely it gets in the player's way. It needs follow_target_id, desired distance bands, teleport or catch-up rules, path_replan_interval_ms, combat override rules, and debug traces for why the companion chose a position.",
   "design_purpose": [
-    "Give the player a readable way to use companion follow as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect companion follow to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Keep story, combat, or utility companions near enough to matter without blocking the player.",
+    "Support escort, co-op-like, or party fantasies with believable ally movement.",
+    "Let companions transition between following, helping, reviving, fighting, and waiting states."
   ],
-  "player_fantasy": "The player feels the world responds with believable intent instead of static scripting.",
+  "player_fantasy": "The player feels accompanied by a useful ally who keeps up and helps without becoming a navigation problem.",
   "required_systems": [
-    "ai_state_machine",
     "navigation",
-    "sensing",
-    "decision_rules"
+    "formation_positions",
+    "ally_state_machine",
+    "avoidance",
+    "teleport_fallback"
   ],
   "parameters": [
     {
-      "name": "sense_radius",
-      "type": "float",
-      "typical_range": "1-100 world units",
-      "description": "Area within which the AI can consider stimuli."
+      "name": "follow_target_id",
+      "type": "string",
+      "typical_range": "player, leader_actor, party_slot_0",
+      "description": "Actor the companion tries to stay near or align with."
     },
     {
-      "name": "decision_interval",
+      "name": "preferred_follow_distance",
       "type": "float",
-      "typical_range": "0.05-2 seconds",
-      "description": "How often the AI re-evaluates the behavior."
+      "typical_range": "1-8 world units",
+      "description": "Distance band where the companion is considered comfortably following."
     },
     {
-      "name": "priority_weight",
+      "name": "catchup_teleport_distance",
       "type": "float",
-      "typical_range": "0-10",
-      "description": "Relative importance compared with competing AI goals."
+      "typical_range": "8-80 world units",
+      "description": "Separation beyond which the companion may warp to a safe fallback point."
+    },
+    {
+      "name": "path_replan_interval_ms",
+      "type": "integer",
+      "typical_range": "100-2000 ms",
+      "description": "Minimum interval between follow path recalculations."
+    },
+    {
+      "name": "obstruction_timeout_ms",
+      "type": "integer",
+      "typical_range": "500-10000 ms",
+      "description": "Maximum blocked duration before using regroup, wait, or teleport fallback behavior."
     }
   ],
   "common_variants": [
-    "companion_follow_scripted_behavior",
-    "companion_follow_utility_behavior",
-    "behavior_tree_variant",
-    "director_controlled"
+    "close_follow",
+    "formation_follow",
+    "combat_companion",
+    "escort_npc",
+    "pet_follow"
   ],
   "edge_cases": [
-    "Companion Follow is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Companion Follow overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Companion Follow runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The player jumps gaps, climbs ladders, enters vehicles, or uses traversal the companion cannot perform.",
+    "The companion blocks a doorway, loot pickup, camera view, or precision platforming path.",
+    "Combat starts while the companion is catching up or teleporting.",
+    "Save/load restores the companion in an invalid navmesh area or inside the player collider."
   ],
   "common_bugs": [
-    "Companion Follow state does not reset correctly after interruption or reload.",
-    "Feedback for Companion Follow plays even when the mechanic fails or is rejected.",
-    "Companion Follow produces different results between frame rates, platforms, or network clients."
+    "Companion replans every frame toward the player's exact position and jitters behind them.",
+    "Teleport fallback ignores line of sight or safe placement and appears in front of enemies or hazards.",
+    "Companion collision pushes the player off ledges or out of interact prompts.",
+    "Animation state says idle while navigation velocity is high, creating sliding allies."
   ],
   "balancing_notes": [
-    "Make Companion Follow strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Companions should be useful enough to justify attention but not solve stealth, combat, or traversal for the player by default.",
+    "Catch-up rules should be generous in traversal-heavy games and stricter in games where escort positioning is the challenge.",
+    "Combat companions need separate threat, damage, and revive budgets from enemy AI so encounters remain readable."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Companion Follow becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide commands such as wait, follow, or regroup if companion positioning can interfere with motor or camera control.",
+    "Avoid companion chatter or alerts that are audio-only; important ally state should be visible."
   ],
   "implementation_notes": {
-    "unity": "Implement Companion Follow with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Companion Follow as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Companion Follow with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Companion Follow as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use NavMeshAgent with follow bands and sampled offsets rather than steering to the player's exact transform; log follow_reason, path status, and teleport fallback selection.",
+    "godot": "Use NavigationAgent2D/3D and a companion state machine with follow, wait, combat, and catchup states; collision layers should prevent allies from shoving the player.",
+    "unreal": "Use AIController with Behavior Tree/StateTree Blackboard keys for FollowTarget, DesiredSlot, and CatchupState; smart links or teleport fallbacks should validate safe destinations.",
+    "web": "For grid or lightweight games, reserve adjacent follow cells and evaluate deterministic offsets by party order; persist companion state and fallback position for save/load."
   },
   "related_mechanics": [
     "ai.chase",
-    "ai.patrol",
-    "combat.hit_stun",
-    "stealth.alert_state"
+    "ai.flee",
+    "ai.utility_scoring",
+    "multiplayer.revive_teammate"
   ],
   "combines_well_with": [
-    "ai.flee",
-    "ai.investigate_noise",
-    "combat.hit_stun",
-    "stealth.alert_state"
+    "narrative.reputation_gating",
+    "combat.ranged_attack",
+    "ui_ux.interaction_prompt",
+    "survival.health"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Last of Us",
+      "note": "Uses companion characters that follow and assist during exploration and combat."
+    },
+    {
+      "title": "God of War",
+      "note": "Uses an allied companion with follow and combat support behavior."
+    }
+  ],
   "tags": [
     "agent_behavior",
     "ai",

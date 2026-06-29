@@ -2,9 +2,9 @@
   "id": "procedural_generation.seeded_generation",
   "name": "Seeded Generation",
   "aliases": [
-    "seeded generation mechanic",
-    "seeded generation system",
-    "seeded generation"
+    "seeded RNG",
+    "reproducible generation",
+    "world seed"
   ],
   "category": "procedural_generation",
   "subcategory": "content_generation",
@@ -24,90 +24,107 @@
     "sandbox",
     "survival"
   ],
-  "description": "A generation method where the same seed recreates the same output.",
-  "design_notes": "Seeded Generation should be designed around a clear player promise, a readable trigger, and a predictable result. For procedural generation mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A deterministic generation approach where a seed and content version reproduce the same generated result under the same rules.",
+  "design_notes": "Seeded generation is a reproducibility contract. It needs generation_seed, content_version, rng_stream_id separation, deterministic ordering, save/load compatibility, and debug metadata so players can share worlds and developers can reproduce rare bugs.",
   "design_purpose": [
-    "Give the player a readable way to use seeded generation as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect seeded generation to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Allow players, QA, and designers to reproduce generated worlds, runs, encounters, or loot outcomes.",
+    "Support shareable seeds and deterministic challenge modes.",
+    "Make procedural bugs debuggable by recording seed, generator version, and validation path."
   ],
-  "player_fantasy": "The player feels each run or world can surprise them while still following understandable rules.",
+  "player_fantasy": "The player feels they can discover, share, and revisit a specific generated world or run.",
   "required_systems": [
     "random_number_generator",
-    "content_rules",
-    "validation_pass",
-    "seed_storage"
+    "content_versioning",
+    "generator_pipeline",
+    "save_state",
+    "debug_logging"
   ],
   "parameters": [
     {
-      "name": "seed_value",
+      "name": "generation_seed",
       "type": "integer",
-      "typical_range": "0-2^32",
-      "description": "Seed used to make generation reproducible."
+      "typical_range": "0-2^64",
+      "description": "Primary seed used to initialize deterministic generation."
     },
     {
-      "name": "generation_depth",
-      "type": "integer",
-      "typical_range": "1-20 passes",
-      "description": "Number of passes used to construct and validate output."
+      "name": "rng_stream_id",
+      "type": "string",
+      "typical_range": "terrain, loot, encounters, decoration",
+      "description": "Named substream that prevents one generator from changing another generator's output."
     },
     {
-      "name": "content_budget",
+      "name": "content_version",
+      "type": "string",
+      "typical_range": "0.1.0, season_3, ruleset_12",
+      "description": "Version of content tables and generator rules used to interpret the seed."
+    },
+    {
+      "name": "deterministic_order_key",
+      "type": "string",
+      "typical_range": "chunk_coordinate, graph_node_id, room_index",
+      "description": "Stable sort key used before consuming random numbers from a stream."
+    },
+    {
+      "name": "validation_retries",
       "type": "integer",
-      "typical_range": "1-10000 items",
-      "description": "Maximum number of pieces, rooms, encounters, or rewards generated."
+      "typical_range": "0-100 attempts",
+      "description": "Maximum repair or regeneration attempts before a fallback template is used."
     }
   ],
   "common_variants": [
-    "seeded_generation_fully_random",
-    "seeded_generation_seeded_random",
-    "grammar_based",
-    "hand_authored_chunks"
+    "world_seed",
+    "daily_seed",
+    "challenge_seed",
+    "per_chunk_seed",
+    "split_rng_streams"
   ],
   "edge_cases": [
-    "Seeded Generation is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Seeded Generation overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Seeded Generation runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Changing content_version can make old seeds produce different maps unless old rules are retained or migrated.",
+    "Parallel generation consumes RNG streams in nondeterministic order unless each chunk or subsystem has its own rng_stream_id.",
+    "A validation retry can accidentally consume extra random values and desync later generation.",
+    "Floating point noise or unordered map iteration can produce different output across platforms."
   ],
   "common_bugs": [
-    "Seeded Generation state does not reset correctly after interruption or reload.",
-    "Feedback for Seeded Generation plays even when the mechanic fails or is rejected.",
-    "Seeded Generation produces different results between frame rates, platforms, or network clients."
+    "Loot generation consumes from the terrain RNG stream and changes the world when an item table is edited.",
+    "Seeded bug reports omit content_version, so developers cannot reproduce the player's map.",
+    "Save files store only generated output and lose the generation_seed needed to rebuild missing chunks.",
+    "Validation fallback uses non-seeded randomness and breaks deterministic replay."
   ],
   "balancing_notes": [
-    "Make Seeded Generation strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Separate streams let designers tune loot, terrain, and encounters independently without invalidating every seed.",
+    "Daily or challenge seeds should lock content_version so leaderboards are not affected by mid-event patches.",
+    "If a seed can generate a bad start, include validation and fallback rules rather than relying on players to reroll."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Seeded Generation becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Expose seed text in a copyable field so players can share and report worlds accurately.",
+    "For challenge seeds, disclose major rule modifiers so players are not surprised by hidden generation constraints."
   ],
   "implementation_notes": {
-    "unity": "Implement Seeded Generation with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Seeded Generation as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Seeded Generation with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Seeded Generation as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use a deterministic RNG wrapper with named rng_stream_id values; store generation_seed, content_version, and chunk_coordinate in saves and editor debug overlays.",
+    "godot": "Keep generator functions pure where possible, passing seed and stream IDs explicitly; avoid relying on global RandomNumberGenerator state across unrelated systems.",
+    "unreal": "Store seed and content version in SaveGame or backend run records; use deterministic streams per subsystem and log generation steps with graph_node_id or chunk coordinates.",
+    "web": "Use a stable seeded RNG library or integer PRNG, sort generation inputs before rolling, and include seed/version in share URLs and bug-report exports."
   },
   "related_mechanics": [
-    "economy.loot_table",
-    "procedural_generation.procedural_level_rooms",
     "procedural_generation.procedural_terrain",
-    "roguelike.procedural_floor"
+    "procedural_generation.room_connection_graph",
+    "procedural_generation.loot_generation",
+    "procedural_generation.random_encounters"
   ],
   "combines_well_with": [
+    "roguelike.procedural_floor",
     "economy.loot_table",
-    "procedural_generation.biome_generation",
-    "procedural_generation.random_encounters",
-    "roguelike.procedural_floor"
+    "ai.enemy_spawn_director",
+    "ui_ux.minimap"
   ],
   "example_games": [
     {
       "title": "Minecraft",
-      "note": "Uses world seeds for reproducible terrain."
+      "note": "Uses world seeds to reproduce generated worlds."
     },
     {
       "title": "Spelunky",
-      "note": "Uses procedural layouts for replayable runs."
+      "note": "Uses seeded daily-style runs and deterministic level generation concepts."
     }
   ],
   "tags": [

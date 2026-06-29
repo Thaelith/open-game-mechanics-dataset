@@ -2,9 +2,9 @@
   "id": "ai.enemy_spawn_director",
   "name": "Enemy Spawn Director",
   "aliases": [
-    "enemy spawn director mechanic",
-    "enemy spawn director system",
-    "enemy spawn director"
+    "spawn director",
+    "encounter director",
+    "AI director"
   ],
   "category": "ai",
   "subcategory": "agent_behavior",
@@ -24,83 +24,109 @@
     "strategy",
     "simulation"
   ],
-  "description": "Enemy Spawn Director is a non-player behavior mechanic that controls sensing, intention, movement, and response.",
-  "design_notes": "Enemy Spawn Director should be designed around a clear player promise, a readable trigger, and a predictable result. For ai mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A pacing system that chooses when, where, and what enemies to spawn based on budget, pressure, safety, and encounter goals.",
+  "design_notes": "A spawn director is an encounter pacing controller. It needs spawn_budget, threat budget, cooldowns, spawn group tags, player distance constraints, safe spawn validation, and pacing telemetry so pressure feels authored even when timing is dynamic.",
   "design_purpose": [
-    "Give the player a readable way to use enemy spawn director as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect enemy spawn director to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Maintain encounter pressure without hand-placing every enemy wave.",
+    "Adapt enemy composition to player progress, location, party size, or current threat level.",
+    "Prevent dead air and unfair spikes by controlling spawn timing and safe placement."
   ],
-  "player_fantasy": "The player feels the world responds with believable intent instead of static scripting.",
+  "player_fantasy": "The player feels the encounter escalating naturally, as if the world is responding without spawning enemies unfairly in view.",
   "required_systems": [
-    "ai_state_machine",
-    "navigation",
-    "sensing",
-    "decision_rules"
+    "spawn_points",
+    "encounter_budget",
+    "player_tracking",
+    "navmesh_validation",
+    "telemetry"
   ],
   "parameters": [
     {
-      "name": "sense_radius",
-      "type": "float",
-      "typical_range": "1-100 world units",
-      "description": "Area within which the AI can consider stimuli."
+      "name": "spawn_budget",
+      "type": "integer",
+      "typical_range": "1-200 points",
+      "description": "Budget consumed by active or queued enemies in the encounter."
     },
     {
-      "name": "decision_interval",
+      "name": "threat_budget",
       "type": "float",
-      "typical_range": "0.05-2 seconds",
-      "description": "How often the AI re-evaluates the behavior."
+      "typical_range": "0.0-100.0",
+      "description": "Pressure target used to decide whether to spawn, wait, or de-escalate."
     },
     {
-      "name": "priority_weight",
+      "name": "spawn_group_id",
+      "type": "string",
+      "typical_range": "melee_pack, ranged_mix, elite_wave",
+      "description": "Enemy composition group selected by context and budget."
+    },
+    {
+      "name": "safe_spawn_distance_min",
       "type": "float",
-      "typical_range": "0-10",
-      "description": "Relative importance compared with competing AI goals."
+      "typical_range": "5-80 world units",
+      "description": "Minimum distance from player or camera for a spawn point to be eligible."
+    },
+    {
+      "name": "spawn_commit_interval_ms",
+      "type": "integer",
+      "typical_range": "500-60000 ms",
+      "description": "Minimum interval between committed spawns for the same director or group."
     }
   ],
   "common_variants": [
-    "enemy_spawn_director_scripted_behavior",
-    "enemy_spawn_director_utility_behavior",
-    "behavior_tree_variant",
-    "director_controlled"
+    "wave_director",
+    "horde_director",
+    "ambient_spawn_director",
+    "rubber_band_director",
+    "elite_injector"
   ],
   "edge_cases": [
-    "Enemy Spawn Director is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Enemy Spawn Director overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Enemy Spawn Director runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "All spawn points fail safe placement because they are visible, occupied, unreachable, or behind locked doors.",
+    "Spawn budget frees up at the same time multiple directors request enemies.",
+    "A player backtracks or speedruns and invalidates the intended encounter region.",
+    "Networked games need one authoritative director so clients do not spawn duplicate enemies."
   ],
   "common_bugs": [
-    "Enemy Spawn Director state does not reset correctly after interruption or reload.",
-    "Feedback for Enemy Spawn Director plays even when the mechanic fails or is rejected.",
-    "Enemy Spawn Director produces different results between frame rates, platforms, or network clients."
+    "Director spawns enemies outside navmesh or behind one-way gates because validation only checks distance.",
+    "Active enemy count desyncs when enemies die by despawn, fall out of world, or convert allegiance.",
+    "Cooldowns reset on save/load and immediately spawn a burst.",
+    "Telemetry records requested spawns but not rejected reasons, hiding why encounters feel empty."
   ],
   "balancing_notes": [
-    "Make Enemy Spawn Director strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Spawn budgets should account for enemy role, travel time, player resources, and current objective pressure.",
+    "Dynamic spawning needs visible fairness rules; enemies appearing inside cleared safe zones can feel like cheating.",
+    "Track spawn reason, rejection reason, and time-to-contact to tune pacing rather than only total enemy count."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Enemy Spawn Director becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Avoid spawning threats directly behind players without readable audio, UI, or camera-safe warning cues.",
+    "Offer difficulty settings that change spawn_budget or cooldowns rather than only enemy health."
   ],
   "implementation_notes": {
-    "unity": "Implement Enemy Spawn Director with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Enemy Spawn Director as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Enemy Spawn Director with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Enemy Spawn Director as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Keep director state in an encounter service with spawn_budget, active enemy IDs, cooldown timers, and rejection logging; validate NavMesh position, camera visibility, and path-to-player before instantiation.",
+    "godot": "Use spawn point nodes with tags and an Autoload or scene director that runs safe placement checks, cooldowns, and active count bookkeeping before adding enemies to the tree.",
+    "unreal": "Use GameMode/GameState or a dedicated subsystem for authoritative spawn decisions; EQS can validate spawn locations, while AI Debugger or Visual Logger should record director reasons.",
+    "web": "Represent spawn requests as deterministic events sorted by director ID and tick; validate grid reachability, player distance, and active budget before committing entities."
   },
   "related_mechanics": [
-    "ai.chase",
-    "ai.patrol",
-    "combat.hit_stun",
-    "stealth.alert_state"
+    "procedural_generation.random_encounters",
+    "procedural_generation.wave_generation",
+    "ai.utility_scoring",
+    "survival.day_night_cycle"
   ],
   "combines_well_with": [
-    "ai.flee",
-    "ai.investigate_noise",
-    "combat.hit_stun",
-    "stealth.alert_state"
+    "combat.area_of_effect_attack",
+    "multiplayer.team_objective",
+    "horror.monster_patrol",
+    "ui_ux.minimap"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Left 4 Dead",
+      "note": "Uses a director concept to pace enemy pressure."
+    },
+    {
+      "title": "Risk of Rain 2",
+      "note": "Uses spawn credits and scaling pressure during runs."
+    }
+  ],
   "tags": [
     "agent_behavior",
     "ai",

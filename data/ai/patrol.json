@@ -3,8 +3,8 @@
   "name": "Patrol",
   "aliases": [
     "guard route",
-    "patrol path",
-    "waypoint patrol"
+    "waypoint patrol",
+    "route patrol"
   ],
   "category": "ai",
   "subcategory": "navigation_behavior",
@@ -25,91 +25,92 @@
     "strategy",
     "horror"
   ],
-  "description": "An AI behavior where an agent follows a route, area, or schedule while scanning for stimuli.",
-  "design_notes": "Patrols create predictable enemy presence and readable risk. The route is only one part of the mechanic; look direction, pauses, hearing, alert transitions, and recovery to route all determine how players plan around it.",
+  "description": "An AI navigation behavior where an agent follows a defined route, schedule, or area loop while monitoring perception events.",
+  "design_notes": "Patrol is a readable AI promise: the agent will cover space in a pattern until a perception_event interrupts it. The useful details are patrol_route_id, waypoint_index, wait timers, look arcs, route interruption, resume behavior, navmesh failure, and debug route visualization.",
   "design_purpose": [
-    "Give players observable patterns they can learn, avoid, exploit, or interrupt.",
-    "Populate spaces with believable activity before combat or alarm states begin.",
-    "Support stealth, horror, and strategy pacing through controlled enemy coverage."
+    "Give players observable movement patterns they can learn, avoid, distract, or interrupt.",
+    "Populate spaces with believable activity before chase, alarm, or combat states begin.",
+    "Let designers shape stealth and horror pacing through coverage gaps, pause points, and sightline timing."
   ],
-  "player_fantasy": "The player feels clever when they read a patrol pattern and move through danger at the right moment.",
+  "player_fantasy": "The player feels clever when they read a guard route, wait for the right opening, and move through danger without being caught.",
   "required_systems": [
     "navigation",
     "waypoint_graph",
     "ai_state_machine",
     "perception_system",
-    "schedule_or_route_data"
+    "debug_visualization"
   ],
   "parameters": [
     {
-      "name": "waypoint_count",
-      "type": "integer",
-      "typical_range": "1-50 points",
-      "description": "Number of route points used by the patrol."
+      "name": "patrol_route_id",
+      "type": "string",
+      "typical_range": "guard_hall_a, market_loop, random_area_3",
+      "description": "Stable identifier for the route, area, or schedule assigned to the agent."
     },
     {
-      "name": "pause_at_waypoint_ms",
+      "name": "waypoint_index",
+      "type": "integer",
+      "typical_range": "0-49",
+      "description": "Current route point used for movement, save/load restoration, and debug display."
+    },
+    {
+      "name": "waypoint_wait_ms",
       "type": "integer",
       "typical_range": "0-10000 ms",
-      "description": "Dwell window before moving to the next route point."
+      "description": "Waypoint dwell window before the agent advances to the next route point."
     },
     {
-      "name": "look_sweep_angle_degrees",
-      "type": "float",
-      "typical_range": "0-180 degrees",
-      "description": "Optional scan arc used while pausing or walking."
+      "name": "route_resume_policy",
+      "type": "string",
+      "typical_range": "nearest, next_index, original_index, restart",
+      "description": "Rule used after chase, investigation, or scripted interruption ends."
     },
     {
-      "name": "route_resume_delay_ms",
+      "name": "path_replan_interval_ms",
       "type": "integer",
-      "typical_range": "0-15000 ms",
-      "description": "Delay before returning to patrol after investigation or chase."
-    },
-    {
-      "name": "patrol_variation_seed",
-      "type": "integer",
-      "typical_range": "0-2^32",
-      "description": "Seed for route variation when deterministic randomness is desired."
+      "typical_range": "100-2000 ms",
+      "description": "Minimum delay between path requests while moving along the patrol route."
     }
   ],
   "common_variants": [
     "loop_patrol",
     "ping_pong_patrol",
-    "random_waypoint_patrol",
     "scheduled_patrol",
+    "random_waypoint_patrol",
     "area_guard_patrol"
   ],
   "edge_cases": [
-    "Blocked navigation should choose wait, reroute, teleport fallback, or alert transition.",
-    "After chasing or investigating, the AI needs a clear rule for resuming at nearest, next, or original waypoint.",
-    "Multiple AI sharing a route should avoid overlapping bodies and identical synchronized pauses unless intentional.",
-    "Save/load mid-route must restore path target, look direction, and perception state."
+    "A navmesh_query to the next waypoint fails because a door closed, a moving platform left, or dynamic blockers appeared.",
+    "After chase or investigation, the agent must decide whether to resume from nearest waypoint, saved waypoint_index, or a designer-authored fallback.",
+    "Multiple agents sharing patrol_route_id need offset timing or avoidance so they do not stack on the same waypoint.",
+    "Save/load during a wait timer must restore waypoint_index, remaining wait, look direction, and alert state consistently."
   ],
   "common_bugs": [
-    "AI rotates instantly at waypoints and unfairly spots the player during a visual pop.",
-    "Route index advances even when navigation fails, causing the AI to skip important coverage.",
-    "Perception keeps running during scripted pauses that designers expected to be safe.",
-    "Patrol state never resumes after last-known-position search because the investigation flag is not cleared."
+    "waypoint_index advances even when movement failed, causing the patrol to skip coverage-critical points.",
+    "Patrol resumes immediately after losing the player because investigation state clears before line-of-sight grace expires.",
+    "Look arcs snap at waypoints and unfairly detect the player during an animation/state synchronization pop.",
+    "Debug visualization shows route nodes but not the active navmesh_query, making blocked-path failures hard to diagnose."
   ],
   "balancing_notes": [
-    "Long predictable routes favor stealth planning; random routes create tension but can feel unfair without readable cues.",
-    "Patrol coverage should leave intentional gaps, tools, or timing windows for the player."
+    "Long predictable routes reward planning; randomized routes need visible tells or they become perceived as unfair.",
+    "Coverage should intentionally leave timing windows, alternate tools, or route manipulation options for the player.",
+    "Patrol wait times and perception radius should be tuned together; long waits with wide sightlines can lock down a room completely."
   ],
   "accessibility_notes": [
-    "Provide readable enemy facing, footstep, or suspicion cues so patrol timing is not audio-only.",
-    "Avoid requiring players to memorize long invisible schedules without environmental landmarks."
+    "Expose facing, suspicion, and route timing through readable visual cues as well as audio.",
+    "Avoid requiring players to memorize long invisible schedules without landmarks, map hints, or repeated route tells."
   ],
   "implementation_notes": {
-    "unity": "Use NavMeshAgent or custom grid navigation with route data stored separately from perception; expose gizmos for waypoint order and look arcs.",
-    "godot": "Use NavigationAgent2D or NavigationAgent3D with a behavior-state script that stores current waypoint, pause timer, and perception state.",
-    "unreal": "Use Behavior Trees or StateTree with Blackboard keys for route index, investigation target, and resume policy; keep perception events separate from movement tasks.",
-    "web": "Represent routes as graph nodes and update AI decisions on a fixed tick; keep pathfinding, perception, and animation state independent."
+    "unity": "Use NavMeshAgent or grid navigation with patrol_route_id data stored outside the scene object; draw gizmos for route order, wait zones, sight arcs, and current navmesh_query failure reasons.",
+    "godot": "Use NavigationAgent2D/3D and store ai_state_id, patrol_route_id, waypoint_index, and wait timer on the agent; emit debug labels for resume_policy and blocked path results.",
+    "unreal": "Implement patrol as Behavior Tree or StateTree tasks with Blackboard keys for patrol_route_id, waypoint_index, and route_resume_policy; use AI Debugger to show active path and abort reason.",
+    "web": "Represent routes as graph nodes and run movement decisions on a fixed tick; persist waypoint_index and use deterministic decision order when multiple interruptions arrive in one frame."
   },
   "related_mechanics": [
     "ai.chase",
     "ai.investigate_noise",
-    "stealth.last_known_position_search",
-    "ai.line_of_sight_detection"
+    "ai.line_of_sight_detection",
+    "stealth.last_known_position_search"
   ],
   "combines_well_with": [
     "stealth.visibility_meter",
@@ -117,7 +118,16 @@
     "horror.monster_patrol",
     "ui_ux.minimap"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Metal Gear Solid",
+      "note": "Uses readable guard patrols as a stealth planning element."
+    },
+    {
+      "title": "Alien: Isolation",
+      "note": "Uses patrol and search behavior to create pressure in horror spaces."
+    }
+  ],
   "tags": [
     "ai",
     "patrol",

@@ -2,9 +2,9 @@
   "id": "procedural_generation.biome_generation",
   "name": "Biome Generation",
   "aliases": [
-    "biome generation mechanic",
-    "biome generation system",
-    "biome generation"
+    "biome placement",
+    "ecological zones",
+    "region generation"
   ],
   "category": "procedural_generation",
   "subcategory": "content_generation",
@@ -24,83 +24,109 @@
     "sandbox",
     "survival"
   ],
-  "description": "Biome Generation is a content-generation mechanic that creates spaces, events, rewards, or structures from rules and seeds.",
-  "design_notes": "Biome Generation should be designed around a clear player promise, a readable trigger, and a predictable result. For procedural generation mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A generation process that assigns biome identities, boundaries, resources, hazards, and visual rules across a map or world.",
+  "design_notes": "Biome generation gives procedural space identity. Useful biome systems track biome_id, noise masks, climate inputs, adjacency rules, transition widths, content_version, and validation so the world reads as varied without producing impossible resource or traversal combinations.",
   "design_purpose": [
-    "Give the player a readable way to use biome generation as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect biome generation to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create recognizable regions with distinct visuals, resources, enemies, and traversal constraints.",
+    "Control pacing by placing safer, harsher, richer, or more specialized zones in meaningful patterns.",
+    "Support replayable worlds while keeping resource access and navigation solvable."
   ],
-  "player_fantasy": "The player feels each run or world can surprise them while still following understandable rules.",
+  "player_fantasy": "The player feels they are crossing distinct regions with different moods, risks, and opportunities.",
   "required_systems": [
-    "random_number_generator",
-    "content_rules",
-    "validation_pass",
-    "seed_storage"
+    "noise_sampling",
+    "biome_rules",
+    "resource_placement",
+    "terrain_generation",
+    "validation_pass"
   ],
   "parameters": [
     {
-      "name": "seed_value",
-      "type": "integer",
-      "typical_range": "0-2^32",
-      "description": "Seed used to make generation reproducible."
+      "name": "biome_id",
+      "type": "string",
+      "typical_range": "forest, desert, tundra, swamp, volcanic",
+      "description": "Canonical biome rule set applied to terrain, decoration, encounters, and resources."
     },
     {
-      "name": "generation_depth",
-      "type": "integer",
-      "typical_range": "1-20 passes",
-      "description": "Number of passes used to construct and validate output."
+      "name": "biome_noise_scale",
+      "type": "float",
+      "typical_range": "0.001-0.5",
+      "description": "Noise sampling scale used to define biome regions or masks."
     },
     {
-      "name": "content_budget",
+      "name": "transition_width_tiles",
       "type": "integer",
-      "typical_range": "1-10000 items",
-      "description": "Maximum number of pieces, rooms, encounters, or rewards generated."
+      "typical_range": "0-64 tiles",
+      "description": "Blend width between adjacent biome masks or material zones."
+    },
+    {
+      "name": "adjacency_rule_id",
+      "type": "string",
+      "typical_range": "climate_band, no_desert_next_to_tundra, river_border",
+      "description": "Rule that controls which biome pairs can touch or blend."
+    },
+    {
+      "name": "resource_density_multiplier",
+      "type": "float",
+      "typical_range": "0.1-5.0",
+      "description": "Biome-specific modifier for resource, loot, or encounter placement density."
     }
   ],
   "common_variants": [
-    "biome_generation_fully_random",
-    "biome_generation_seeded_random",
-    "grammar_based",
-    "hand_authored_chunks"
+    "noise_biomes",
+    "climate_biomes",
+    "tile_region_biomes",
+    "ring_biomes",
+    "hand_seeded_biomes"
   ],
   "edge_cases": [
-    "Biome Generation is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Biome Generation overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Biome Generation runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A required resource appears only in a biome that the seed failed to place near reachable progression routes.",
+    "Biome transitions create narrow hazard strips, visual seams, or mismatched collision/navigation rules.",
+    "Adjacent biome rules reject every candidate and require fallback_template_id or repair passes.",
+    "Content patches change biome_id rules and old saves need compatibility for discovered map regions."
   ],
   "common_bugs": [
-    "Biome Generation state does not reset correctly after interruption or reload.",
-    "Feedback for Biome Generation plays even when the mechanic fails or is rejected.",
-    "Biome Generation produces different results between frame rates, platforms, or network clients."
+    "Biome masks use different coordinates than terrain chunks, causing decoration and ground textures to disagree.",
+    "Resource placement samples biome_id before transition blending and spawns desert resources in forest visuals.",
+    "RNG stream sharing means adding a new biome changes loot or encounter generation elsewhere.",
+    "Debug maps show colors but not adjacency_rule_id or rejected placement reasons."
   ],
   "balancing_notes": [
-    "Make Biome Generation strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Biome size should support travel goals: tiny regions feel noisy, while huge regions can starve players of needed resources.",
+    "Resource density and enemy difficulty need to be tuned per biome so visual variety also affects play.",
+    "Rare biomes are exciting only if players have clues, maps, or systems that make finding them reasonable."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Biome Generation becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use shapes, landmarks, labels, and material changes in addition to color to distinguish biome boundaries.",
+    "Avoid dense procedural decoration that hides hazards, enemies, or interactables without visibility options."
   ],
   "implementation_notes": {
-    "unity": "Implement Biome Generation with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Biome Generation as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Biome Generation with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Biome Generation as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Generate biome masks from chunk_coordinate and generation_seed, then pass biome_id into terrain, foliage, resource, and encounter systems; draw editor overlays for masks and adjacency failures.",
+    "godot": "Keep biome rules in Resources or JSON and sample them before TileMap or mesh decoration; save content_version and discovered biome IDs for map compatibility.",
+    "unreal": "Use PCG graphs or custom runtime systems with biome_id metadata; validate biome adjacency, navigation, and spawn/resource rules before streaming a region active.",
+    "web": "Use deterministic noise and integer chunk coordinates to assign biome_id; export biome masks in debug views so bad seeds can be reproduced from seed and content_version."
   },
   "related_mechanics": [
-    "economy.loot_table",
-    "procedural_generation.procedural_level_rooms",
     "procedural_generation.procedural_terrain",
-    "roguelike.procedural_floor"
+    "procedural_generation.seeded_generation",
+    "procedural_generation.random_encounters",
+    "economy.crafting_materials"
   ],
   "combines_well_with": [
-    "economy.loot_table",
-    "procedural_generation.random_encounters",
-    "procedural_generation.seeded_generation",
-    "roguelike.procedural_floor"
+    "survival.temperature",
+    "survival.base_building",
+    "ui_ux.minimap",
+    "ai.enemy_spawn_director"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Minecraft",
+      "note": "Uses generated biomes with distinct terrain and resources."
+    },
+    {
+      "title": "Terraria",
+      "note": "Uses biome regions with specific enemies and materials."
+    }
+  ],
   "tags": [
     "biome",
     "content_generation",

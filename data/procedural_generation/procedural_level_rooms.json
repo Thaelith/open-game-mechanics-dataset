@@ -2,9 +2,9 @@
   "id": "procedural_generation.procedural_level_rooms",
   "name": "Procedural Level Rooms",
   "aliases": [
-    "procedural level rooms mechanic",
-    "procedural level rooms system",
-    "procedural level rooms"
+    "room generation",
+    "generated rooms",
+    "dungeon room assembly"
   ],
   "category": "procedural_generation",
   "subcategory": "content_generation",
@@ -24,83 +24,109 @@
     "sandbox",
     "survival"
   ],
-  "description": "Procedural Level Rooms is a content-generation mechanic that creates spaces, events, rewards, or structures from rules and seeds.",
-  "design_notes": "Procedural Level Rooms should be designed around a clear player promise, a readable trigger, and a predictable result. For procedural generation mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A level generation method that places authored or parameterized room templates into a generated layout with sockets, rules, and validation.",
+  "design_notes": "Procedural rooms work when authored chunks and generated topology agree. The generator needs room_template_id, doorway sockets, room tags, placement_rule_id, lock/key ordering, spawn validation, and fallback rooms for failed constraints.",
   "design_purpose": [
-    "Give the player a readable way to use procedural level rooms as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect procedural level rooms to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create replayable dungeon, mission, or building layouts from reusable room content.",
+    "Let designers author high-quality room pieces while the generator controls order, branches, and pacing.",
+    "Guarantee that starts, exits, rewards, hazards, and objectives fit the generated route."
   ],
-  "player_fantasy": "The player feels each run or world can surprise them while still following understandable rules.",
+  "player_fantasy": "The player feels each run or mission has a new layout while rooms still look intentional and playable.",
   "required_systems": [
-    "random_number_generator",
-    "content_rules",
-    "validation_pass",
-    "seed_storage"
+    "room_template_database",
+    "room_connection_graph",
+    "doorway_sockets",
+    "placement_rules",
+    "validation_pass"
   ],
   "parameters": [
     {
-      "name": "seed_value",
-      "type": "integer",
-      "typical_range": "0-2^32",
-      "description": "Seed used to make generation reproducible."
+      "name": "room_template_id",
+      "type": "string",
+      "typical_range": "start_small, combat_l, treasure_deadend",
+      "description": "Stable identifier for an authored or generated room template."
     },
     {
-      "name": "generation_depth",
-      "type": "integer",
-      "typical_range": "1-20 passes",
-      "description": "Number of passes used to construct and validate output."
+      "name": "doorway_socket_id",
+      "type": "string",
+      "typical_range": "north_a, east_large, ladder_down",
+      "description": "Connection point used to align rooms, corridors, or vertical links."
     },
     {
-      "name": "content_budget",
+      "name": "placement_rule_id",
+      "type": "string",
+      "typical_range": "critical_path, optional_branch, boss_before_exit",
+      "description": "Rule describing where the room may appear in the graph or layout."
+    },
+    {
+      "name": "fallback_template_id",
+      "type": "string",
+      "typical_range": "safe_corridor, empty_room, repair_hub",
+      "description": "Template used when constraints fail after validation_retries."
+    },
+    {
+      "name": "validation_retries",
       "type": "integer",
-      "typical_range": "1-10000 items",
-      "description": "Maximum number of pieces, rooms, encounters, or rewards generated."
+      "typical_range": "0-100 attempts",
+      "description": "Attempts to place or repair a room before falling back."
     }
   ],
   "common_variants": [
-    "procedural_level_rooms_fully_random",
-    "procedural_level_rooms_seeded_random",
-    "grammar_based",
-    "hand_authored_chunks"
+    "prefab_room_dungeon",
+    "tile_room_generator",
+    "socket_based_rooms",
+    "grammar_room_layout",
+    "mission_room_pool"
   ],
   "edge_cases": [
-    "Procedural Level Rooms is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Procedural Level Rooms overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Procedural Level Rooms runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A required doorway socket is blocked by props, hazards, or collision after decoration.",
+    "The room pool runs out of templates matching the needed size, tag, or critical path role.",
+    "A lock room appears before the key room or ability unlock that opens it.",
+    "Spawn points inside a valid room fail because they are too close to the player or outside navmesh."
   ],
   "common_bugs": [
-    "Procedural Level Rooms state does not reset correctly after interruption or reload.",
-    "Feedback for Procedural Level Rooms plays even when the mechanic fails or is rejected.",
-    "Procedural Level Rooms produces different results between frame rates, platforms, or network clients."
+    "Rooms align visually but their navigation meshes, collision, or door triggers do not connect.",
+    "Template IDs are selected by array index, so adding a room changes old seeds unpredictably.",
+    "Validation checks only room graph connectivity and misses actual unreachable areas after decoration.",
+    "Fallback rooms lack required tags and break quest, loot, or boss placement later in the pipeline."
   ],
   "balancing_notes": [
-    "Make Procedural Level Rooms strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Room pool variety should be tuned against session length; too few templates expose repetition quickly.",
+    "Critical path rooms should teach mechanics and scale risk before optional branches add complexity.",
+    "Fallback templates should be safe but not so rewarding that failed generation becomes optimal."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Procedural Level Rooms becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Ensure generated room readability with landmarks, exits, and map support rather than relying on memorized layouts.",
+    "Avoid narrow procedural routes that require precision movement unless the game clearly supports it."
   ],
   "implementation_notes": {
-    "unity": "Implement Procedural Level Rooms with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Procedural Level Rooms as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Procedural Level Rooms with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Procedural Level Rooms as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Instantiate room prefabs by room_template_id and doorway_socket_id, then run validation for door triggers, collision, navmesh links, spawn points, and objective reachability before committing the layout.",
+    "godot": "Use PackedScene room templates with exported socket markers; build a logical room graph first, then instance scenes and run navigation/connectivity checks.",
+    "unreal": "Use level instances, DataAssets, or PCG components for room templates; validate sockets, navmesh, gameplay tags, and lock/key ordering before making the level playable.",
+    "web": "Represent rooms and sockets as data, use deterministic template selection by ID, and export graph plus placement failures for reproducible seed debugging."
   },
   "related_mechanics": [
-    "economy.loot_table",
-    "procedural_generation.procedural_terrain",
-    "procedural_generation.random_encounters",
-    "roguelike.procedural_floor"
+    "procedural_generation.room_connection_graph",
+    "procedural_generation.seeded_generation",
+    "puzzle.key_and_lock",
+    "procedural_generation.random_encounters"
   ],
   "combines_well_with": [
+    "roguelike.procedural_floor",
     "economy.loot_table",
-    "procedural_generation.biome_generation",
-    "procedural_generation.seeded_generation",
-    "roguelike.procedural_floor"
+    "ai.patrol",
+    "ui_ux.minimap"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Spelunky",
+      "note": "Uses authored chunks assembled into generated levels."
+    },
+    {
+      "title": "Enter the Gungeon",
+      "note": "Uses room-based dungeon layouts with combat and reward rooms."
+    }
+  ],
   "tags": [
     "content_generation",
     "procedural",

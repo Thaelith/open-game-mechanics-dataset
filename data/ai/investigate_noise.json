@@ -2,9 +2,9 @@
   "id": "ai.investigate_noise",
   "name": "Investigate Noise",
   "aliases": [
-    "investigate noise mechanic",
-    "investigate noise system",
-    "investigate noise"
+    "sound investigation",
+    "noise response",
+    "stimulus search"
   ],
   "category": "ai",
   "subcategory": "agent_behavior",
@@ -24,83 +24,109 @@
     "strategy",
     "simulation"
   ],
-  "description": "Investigate Noise is a non-player behavior mechanic that controls sensing, intention, movement, and response.",
-  "design_notes": "Investigate Noise should be designed around a clear player promise, a readable trigger, and a predictable result. For ai mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "An AI behavior where an agent reacts to an auditory or disturbance event by moving to inspect its source or last known position.",
+  "design_notes": "Noise investigation bridges stealth, patrol, and chase. It needs perception_event metadata, source confidence, last_known_position, investigation radius, timeout, and resume rules so distractions feel useful but not magical.",
   "design_purpose": [
-    "Give the player a readable way to use investigate noise as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect investigate noise to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Let players manipulate AI attention with footsteps, thrown objects, alarms, or decoys.",
+    "Create a readable middle state between calm patrol and full chase.",
+    "Make spaces feel responsive without requiring every stimulus to become combat."
   ],
-  "player_fantasy": "The player feels the world responds with believable intent instead of static scripting.",
+  "player_fantasy": "The player feels clever when they lure an enemy away, slip past during the search, or bait attention into a trap.",
   "required_systems": [
-    "ai_state_machine",
+    "perception_system",
+    "sound_event_bus",
     "navigation",
-    "sensing",
-    "decision_rules"
+    "ai_blackboard",
+    "search_behavior"
   ],
   "parameters": [
     {
-      "name": "sense_radius",
-      "type": "float",
-      "typical_range": "1-100 world units",
-      "description": "Area within which the AI can consider stimuli."
+      "name": "perception_event_id",
+      "type": "string",
+      "typical_range": "footstep, thrown_object, gunshot, alarm",
+      "description": "Stimulus identifier that triggered investigation."
     },
     {
-      "name": "decision_interval",
-      "type": "float",
-      "typical_range": "0.05-2 seconds",
-      "description": "How often the AI re-evaluates the behavior."
+      "name": "last_known_position",
+      "type": "vector",
+      "typical_range": "world-space coordinate",
+      "description": "Validated source position the agent will inspect or search around."
     },
     {
-      "name": "priority_weight",
+      "name": "noise_loudness_radius",
       "type": "float",
-      "typical_range": "0-10",
-      "description": "Relative importance compared with competing AI goals."
+      "typical_range": "1-80 world units",
+      "description": "Range within which AI can receive the stimulus before occlusion or hearing modifiers."
+    },
+    {
+      "name": "search_sweep_commitment_ms",
+      "type": "integer",
+      "typical_range": "500-30000 ms",
+      "description": "Search commitment window before resuming patrol or escalating."
+    },
+    {
+      "name": "source_confidence_threshold",
+      "type": "float",
+      "typical_range": "0.0-1.0",
+      "description": "Minimum confidence needed to leave current behavior for the noise."
     }
   ],
   "common_variants": [
-    "investigate_noise_scripted_behavior",
-    "investigate_noise_utility_behavior",
-    "behavior_tree_variant",
-    "director_controlled"
+    "single_point_investigation",
+    "area_search",
+    "team_callout",
+    "decoy_response",
+    "alarm_investigation"
   ],
   "edge_cases": [
-    "Investigate Noise is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Investigate Noise overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Investigate Noise runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Several noise events arrive in one decision interval and need deterministic priority ordering.",
+    "A noise source is unreachable, inside a wall, or outside the agent's allowed zone.",
+    "The agent hears a noise while already chasing a target and must compare threat_score against curiosity.",
+    "A decoy is picked up or destroyed before the agent reaches last_known_position."
   ],
   "common_bugs": [
-    "Investigate Noise state does not reset correctly after interruption or reload.",
-    "Feedback for Investigate Noise plays even when the mechanic fails or is rejected.",
-    "Investigate Noise produces different results between frame rates, platforms, or network clients."
+    "Investigation uses the sound emitter transform after it has moved instead of the captured event position.",
+    "AI forgets the original patrol_route_id and cannot resume after investigation_duration_ms.",
+    "Every nearby agent responds identically because squad_id coordination or reservation is missing.",
+    "Noise occlusion is ignored, so enemies hear quiet events through thick walls."
   ],
   "balancing_notes": [
-    "Make Investigate Noise strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Noise tools should be reliable enough for planning but limited by line, distance, cooldown, or enemy suspicion state.",
+    "If investigation always escalates to chase, players stop using distractions as stealth tools.",
+    "Group callouts should create pressure without pulling an entire level from one minor sound."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Investigate Noise becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show or teach which player actions make noise, using visual indicators as well as sound.",
+    "For players with hearing loss, provide readable suspicion markers or minimap pulses for caused distractions."
   ],
   "implementation_notes": {
-    "unity": "Implement Investigate Noise with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Investigate Noise as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Investigate Noise with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Investigate Noise as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Publish sound events with perception_event_id, position, loudness, and source actor; AI stores last_known_position and debug_reason_trace before issuing a NavMesh query.",
+    "godot": "Route noise through a signal/event bus and evaluate hearing radius plus occlusion before setting blackboard-like state on agents; draw investigation circles in debug builds.",
+    "unreal": "Use AI Perception hearing stimuli or custom gameplay messages; Blackboard keys should include NoiseLocation, NoiseTag, Confidence, and ResumeState for Behavior Tree abort rules.",
+    "web": "Store sound events in a deterministic queue sorted by timestamp and source ID; grid or nav agents should validate reachability before switching to investigate state."
   },
   "related_mechanics": [
-    "ai.chase",
     "ai.patrol",
-    "combat.hit_stun",
-    "stealth.alert_state"
+    "ai.chase",
+    "ai.line_of_sight_detection",
+    "stealth.distraction_throw"
   ],
   "combines_well_with": [
-    "ai.flee",
-    "ai.line_of_sight_detection",
-    "combat.hit_stun",
-    "stealth.alert_state"
+    "stealth.shadow_cover",
+    "stealth.last_known_position_search",
+    "horror.sound_lure",
+    "ui_ux.minimap"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Last of Us",
+      "note": "Uses thrown objects and sound to redirect enemies."
+    },
+    {
+      "title": "Hitman",
+      "note": "Uses distractions to move NPCs and guards."
+    }
+  ],
   "tags": [
     "agent_behavior",
     "ai",

@@ -3,8 +3,8 @@
   "name": "Room Connection Graph",
   "aliases": [
     "room graph",
-    "level graph",
-    "dungeon connectivity graph"
+    "dungeon topology",
+    "level connection graph"
   ],
   "category": "procedural_generation",
   "subcategory": "level_topology",
@@ -24,99 +24,107 @@
     "adventure",
     "dungeon_crawler"
   ],
-  "description": "A generated graph that defines how rooms, arenas, corridors, or level nodes connect.",
-  "design_notes": "Room connection graphs define pacing before geometry exists. They should encode start, exit, critical path, branches, locks, rewards, loops, and validation rules so generated levels remain navigable and purposeful.",
+  "description": "A graph structure that defines rooms as nodes and doorways, corridors, locks, or transitions as edges before or during level assembly.",
+  "design_notes": "Room connection graphs determine whether a generated level is navigable, paced, and solvable. A useful graph records graph_node_id, graph_edge_id, critical_path_node_count, branch_probability, loop_connection_budget, lock/key ordering, and validation failures.",
   "design_purpose": [
-    "Create navigable procedural level structure.",
-    "Control pacing through critical path length and branch rewards.",
-    "Support keys, shops, bosses, secrets, and optional rooms."
+    "Control progression through generated rooms before detailed geometry is placed.",
+    "Guarantee reachable starts, goals, keys, locks, shops, secrets, and exits.",
+    "Give designers topology knobs such as loops, branches, dead ends, and critical path length."
   ],
-  "player_fantasy": "The player feels they are exploring a coherent space with choices, loops, and goals.",
+  "player_fantasy": "The player feels they are exploring a coherent dungeon or facility with routes, loops, and discoveries rather than disconnected rooms.",
   "required_systems": [
-    "random_number_generator",
     "graph_generator",
-    "room_template_database",
-    "validation_pass"
+    "room_templates",
+    "doorway_sockets",
+    "connectivity_validation",
+    "debug_visualization"
   ],
   "parameters": [
     {
+      "name": "graph_node_id",
+      "type": "string",
+      "typical_range": "start, key_room_2, boss_room",
+      "description": "Stable identifier for a room or logical space in the generated graph."
+    },
+    {
+      "name": "graph_edge_id",
+      "type": "string",
+      "typical_range": "door_12, locked_gate_a, corridor_4",
+      "description": "Identifier for a connection between two graph nodes."
+    },
+    {
       "name": "critical_path_node_count",
       "type": "integer",
-      "typical_range": "3-30 rooms",
-      "description": "Rooms required between start and exit."
+      "typical_range": "3-30 nodes",
+      "description": "Number of nodes on the required route from start to main objective."
     },
     {
       "name": "branch_probability",
       "type": "float",
-      "typical_range": "0-1",
-      "description": "Chance that a graph node creates an optional branch."
+      "typical_range": "0.0-1.0",
+      "description": "Chance or weight for adding optional branches from critical path nodes."
     },
     {
       "name": "loop_connection_budget",
       "type": "integer",
-      "typical_range": "0-20 edges",
-      "description": "Extra edges used to create loops or shortcuts."
-    },
-    {
-      "name": "required_room_tag_ids",
-      "type": "array",
-      "typical_range": "0-20 tags",
-      "description": "Room types that must appear in a valid graph."
-    },
-    {
-      "name": "graph_validation_retries",
-      "type": "integer",
-      "typical_range": "0-200 attempts",
-      "description": "Attempts to rebuild a graph that fails constraints."
+      "typical_range": "0-20 loops",
+      "description": "Maximum extra edges that create shortcuts, alternate routes, or cycles."
     }
   ],
   "common_variants": [
-    "tree_dungeon_graph",
-    "looping_dungeon_graph",
-    "lock_and_key_graph",
-    "hub_and_spoke_graph"
+    "linear_dungeon_graph",
+    "branching_graph",
+    "hub_and_spoke_graph",
+    "looped_graph",
+    "lock_and_key_graph"
   ],
   "edge_cases": [
-    "Lock-and-key graphs must prove keys appear before locks on reachable paths.",
-    "Secret rooms should not block required progression.",
-    "Room templates can fail to connect even when graph edges are valid."
+    "A lock appears before its key or ability gate, causing a soft-lock.",
+    "Doorway sockets selected by room_template_id do not physically align even though the graph edge exists.",
+    "Optional branches consume all valid room templates and leave no fallback for the critical path.",
+    "Loop connections bypass required tutorial, boss, or reward nodes."
   ],
   "common_bugs": [
-    "Graph validation checks connectivity but not critical path ordering.",
-    "Random branch generation creates unreachable isolated components.",
-    "Seed changes between graph and room placement make debugging impossible."
+    "Connectivity validation checks graph edges but not actual spawned doorway collisions or navmesh reachability.",
+    "Random graph traversal uses unordered sets and produces different topology from the same seed.",
+    "Dead-end treasure rooms are selected for mandatory objectives because room tags are too broad.",
+    "Debug maps show room layout but not graph_edge_id reasons for rejected connections."
   ],
   "balancing_notes": [
-    "Long critical paths increase run commitment; branch density increases exploration and reward choice.",
-    "Loops improve navigation but can reduce tension if every route bypasses risk."
+    "Critical path length drives session duration more reliably than total room count.",
+    "Loops reduce backtracking frustration but can weaken lock/key or chase pacing if overused.",
+    "Optional branch rewards should match branch risk and distance from the main route."
   ],
   "accessibility_notes": [
-    "Generated layouts should support readable maps or landmarks when graph complexity is high."
+    "Generated maps should represent graph structure clearly when navigation complexity is high.",
+    "Avoid procedurally creating maze-like graphs without landmarks, map tools, or pathfinding support."
   ],
   "implementation_notes": {
-    "unity": "Generate the abstract room graph before geometry, validate start-to-exit reachability and lock/key ordering, then instantiate prefabs from node metadata.",
-    "godot": "Represent graph nodes and edges as dictionaries or Resources, run connectivity and required-room validation, then place room scenes after the graph passes constraints.",
-    "unreal": "Build graph data in a generator actor or subsystem, validate critical-path and branch constraints, then spawn level instances or room actors from node definitions.",
-    "web": "Generate graph nodes and edges as plain data with a stored seed, validate reachability and room tags, then feed the graph into tile, canvas, or WebGL placement."
+    "unity": "Generate a logical graph first, validate lock/key ordering, then instantiate room_template_id prefabs by doorway sockets; draw graph_node_id and graph_edge_id overlays in editor tools.",
+    "godot": "Represent topology as data dictionaries or Resources before scene instancing; run reachability and soft-lock validation before adding room scenes to the tree.",
+    "unreal": "Use DataAssets for room templates and a generator subsystem that builds graph nodes/edges, validates critical path and loops, then spawns level instances or PCG content.",
+    "web": "Keep the graph as JSON-serializable data with stable node and edge IDs; export failed seeds with graph and validation_retries for reproducible bug reports."
   },
   "related_mechanics": [
     "procedural_generation.procedural_level_rooms",
+    "procedural_generation.seeded_generation",
     "procedural_generation.procedural_terrain",
-    "roguelike.procedural_floor"
+    "puzzle.key_and_lock"
   ],
   "combines_well_with": [
-    "puzzle.key_and_lock",
+    "roguelike.procedural_floor",
+    "procedural_generation.random_encounters",
     "economy.loot_table",
-    "roguelike.risk_reward_room"
+    "ui_ux.minimap"
   ],
   "example_games": [
     {
-      "title": "Slay the Spire",
-      "note": "Uses a connected node map to structure run choices between encounters."
+      "title": "The Binding of Isaac",
+      "note": "Uses generated room layouts connected into floor maps."
     },
     {
-      "title": "The Binding of Isaac",
-      "note": "Uses connected rooms to structure each floor layout."
+      "title": "Dead Cells",
+      "note": "Uses generated level routes with branches and exits."
     }
   ],
   "tags": [
