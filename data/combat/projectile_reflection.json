@@ -99,10 +99,10 @@
     "Offer alternate defenses if reflection is mandatory and depends on very narrow timing."
   ],
   "implementation_notes": {
-    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
-    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
-    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
-    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
+    "unity": "During reflection_active_window_ms, validate projectile_id, reflectable tags, incoming angle, and owner_id. Transfer ownership, update velocity, and move the projectile outside the reflector collider before resuming simulation.",
+    "godot": "Check projectile Area collisions against reflector state and angle tolerance. On success, rewrite owner_id, velocity, damage multiplier, and homing target before emitting reflect feedback.",
+    "unreal": "Handle reflection on the server by validating projectile class or tags, guard angle, and timing window. Update replicated projectile owner, instigator, velocity, and bounce count atomically.",
+    "web": "Resolve reflection as a projectile transaction keyed by projectile_id and reflector_id. Change owner, direction, speed, damage, and reflection count in one step to avoid loops or friendly-fire errors."
   },
   "related_mechanics": [
     "combat.parry",

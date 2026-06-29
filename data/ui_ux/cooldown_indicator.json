@@ -99,10 +99,10 @@
     "Allow scaling or simplified cooldown displays when many abilities are visible at once."
   ],
   "implementation_notes": {
-    "unity": "Bind the UI to gameplay state through events or observable view models, not direct polling from presentation widgets; support UI Toolkit, uGUI, and input glyph updates from the active Input System scheme.",
-    "godot": "Drive Control nodes from a small view-model dictionary or signal payload, and keep input focus, localization, and scaling separate from gameplay state.",
-    "unreal": "Use UMG or CommonUI widgets fed by gameplay events, with focus navigation, platform glyphs, and replicated-state boundaries handled outside widget animation code.",
-    "web": "Render the UI from normalized game state, keep input mapping and localization data outside component logic, and avoid making animation completion the source of truth."
+    "unity": "Bind each widget to ability_id, cooldown_group_id, remaining_cooldown_seconds, and charge count from gameplay state. Drive ready flashes from cooldown-complete events, not animation timers.",
+    "godot": "Expose cooldown state as signals or a view model with ability_id, remaining time, max time, and charges. Control nodes render radial, numeric, or icon states from the same values gameplay uses.",
+    "unreal": "Feed UMG/CommonUI from ability cooldown tags, Gameplay Effect durations, or replicated ability state. Treat the server cooldown as authoritative and correct predicted UI when ability activation is rejected.",
+    "web": "Store cooldowns by ability_id and cooldown_group_id in simulation state. Render fill and numeric countdown from remaining time, and pulse unavailable input only after a rejected use event."
   },
   "related_mechanics": [
     "ui_ux.hit_marker",

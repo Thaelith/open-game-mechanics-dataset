@@ -99,10 +99,10 @@
     "Avoid presenting tone icons without text labels for players who cannot infer icon meaning."
   ],
   "implementation_notes": {
-    "unity": "Bind the UI to gameplay state through events or observable view models, not direct polling from presentation widgets; support UI Toolkit, uGUI, and input glyph updates from the active Input System scheme.",
-    "godot": "Drive Control nodes from a small view-model dictionary or signal payload, and keep input focus, localization, and scaling separate from gameplay state.",
-    "unreal": "Use UMG or CommonUI widgets fed by gameplay events, with focus navigation, platform glyphs, and replicated-state boundaries handled outside widget animation code.",
-    "web": "Render the UI from normalized game state, keep input mapping and localization data outside component logic, and avoid making animation completion the source of truth."
+    "unity": "Render choices from dialogue_node_id and choice_id records, then re-check conditions, costs, and reputation gates when the player commits. Save the selected branch before advancing the dialogue node.",
+    "godot": "Keep dialogue state in a narrative service with current_node_id, available choice IDs, and condition results. Control nodes should request a choice transaction rather than mutating story flags directly.",
+    "unreal": "Use dialogue data assets or tables keyed by node and choice IDs, evaluate Gameplay Tags or quest conditions for display, then validate again in the dialogue subsystem before applying consequences.",
+    "web": "Drive the UI from a dialogue state object and commit selections through a pure chooseDialogueOption(node_id, choice_id) transaction that records branch, flags, and history together."
   },
   "related_mechanics": [
     "narrative.branching_dialogue",

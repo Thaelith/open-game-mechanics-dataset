@@ -99,10 +99,10 @@
     "Use audio, visual, and haptic cues for charge levels rather than relying on small particles alone."
   ],
   "implementation_notes": {
-    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
-    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
-    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
-    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
+    "unity": "Track charge_session_id, input hold duration, charge level, and release frame in combat state. Validate resource cost and interruption before creating the charged attack instance.",
+    "godot": "Keep charge_start_tick and charge_level on the actor, update feedback from that state, and resolve release or cancel through the combat state machine rather than AnimationPlayer alone.",
+    "unreal": "Use a Gameplay Ability or weapon component that owns charge timing, prediction keys, and release validation. Montage sections can show levels, but damage metadata comes from charge state.",
+    "web": "Model charging as {charge_start_ms, current_level, committed_release}. On release, validate hold duration and interruption flags before spawning the attack or refunding the action."
   },
   "related_mechanics": [
     "combat.melee_attack",

@@ -99,10 +99,10 @@
     "Avoid making minimap reading mandatory when landmarks, compass cues, or objective text could also guide players."
   ],
   "implementation_notes": {
-    "unity": "Bind the UI to gameplay state through events or observable view models, not direct polling from presentation widgets; support UI Toolkit, uGUI, and input glyph updates from the active Input System scheme.",
-    "godot": "Drive Control nodes from a small view-model dictionary or signal payload, and keep input focus, localization, and scaling separate from gameplay state.",
-    "unreal": "Use UMG or CommonUI widgets fed by gameplay events, with focus navigation, platform glyphs, and replicated-state boundaries handled outside widget animation code.",
-    "web": "Render the UI from normalized game state, keep input mapping and localization data outside component logic, and avoid making animation completion the source of truth."
+    "unity": "Build minimap icons from map_entity_id, icon_type, and reveal state rather than scene hierarchy. Project world coordinates into minimap space and cull icons by priority before rendering.",
+    "godot": "Maintain a map data model with explored cells, floor_id, and icon records. Control nodes should render from that model while gameplay systems update fog reveal and entity visibility separately.",
+    "unreal": "Use a map subsystem to track replicated icon actors, objective markers, and fog-of-war state. UMG should consume filtered icon data rather than scanning all world actors each tick.",
+    "web": "Represent minimap state as tiles, reveal masks, and icon records. Apply north-up or player-up transforms in the renderer and enforce icon_cull_priority before drawing."
   },
   "related_mechanics": [
     "ui_ux.quest_marker",

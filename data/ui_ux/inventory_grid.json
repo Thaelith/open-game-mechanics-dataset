@@ -99,10 +99,10 @@
     "Do not rely only on item icon art; include names, categories, and comparison text where possible."
   ],
   "implementation_notes": {
-    "unity": "Bind the UI to gameplay state through events or observable view models, not direct polling from presentation widgets; support UI Toolkit, uGUI, and input glyph updates from the active Input System scheme.",
-    "godot": "Drive Control nodes from a small view-model dictionary or signal payload, and keep input focus, localization, and scaling separate from gameplay state.",
-    "unreal": "Use UMG or CommonUI widgets fed by gameplay events, with focus navigation, platform glyphs, and replicated-state boundaries handled outside widget animation code.",
-    "web": "Render the UI from normalized game state, keep input mapping and localization data outside component logic, and avoid making animation completion the source of truth."
+    "unity": "Represent each item as item_instance_id plus stack data, and keep slot coordinates in the inventory model. Treat drag/drop, swap, equip, and stack split as validated transactions before updating uGUI or UI Toolkit views.",
+    "godot": "Store item_instance_id, slot Vector2i, and stack count outside Control nodes. Emit a drag transaction from the UI, validate stack limits and slot restrictions in the inventory service, then redraw from accepted state.",
+    "unreal": "Use UMG or CommonUI only for presentation; send slot coordinates and item_instance_id through an inventory component or server RPC, then apply server correction for failed moves, splits, or equipment restrictions.",
+    "web": "Keep inventory as normalized state keyed by item_instance_id and slot coordinates. Commit drag, split, merge, and sort operations through one reducer or transaction so UI animation never becomes the source of truth."
   },
   "related_mechanics": [
     "economy.crafting_materials",

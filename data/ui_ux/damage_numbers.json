@@ -99,10 +99,10 @@
     "Use text labels or icons for damage categories instead of color alone."
   ],
   "implementation_notes": {
-    "unity": "Bind the UI to gameplay state through events or observable view models, not direct polling from presentation widgets; support UI Toolkit, uGUI, and input glyph updates from the active Input System scheme.",
-    "godot": "Drive Control nodes from a small view-model dictionary or signal payload, and keep input focus, localization, and scaling separate from gameplay state.",
-    "unreal": "Use UMG or CommonUI widgets fed by gameplay events, with focus navigation, platform glyphs, and replicated-state boundaries handled outside widget animation code.",
-    "web": "Render the UI from normalized game state, keep input mapping and localization data outside component logic, and avoid making animation completion the source of truth."
+    "unity": "Create number events from confirmed DamageResult payloads with target_id, damage_type, amount_after_mitigation, and critical metadata. Anchor world-space labels to target sockets and merge repeated ticks by source effect.",
+    "godot": "Emit damage_number events after health or shield state changes, carrying final amount and category. Render Control or Node2D labels from those events and pool them to avoid allocation spikes.",
+    "unreal": "Send final damage data from the damage component or Gameplay Effect execution to UMG/CommonUI. Use target actor, damage type, crit flag, and stack merge keys instead of reading values from floating text widgets.",
+    "web": "Generate floating-number events from committed combat state, keyed by target_id and damage_source_id. Apply stack_merge_window_ms before rendering so damage-over-time and shotgun hits do not flood the UI."
   },
   "related_mechanics": [
     "ui_ux.hit_marker",

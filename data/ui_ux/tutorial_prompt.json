@@ -99,10 +99,10 @@
     "Use text plus icons, and ensure prompts are compatible with screen reader or narration systems where supported."
   ],
   "implementation_notes": {
-    "unity": "Bind the UI to gameplay state through events or observable view models, not direct polling from presentation widgets; support UI Toolkit, uGUI, and input glyph updates from the active Input System scheme.",
-    "godot": "Drive Control nodes from a small view-model dictionary or signal payload, and keep input focus, localization, and scaling separate from gameplay state.",
-    "unreal": "Use UMG or CommonUI widgets fed by gameplay events, with focus navigation, platform glyphs, and replicated-state boundaries handled outside widget animation code.",
-    "web": "Render the UI from normalized game state, keep input mapping and localization data outside component logic, and avoid making animation completion the source of truth."
+    "unity": "Key each prompt by tutorial_flag_id and trigger_condition_id. Record shown, dismissed, and failure-counter state in the player profile so Control or UI Toolkit widgets only display resolved prompt data.",
+    "godot": "Use a tutorial service that listens for gameplay events and emits prompt payloads with action IDs and dismissal scope. Control nodes should update glyphs from current input bindings before display.",
+    "unreal": "Evaluate prompt triggers in a tutorial subsystem using gameplay tags, progress flags, and failure counters. UMG/CommonUI receives prompt view models and reports dismissal back to profile state.",
+    "web": "Store tutorial state as flags, counters, and dismissal records. Generate prompt view models from current input mappings and commit dismissals through profile-scoped state updates."
   },
   "related_mechanics": [
     "ui_ux.interaction_prompt",

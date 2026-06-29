@@ -99,10 +99,10 @@
     "Avoid high-frequency shield flicker effects without intensity controls."
   ],
   "implementation_notes": {
-    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
-    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
-    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
-    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
+    "unity": "Represent shield_capacity, recharge_delay, and damage-type filters on a shield component. Apply shield absorption and overflow-to-health in one damage transaction before updating visuals.",
+    "godot": "Keep shield points, recharge timer, and active coverage on the actor state. The damage resolver checks shield eligibility, applies overflow, and emits shield_break or recharge events.",
+    "unreal": "Use attributes or replicated shield state for capacity and recharge. Resolve damage filtering and overflow in Gameplay Effect execution or a combat component, then trigger Gameplay Cues for shield hits.",
+    "web": "Store shield_state with capacity, recharge_until_ms, coverage arc, and damage filters. Commit absorb, overflow, break stun, and recharge scheduling together during damage resolution."
   },
   "related_mechanics": [
     "combat.block",

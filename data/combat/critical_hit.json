@@ -99,10 +99,10 @@
     "Avoid making tiny weak points mandatory without aim assists, alternate strategies, or readable target presentation."
   ],
   "implementation_notes": {
-    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
-    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
-    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
-    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
+    "unity": "Resolve criticals inside the damage transaction using hit_zone_id, critical_chance_percent, deterministic RNG seed, and immunity tags. Emit critical feedback only after final damage is confirmed.",
+    "godot": "Pass hit metadata such as weak_point, backstab, and source stats into the damage resolver. Roll or validate crit there, then send final category to UI and audio signals.",
+    "unreal": "Evaluate critical chance, weak-point tags, and immunity in Gameplay Effect execution or server combat code. Replicate the final critical result rather than re-rolling in UI.",
+    "web": "Use attack_instance_id, target_id, hit_zone_id, and seeded RNG state to resolve critical outcomes once. Store final damage category for numbers, hit markers, and logs."
   },
   "related_mechanics": [
     "ui_ux.hit_marker",

@@ -100,10 +100,10 @@
     "Use distinct indicators for blockable, guard-breaking, and unblockable attacks where readability is critical."
   ],
   "implementation_notes": {
-    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
-    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
-    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
-    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
+    "unity": "Evaluate block from defender guard_state, facing vector, guard_arc_degrees, and incoming attack metadata inside the damage transaction. Apply stamina cost and chip damage before final health changes.",
+    "godot": "Store guard state, facing, stamina, and raise time on the defender. The damage resolver checks arc, blockable tags, and stamina before choosing blocked, chip, guard break, or full damage.",
+    "unreal": "Use a combat component or Gameplay Effect execution to resolve guard arc, stamina cost, chip damage, and guard-break transitions on the server before broadcasting UI cues.",
+    "web": "Process block as part of damage resolution with defender_id, attack_id, guard angle, stamina state, and blockable tags. Commit stamina and health changes in one transaction."
   },
   "related_mechanics": [
     "combat.parry",

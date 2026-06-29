@@ -99,10 +99,10 @@
     "Avoid requiring precise analog direction for critical actions without confirmation or deadzone tuning."
   ],
   "implementation_notes": {
-    "unity": "Bind the UI to gameplay state through events or observable view models, not direct polling from presentation widgets; support UI Toolkit, uGUI, and input glyph updates from the active Input System scheme.",
-    "godot": "Drive Control nodes from a small view-model dictionary or signal payload, and keep input focus, localization, and scaling separate from gameplay state.",
-    "unreal": "Use UMG or CommonUI widgets fed by gameplay events, with focus navigation, platform glyphs, and replicated-state boundaries handled outside widget animation code.",
-    "web": "Render the UI from normalized game state, keep input mapping and localization data outside component logic, and avoid making animation completion the source of truth."
+    "unity": "Track radial_menu_id, highlighted_slice_id, input vector, and commit_on_release state in a controller model. Apply radial_time_scale through a gameplay time service, not widget animation.",
+    "godot": "Compute slice selection from the input vector and selection_deadzone_radius in a Control script, then send the selected action_id to gameplay only on an explicit commit event.",
+    "unreal": "Use CommonUI or UMG for the wheel, but keep selected action, deadzone handling, and release-to-commit in a player input component. Scope time dilation so multiplayer or UI animation is not unintentionally slowed.",
+    "web": "Represent the wheel as {open, highlighted_slice_id, committed_action_id}. Normalize mouse, stick, and touch input through the same polar-angle calculation before dispatching the commit transaction."
   },
   "related_mechanics": [
     "ui_ux.inventory_grid",

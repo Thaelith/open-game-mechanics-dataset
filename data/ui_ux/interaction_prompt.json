@@ -100,10 +100,10 @@
     "Do not rely only on proximity; combine world highlight, text, and prompt positioning where possible."
   ],
   "implementation_notes": {
-    "unity": "Bind the UI to gameplay state through events or observable view models, not direct polling from presentation widgets; support UI Toolkit, uGUI, and input glyph updates from the active Input System scheme.",
-    "godot": "Drive Control nodes from a small view-model dictionary or signal payload, and keep input focus, localization, and scaling separate from gameplay state.",
-    "unreal": "Use UMG or CommonUI widgets fed by gameplay events, with focus navigation, platform glyphs, and replicated-state boundaries handled outside widget animation code.",
-    "web": "Render the UI from normalized game state, keep input mapping and localization data outside component logic, and avoid making animation completion the source of truth."
+    "unity": "Select a focused interactable_id from raycasts or trigger candidates, stabilize it with candidate_stability_ms, and display action IDs from the input system. Validate the interactable again on tap or hold completion.",
+    "godot": "Maintain candidate interactables from Area2D/Area3D or raycasts with priority scores. The prompt Control displays the current focus target, while interaction execution rechecks range and enabled state.",
+    "unreal": "Use interfaces or Gameplay Tags to expose interaction candidates. Store focused actor, action tag, and hold progress in a component, then validate authority before executing the interaction.",
+    "web": "Keep focus_target_id and action_id in state after candidate scoring. Render the prompt from that focus state and cancel hold progress if the target leaves range or becomes disabled."
   },
   "related_mechanics": [
     "accessibility.toggle_hold_option",

@@ -99,10 +99,10 @@
     "Avoid effects that hide their own safe zones with particles or screen shake."
   ],
   "implementation_notes": {
-    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
-    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
-    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
-    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
+    "unity": "Create an aoe_instance_id with shape, radius, target filters, and falloff curve. Query overlaps at activation or tick intervals, track hit target IDs as needed, and apply damage through the resolver.",
+    "godot": "Represent the AoE as Area2D/Area3D or explicit physics queries with aoe_instance_id and target filters. Telegraph and damage phases should be separate states with validated timing.",
+    "unreal": "Use collision queries, Gameplay Ability target data, or area actors with server-owned aoe_instance_id. Apply LOS, falloff, friendly-fire, and max target rules before damage execution.",
+    "web": "Store area attacks as simulation entities with shape, activation time, tick schedule, and hit tracking. Resolve overlap, cover rules, and falloff before emitting combat events."
   },
   "related_mechanics": [
     "combat.damage_over_time",

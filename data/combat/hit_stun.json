@@ -99,10 +99,10 @@
     "Avoid rapid repeated stun flashes that obscure hazards or cause visual discomfort."
   ],
   "implementation_notes": {
-    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
-    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
-    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
-    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
+    "unity": "Apply stun as a prioritized hit_reaction state with hit_stun_frames, recovery_cancel_frame, and repeated-stun decay. Keep hit stop on a separate presentation or combat clock so stun duration is not accidentally extended.",
+    "godot": "Store stun_remaining_ticks and hit_stop_remaining_ticks separately on the actor. Resolve repeated stun decay before setting animation and restore control only after recovery cancel rules allow it.",
+    "unreal": "Use a Gameplay Effect, ability state, or combat component for stun priority and duration. Keep hit stop, montage playback rate, and recovery cancel frame separate from replicated stun authority.",
+    "web": "Represent hit stun as actor state with priority, remaining frames, decay source, and cancel frame. Process hit stop on a separate clock before evaluating input lockout and recovery."
   },
   "related_mechanics": [
     "combat.knockback",

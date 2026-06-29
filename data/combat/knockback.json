@@ -99,10 +99,10 @@
     "Avoid excessive camera motion during knockback, or provide reduced impact-camera settings."
   ],
   "implementation_notes": {
-    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
-    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
-    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
-    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
+    "unity": "Apply knockback as a hit_reaction movement state with source attack_instance_id, impulse vector, decay timer, and wall collision policy. Use swept movement so displacement cannot tunnel through geometry.",
+    "godot": "Store knockback_velocity, decay ticks, and control lockout on the actor. Combine it with CharacterBody movement in _physics_process and clear it through landing, wall hit, or state priority rules.",
+    "unreal": "Use CharacterMovement launches or a custom hit-reaction mode with server-authoritative impulse, resistance, and recovery. Replicate the reaction state instead of only applying cosmetic force locally.",
+    "web": "Represent knockback as forced_velocity plus decay and source metadata. Resolve it before player input acceleration, handle wall_collision_reaction, and clear control lockout through explicit state transitions."
   },
   "related_mechanics": [
     "combat.hit_stun",

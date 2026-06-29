@@ -107,10 +107,10 @@
     "Avoid requiring hidden animation-frame knowledge for basic attacks; reserve tight cancels for advanced mastery."
   ],
   "implementation_notes": {
-    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
-    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
-    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
-    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
+    "unity": "Create an attack_instance_id when startup begins, open hitboxes only during active frames, and maintain a per-target hit set so each target is damaged once per swing unless metadata allows repeats.",
+    "godot": "Track attack_instance_id, active_frame_range, and already_hit target IDs on the actor. Evaluate Area2D/Area3D overlaps or shape casts during physics ticks and emit damage only through the combat resolver.",
+    "unreal": "Use montage notifies or ability tasks to mark active frames, but keep attack_instance_id and per-target hit tracking in the combat component. Use traces or overlap queries with server-authoritative damage.",
+    "web": "Resolve melee from attack metadata, actor transform, active frame, and hit shape. Cache hit target IDs per attack_instance_id before queuing damage and hit-confirm events."
   },
   "related_mechanics": [
     "combat.combo_chain",

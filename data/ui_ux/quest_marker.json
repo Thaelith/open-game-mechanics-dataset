@@ -99,10 +99,10 @@
     "Allow players to reduce marker clutter or pin only one objective at a time."
   ],
   "implementation_notes": {
-    "unity": "Bind the UI to gameplay state through events or observable view models, not direct polling from presentation widgets; support UI Toolkit, uGUI, and input glyph updates from the active Input System scheme.",
-    "godot": "Drive Control nodes from a small view-model dictionary or signal payload, and keep input focus, localization, and scaling separate from gameplay state.",
-    "unreal": "Use UMG or CommonUI widgets fed by gameplay events, with focus navigation, platform glyphs, and replicated-state boundaries handled outside widget animation code.",
-    "web": "Render the UI from normalized game state, keep input mapping and localization data outside component logic, and avoid making animation completion the source of truth."
+    "unity": "Bind markers to objective_id plus target entity, world position, or objective area. Project world-to-screen after camera update and remove markers when quest state changes to completed, failed, or hidden.",
+    "godot": "Store marker state as objective_id, target NodePath or area center, and marker mode. Update screen-edge clamps after camera transforms and handle above/below indicators from world height delta.",
+    "unreal": "Feed UMG marker widgets from a quest tracker component that owns objective IDs, target actors, and area radii. Use weak actor references and clear widgets when replicated quest state changes.",
+    "web": "Keep quest markers in normalized state keyed by objective_id. Resolve target position each frame, clamp offscreen markers with padding, and hide stale markers when target or quest state is invalid."
   },
   "related_mechanics": [
     "ui_ux.minimap",

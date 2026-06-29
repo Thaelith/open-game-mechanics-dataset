@@ -99,10 +99,10 @@
     "Allow hit marker size, opacity, and sound volume to be adjusted separately from damage numbers."
   ],
   "implementation_notes": {
-    "unity": "Bind the UI to gameplay state through events or observable view models, not direct polling from presentation widgets; support UI Toolkit, uGUI, and input glyph updates from the active Input System scheme.",
-    "godot": "Drive Control nodes from a small view-model dictionary or signal payload, and keep input focus, localization, and scaling separate from gameplay state.",
-    "unreal": "Use UMG or CommonUI widgets fed by gameplay events, with focus navigation, platform glyphs, and replicated-state boundaries handled outside widget animation code.",
-    "web": "Render the UI from normalized game state, keep input mapping and localization data outside component logic, and avoid making animation completion the source of truth."
+    "unity": "Spawn markers from a confirmed DamageResult event that includes target_id, hit_category, blocked_or_immune flags, and prediction status. Use predicted_hit_opacity only until the authoritative result arrives.",
+    "godot": "Emit a hit_confirmed signal from the damage resolver, not projectile overlap. Include critical, shielded, blocked, and immune metadata so the Control node can filter or style the marker correctly.",
+    "unreal": "Route server-confirmed damage through Gameplay Cues or UI messages and keep a separate predicted marker path for local responsiveness. Merge pellet or multi-hit events before playing marker audio.",
+    "web": "Queue hit-marker events from the simulation damage result with attack_instance_id and target_id. Coalesce events inside multi_hit_merge_window_ms and suppress markers for blocked or immune outcomes."
   },
   "related_mechanics": [
     "combat.ranged_attack",

@@ -99,10 +99,10 @@
     "Provide camera sensitivity and auto-recenter settings to reduce motion discomfort during lock-on."
   ],
   "implementation_notes": {
-    "unity": "Model combat timing and hit resolution as data-owned state, drive animation from that state, and apply damage through one authoritative resolver rather than animation-only callbacks.",
-    "godot": "Keep combat windows on the actor state, evaluate Area2D/Area3D or shape queries during physics ticks, and emit presentation signals after authoritative damage resolution.",
-    "unreal": "Use Gameplay Ability System, Actor Components, or replicated combat state for timing and damage authority, with montage notifies only marking windows or presentation events.",
-    "web": "Resolve combat in the fixed simulation step from actor state, hit volumes, and attack metadata, then queue UI/audio/camera events from the confirmed result."
+    "unity": "Maintain locked_target_id, target_anchor, line_of_sight_break_timer, and switch cooldown in combat targeting state. Feed camera and attack orientation from that state after candidate validation.",
+    "godot": "Store locked target NodePath, anchor offset, and switch cooldown on the player combat state. Re-score candidates from screen position and distance, then clear lock when visibility grace expires.",
+    "unreal": "Use a targeting component with replicated locked actor, socket or anchor name, LOS grace, and switch input cooldown. Camera modes and combat traces consume that component's target data.",
+    "web": "Keep locked_target_id, last_visible_ms, and target priority score in player state. Update candidate scoring separately from attack execution so target loss does not corrupt active attacks."
   },
   "related_mechanics": [
     "camera.camera_lock_on",
