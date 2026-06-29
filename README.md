@@ -70,13 +70,6 @@ python -m http.server 8000
 
 Then open `http://localhost:8000/site/`.
 
-To enable GitHub Pages:
-
-1. Open repository Settings, then Pages.
-2. Under Build and deployment, choose Deploy from a branch.
-3. Select the `main` branch and the `/ (root)` folder.
-4. Save, then open `https://thaelith.github.io/open-game-mechanics-dataset/site/`.
-
 ## Folder Structure
 
 ```text
