@@ -4,7 +4,7 @@
   "license": "CC0-1.0",
   "tool_license": "MIT",
   "total_mechanics": 223,
-  "last_generated": "2026-06-29T20:50:25+00:00",
+  "last_generated": "2026-06-29T21:40:23+00:00",
   "mechanics": [
     {
       "id": "accessibility.adjustable_difficulty",
@@ -1230,7 +1230,7 @@
       "id": "economy.coins",
       "name": "Coins",
       "category": "economy",
-      "subcategory": "economy",
+      "subcategory": "currency_wallet",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1253,7 +1253,7 @@
       "id": "economy.crafting_materials",
       "name": "Crafting Materials",
       "category": "economy",
-      "subcategory": "economy",
+      "subcategory": "crafting_resources",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1276,7 +1276,7 @@
       "id": "economy.dynamic_pricing",
       "name": "Dynamic Pricing",
       "category": "economy",
-      "subcategory": "economy",
+      "subcategory": "price_modulation",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1299,7 +1299,7 @@
       "id": "economy.gacha_pull",
       "name": "Gacha Pull",
       "category": "economy",
-      "subcategory": "economy",
+      "subcategory": "randomized_reward_purchase",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1322,7 +1322,7 @@
       "id": "economy.idle_income",
       "name": "Idle Income",
       "category": "economy",
-      "subcategory": "economy",
+      "subcategory": "passive_accrual",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1371,7 +1371,7 @@
       "id": "economy.repair_cost",
       "name": "Repair Cost",
       "category": "economy",
-      "subcategory": "economy",
+      "subcategory": "maintenance_sink",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1394,7 +1394,7 @@
       "id": "economy.resource_conversion",
       "name": "Resource Conversion",
       "category": "economy",
-      "subcategory": "economy",
+      "subcategory": "resource_exchange",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1417,7 +1417,7 @@
       "id": "economy.shop",
       "name": "Shop",
       "category": "economy",
-      "subcategory": "economy",
+      "subcategory": "vendor_transactions",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1440,7 +1440,7 @@
       "id": "economy.trading",
       "name": "Trading",
       "category": "economy",
-      "subcategory": "economy",
+      "subcategory": "trade_exchange",
       "status": "draft",
       "dimensions": [
         "2D",

@@ -7,7 +7,7 @@
     "exchange trade"
   ],
   "category": "economy",
-  "subcategory": "economy",
+  "subcategory": "trade_exchange",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -56,7 +56,7 @@
       "name": "currency_offer_minor_units",
       "type": "integer",
       "typical_range": "0-100000000",
-      "description": "Currency amount offered as part of the trade, stored in minor units."
+      "description": "Currency offered as part of the trade, stored in minor units."
     },
     {
       "name": "acceptance_lock_seconds",
@@ -68,7 +68,7 @@
       "name": "trade_tax_ratio",
       "type": "float",
       "typical_range": "0.0-0.3",
-      "description": "Optional fee removed from currency or item value when a trade commits."
+      "description": "Optional fee removed from committed currency or item proceeds when a trade completes."
     }
   ],
   "common_variants": [

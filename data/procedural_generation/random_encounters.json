@@ -59,7 +59,7 @@
       "description": "Minimum distance from the player, camera, or protected area for placement."
     },
     {
-      "name": "cooldown_group_id",
+      "name": "repeat_lockout_group_id",
       "type": "string",
       "typical_range": "ambush, merchant, elite_patrol",
       "description": "Group key that prevents similar encounters from repeating too soon."

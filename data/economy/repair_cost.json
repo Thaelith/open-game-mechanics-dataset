@@ -7,7 +7,7 @@
     "maintenance cost"
   ],
   "category": "economy",
-  "subcategory": "economy",
+  "subcategory": "maintenance_sink",
   "status": "draft",
   "dimensions": [
     "2D",

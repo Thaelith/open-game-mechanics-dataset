@@ -7,7 +7,7 @@
     "spendable currency"
   ],
   "category": "economy",
-  "subcategory": "economy",
+  "subcategory": "currency_wallet",
   "status": "draft",
   "dimensions": [
     "2D",

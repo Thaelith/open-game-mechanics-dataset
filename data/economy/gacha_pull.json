@@ -7,7 +7,7 @@
     "capsule draw"
   ],
   "category": "economy",
-  "subcategory": "economy",
+  "subcategory": "randomized_reward_purchase",
   "status": "draft",
   "dimensions": [
     "2D",

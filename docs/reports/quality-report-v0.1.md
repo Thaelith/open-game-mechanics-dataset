@@ -6,7 +6,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Metric | Value |
 | --- | --- |
-| Generated at | 2026-06-29T20:50:54+00:00 |
+| Generated at | 2026-06-29T21:40:39+00:00 |
 | Schema version | 0.1.0 |
 | Total mechanics | 223 |
 | Total categories | 26 |
@@ -46,19 +46,18 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Metric | Value |
 | --- | --- |
-| Total advisory warnings | 11 |
+| Total advisory warnings | 0 |
 
 ### Warning Count by Category
 
 | Category | Warnings |
 | --- | --- |
-| economy | 8 |
-| procedural_generation | 3 |
 | accessibility | 0 |
 | ai | 0 |
 | camera | 0 |
 | combat | 0 |
 | crafting | 0 |
+| economy | 0 |
 | horror | 0 |
 | meta | 0 |
 | movement | 0 |
@@ -66,6 +65,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 | narrative | 0 |
 | physics | 0 |
 | platforming | 0 |
+| procedural_generation | 0 |
 | progression | 0 |
 | puzzle | 0 |
 | rhythm | 0 |
@@ -81,23 +81,11 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 ### Top 20 Mechanics by Warning Count
 
-| Mechanic | Warnings |
-| --- | --- |
-| economy.idle_income | 4 |
-| economy.trading | 2 |
-| procedural_generation.wave_generation | 2 |
-| economy.dynamic_pricing | 1 |
-| economy.shop | 1 |
-| procedural_generation.random_encounters | 1 |
+_None._
 
 ### Top Repeated Weak or Generic Terms
 
-| Term | Count |
-| --- | --- |
-| cooldown | 3 |
-| time | 3 |
-| value | 3 |
-| amount | 2 |
+_None._
 
 ## Field Completeness
 
@@ -125,13 +113,12 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Category | Mechanics | Generic Warnings | Avg Warnings | Missing Examples | Weak Impl Notes | Low Params | Low Edge Cases | Low Bugs |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| economy | 10 | 8 | 0.80 | 0 | 0 | 0 | 0 | 0 |
-| procedural_generation | 9 | 3 | 0.33 | 0 | 0 | 0 | 0 | 0 |
 | accessibility | 5 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | ai | 11 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | camera | 10 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | combat | 19 | 0 | 0.00 | 1 | 0 | 0 | 0 | 0 |
 | crafting | 4 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
+| economy | 10 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | horror | 8 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | meta | 4 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | movement | 12 | 0 | 0.00 | 3 | 0 | 0 | 0 | 0 |
@@ -139,6 +126,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 | narrative | 5 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | physics | 11 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | platforming | 9 | 0 | 0.00 | 1 | 0 | 0 | 0 | 0 |
+| procedural_generation | 9 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | progression | 11 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | puzzle | 10 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | rhythm | 4 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
@@ -158,7 +146,6 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Category | Subcategory | Mechanics |
 | --- | --- | --- |
-| economy | economy | 9 |
 | progression | progression | 9 |
 
 ### `accessibility`
@@ -225,8 +212,16 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Subcategory | Mechanics |
 | --- | --- |
-| economy | 9 |
+| crafting_resources | 1 |
+| currency_wallet | 1 |
+| maintenance_sink | 1 |
+| passive_accrual | 1 |
+| price_modulation | 1 |
+| randomized_reward_purchase | 1 |
+| resource_exchange | 1 |
 | reward_distribution | 1 |
+| trade_exchange | 1 |
+| vendor_transactions | 1 |
 
 ### `horror`
 
@@ -606,7 +601,6 @@ _None._
 
 ## Recommended Next Passes
 
-- Run a wording pass on `economy`; it has the highest average advisory warning rate (0.80 per mechanic).
-- Plan a focused subcategory cleanup for `economy`; 1 generic subcategory bucket(s) are present.
-- Hand-review `economy.idle_income` first among individual entries; it has 4 warning(s) and 4 incoming link(s).
+- Run a wording pass on `accessibility`; it has the highest average advisory warning rate (0.00 per mechanic).
+- Plan a focused subcategory cleanup for `progression`; 1 generic subcategory bucket(s) are present.
 - Improve relationship coverage in `platforming`; it averages 7.22 outgoing link(s) per mechanic.

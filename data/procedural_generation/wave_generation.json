@@ -65,10 +65,10 @@
       "description": "Curve that maps wave_index and player state to budget and modifiers."
     },
     {
-      "name": "inter_wave_cooldown_ms",
+      "name": "inter_wave_recovery_ms",
       "type": "integer",
       "typical_range": "0-120000 ms",
-      "description": "Rest or preparation time before the next wave begins."
+      "description": "Rest or preparation interval before the next wave begins."
     }
   ],
   "common_variants": [

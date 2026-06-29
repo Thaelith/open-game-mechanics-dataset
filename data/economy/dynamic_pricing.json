@@ -7,7 +7,7 @@
     "price modifiers"
   ],
   "category": "economy",
-  "subcategory": "economy",
+  "subcategory": "price_modulation",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -62,7 +62,7 @@
       "name": "sellback_ratio",
       "type": "float",
       "typical_range": "0.05-0.95",
-      "description": "Fraction of purchase value returned when the player sells an item back."
+      "description": "Fraction of original buy price returned when the player sells an item back."
     },
     {
       "name": "price_floor_minor_units",
