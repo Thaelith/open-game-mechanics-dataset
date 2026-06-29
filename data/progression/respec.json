@@ -89,10 +89,10 @@
     "Provide confirmation, preview, and undo steps so players do not lose progress through accidental clicks."
   ],
   "implementation_notes": {
-    "unity": "Apply respec through a transaction that removes grants, validates dependencies, refunds resources, and writes one save-state update.",
-    "godot": "Keep build state separate from granted effects so refunding can recompute final stats from selected nodes.",
-    "unreal": "Centralize respec authority in a progression component and replay ability grants after validation.",
-    "web": "Represent selected nodes as IDs and recompute derived stats from scratch after every refund or purchase transaction."
+    "unity": "Run respec as a transaction that removes granted abilities, validates dependency fallout, refunds points or currency, recomputes derived stats, and writes one save update.",
+    "godot": "Store selected build IDs separately from granted effects, then rebuild abilities and stats from scratch after each refund so stale passives cannot remain active.",
+    "unreal": "Centralize respec in a progression component or subsystem that validates dependent nodes, removes Gameplay Abilities, and reapplies remaining grants after confirmation.",
+    "web": "Keep build selections as immutable IDs, preview refund results in pure functions, then commit a single transaction that recomputes stats, hotbar validity, and save state."
   },
   "related_mechanics": [
     "progression.skill_tree",
@@ -104,7 +104,16 @@
     "ui_ux.dialogue_choice",
     "narrative.reputation_gating"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Elden Ring",
+      "note": "Uses a limited resource to let players reallocate character attributes."
+    },
+    {
+      "title": "Diablo III",
+      "note": "Lets players change active skills to reshape builds."
+    }
+  ],
   "tags": [
     "progression",
     "respec",

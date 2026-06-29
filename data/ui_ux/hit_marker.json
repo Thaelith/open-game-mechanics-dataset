@@ -88,10 +88,10 @@
     "Provide visual and audio confirmation options independently, with color-safe marker variants."
   ],
   "implementation_notes": {
-    "unity": "Listen to authoritative damage events and drive UI/audio markers from hit category metadata, not raw collision callbacks.",
-    "godot": "Emit hit-confirm signals from the damage system and render marker Control nodes or world-space labels as needed.",
-    "unreal": "Route damage confirmation through gameplay cues or UI events and distinguish predicted from confirmed hits in multiplayer.",
-    "web": "Queue marker events from the simulation step and render them in UI or world space with short lifetimes."
+    "unity": "Subscribe to confirmed damage-result events and map hit category metadata to reticle marker, sound, and optional world-space feedback instead of listening to raw projectile collisions.",
+    "godot": "Emit hit-confirm signals from the damage resolver with target category and critical metadata, then render short-lived Control nodes or world-space markers.",
+    "unreal": "Route confirmed damage through Gameplay Cues or UI events, distinguishing armor, critical, kill, and predicted hits when network latency is involved.",
+    "web": "Queue hit marker events from the simulation damage result, coalesce rapid multi-hit events, and render UI or world-space markers with marker_linger_ms lifetimes."
   },
   "related_mechanics": [
     "combat.ranged_attack",
@@ -103,7 +103,12 @@
     "combat.damage_over_time",
     "combat.combo_chain"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Call of Duty 4: Modern Warfare",
+      "note": "Uses hit markers to confirm successful shots."
+    }
+  ],
   "tags": [
     "ui",
     "combat_feedback",

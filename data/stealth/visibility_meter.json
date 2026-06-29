@@ -88,10 +88,10 @@
     "Avoid color-only hidden/detected states and allow meter scaling or alternate icon modes."
   ],
   "implementation_notes": {
-    "unity": "Sample lighting or authored stealth volumes and feed the result into the same perception score used by AI where possible.",
-    "godot": "Combine Area-based shadow volumes, ray checks, and movement state into a visibility score updated on a fixed cadence.",
-    "unreal": "Use perception components, lighting volumes, or gameplay tags to compute exposure and replicate only needed UI state.",
-    "web": "Compute exposure from tile, light, and cover data in the simulation model, then render the meter as a separate UI binding."
+    "unity": "Compute visibility from sampled body points, authored shadow volumes, stance, and movement noise, then feed the same score into AI perception and the UI meter where possible.",
+    "godot": "Combine Area-based light or shadow volumes with ray visibility checks and stance state, smoothing the displayed meter separately from the AI detection threshold.",
+    "unreal": "Use perception data, Gameplay Tags, or stealth volumes to compute exposure on the authoritative actor state, then replicate only the score category needed by UI.",
+    "web": "Calculate exposure from tile lighting, cover masks, movement state, and observer angles in the simulation model, then bind the result to a UI meter with smoothing."
   },
   "related_mechanics": [
     "ai.line_of_sight_detection",
@@ -103,7 +103,12 @@
     "stealth.last_known_position_search",
     "ui_ux.interaction_prompt"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Thief: The Dark Project",
+      "note": "Uses a light gem to communicate how visible the player is."
+    }
+  ],
   "tags": [
     "stealth",
     "visibility",

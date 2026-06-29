@@ -24,3 +24,15 @@ jobs:
 
       - name: Check generated index
         run: python tools/generate_index.py --check
+
+      - name: Check local documentation links
+        run: python tools/check_links.py
+
+      - name: Run advisory generic lint
+        run: python tools/generic_lint.py --limit 50
+
+      - name: Print category coverage report
+        run: python tools/category_coverage_report.py --json
+
+      - name: Smoke test dataset search
+        run: python tools/search_dataset.py --query jump_assist --limit 5

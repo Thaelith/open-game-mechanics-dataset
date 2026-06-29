@@ -88,10 +88,10 @@
     "Use clear magazine and reserve indicators and avoid relying only on click sounds for empty weapons."
   ],
   "implementation_notes": {
-    "unity": "Model startup, active, recovery, and cancel windows as data, then drive hitboxes, animation events, and damage application from one combat state source. For Reload, validate this path with parameters such as magazine_capacity and reload_commit_frame.",
-    "godot": "Use Area2D or Area3D hit volumes with frame-window state on the actor; avoid placing damage authority inside animation-only callbacks. For Reload, validate this path with parameters such as magazine_capacity and reload_commit_frame.",
-    "unreal": "Implement the action as a Gameplay Ability or Actor Component with montage notifies for windows and authoritative damage on the server when networked. For Reload, validate this path with parameters such as magazine_capacity and reload_commit_frame.",
-    "web": "Update combat windows in the fixed simulation step, evaluate hurtbox overlap from cached transforms, and emit presentation events separately from damage state. For Reload, validate this path with parameters such as magazine_capacity and reload_commit_frame."
+    "unity": "Represent reload as a weapon state with a commit frame or per-round insert event; transfer ammo from reserve to magazine only at the configured commit point.",
+    "godot": "Store magazine and reserve counts on the weapon resource or node, drive reload timers from _physics_process, and apply per-shell inserts from explicit state events.",
+    "unreal": "Implement reload in the weapon or Gameplay Ability state machine, using montage notifies for commit points while keeping ammo authority on the server.",
+    "web": "Model reload as a timed weapon state with reload_started_ms, commit frame, and cancel policy, then update magazine and reserve counts in one deterministic transaction."
   },
   "related_mechanics": [
     "combat.ranged_attack",
@@ -103,7 +103,16 @@
     "combat.damage_over_time",
     "ui_ux.hit_marker"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Counter-Strike 2",
+      "note": "Uses reload commitment as a tactical timing cost in firefights."
+    },
+    {
+      "title": "Resident Evil 4",
+      "note": "Uses reload timing and ammunition pressure as part of combat pacing."
+    }
+  ],
   "tags": [
     "combat",
     "ammo",

@@ -81,10 +81,10 @@
     "Use consistent visual language for semisolid platforms so players can identify collision behavior before jumping."
   ],
   "implementation_notes": {
-    "unity": "Use PlatformEffector2D where applicable or a custom collision filter that disables contact per actor during drop-through windows.",
-    "godot": "Use one-way collision settings for CollisionShape2D or explicit collision layers for 3D-style controllers.",
-    "unreal": "Implement through custom movement collision filtering or platform components that ignore actors based on approach direction and drop state.",
-    "web": "Resolve platform collision only when the actor crosses the top plane from above and has not requested a drop-through window."
+    "unity": "Use PlatformEffector2D for 2D projects or filter contacts manually by comparing previous actor bottom position, current velocity, and the platform top plane before accepting a landing.",
+    "godot": "Use one-way collision on CollisionShape2D where possible; for custom controllers, accept the platform only when the body approaches from above and is outside any drop-through ignore window.",
+    "unreal": "Implement a platform component that exposes a top plane and per-actor ignore timers, then have the character movement sweep reject contacts that arrive from below.",
+    "web": "Resolve the platform as a segment or slab that only blocks downward crossings from above, with actor-specific drop timers rather than globally disabling the platform."
   },
   "related_mechanics": [
     "platforming.drop_through_platform",
@@ -96,7 +96,12 @@
     "movement.crouch",
     "puzzle.pressure_plate"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Super Mario World",
+      "note": "Uses semisolid platforms that can be jumped through and stood on."
+    }
+  ],
   "tags": [
     "physics",
     "collision",

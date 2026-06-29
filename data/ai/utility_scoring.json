@@ -89,10 +89,10 @@
     "When utility drives opponents, keep player-readable tells so behavior feels reactive rather than random."
   ],
   "implementation_notes": {
-    "unity": "Represent actions and considerations as data assets or plain objects and add debug views for per-consideration scores.",
-    "godot": "Use Resources for score curves and a blackboard dictionary, then select actions on a fixed decision cadence.",
-    "unreal": "Combine Utility AI plugins or custom score evaluators with Behavior Tree/StateTree tasks for execution.",
-    "web": "Compute utility scores in pure functions over AI state so decisions can be logged, replayed, and tested."
+    "unity": "Represent actions, considerations, score curves, and cooldowns as data assets or plain serializable objects, and add an inspector panel that shows why the winning action scored highest.",
+    "godot": "Use Resources for consideration curves and a blackboard dictionary for inputs, then run scoring on a fixed cadence with hysteresis before switching behavior states.",
+    "unreal": "Implement score evaluators as data-driven objects feeding Behavior Tree or StateTree execution, with Blackboard values captured for debugging each decision pass.",
+    "web": "Compute action scores through pure functions over AI state, log the consideration breakdown, and apply commitment_min_ms before allowing a new winner to interrupt."
   },
   "related_mechanics": [
     "ai.patrol",

@@ -89,10 +89,10 @@
     "Support text scaling, input glyph alternatives, and optional hold-to-toggle behavior for long interactions."
   ],
   "implementation_notes": {
-    "unity": "Query interactable components each frame or fixed cadence, choose one candidate, and bind prompt glyphs through the active input scheme.",
-    "godot": "Use Area nodes or raycasts to collect candidates and update a Control node with localized action labels.",
-    "unreal": "Use interfaces or gameplay tags for interactables and CommonUI or UMG widgets for platform-specific input glyphs.",
-    "web": "Maintain interactable candidates in game state and render prompts from current input mapping and focus target."
+    "unity": "Collect nearby IInteractable components through trigger volumes or camera rays, rank them by facing and distance, and display the active Input System binding for the chosen action.",
+    "godot": "Use Area2D/Area3D or raycasts to maintain candidate interactables, select one stable focus target, and update a Control node with localized action text.",
+    "unreal": "Expose interactables through interfaces or Gameplay Tags, select focus from trace and overlap data, then render platform glyphs through CommonUI or UMG.",
+    "web": "Keep interactable candidates and current input mapping in game state, choose a stable focus target, and render prompts from the same action IDs consumed by input."
   },
   "related_mechanics": [
     "accessibility.toggle_hold_option",
@@ -104,7 +104,12 @@
     "narrative.branching_dialogue",
     "survival.base_building"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Legend of Zelda: Breath of the Wild",
+      "note": "Uses contextual prompts for picking up, talking, climbing, and other world interactions."
+    }
+  ],
   "tags": [
     "ui",
     "interaction",

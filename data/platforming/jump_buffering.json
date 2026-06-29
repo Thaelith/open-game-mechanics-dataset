@@ -82,10 +82,10 @@
     "Expose stronger buffering in assist settings for games with frequent precision jumps."
   ],
   "implementation_notes": {
-    "unity": "Use an explicit movement-state enum and feed the final desired velocity into CharacterController.Move or Rigidbody movement from FixedUpdate; keep dash and jump assists outside animation callbacks. For Jump Buffering, validate this path with parameters such as jump_buffer_ms and buffer_accepts_hold.",
-    "godot": "Keep the mechanic state on CharacterBody2D or CharacterBody3D, update velocity in _physics_process, and separate input buffering from collision response. For Jump Buffering, validate this path with parameters such as jump_buffer_ms and buffer_accepts_hold.",
-    "unreal": "Use CharacterMovement with a custom movement state or Gameplay Ability; gate activation through prediction-safe input and reconcile movement corrections cleanly in networked play. For Jump Buffering, validate this path with parameters such as jump_buffer_ms and buffer_accepts_hold.",
-    "web": "Represent the mechanic as deterministic state in the simulation loop, then apply resolved displacement before rendering through Canvas, Phaser, Three.js, or a custom engine. For Jump Buffering, validate this path with parameters such as jump_buffer_ms and buffer_accepts_hold."
+    "unity": "Record jump-press timestamps from the Input System, then consume the newest buffered press when ground, wall, or ledge jump eligibility becomes true inside the fixed movement update.",
+    "godot": "Capture Input.is_action_just_pressed for jump into a short-lived buffer and resolve it after floor and wall checks so buffered jumps use the correct movement state.",
+    "unreal": "Queue jump input in the character or ability component and consume it from CharacterMovement state after landing, wall contact, or custom movement eligibility is confirmed.",
+    "web": "Store jump_pressed_ms in the input state, expire it after jump_buffer_ms, and let the simulation consume the buffer once a legal jump transition is available."
   },
   "related_mechanics": [
     "platforming.coyote_time",
@@ -97,7 +97,12 @@
     "movement.air_dash",
     "accessibility.toggle_hold_option"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Celeste",
+      "note": "Uses input leniency to support precise platforming."
+    }
+  ],
   "tags": [
     "platforming",
     "input_buffer",

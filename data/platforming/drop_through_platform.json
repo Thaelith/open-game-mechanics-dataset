@@ -81,10 +81,10 @@
     "Allow remapping the drop input and avoid requiring awkward simultaneous inputs on small controllers."
   ],
   "implementation_notes": {
-    "unity": "Use an explicit movement-state enum and feed the final desired velocity into CharacterController.Move or Rigidbody movement from FixedUpdate; keep dash and jump assists outside animation callbacks. For Drop-Through Platform, validate this path with parameters such as drop_input_chord and drop_collision_disable_ms.",
-    "godot": "Keep the mechanic state on CharacterBody2D or CharacterBody3D, update velocity in _physics_process, and separate input buffering from collision response. For Drop-Through Platform, validate this path with parameters such as drop_input_chord and drop_collision_disable_ms.",
-    "unreal": "Use CharacterMovement with a custom movement state or Gameplay Ability; gate activation through prediction-safe input and reconcile movement corrections cleanly in networked play. For Drop-Through Platform, validate this path with parameters such as drop_input_chord and drop_collision_disable_ms.",
-    "web": "Represent the mechanic as deterministic state in the simulation loop, then apply resolved displacement before rendering through Canvas, Phaser, Three.js, or a custom engine. For Drop-Through Platform, validate this path with parameters such as drop_input_chord and drop_collision_disable_ms."
+    "unity": "On a valid drop input chord, add the current platform collider to an actor-local ignore set for drop_collision_disable_ms and clear it only after the actor bottom passes below the platform.",
+    "godot": "Switch collision masks or one-way platform ignore state for the specific body after down+jump or down+interact, then restore collision once clearance is reached.",
+    "unreal": "Track the platform being stood on and apply a temporary movement ignore rule or custom floor rejection for that actor rather than disabling collision for every player.",
+    "web": "Store ignored_platform_id and drop_until_ms on the actor, skip only that platform during vertical collision resolution, and re-enable collision after minimum_platform_clearance."
   },
   "related_mechanics": [
     "physics.one_way_platform",
@@ -96,7 +96,12 @@
     "combat.melee_attack",
     "ui_ux.interaction_prompt"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Super Smash Bros. Ultimate",
+      "note": "Uses platform dropping as a common arena movement action."
+    }
+  ],
   "tags": [
     "platforming",
     "collision",

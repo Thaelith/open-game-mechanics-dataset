@@ -88,10 +88,10 @@
     "Explain locked options in plain language and avoid color-only faction standing indicators."
   ],
   "implementation_notes": {
-    "unity": "Store faction standings as save-state values and evaluate gates through data-driven condition checks shared by UI and quest logic.",
-    "godot": "Represent gates as Resources or dictionaries with condition arrays and resolve them through a central narrative-state service.",
-    "unreal": "Use Gameplay Tags or data assets for faction IDs and evaluate gate conditions in quest/dialogue subsystems.",
-    "web": "Keep reputation and gate conditions in JSON data and run pure condition checks for both display and activation."
+    "unity": "Store faction standings and gate definitions as data, then evaluate the same condition object for dialogue display, quest activation, vendors, and save migration.",
+    "godot": "Represent gates as Resources or dictionaries with faction_id, threshold, and bypass conditions, resolved through a central narrative-state service.",
+    "unreal": "Use Gameplay Tags, Data Assets, or quest data tables for faction IDs and evaluate reputation conditions in dialogue, vendor, and level-access systems.",
+    "web": "Keep reputation tracks and gate conditions in JSON, run pure condition checks for both locked-option display and activation, and include bypass reasons in UI data."
   },
   "related_mechanics": [
     "narrative.reputation_choice",
@@ -103,7 +103,12 @@
     "progression.skill_tree",
     "ui_ux.dialogue_choice"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Fallout: New Vegas",
+      "note": "Uses faction reputation to alter reactions and access to content."
+    }
+  ],
   "tags": [
     "narrative",
     "reputation",

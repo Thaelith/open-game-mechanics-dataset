@@ -88,10 +88,10 @@
     "Use strong audio/visual warnings as guard nears break, not only a small meter."
   ],
   "implementation_notes": {
-    "unity": "Model startup, active, recovery, and cancel windows as data, then drive hitboxes, animation events, and damage application from one combat state source. For Guard Break, validate this path with parameters such as guard_damage_per_hit and guard_break_threshold.",
-    "godot": "Use Area2D or Area3D hit volumes with frame-window state on the actor; avoid placing damage authority inside animation-only callbacks. For Guard Break, validate this path with parameters such as guard_damage_per_hit and guard_break_threshold.",
-    "unreal": "Implement the action as a Gameplay Ability or Actor Component with montage notifies for windows and authoritative damage on the server when networked. For Guard Break, validate this path with parameters such as guard_damage_per_hit and guard_break_threshold.",
-    "web": "Update combat windows in the fixed simulation step, evaluate hurtbox overlap from cached transforms, and emit presentation events separately from damage state. For Guard Break, validate this path with parameters such as guard_damage_per_hit and guard_break_threshold."
+    "unity": "Apply guard damage from attack metadata inside the same damage transaction that handles block, then trigger break stun when accumulated guard pressure crosses guard_break_threshold.",
+    "godot": "Keep guard pressure on the defender state, increment it from validated attack contacts, and transition to a break stun animation when the threshold is reached.",
+    "unreal": "Model guard pressure as replicated combat state or Gameplay Attribute data and fire a Gameplay Cue or montage when the server confirms the break.",
+    "web": "Track guard_meter on defenders in the simulation model, apply pressure after block resolution, and emit a guard_break event for UI, audio, and stagger presentation."
   },
   "related_mechanics": [
     "combat.block",
@@ -103,7 +103,12 @@
     "combat.combo_chain",
     "ui_ux.damage_numbers"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Sekiro: Shadows Die Twice",
+      "note": "Uses posture pressure to create defense-breaking combat moments."
+    }
+  ],
   "tags": [
     "combat",
     "guard",

@@ -88,10 +88,10 @@
     "Communicate search state through barks, icons, or posture so players understand they are not fully safe yet."
   ],
   "implementation_notes": {
-    "unity": "Store last-known data as immutable position, timestamp, and stimulus type; do not reference the live player transform during search.",
-    "godot": "Keep search memory in the AI blackboard and generate NavigationAgent targets from sampled positions around the remembered point.",
-    "unreal": "Use AI Perception events to write Blackboard memory keys and Behavior Tree or StateTree tasks for search patterns.",
-    "web": "Persist last-known position in AI state and sample reachable search nodes from the navigation graph."
+    "unity": "Write immutable stimulus records with position, timestamp, confidence, and source into an AI blackboard, then sample NavMesh search points around that stored position.",
+    "godot": "Keep remembered_position and confidence on the AI state, generate NavigationAgent targets from reachable points near that memory, and decay confidence during search.",
+    "unreal": "Use AI Perception to update Blackboard keys for last seen/heard location, then run Behavior Tree or StateTree search tasks until confidence reaches the patrol threshold.",
+    "web": "Store last-known position as data, not a live player reference, and sample reachable graph nodes around it while confidence decay controls when patrol resumes."
   },
   "related_mechanics": [
     "ai.investigate_noise",
@@ -103,7 +103,12 @@
     "horror.monster_patrol",
     "ui_ux.minimap"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Metal Gear Solid V: The Phantom Pain",
+      "note": "Uses enemy search behavior after guards lose direct contact with the player."
+    }
+  ],
   "tags": [
     "stealth",
     "ai",

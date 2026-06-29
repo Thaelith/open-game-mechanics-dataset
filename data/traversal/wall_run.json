@@ -89,10 +89,10 @@
     "Provide an option to reduce camera roll and use strong surface readability for runnable walls."
   ],
   "implementation_notes": {
-    "unity": "Use an explicit movement-state enum and feed the final desired velocity into CharacterController.Move or Rigidbody movement from FixedUpdate; keep dash and jump assists outside animation callbacks. For Wall Run, validate this path with parameters such as wall_run_min_entry_velocity and wall_run_gravity_scale.",
-    "godot": "Keep the mechanic state on CharacterBody2D or CharacterBody3D, update velocity in _physics_process, and separate input buffering from collision response. For Wall Run, validate this path with parameters such as wall_run_min_entry_velocity and wall_run_gravity_scale.",
-    "unreal": "Use CharacterMovement with a custom movement state or Gameplay Ability; gate activation through prediction-safe input and reconcile movement corrections cleanly in networked play. For Wall Run, validate this path with parameters such as wall_run_min_entry_velocity and wall_run_gravity_scale.",
-    "web": "Represent the mechanic as deterministic state in the simulation loop, then apply resolved displacement before rendering through Canvas, Phaser, Three.js, or a custom engine. For Wall Run, validate this path with parameters such as wall_run_min_entry_velocity and wall_run_gravity_scale."
+    "unity": "Detect runnable wall normals with capsule casts, project velocity along the wall tangent, apply wall_run_gravity_scale while attached, and exit when distance, angle, or input rules fail.",
+    "godot": "Use raycasts or shape casts from CharacterBody3D to cache the wall normal, then move along the tangent in _physics_process while reducing gravity and tracking max distance.",
+    "unreal": "Use a custom CharacterMovement mode for wall running so gravity, braking, camera roll, and jump-off impulse are owned by movement code instead of animation montages.",
+    "web": "Represent wall-run attachment as an actor state with wall_normal, entry_velocity, and distance_traveled, then project motion along the surface before resolving collisions."
   },
   "related_mechanics": [
     "platforming.wall_jump",
@@ -104,7 +104,16 @@
     "movement.air_dash",
     "camera.dynamic_fov"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Titanfall 2",
+      "note": "Uses wall running as a core traversal and combat-positioning tool."
+    },
+    {
+      "title": "Prince of Persia: The Sands of Time",
+      "note": "Uses wall running as part of acrobatic traversal routes."
+    }
+  ],
   "tags": [
     "traversal",
     "wall_interaction",

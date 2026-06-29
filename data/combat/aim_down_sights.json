@@ -88,10 +88,10 @@
     "Offer hold/toggle settings, scoped sensitivity, reticle options, and reduced zoom-motion settings."
   ],
   "implementation_notes": {
-    "unity": "Model startup, active, recovery, and cancel windows as data, then drive hitboxes, animation events, and damage application from one combat state source. For Aim Down Sights, validate this path with parameters such as ads_zoom_multiplier and ads_enter_ms.",
-    "godot": "Use Area2D or Area3D hit volumes with frame-window state on the actor; avoid placing damage authority inside animation-only callbacks. For Aim Down Sights, validate this path with parameters such as ads_zoom_multiplier and ads_enter_ms.",
-    "unreal": "Implement the action as a Gameplay Ability or Actor Component with montage notifies for windows and authoritative damage on the server when networked. For Aim Down Sights, validate this path with parameters such as ads_zoom_multiplier and ads_enter_ms.",
-    "web": "Update combat windows in the fixed simulation step, evaluate hurtbox overlap from cached transforms, and emit presentation events separately from damage state. For Aim Down Sights, validate this path with parameters such as ads_zoom_multiplier and ads_enter_ms."
+    "unity": "Blend camera FOV, weapon pose, reticle spread, and movement modifiers from one ADS state so shooting uses the same precision values shown by the view.",
+    "godot": "Drive ADS as a weapon or player state that interpolates camera zoom and spread values while respecting input mode settings for hold or toggle aim.",
+    "unreal": "Use Enhanced Input and a weapon component or Gameplay Ability to set ADS state, camera modifiers, movement speed, and replicated firing spread from shared data.",
+    "web": "Keep ads_active and ads_blend in weapon/player state, update zoom and spread in the simulation, and render scope or reticle changes from those values."
   },
   "related_mechanics": [
     "combat.ranged_attack",
@@ -104,7 +104,12 @@
     "camera.dynamic_fov",
     "combat.lock_on_targeting"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Call of Duty 4: Modern Warfare",
+      "note": "Uses aim-down-sights as a core precision shooting state."
+    }
+  ],
   "tags": [
     "combat",
     "aiming",

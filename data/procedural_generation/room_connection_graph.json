@@ -94,10 +94,10 @@
     "Generated layouts should support readable maps or landmarks when graph complexity is high."
   ],
   "implementation_notes": {
-    "unity": "Generate the abstract graph first, validate progression constraints, then instantiate room prefabs or tile chunks from node metadata.",
-    "godot": "Represent graph nodes as dictionaries or Resources and validate connectivity before placing scenes into the world.",
-    "unreal": "Build graph data in a subsystem or generator actor, then spawn room level instances after constraints pass.",
-    "web": "Generate graph nodes and edges as plain data, run validation, then feed the graph into tile, canvas, or WebGL room placement."
+    "unity": "Generate the abstract room graph before geometry, validate start-to-exit reachability and lock/key ordering, then instantiate prefabs from node metadata.",
+    "godot": "Represent graph nodes and edges as dictionaries or Resources, run connectivity and required-room validation, then place room scenes after the graph passes constraints.",
+    "unreal": "Build graph data in a generator actor or subsystem, validate critical-path and branch constraints, then spawn level instances or room actors from node definitions.",
+    "web": "Generate graph nodes and edges as plain data with a stored seed, validate reachability and room tags, then feed the graph into tile, canvas, or WebGL placement."
   },
   "related_mechanics": [
     "procedural_generation.procedural_level_rooms",
@@ -109,7 +109,16 @@
     "economy.loot_table",
     "roguelike.risk_reward_room"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Slay the Spire",
+      "note": "Uses a connected node map to structure run choices between encounters."
+    },
+    {
+      "title": "The Binding of Isaac",
+      "note": "Uses connected rooms to structure each floor layout."
+    }
+  ],
   "tags": [
     "procedural",
     "graph",

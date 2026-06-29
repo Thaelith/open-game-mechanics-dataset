@@ -82,10 +82,10 @@
     "Coyote time is an effective motor accessibility affordance when platforming demands frequent edge jumps."
   ],
   "implementation_notes": {
-    "unity": "Use an explicit movement-state enum and feed the final desired velocity into CharacterController.Move or Rigidbody movement from FixedUpdate; keep dash and jump assists outside animation callbacks. For Coyote Time, validate this path with parameters such as ledge_grace_ms and eligible_floor_tags.",
-    "godot": "Keep the mechanic state on CharacterBody2D or CharacterBody3D, update velocity in _physics_process, and separate input buffering from collision response. For Coyote Time, validate this path with parameters such as ledge_grace_ms and eligible_floor_tags.",
-    "unreal": "Use CharacterMovement with a custom movement state or Gameplay Ability; gate activation through prediction-safe input and reconcile movement corrections cleanly in networked play. For Coyote Time, validate this path with parameters such as ledge_grace_ms and eligible_floor_tags.",
-    "web": "Represent the mechanic as deterministic state in the simulation loop, then apply resolved displacement before rendering through Canvas, Phaser, Three.js, or a custom engine. For Coyote Time, validate this path with parameters such as ledge_grace_ms and eligible_floor_tags."
+    "unity": "Track the last grounded timestamp from CharacterController.isGrounded, collision callbacks, or a grounded probe, then allow Jump() while Time.time is within ledge_grace_ms and the last floor tag is eligible.",
+    "godot": "Store the last floor contact tick from is_on_floor() on CharacterBody2D or CharacterBody3D and consume the grace window before applying the jump velocity in _physics_process.",
+    "unreal": "Use CharacterMovement floor detection or OnMovementModeChanged to cache the last walking frame, then allow Jump input while the coyote timer is valid and clear it after launch.",
+    "web": "Keep last_grounded_ms in the platformer state, update it after collision resolution, and evaluate jump input against that timestamp before applying vertical launch."
   },
   "related_mechanics": [
     "platforming.jump_buffering",

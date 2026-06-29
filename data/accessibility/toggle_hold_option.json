@@ -83,10 +83,10 @@
     "This mechanic is itself an accessibility affordance and should be available early in settings, not hidden behind gameplay progress."
   ],
   "implementation_notes": {
-    "unity": "Route actions through an input abstraction that can transform press/release events according to per-action settings.",
-    "godot": "Store preferences in a settings resource and resolve action active state through helper functions rather than raw Input checks.",
-    "unreal": "Use Enhanced Input actions with settings-driven trigger behavior or a gameplay input layer that handles toggle state.",
-    "web": "Keep input preferences in profile storage and convert DOM/gamepad events into action states before simulation reads them."
+    "unity": "Put hold/toggle conversion in the input abstraction layer so gameplay code reads action state, while per-action preferences and reset contexts live in the player profile.",
+    "godot": "Store input-mode preferences in a settings Resource and resolve action active state through helper functions that can clear toggles on death, menus, or context changes.",
+    "unreal": "Use Enhanced Input triggers or a gameplay input component to apply per-action hold/toggle behavior before abilities or movement code consume the action.",
+    "web": "Convert keyboard, mouse, touch, and gamepad events into normalized action states using profile preferences, then clear toggles from configured reset contexts."
   },
   "related_mechanics": [
     "ui_ux.accessibility_remap_controls",
@@ -98,7 +98,12 @@
     "combat.block",
     "ui_ux.interaction_prompt"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Last of Us Part II",
+      "note": "Includes accessibility settings that let players adjust hold and toggle behavior."
+    }
+  ],
   "tags": [
     "accessibility",
     "input",

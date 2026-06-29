@@ -88,10 +88,10 @@
     "Show full text, icons, and comparison hints without requiring rapid reading or memory of hidden upgrade names."
   ],
   "implementation_notes": {
-    "unity": "Generate choices from data assets using filters, tags, and seeded RNG; commit the selected upgrade through run-state transactions.",
-    "godot": "Use Resource definitions for upgrades and generate choice arrays from run tags before showing a Control-based selection UI.",
-    "unreal": "Use Data Assets for upgrades and a subsystem that applies filters, rarity weights, and replicated reward selection where needed.",
-    "web": "Generate choices from JSON upgrade data with a seeded RNG and keep the selected option as an immutable run event."
+    "unity": "Generate choice slots from upgrade ScriptableObjects using eligibility filters, rarity weights, and run tags, then commit the selected upgrade through a run-state transaction.",
+    "godot": "Use Resource definitions for upgrades and build the offered set from current run tags before displaying a Control-based choice UI with reroll or skip actions.",
+    "unreal": "Use Data Assets for upgrades and a reward subsystem that applies rarity weights, synergy bias, and server-authoritative selection for networked runs.",
+    "web": "Generate choices from JSON upgrade data with a seeded RNG, persist the offered option IDs, and record the selected option as an immutable run event."
   },
   "related_mechanics": [
     "roguelike.random_powerups",
@@ -103,7 +103,16 @@
     "progression.respec",
     "procedural_generation.seeded_generation"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Hades",
+      "note": "Offers small sets of boon choices that shape each run."
+    },
+    {
+      "title": "Slay the Spire",
+      "note": "Uses post-combat card choices as a central run-building decision."
+    }
+  ],
   "tags": [
     "roguelike",
     "choice",

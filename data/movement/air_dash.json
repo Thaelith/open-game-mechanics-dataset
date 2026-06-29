@@ -88,10 +88,10 @@
     "Use clear charge feedback so players know whether an air dash is available while airborne."
   ],
   "implementation_notes": {
-    "unity": "Use an explicit movement-state enum and feed the final desired velocity into CharacterController.Move or Rigidbody movement from FixedUpdate; keep dash and jump assists outside animation callbacks. For Air Dash, validate this path with parameters such as air_dash_distance and air_dash_vector_mode.",
-    "godot": "Keep the mechanic state on CharacterBody2D or CharacterBody3D, update velocity in _physics_process, and separate input buffering from collision response. For Air Dash, validate this path with parameters such as air_dash_distance and air_dash_vector_mode.",
-    "unreal": "Use CharacterMovement with a custom movement state or Gameplay Ability; gate activation through prediction-safe input and reconcile movement corrections cleanly in networked play. For Air Dash, validate this path with parameters such as air_dash_distance and air_dash_vector_mode.",
-    "web": "Represent the mechanic as deterministic state in the simulation loop, then apply resolved displacement before rendering through Canvas, Phaser, Three.js, or a custom engine. For Air Dash, validate this path with parameters such as air_dash_distance and air_dash_vector_mode."
+    "unity": "Track an air-dash charge separately from grounded dash charges, suspend or scale gravity during air_dash_hover_frames, and sweep the chosen vector so walls truncate the burst cleanly.",
+    "godot": "Store remaining_air_dashes on the CharacterBody, consume it only after a valid airborne activation, and restore it from the configured reset rule such as landing or pickup contact.",
+    "unreal": "Implement air dash as a custom movement burst or Gameplay Ability that checks MovementMode, predicts the dash vector, and reconciles charge reset events on the server.",
+    "web": "Keep air_dash_charges and dash_state in the actor data, resolve the burst through swept collision, and apply reset events after collision and pickup processing."
   },
   "related_mechanics": [
     "movement.dash",
@@ -103,7 +103,16 @@
     "traversal.wall_run",
     "camera.smooth_follow_camera"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Celeste",
+      "note": "Uses aerial dashes as a central route and recovery mechanic."
+    },
+    {
+      "title": "Mega Man X",
+      "note": "Uses air dash upgrades to expand mobility in later entries."
+    }
+  ],
   "tags": [
     "movement",
     "air_control",

@@ -90,10 +90,10 @@
     "Use icons, timers, color-safe overlays, and audio cues to show active harmful statuses."
   ],
   "implementation_notes": {
-    "unity": "Model startup, active, recovery, and cancel windows as data, then drive hitboxes, animation events, and damage application from one combat state source. For Damage Over Time, validate this path with parameters such as dot_tick_interval_ms and dot_total_ticks.",
-    "godot": "Use Area2D or Area3D hit volumes with frame-window state on the actor; avoid placing damage authority inside animation-only callbacks. For Damage Over Time, validate this path with parameters such as dot_tick_interval_ms and dot_total_ticks.",
-    "unreal": "Implement the action as a Gameplay Ability or Actor Component with montage notifies for windows and authoritative damage on the server when networked. For Damage Over Time, validate this path with parameters such as dot_tick_interval_ms and dot_total_ticks.",
-    "web": "Update combat windows in the fixed simulation step, evaluate hurtbox overlap from cached transforms, and emit presentation events separately from damage state. For Damage Over Time, validate this path with parameters such as dot_tick_interval_ms and dot_total_ticks."
+    "unity": "Store active DoT effects on a status-effect component with source, remaining ticks, next tick time, and stacking rule; apply damage through the central damage service.",
+    "godot": "Represent each DoT as a status resource or dictionary on the actor, tick it from a deterministic timer, and remove it after dot_total_ticks or cleanse events.",
+    "unreal": "Implement DoT through Gameplay Effects or a replicated status component so periodic damage, source attribution, and removal are server-authoritative.",
+    "web": "Keep active status effects in actor state with next_tick_ms and stack metadata, then process ticks in the fixed simulation before rendering floating text or icons."
   },
   "related_mechanics": [
     "survival.health",
@@ -105,7 +105,16 @@
     "progression.skill_tree",
     "ui_ux.damage_numbers"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Slay the Spire",
+      "note": "Uses poison as a visible delayed-damage pressure mechanic."
+    },
+    {
+      "title": "World of Warcraft",
+      "note": "Uses periodic damage effects across combat abilities and statuses."
+    }
+  ],
   "tags": [
     "combat",
     "status_effect",
