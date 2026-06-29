@@ -2,12 +2,12 @@
   "id": "strategy.territory_control",
   "name": "Territory Control",
   "aliases": [
-    "territory control mechanic",
-    "territory control system",
-    "territory control"
+    "zone control",
+    "region ownership",
+    "map control"
   ],
   "category": "strategy",
-  "subcategory": "strategy",
+  "subcategory": "region_ownership",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -21,89 +21,134 @@
   },
   "genres": [
     "strategy",
+    "real_time_strategy",
     "4x",
-    "real_time_strategy"
+    "tactical"
   ],
-  "description": "Territory Control is a planning mechanic that governs territory, information, unit roles, resources, or long-horizon decisions.",
-  "design_notes": "Territory Control should be designed around a clear player promise, a readable trigger, and a predictable result. For strategy mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A strategic ownership system where players or teams capture, contest, defend, and exploit map regions for resources, scoring, visibility, movement, or production.",
+  "design_notes": "Territory control works when ownership changes are readable and consequential. Designers should define region boundaries, capture rules, contested state, ownership transactions, scoring hooks, late-join sync, and how territory interacts with fog, resources, and unit movement.",
   "design_purpose": [
-    "Give the player a readable way to use territory control as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect territory control to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Turn map position into a measurable strategic resource.",
+    "Create conflict over regions that generate income, vision, spawn access, or victory progress.",
+    "Give level designers control over pacing through chokepoints, neutral zones, and contested objectives."
   ],
-  "player_fantasy": "The player feels they are winning through planning, information, and tradeoffs.",
+  "player_fantasy": "The player feels they are expanding influence across the map and forcing opponents to respond.",
   "required_systems": [
-    "map_state",
-    "unit_system",
-    "visibility_rules",
-    "ai_or_rules_engine"
+    "region_map",
+    "team_state",
+    "capture_rules",
+    "scoring_system",
+    "ui_map_overlay"
   ],
   "parameters": [
     {
-      "name": "decision_horizon",
-      "type": "integer",
-      "typical_range": "1-100 turns",
-      "description": "Number of future steps the mechanic asks players to plan around."
+      "name": "territory_region_id",
+      "type": "string",
+      "typical_range": "region_a, fuel_point_03, sector_north",
+      "description": "Map region or objective zone with ownership state."
     },
     {
-      "name": "information_radius",
-      "type": "float",
-      "typical_range": "1-200 tiles or units",
-      "description": "Area of map or state affected by information rules."
+      "name": "control_owner_id",
+      "type": "string",
+      "typical_range": "neutral, player_1, team_blue, faction_red",
+      "description": "Current owning player, team, or faction."
     },
     {
-      "name": "resource_pressure",
+      "name": "capture_progress",
       "type": "float",
-      "typical_range": "0-10",
-      "description": "How strongly the mechanic pushes opportunity cost."
+      "typical_range": "0.0-1.0",
+      "description": "Normalized capture completion for the current contender."
+    },
+    {
+      "name": "contested_state",
+      "type": "string",
+      "typical_range": "uncontested, contested, locked, decaying",
+      "description": "Conflict state derived from units, structures, or scripted rules."
+    },
+    {
+      "name": "capture_source_id",
+      "type": "string",
+      "typical_range": "unit_id, building_id, squad_id, objective_script",
+      "description": "Entity or rule currently contributing capture pressure."
+    },
+    {
+      "name": "ownership_transaction_id",
+      "type": "string",
+      "typical_range": "unique per ownership transfer",
+      "description": "Committed ownership change used by scoring, replay, and sync."
+    },
+    {
+      "name": "resource_income_rate",
+      "type": "float",
+      "typical_range": "0-100 units per minute",
+      "description": "Income generated while the region is owned and connected."
     }
   ],
   "common_variants": [
-    "territory_control_turn_based_variant",
-    "territory_control_real_time_variant",
-    "hidden_information_variant",
-    "asymmetric_variant"
+    "capture_point",
+    "sector_control",
+    "influence_border",
+    "supply_connected_territory",
+    "king_of_the_hill_zone"
   ],
   "edge_cases": [
-    "Territory Control is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Territory Control overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Territory Control runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Two teams enter the region on the same tick and capture progress must stop or reverse.",
+    "The owning team disconnects or changes alliance while income is being awarded.",
+    "A region is captured while hidden under fog of war and needs partial disclosure.",
+    "A scripted lock or neutralization effect interrupts capture at the exact transfer tick.",
+    "Late-joining clients need current ownership, progress, and income state without replaying the full match."
   ],
   "common_bugs": [
-    "Territory Control state does not reset correctly after interruption or reload.",
-    "Feedback for Territory Control plays even when the mechanic fails or is rejected.",
-    "Territory Control produces different results between frame rates, platforms, or network clients."
+    "Capture progress continues after the capture source dies or leaves the region.",
+    "Income is granted to the old owner for one extra tick after transfer.",
+    "UI overlays update before authority accepts the ownership transaction.",
+    "Contested state differs between server, minimap, and world marker.",
+    "Replay desyncs because capture sources are iterated in non-deterministic order."
   ],
   "balancing_notes": [
-    "Make Territory Control strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Capture pace controls whether territory rewards aggression, defense, or coordinated pushes.",
+    "High income regions should be exposed enough to create counterplay.",
+    "Connectivity rules can create deep strategy, but players need clear explanations for why income is blocked."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Territory Control becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show ownership and contested state through shape, text, pattern, and audio cues in addition to color.",
+    "Provide map overlays that can be paused or inspected without losing important capture information.",
+    "Keep capture progress readable for players who cannot track subtle world-space changes."
   ],
   "implementation_notes": {
-    "unity": "Implement Territory Control with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Territory Control as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Territory Control with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Territory Control as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Represent each territory_region_id as gameplay state with owner, contender, capture progress, and income data. Resolve capture sources in deterministic order, commit ownership_transaction_id, then update UI and income systems from the committed transfer.",
+    "godot": "Use Area nodes or map region data for capture zones, but keep authoritative ownership in a strategy state model. Emit ownership_changed and contested_state_changed signals for UI, minimap, scoring, and resource systems.",
+    "unreal": "Use replicated actors or components for territory regions, with server authority resolving capture and income. Store ownership_transaction_id and revealed state for replay, late join, and fog-of-war interactions.",
+    "web": "Update territory through a fixed-step reducer keyed by region ids and sorted capture sources. Render overlays from ownership state, and log transfer events so replays and server correction can rebuild map control."
   },
   "related_mechanics": [
-    "ai.patrol",
+    "multiplayer.team_objective",
     "strategy.fog_of_war",
-    "strategy.tech_tree",
-    "ui_ux.minimap"
+    "economy.resource_conversion",
+    "simulation.population_model"
   ],
   "combines_well_with": [
-    "ai.patrol",
     "strategy.unit_counter_system",
-    "ui_ux.minimap"
+    "strategy.tech_tree",
+    "ui_ux.minimap",
+    "simulation.traffic_flow"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Company of Heroes",
+      "note": "Uses territory sectors for resources and map control."
+    },
+    {
+      "title": "Civilization VI",
+      "note": "Uses owned tiles and borders as core strategic territory."
+    }
+  ],
   "tags": [
-    "planning",
-    "strategy",
-    "territory"
+    "territory_control",
+    "region_ownership",
+    "capture_progress",
+    "map_control",
+    "resource_income"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

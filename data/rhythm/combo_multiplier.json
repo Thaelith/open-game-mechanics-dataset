@@ -2,12 +2,12 @@
   "id": "rhythm.combo_multiplier",
   "name": "Combo Multiplier",
   "aliases": [
-    "combo multiplier mechanic",
-    "combo multiplier system",
-    "combo multiplier"
+    "rhythm combo",
+    "streak multiplier",
+    "score streak"
   ],
   "category": "rhythm",
-  "subcategory": "rhythm",
+  "subcategory": "streak_scoring",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,94 +16,139 @@
   ],
   "difficulty": {
     "design": "medium",
-    "implementation": "hard",
-    "tuning": "expert"
+    "implementation": "medium",
+    "tuning": "hard"
   },
   "genres": [
     "rhythm",
-    "action",
-    "music"
+    "music",
+    "arcade",
+    "action"
   ],
-  "description": "Combo Multiplier is a timing mechanic where player input, scoring, or simulation aligns with musical or beat-based windows.",
-  "design_notes": "Combo Multiplier should be designed around a clear player promise, a readable trigger, and a predictable result. For rhythm mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A scoring layer that increases rewards for consecutive successful rhythm judgments and resets or reduces value when misses, breaks, or invalid inputs occur.",
+  "design_notes": "Combo multipliers turn consistency into score pressure. The design should define which hit judgments increment combo_count, which states break it, how multipliers scale, how dropped inputs are displayed, and whether assists or calibration changes mark the score differently.",
   "design_purpose": [
-    "Give the player a readable way to use combo multiplier as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect combo multiplier to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Reward sustained rhythmic accuracy beyond individual note hits.",
+    "Create tension by making a single miss affect score potential.",
+    "Support rank, achievements, feedback, and end-of-song summaries."
   ],
-  "player_fantasy": "The player feels synchronized with music, timing, and responsive feedback.",
+  "player_fantasy": "The player feels momentum build as accurate hits stack into a high-value streak.",
   "required_systems": [
-    "audio_clock",
-    "timing_window",
-    "input_buffer",
-    "feedback_system"
+    "judgment_system",
+    "score_pipeline",
+    "combo_state",
+    "ui_feedback",
+    "replay_validation"
   ],
   "parameters": [
     {
-      "name": "beats_per_minute",
-      "type": "float",
-      "typical_range": "60-220 BPM",
-      "description": "Tempo used by the mechanic."
-    },
-    {
-      "name": "perfect_window",
-      "type": "float",
-      "typical_range": "10-80 milliseconds",
-      "description": "Timing tolerance for the best outcome."
-    },
-    {
-      "name": "miss_penalty",
+      "name": "combo_count",
       "type": "integer",
-      "typical_range": "0-100",
-      "description": "Penalty applied when input falls outside accepted timing."
+      "typical_range": "0 to chart note count",
+      "description": "Current successful streak count after judgment processing."
+    },
+    {
+      "name": "combo_break_rule_id",
+      "type": "string",
+      "typical_range": "miss_only, any_bad, lane_error, damage_taken",
+      "description": "Rule that determines which events reset the streak."
+    },
+    {
+      "name": "multiplier_tier_id",
+      "type": "string",
+      "typical_range": "x1, x2, x4, x8, overdrive",
+      "description": "Current reward tier derived from combo_count thresholds."
+    },
+    {
+      "name": "streak_threshold_table_id",
+      "type": "string",
+      "typical_range": "casual_table, arcade_table, expert_table",
+      "description": "Data table mapping combo bands to multiplier tiers."
+    },
+    {
+      "name": "hit_judgment_id",
+      "type": "string",
+      "typical_range": "perfect, good, bad, miss",
+      "description": "Judgment result used to update combo and score state."
+    },
+    {
+      "name": "recovery_grace_note_count",
+      "type": "integer",
+      "typical_range": "0-3 notes",
+      "description": "Optional assist allowance before a streak fully breaks."
+    },
+    {
+      "name": "score_submission_id",
+      "type": "string",
+      "typical_range": "unique per song result",
+      "description": "Result identifier used for replay validation and leaderboards."
     }
   ],
   "common_variants": [
-    "combo_multiplier_strict_timing",
-    "combo_multiplier_forgiving_timing",
-    "call_and_response",
-    "score_combo_variant"
+    "linear_combo_multiplier",
+    "tiered_combo_multiplier",
+    "overdrive_streak",
+    "assist_grace_combo",
+    "ranked_strict_combo"
   ],
   "edge_cases": [
-    "Combo Multiplier is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Combo Multiplier overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Combo Multiplier runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A simultaneous chord has one perfect note and one missed lane input.",
+    "A hold note starts successfully but releases early during an otherwise valid streak.",
+    "A pause or disconnect occurs after a hit but before combo feedback displays.",
+    "Assist grace prevents a break locally but ranked score submission must mark the assist.",
+    "Replay validation sees the same inputs but a different note order after chart migration."
   ],
   "common_bugs": [
-    "Combo Multiplier state does not reset correctly after interruption or reload.",
-    "Feedback for Combo Multiplier plays even when the mechanic fails or is rejected.",
-    "Combo Multiplier produces different results between frame rates, platforms, or network clients."
+    "Combo increments per visual effect instead of per committed hit_judgment_id.",
+    "Misses break combo twice for one note because both miss cleanup and input failure emit events.",
+    "Multiplier tier updates after score calculation, applying the old tier to the wrong note.",
+    "End-of-song summaries include hidden assist grace but leaderboards submit as unassisted.",
+    "Combo UI resets on scene reload while score state still contains the previous streak."
   ],
   "balancing_notes": [
-    "Make Combo Multiplier strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "High multipliers make full-combo play exciting but can make early mistakes feel unrecoverable.",
+    "Grace systems are useful for accessibility and casual modes when they are surfaced honestly in scoring.",
+    "Streak thresholds should reflect chart density; sparse songs need different pacing than dense charts."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Combo Multiplier becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Allow reduced visual clutter for combo effects while keeping essential streak state visible.",
+    "Offer assist profiles that soften combo breaks without hiding the scoring difference.",
+    "Use text and shape changes, not only color or screen shake, to show combo state."
   ],
   "implementation_notes": {
-    "unity": "Implement Combo Multiplier with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Combo Multiplier as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Combo Multiplier with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Combo Multiplier as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Update combo_count from structured judgment events emitted by the rhythm subsystem, then calculate multiplier tier before adding note score. Store score_submission_id, assist flags, and chart version for leaderboard and replay validation.",
+    "godot": "Keep combo state in a scoring node that receives hit_judgment_id events in deterministic chart order. UI nodes should subscribe to combo changes instead of maintaining their own streak counters.",
+    "unreal": "Use a scoring component or subsystem to own combo_count, break rules, and multiplier tiers. Networked or ranked modes should submit authoritative result data with chart_id, score_submission_id, and assist metadata.",
+    "web": "Process combo updates in the same reducer that handles timing judgments. Persist final result records with combo break events so refreshes, replays, and leaderboard submissions cannot reinterpret the streak."
   },
   "related_mechanics": [
+    "rhythm.sync_window",
     "rhythm.beat_matching",
     "rhythm.note_lane",
-    "time.rhythm_timing",
-    "ui_ux.damage_numbers"
+    "progression.achievement_system"
   ],
   "combines_well_with": [
-    "rhythm.sync_window",
+    "ui_ux.damage_numbers",
+    "camera.screen_shake",
     "time.rhythm_timing",
-    "ui_ux.damage_numbers"
+    "meta.player_profile_stats"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Guitar Hero",
+      "note": "Uses note streaks and multipliers as a central scoring layer."
+    },
+    {
+      "title": "Thumper",
+      "note": "Uses rhythmic accuracy and streak pressure in score-focused play."
+    }
+  ],
   "tags": [
-    "combo",
-    "rhythm",
-    "timing"
+    "combo_multiplier",
+    "streak_scoring",
+    "hit_judgment",
+    "leaderboard_result",
+    "rhythm_feedback"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

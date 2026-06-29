@@ -2,12 +2,12 @@
   "id": "meta.collection_log",
   "name": "Collection Log",
   "aliases": [
-    "collection log mechanic",
-    "collection log system",
-    "collection log"
+    "completion log",
+    "account collection",
+    "discovery journal"
   ],
   "category": "meta",
-  "subcategory": "meta",
+  "subcategory": "account_collection",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -17,93 +17,138 @@
   "difficulty": {
     "design": "medium",
     "implementation": "medium",
-    "tuning": "hard"
+    "tuning": "medium"
   },
   "genres": [
+    "rpg",
     "roguelike",
-    "live_service",
-    "arcade"
+    "simulation",
+    "adventure"
   ],
-  "description": "Collection Log is a profile-level mechanic that operates across sessions, runs, or modes rather than only inside one encounter.",
-  "design_notes": "Collection Log should be designed around a clear player promise, a readable trigger, and a predictable result. For meta mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "An account- or profile-level record of discovered items, characters, enemies, lore entries, cosmetics, achievements, or other long-term collectibles.",
+  "design_notes": "A collection log gives players long-term goals outside a single session. The design should define which discoveries are automatic, which require claim actions, which are hidden, how retroactive unlocks work after content updates, and how privacy settings affect shared profile pages.",
   "design_purpose": [
-    "Give the player a readable way to use collection log as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect collection log to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players a persistent sense of completion and discovery across sessions.",
+    "Expose optional goals without forcing them into the core progression path.",
+    "Support account migration, cross-save records, and retrospective unlock checks."
   ],
-  "player_fantasy": "The player feels their history across sessions has visible meaning.",
+  "player_fantasy": "The player feels their account remembers what they have found, mastered, and completed over the life of the game.",
   "required_systems": [
-    "player_profile",
-    "analytics_or_stats",
-    "reward_rules",
-    "save_state"
+    "account_profile",
+    "collection_database",
+    "save_system",
+    "ui_journal",
+    "platform_services"
   ],
   "parameters": [
     {
-      "name": "reset_period",
+      "name": "account_id",
       "type": "string",
-      "typical_range": "run, daily, weekly, season, permanent",
-      "description": "When the mechanic refreshes or resets."
+      "typical_range": "platform or game account identifier",
+      "description": "Account owner for collection records, platform sync, and privacy settings."
     },
     {
-      "name": "reward_tier_count",
+      "name": "profile_id",
+      "type": "string",
+      "typical_range": "local profile or save slot identifier",
+      "description": "Profile segment used when one account has multiple save slots."
+    },
+    {
+      "name": "collection_entry_id",
+      "type": "string",
+      "typical_range": "item_iron_sword, enemy_wraith, lore_page_03",
+      "description": "Stable content key for the discovered or claimed entry."
+    },
+    {
+      "name": "unlock_timestamp_ms",
       "type": "integer",
-      "typical_range": "1-100",
-      "description": "Number of visible reward or stat tiers."
+      "typical_range": "unix epoch milliseconds",
+      "description": "Recorded unlock moment used for sorting, audit, and sync conflict resolution."
     },
     {
-      "name": "visibility_rule",
+      "name": "discovery_source_id",
       "type": "string",
-      "typical_range": "always, unlocked, discovered, hidden",
-      "description": "When the player can see the meta information."
+      "typical_range": "loot_drop, boss_defeat, quest_reward, migration",
+      "description": "Source event that granted the entry and helps debug retroactive unlocks."
+    },
+    {
+      "name": "retroactive_unlock_policy",
+      "type": "string",
+      "typical_range": "scan_saves, require_new_discovery, grant_from_achievement",
+      "description": "Rule for awarding entries added after players already met requirements."
+    },
+    {
+      "name": "privacy_visibility_id",
+      "type": "string",
+      "typical_range": "private, friends, public, hidden_spoilers",
+      "description": "Sharing rule for profile pages, social features, and platform presence."
     }
   ],
   "common_variants": [
-    "collection_log_daily_variant",
-    "collection_log_seasonal_variant",
-    "account_wide",
-    "save_slot_specific"
+    "item_collection_log",
+    "enemy_codex",
+    "lore_archive",
+    "cosmetic_collection",
+    "account_completion_tracker"
   ],
   "edge_cases": [
-    "Collection Log is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Collection Log overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Collection Log runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A content update renames or removes collection_entry_id values already present in old saves.",
+    "The same discovery is earned offline on two devices before cross-save conflict resolution.",
+    "A hidden spoiler entry is discovered but should not reveal locked neighboring entries.",
+    "A migrated save has proof of completion but lacks the original discovery source event.",
+    "Platform privacy settings forbid publishing entries that the local UI marks public."
   ],
   "common_bugs": [
-    "Collection Log state does not reset correctly after interruption or reload.",
-    "Feedback for Collection Log plays even when the mechanic fails or is rejected.",
-    "Collection Log produces different results between frame rates, platforms, or network clients."
+    "Collection entries are unlocked from UI preview instead of the committed gameplay event.",
+    "Cross-save merge picks the newest profile and loses older collection entries.",
+    "Retroactive scans run every launch and repeatedly show unlock notifications.",
+    "Display names are used as keys and break when localization changes.",
+    "Hidden entries count toward completion percentages before they are revealed to the player."
   ],
   "balancing_notes": [
-    "Make Collection Log strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Collection logs should make optional mastery visible without making normal play feel incomplete.",
+    "Hidden entries are strongest when they protect surprise, not when they obscure basic progress.",
+    "Completion rewards should respect spoiler pacing and avoid requiring unreasonable random drops."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Collection Log becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide search, filters, progress text, and clear locked-state descriptions for large logs.",
+    "Avoid communicating rarity, category, or completion only through color.",
+    "Let players hide spoiler entries or reduce notification frequency."
   ],
   "implementation_notes": {
-    "unity": "Implement Collection Log with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Collection Log as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Collection Log with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Collection Log as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store collection_entry_id records in an account profile service, not scene objects. Use ScriptableObject or addressable definitions for entry metadata, commit unlocks through one account transaction, and sync platform achievements only after the local entry is persisted.",
+    "godot": "Keep collection definitions as Resources and profile records in a versioned save dictionary keyed by collection_entry_id. Run retroactive scans behind a migration marker so old saves are fixed once without repeating notifications.",
+    "unreal": "Use Data Assets for collection definitions and SaveGame or online profile state for unlock records. Platform service calls should be idempotent and respect privacy_visibility_id before publishing profile progress.",
+    "web": "Persist collection state in account storage or IndexedDB with content version and unlock timestamps. When cross-save is available, merge by stable entry ids and keep discovery_source_id audit data for conflict resolution."
   },
   "related_mechanics": [
-    "meta.daily_challenge",
-    "meta.player_profile_stats",
-    "progression.meta_progression",
-    "roguelike.run_based_progression"
+    "progression.achievement_system",
+    "narrative.codex_journal",
+    "progression.unlockable_abilities",
+    "meta.player_profile_stats"
   ],
   "combines_well_with": [
-    "meta.new_game_plus",
-    "progression.meta_progression",
-    "roguelike.run_based_progression"
+    "ui_ux.inventory_grid",
+    "progression.equipment_rarity",
+    "economy.loot_table",
+    "accessibility.text_scaling"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Vampire Survivors",
+      "note": "Uses collection and unlock records as long-term account goals."
+    },
+    {
+      "title": "Hades",
+      "note": "Tracks discovered boons, keepsakes, and other profile-level records."
+    }
+  ],
   "tags": [
-    "collection",
-    "meta",
-    "retention"
+    "collection_log",
+    "account_state",
+    "profile_progress",
+    "cross_save",
+    "completion_tracking"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

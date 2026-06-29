@@ -4,7 +4,7 @@
   "license": "CC0-1.0",
   "tool_license": "MIT",
   "total_mechanics": 223,
-  "last_generated": "2026-06-29T14:46:14+00:00",
+  "last_generated": "2026-06-29T15:13:23+00:00",
   "mechanics": [
     {
       "id": "accessibility.adjustable_difficulty",
@@ -1655,7 +1655,7 @@
       "id": "meta.collection_log",
       "name": "Collection Log",
       "category": "meta",
-      "subcategory": "meta",
+      "subcategory": "account_collection",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1663,14 +1663,17 @@
         "3D"
       ],
       "genres": [
+        "rpg",
         "roguelike",
-        "live_service",
-        "arcade"
+        "simulation",
+        "adventure"
       ],
       "tags": [
-        "collection",
-        "meta",
-        "retention"
+        "collection_log",
+        "account_state",
+        "profile_progress",
+        "cross_save",
+        "completion_tracking"
       ],
       "path": "data/meta/collection_log.json"
     },
@@ -1678,7 +1681,7 @@
       "id": "meta.daily_challenge",
       "name": "Daily Challenge",
       "category": "meta",
-      "subcategory": "meta",
+      "subcategory": "rotating_challenge",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1687,13 +1690,16 @@
       ],
       "genres": [
         "roguelike",
-        "live_service",
-        "arcade"
+        "platformer",
+        "racing",
+        "strategy"
       ],
       "tags": [
-        "daily",
-        "meta",
-        "retention"
+        "daily_challenge",
+        "rotation_seed",
+        "reward_claim",
+        "leaderboard",
+        "account_profile"
       ],
       "path": "data/meta/daily_challenge.json"
     },
@@ -1701,7 +1707,7 @@
       "id": "meta.new_game_plus",
       "name": "New Game Plus",
       "category": "meta",
-      "subcategory": "meta",
+      "subcategory": "repeat_playthrough",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1709,14 +1715,17 @@
         "3D"
       ],
       "genres": [
-        "roguelike",
-        "live_service",
-        "arcade"
+        "rpg",
+        "action",
+        "adventure",
+        "soulslike"
       ],
       "tags": [
-        "meta",
-        "new",
-        "retention"
+        "new_game_plus",
+        "save_migration",
+        "carryover",
+        "repeat_playthrough",
+        "profile_state"
       ],
       "path": "data/meta/new_game_plus.json"
     },
@@ -1724,7 +1733,7 @@
       "id": "meta.player_profile_stats",
       "name": "Player Profile Stats",
       "category": "meta",
-      "subcategory": "meta",
+      "subcategory": "profile_records",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -1732,14 +1741,17 @@
         "3D"
       ],
       "genres": [
-        "roguelike",
-        "live_service",
-        "arcade"
+        "all_genres",
+        "rpg",
+        "simulation",
+        "competitive"
       ],
       "tags": [
-        "meta",
-        "player",
-        "retention"
+        "profile_stats",
+        "account_state",
+        "cross_save",
+        "privacy",
+        "platform_sync"
       ],
       "path": "data/meta/player_profile_stats.json"
     },
@@ -3654,7 +3666,7 @@
       "id": "rhythm.beat_matching",
       "name": "Beat Matching",
       "category": "rhythm",
-      "subcategory": "rhythm",
+      "subcategory": "beat_timing",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3663,13 +3675,16 @@
       ],
       "genres": [
         "rhythm",
+        "music",
         "action",
-        "music"
+        "arcade"
       ],
       "tags": [
-        "beat",
-        "rhythm",
-        "timing"
+        "beat_matching",
+        "audio_clock",
+        "latency_calibration",
+        "input_judgment",
+        "rhythm"
       ],
       "path": "data/rhythm/beat_matching.json"
     },
@@ -3677,7 +3692,7 @@
       "id": "rhythm.combo_multiplier",
       "name": "Combo Multiplier",
       "category": "rhythm",
-      "subcategory": "rhythm",
+      "subcategory": "streak_scoring",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3686,13 +3701,16 @@
       ],
       "genres": [
         "rhythm",
-        "action",
-        "music"
+        "music",
+        "arcade",
+        "action"
       ],
       "tags": [
-        "combo",
-        "rhythm",
-        "timing"
+        "combo_multiplier",
+        "streak_scoring",
+        "hit_judgment",
+        "leaderboard_result",
+        "rhythm_feedback"
       ],
       "path": "data/rhythm/combo_multiplier.json"
     },
@@ -3700,7 +3718,7 @@
       "id": "rhythm.note_lane",
       "name": "Note Lane",
       "category": "rhythm",
-      "subcategory": "rhythm",
+      "subcategory": "chart_lane",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3709,13 +3727,15 @@
       ],
       "genres": [
         "rhythm",
-        "action",
-        "music"
+        "music",
+        "arcade"
       ],
       "tags": [
-        "note",
-        "rhythm",
-        "timing"
+        "note_lane",
+        "chart_data",
+        "lane_input",
+        "scroll_profile",
+        "accessibility_layout"
       ],
       "path": "data/rhythm/note_lane.json"
     },
@@ -3723,7 +3743,7 @@
       "id": "rhythm.sync_window",
       "name": "Sync Window",
       "category": "rhythm",
-      "subcategory": "rhythm",
+      "subcategory": "timing_judgment",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3732,13 +3752,16 @@
       ],
       "genres": [
         "rhythm",
-        "action",
-        "music"
+        "music",
+        "arcade",
+        "action"
       ],
       "tags": [
-        "rhythm",
-        "sync",
-        "timing"
+        "timing_window",
+        "judgment",
+        "latency_offset",
+        "combo_break",
+        "deterministic_scoring"
       ],
       "path": "data/rhythm/sync_window.json"
     },
@@ -3980,7 +4003,7 @@
       "id": "simulation.needs_simulation",
       "name": "Needs Simulation",
       "category": "simulation",
-      "subcategory": "simulation",
+      "subcategory": "agent_needs",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -3989,13 +4012,16 @@
       ],
       "genres": [
         "simulation",
+        "survival",
         "management",
-        "sandbox"
+        "rpg"
       ],
       "tags": [
-        "needs",
-        "simulation",
-        "systems"
+        "needs_simulation",
+        "agent_state",
+        "simulation_tick",
+        "threshold_effects",
+        "offline_policy"
       ],
       "path": "data/simulation/needs_simulation.json"
     },
@@ -4003,7 +4029,7 @@
       "id": "simulation.population_model",
       "name": "Population Model",
       "category": "simulation",
-      "subcategory": "simulation",
+      "subcategory": "population_dynamics",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4012,13 +4038,16 @@
       ],
       "genres": [
         "simulation",
+        "strategy",
         "management",
-        "sandbox"
+        "survival"
       ],
       "tags": [
-        "population",
-        "simulation",
-        "systems"
+        "population_model",
+        "aggregate_state",
+        "spawn_budget",
+        "capacity",
+        "deterministic_updates"
       ],
       "path": "data/simulation/population_model.json"
     },
@@ -4026,7 +4055,7 @@
       "id": "simulation.systemic_weather",
       "name": "Systemic Weather",
       "category": "simulation",
-      "subcategory": "simulation",
+      "subcategory": "weather_state",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4035,13 +4064,16 @@
       ],
       "genres": [
         "simulation",
-        "management",
-        "sandbox"
+        "survival",
+        "open_world",
+        "strategy"
       ],
       "tags": [
-        "simulation",
-        "systemic",
-        "systems"
+        "weather",
+        "world_state",
+        "forecast",
+        "biome",
+        "simulation_clock"
       ],
       "path": "data/simulation/systemic_weather.json"
     },
@@ -4049,7 +4081,7 @@
       "id": "simulation.traffic_flow",
       "name": "Traffic Flow",
       "category": "simulation",
-      "subcategory": "simulation",
+      "subcategory": "traffic_network",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4059,12 +4091,15 @@
       "genres": [
         "simulation",
         "management",
-        "sandbox"
+        "strategy",
+        "open_world"
       ],
       "tags": [
-        "simulation",
-        "systems",
-        "traffic"
+        "traffic_flow",
+        "network_simulation",
+        "congestion",
+        "pathfinding",
+        "debug_overlay"
       ],
       "path": "data/simulation/traffic_flow.json"
     },
@@ -4214,7 +4249,7 @@
       "id": "strategy.fog_of_war",
       "name": "Fog of War",
       "category": "strategy",
-      "subcategory": "strategy",
+      "subcategory": "map_visibility",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4223,13 +4258,16 @@
       ],
       "genres": [
         "strategy",
+        "real_time_strategy",
         "4x",
-        "real_time_strategy"
+        "tactical"
       ],
       "tags": [
-        "fog",
-        "planning",
-        "strategy"
+        "fog_of_war",
+        "visibility",
+        "scouting",
+        "map_information",
+        "multiplayer_authority"
       ],
       "path": "data/strategy/fog_of_war.json"
     },
@@ -4237,7 +4275,7 @@
       "id": "strategy.tech_tree",
       "name": "Tech Tree",
       "category": "strategy",
-      "subcategory": "strategy",
+      "subcategory": "research_unlocks",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4247,12 +4285,15 @@
       "genres": [
         "strategy",
         "4x",
-        "real_time_strategy"
+        "real_time_strategy",
+        "simulation"
       ],
       "tags": [
-        "planning",
-        "strategy",
-        "tech"
+        "tech_tree",
+        "research",
+        "unlock_graph",
+        "strategy_progression",
+        "resource_transaction"
       ],
       "path": "data/strategy/tech_tree.json"
     },
@@ -4260,7 +4301,7 @@
       "id": "strategy.territory_control",
       "name": "Territory Control",
       "category": "strategy",
-      "subcategory": "strategy",
+      "subcategory": "region_ownership",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4269,13 +4310,16 @@
       ],
       "genres": [
         "strategy",
+        "real_time_strategy",
         "4x",
-        "real_time_strategy"
+        "tactical"
       ],
       "tags": [
-        "planning",
-        "strategy",
-        "territory"
+        "territory_control",
+        "region_ownership",
+        "capture_progress",
+        "map_control",
+        "resource_income"
       ],
       "path": "data/strategy/territory_control.json"
     },
@@ -4283,7 +4327,7 @@
       "id": "strategy.unit_counter_system",
       "name": "Unit Counter System",
       "category": "strategy",
-      "subcategory": "strategy",
+      "subcategory": "unit_matchups",
       "status": "draft",
       "dimensions": [
         "2D",
@@ -4292,13 +4336,16 @@
       ],
       "genres": [
         "strategy",
-        "4x",
-        "real_time_strategy"
+        "real_time_strategy",
+        "tactical",
+        "4x"
       ],
       "tags": [
-        "planning",
-        "strategy",
-        "unit"
+        "unit_counters",
+        "matchups",
+        "damage_modifiers",
+        "strategy_balance",
+        "combat_preview"
       ],
       "path": "data/strategy/unit_counter_system.json"
     },
@@ -6518,6 +6565,7 @@
           "horror.limited_visibility",
           "horror.monster_patrol",
           "horror.sanity_meter",
+          "meta.new_game_plus",
           "multiplayer.asymmetric_roles",
           "multiplayer.matchmaking_lobby",
           "multiplayer.online_coop",
@@ -6557,14 +6605,12 @@
           "roguelike.run_based_progression",
           "simulation.needs_simulation",
           "simulation.population_model",
-          "simulation.systemic_weather",
           "simulation.traffic_flow",
           "stealth.alert_state",
           "stealth.distraction_throw",
           "stealth.last_known_position_search",
           "stealth.noise_meter",
           "stealth.shadow_cover",
-          "strategy.fog_of_war",
           "strategy.tech_tree",
           "strategy.territory_control",
           "strategy.unit_counter_system",
@@ -6617,7 +6663,6 @@
           "horror.sound_lure",
           "meta.collection_log",
           "meta.daily_challenge",
-          "meta.new_game_plus",
           "meta.player_profile_stats",
           "movement.air_dash",
           "movement.swimming",
@@ -6654,7 +6699,9 @@
           "rhythm.note_lane",
           "rhythm.sync_window",
           "roguelike.shop_between_levels",
+          "simulation.systemic_weather",
           "stealth.visibility_meter",
+          "strategy.fog_of_war",
           "survival.day_night_cycle",
           "survival.durability",
           "survival.health",
@@ -6732,6 +6779,7 @@
           "combat.lock_on_targeting",
           "crafting.crafting_queue",
           "horror.monster_patrol",
+          "meta.new_game_plus",
           "multiplayer.asymmetric_roles",
           "multiplayer.friendly_fire",
           "multiplayer.local_coop",
@@ -6756,13 +6804,9 @@
           "puzzle.mirror_light_reflection",
           "puzzle.physics_weight_puzzle",
           "rhythm.beat_matching",
-          "rhythm.combo_multiplier",
-          "rhythm.note_lane",
-          "rhythm.sync_window",
           "roguelike.procedural_floor",
           "roguelike.relic_synergy",
           "roguelike.run_based_progression",
-          "simulation.needs_simulation",
           "simulation.population_model",
           "simulation.systemic_weather",
           "simulation.traffic_flow",
@@ -6772,9 +6816,7 @@
           "stealth.noise_meter",
           "stealth.shadow_cover",
           "strategy.fog_of_war",
-          "strategy.tech_tree",
           "strategy.territory_control",
-          "strategy.unit_counter_system",
           "survival.base_building",
           "survival.temperature",
           "time.rhythm_timing",
@@ -6853,7 +6895,6 @@
           "horror.sound_lure",
           "meta.collection_log",
           "meta.daily_challenge",
-          "meta.new_game_plus",
           "meta.player_profile_stats",
           "movement.air_dash",
           "movement.crouch",
@@ -6895,13 +6936,19 @@
           "puzzle.sequence_memory",
           "puzzle.sliding_block",
           "puzzle.timed_door",
+          "rhythm.combo_multiplier",
+          "rhythm.note_lane",
+          "rhythm.sync_window",
           "roguelike.curse_modifier",
           "roguelike.permadeath",
           "roguelike.pick_one_upgrade_choice",
           "roguelike.random_powerups",
           "roguelike.risk_reward_room",
           "roguelike.shop_between_levels",
+          "simulation.needs_simulation",
           "stealth.visibility_meter",
+          "strategy.tech_tree",
+          "strategy.unit_counter_system",
           "survival.day_night_cycle",
           "survival.durability",
           "survival.health",
@@ -6948,6 +6995,7 @@
           "economy.shop",
           "economy.trading",
           "horror.monster_patrol",
+          "meta.new_game_plus",
           "multiplayer.asymmetric_roles",
           "physics.destructible_environment",
           "procedural_generation.biome_generation",
@@ -6970,8 +7018,6 @@
           "progression.unlockable_abilities",
           "progression.upgrade_shop",
           "rhythm.beat_matching",
-          "rhythm.combo_multiplier",
-          "rhythm.note_lane",
           "rhythm.sync_window",
           "roguelike.curse_modifier",
           "roguelike.pick_one_upgrade_choice",
@@ -6982,9 +7028,7 @@
           "roguelike.run_based_progression",
           "simulation.needs_simulation",
           "simulation.population_model",
-          "simulation.systemic_weather",
           "simulation.traffic_flow",
-          "strategy.fog_of_war",
           "strategy.tech_tree",
           "strategy.territory_control",
           "strategy.unit_counter_system",
@@ -7032,10 +7076,7 @@
           "horror.safe_room",
           "horror.sanity_meter",
           "horror.sound_lure",
-          "meta.collection_log",
           "meta.daily_challenge",
-          "meta.new_game_plus",
-          "meta.player_profile_stats",
           "movement.air_dash",
           "movement.swimming",
           "multiplayer.friendly_fire",
@@ -7070,14 +7111,18 @@
           "puzzle.portal_pair",
           "puzzle.sliding_block",
           "puzzle.timed_door",
+          "rhythm.combo_multiplier",
+          "rhythm.note_lane",
           "roguelike.permadeath",
           "roguelike.shop_between_levels",
+          "simulation.systemic_weather",
           "stealth.alert_state",
           "stealth.distraction_throw",
           "stealth.last_known_position_search",
           "stealth.noise_meter",
           "stealth.shadow_cover",
           "stealth.visibility_meter",
+          "strategy.fog_of_war",
           "survival.day_night_cycle",
           "survival.durability",
           "survival.health",
@@ -7126,6 +7171,8 @@
           "camera.third_person_camera",
           "camera.top_down_camera",
           "combat.reload",
+          "meta.collection_log",
+          "meta.player_profile_stats",
           "movement.climbing",
           "movement.crouch",
           "movement.dash",
@@ -7212,6 +7259,7 @@
         "combat.reload",
         "combat.shield",
         "combat.stealth_kill",
+        "meta.new_game_plus",
         "movement.air_dash",
         "movement.climbing",
         "movement.dash",
@@ -7250,7 +7298,6 @@
         "progression.upgrade_shop",
         "rhythm.beat_matching",
         "rhythm.combo_multiplier",
-        "rhythm.note_lane",
         "rhythm.sync_window",
         "roguelike.curse_modifier",
         "roguelike.permadeath",
@@ -7314,6 +7361,8 @@
         "horror.safe_room",
         "horror.sanity_meter",
         "horror.sound_lure",
+        "meta.collection_log",
+        "meta.new_game_plus",
         "movement.climbing",
         "movement.crouch",
         "movement.dodge_roll",
@@ -7370,14 +7419,15 @@
         "accessibility.assist_mode",
         "accessibility.colorblind_modes",
         "accessibility.text_scaling",
-        "accessibility.toggle_hold_option"
+        "accessibility.toggle_hold_option",
+        "meta.player_profile_stats"
       ],
       "arcade": [
         "camera.screen_shake",
-        "meta.collection_log",
-        "meta.daily_challenge",
-        "meta.new_game_plus",
-        "meta.player_profile_stats",
+        "rhythm.beat_matching",
+        "rhythm.combo_multiplier",
+        "rhythm.note_lane",
+        "rhythm.sync_window",
         "time.rhythm_timing",
         "vehicles.drifting",
         "vehicles.vehicle_boost"
@@ -7390,6 +7440,7 @@
         "combat.melee_attack"
       ],
       "competitive": [
+        "meta.player_profile_stats",
         "multiplayer.matchmaking_lobby"
       ],
       "cooperative": [
@@ -7491,19 +7542,12 @@
         "stealth.shadow_cover",
         "stealth.visibility_meter"
       ],
-      "live_service": [
-        "meta.collection_log",
-        "meta.daily_challenge",
-        "meta.new_game_plus",
-        "meta.player_profile_stats"
-      ],
       "looter": [
         "economy.loot_table"
       ],
       "management": [
         "simulation.needs_simulation",
         "simulation.population_model",
-        "simulation.systemic_weather",
         "simulation.traffic_flow"
       ],
       "metroidvania": [
@@ -7533,6 +7577,8 @@
       ],
       "open_world": [
         "procedural_generation.procedural_terrain",
+        "simulation.systemic_weather",
+        "simulation.traffic_flow",
         "traversal.gliding",
         "traversal.grappling_hook",
         "traversal.jetpack",
@@ -7565,6 +7611,7 @@
       "platformer": [
         "camera.screen_shake",
         "combat.ranged_attack",
+        "meta.daily_challenge",
         "movement.air_dash",
         "movement.climbing",
         "movement.crouch",
@@ -7639,6 +7686,7 @@
         "time.timed_challenge"
       ],
       "racing": [
+        "meta.daily_challenge",
         "time.slow_motion",
         "time.timed_challenge",
         "vehicles.drifting",
@@ -7667,8 +7715,6 @@
         "economy.loot_table",
         "meta.collection_log",
         "meta.daily_challenge",
-        "meta.new_game_plus",
-        "meta.player_profile_stats",
         "movement.dash",
         "procedural_generation.biome_generation",
         "procedural_generation.loot_generation",
@@ -7732,6 +7778,9 @@
         "economy.resource_conversion",
         "economy.shop",
         "economy.trading",
+        "meta.collection_log",
+        "meta.new_game_plus",
+        "meta.player_profile_stats",
         "multiplayer.online_coop",
         "multiplayer.shared_resource_pool",
         "narrative.branching_dialogue",
@@ -7759,6 +7808,7 @@
         "roguelike.risk_reward_room",
         "roguelike.run_based_progression",
         "roguelike.shop_between_levels",
+        "simulation.needs_simulation",
         "survival.durability",
         "survival.health",
         "survival.hunger",
@@ -7797,10 +7847,6 @@
         "procedural_generation.seeded_generation",
         "procedural_generation.wave_generation",
         "puzzle.physics_weight_puzzle",
-        "simulation.needs_simulation",
-        "simulation.population_model",
-        "simulation.systemic_weather",
-        "simulation.traffic_flow",
         "survival.base_building",
         "survival.day_night_cycle",
         "survival.durability",
@@ -7863,6 +7909,8 @@
         "economy.resource_conversion",
         "economy.shop",
         "economy.trading",
+        "meta.collection_log",
+        "meta.player_profile_stats",
         "narrative.reputation_gating",
         "physics.buoyancy",
         "physics.destructible_environment",
@@ -7875,6 +7923,7 @@
         "simulation.population_model",
         "simulation.systemic_weather",
         "simulation.traffic_flow",
+        "strategy.tech_tree",
         "survival.base_building",
         "survival.day_night_cycle",
         "survival.hunger",
@@ -7892,7 +7941,8 @@
       "soulslike": [
         "combat.block",
         "combat.lock_on_targeting",
-        "combat.parry"
+        "combat.parry",
+        "meta.new_game_plus"
       ],
       "stealth": [
         "ai.patrol",
@@ -7934,6 +7984,7 @@
         "economy.resource_conversion",
         "economy.shop",
         "economy.trading",
+        "meta.daily_challenge",
         "multiplayer.asymmetric_roles",
         "multiplayer.ping_system",
         "multiplayer.role_swap",
@@ -7941,6 +7992,9 @@
         "multiplayer.team_objective",
         "progression.respec",
         "progression.skill_tree",
+        "simulation.population_model",
+        "simulation.systemic_weather",
+        "simulation.traffic_flow",
         "strategy.fog_of_war",
         "strategy.tech_tree",
         "strategy.territory_control",
@@ -7994,6 +8048,9 @@
         "roguelike.curse_modifier",
         "roguelike.permadeath",
         "roguelike.risk_reward_room",
+        "simulation.needs_simulation",
+        "simulation.population_model",
+        "simulation.systemic_weather",
         "survival.base_building",
         "survival.day_night_cycle",
         "survival.durability",
@@ -8009,7 +8066,10 @@
         "vehicles.upgradeable_vehicle"
       ],
       "tactical": [
-        "multiplayer.friendly_fire"
+        "multiplayer.friendly_fire",
+        "strategy.fog_of_war",
+        "strategy.territory_control",
+        "strategy.unit_counter_system"
       ],
       "visual_novel": [
         "narrative.branching_dialogue",
@@ -8287,6 +8347,16 @@
       "accessibility_intensity": [
         "horror.sanity_meter"
       ],
+      "accessibility_layout": [
+        "rhythm.note_lane"
+      ],
+      "account_profile": [
+        "meta.daily_challenge"
+      ],
+      "account_state": [
+        "meta.collection_log",
+        "meta.player_profile_stats"
+      ],
       "achievement": [
         "progression.achievement_system"
       ],
@@ -8306,6 +8376,12 @@
         "ai.flocking",
         "ai.investigate_noise",
         "ai.line_of_sight_detection"
+      ],
+      "agent_state": [
+        "simulation.needs_simulation"
+      ],
+      "aggregate_state": [
+        "simulation.population_model"
       ],
       "ai": [
         "ai.boss_phase_transition",
@@ -8362,6 +8438,9 @@
       "attribution": [
         "multiplayer.friendly_fire"
       ],
+      "audio_clock": [
+        "rhythm.beat_matching"
+      ],
       "audio_sync": [
         "time.rhythm_timing"
       ],
@@ -8373,7 +8452,7 @@
         "crafting.workbench",
         "survival.base_building"
       ],
-      "beat": [
+      "beat_matching": [
         "rhythm.beat_matching"
       ],
       "behavior": [
@@ -8388,7 +8467,8 @@
         "ai.line_of_sight_detection"
       ],
       "biome": [
-        "procedural_generation.biome_generation"
+        "procedural_generation.biome_generation",
+        "simulation.systemic_weather"
       ],
       "boost": [
         "vehicles.drifting",
@@ -8442,13 +8522,23 @@
         "combat.combo_chain"
       ],
       "capacity": [
+        "simulation.population_model",
         "survival.inventory_limit"
+      ],
+      "capture_progress": [
+        "strategy.territory_control"
+      ],
+      "carryover": [
+        "meta.new_game_plus"
       ],
       "challenge_room": [
         "roguelike.risk_reward_room"
       ],
       "charge": [
         "combat.charged_attack"
+      ],
+      "chart_data": [
+        "rhythm.note_lane"
       ],
       "chase": [
         "ai.chase"
@@ -8489,7 +8579,7 @@
       "coins": [
         "economy.coins"
       ],
-      "collection": [
+      "collection_log": [
         "meta.collection_log"
       ],
       "collision": [
@@ -8536,9 +8626,17 @@
         "ui_ux.damage_numbers",
         "ui_ux.hit_marker"
       ],
+      "combat_preview": [
+        "strategy.unit_counter_system"
+      ],
       "combo": [
         "combat.combo_chain",
-        "combat.hit_stun",
+        "combat.hit_stun"
+      ],
+      "combo_break": [
+        "rhythm.sync_window"
+      ],
+      "combo_multiplier": [
         "rhythm.combo_multiplier"
       ],
       "commitment": [
@@ -8551,11 +8649,17 @@
       "companion": [
         "ai.companion_follow"
       ],
+      "completion_tracking": [
+        "meta.collection_log"
+      ],
       "condition": [
         "survival.durability"
       ],
       "confirmation": [
         "multiplayer.role_swap"
+      ],
+      "congestion": [
+        "simulation.traffic_flow"
       ],
       "constraint": [
         "physics.pendulum_swing",
@@ -8628,10 +8732,14 @@
       "critical": [
         "combat.critical_hit"
       ],
+      "cross_save": [
+        "meta.collection_log",
+        "meta.player_profile_stats"
+      ],
       "curse": [
         "roguelike.curse_modifier"
       ],
-      "daily": [
+      "daily_challenge": [
         "meta.daily_challenge"
       ],
       "damage": [
@@ -8643,6 +8751,9 @@
       ],
       "damage_modifier": [
         "combat.critical_hit"
+      ],
+      "damage_modifiers": [
+        "strategy.unit_counter_system"
       ],
       "damage_reduction": [
         "combat.block"
@@ -8669,6 +8780,9 @@
       "debris": [
         "physics.breakable_object",
         "physics.destructible_environment"
+      ],
+      "debug_overlay": [
+        "simulation.traffic_flow"
       ],
       "debug_trace": [
         "roguelike.relic_synergy"
@@ -8707,6 +8821,12 @@
       ],
       "determinism": [
         "time.time_rewind"
+      ],
+      "deterministic_scoring": [
+        "rhythm.sync_window"
+      ],
+      "deterministic_updates": [
+        "simulation.population_model"
       ],
       "dialogue": [
         "ui_ux.dialogue_choice"
@@ -8825,11 +8945,14 @@
       "fluid": [
         "physics.buoyancy"
       ],
-      "fog": [
+      "fog_of_war": [
         "strategy.fog_of_war"
       ],
       "food": [
         "survival.hunger"
+      ],
+      "forecast": [
+        "simulation.systemic_weather"
       ],
       "forgiveness": [
         "platforming.coyote_time",
@@ -8901,6 +9024,9 @@
       "hit_confirm": [
         "ui_ux.hit_marker"
       ],
+      "hit_judgment": [
+        "rhythm.combo_multiplier"
+      ],
       "hit_reaction": [
         "combat.hit_stun",
         "combat.knockback"
@@ -8950,6 +9076,9 @@
       ],
       "input_glyphs": [
         "ui_ux.tutorial_prompt"
+      ],
+      "input_judgment": [
+        "rhythm.beat_matching"
       ],
       "input_navigation": [
         "ui_ux.inventory_grid"
@@ -9006,6 +9135,9 @@
       "jetpack": [
         "traversal.jetpack"
       ],
+      "judgment": [
+        "rhythm.sync_window"
+      ],
       "judgment_window": [
         "time.rhythm_timing"
       ],
@@ -9031,6 +9163,9 @@
       "ladder": [
         "traversal.ladder_climb"
       ],
+      "lane_input": [
+        "rhythm.note_lane"
+      ],
       "last_known_position": [
         "horror.monster_patrol"
       ],
@@ -9040,8 +9175,20 @@
       "latency": [
         "time.rhythm_timing"
       ],
+      "latency_calibration": [
+        "rhythm.beat_matching"
+      ],
+      "latency_offset": [
+        "rhythm.sync_window"
+      ],
       "layout_validation": [
         "roguelike.procedural_floor"
+      ],
+      "leaderboard": [
+        "meta.daily_challenge"
+      ],
+      "leaderboard_result": [
+        "rhythm.combo_multiplier"
       ],
       "ledge": [
         "platforming.ledge_climb",
@@ -9118,6 +9265,12 @@
       "map": [
         "ui_ux.minimap"
       ],
+      "map_control": [
+        "strategy.territory_control"
+      ],
+      "map_information": [
+        "strategy.fog_of_war"
+      ],
       "marker": [
         "ui_ux.quest_marker"
       ],
@@ -9126,6 +9279,9 @@
       ],
       "matchmaking": [
         "multiplayer.matchmaking_lobby"
+      ],
+      "matchups": [
+        "strategy.unit_counter_system"
       ],
       "material_grade": [
         "crafting.ingredient_quality"
@@ -9138,10 +9294,6 @@
         "stealth.last_known_position_search"
       ],
       "meta": [
-        "meta.collection_log",
-        "meta.daily_challenge",
-        "meta.new_game_plus",
-        "meta.player_profile_stats",
         "progression.meta_progression"
       ],
       "meta_boundary": [
@@ -9211,6 +9363,9 @@
       "moving_platform": [
         "physics.moving_platform"
       ],
+      "multiplayer_authority": [
+        "strategy.fog_of_war"
+      ],
       "narrative": [
         "narrative.branching_dialogue",
         "narrative.codex_journal",
@@ -9237,13 +9392,16 @@
       "navmesh": [
         "physics.destructible_environment"
       ],
-      "needs": [
+      "needs_simulation": [
         "simulation.needs_simulation"
       ],
       "network_prediction": [
         "ui_ux.hit_marker"
       ],
-      "new": [
+      "network_simulation": [
+        "simulation.traffic_flow"
+      ],
+      "new_game_plus": [
         "meta.new_game_plus"
       ],
       "night_pressure": [
@@ -9259,7 +9417,7 @@
       "noise_event": [
         "horror.sound_lure"
       ],
-      "note": [
+      "note_lane": [
         "rhythm.note_lane"
       ],
       "numbers": [
@@ -9277,6 +9435,9 @@
       ],
       "occlusion": [
         "horror.sound_lure"
+      ],
+      "offline_policy": [
+        "simulation.needs_simulation"
       ],
       "offline_progress": [
         "crafting.crafting_queue"
@@ -9318,6 +9479,9 @@
       ],
       "passenger_transfer": [
         "physics.moving_platform"
+      ],
+      "pathfinding": [
+        "simulation.traffic_flow"
       ],
       "patrol": [
         "ai.patrol",
@@ -9364,11 +9528,8 @@
       "placement": [
         "survival.base_building"
       ],
-      "planning": [
-        "strategy.fog_of_war",
-        "strategy.tech_tree",
-        "strategy.territory_control",
-        "strategy.unit_counter_system"
+      "platform_sync": [
+        "meta.player_profile_stats"
       ],
       "platforming": [
         "movement.air_dash",
@@ -9381,10 +9542,7 @@
         "platforming.wall_jump",
         "platforming.wall_slide"
       ],
-      "player": [
-        "meta.player_profile_stats"
-      ],
-      "population": [
+      "population_model": [
         "simulation.population_model"
       ],
       "portal": [
@@ -9419,6 +9577,9 @@
       "preview": [
         "crafting.ingredient_quality"
       ],
+      "privacy": [
+        "meta.player_profile_stats"
+      ],
       "procedural": [
         "procedural_generation.biome_generation",
         "procedural_generation.loot_generation",
@@ -9438,6 +9599,15 @@
       ],
       "profile_binding": [
         "multiplayer.local_coop"
+      ],
+      "profile_progress": [
+        "meta.collection_log"
+      ],
+      "profile_state": [
+        "meta.new_game_plus"
+      ],
+      "profile_stats": [
+        "meta.player_profile_stats"
       ],
       "progression": [
         "progression.achievement_system",
@@ -9570,6 +9740,9 @@
       "regen_delay": [
         "survival.stamina"
       ],
+      "region_ownership": [
+        "strategy.territory_control"
+      ],
       "relic_synergy": [
         "roguelike.relic_synergy"
       ],
@@ -9580,6 +9753,9 @@
         "economy.repair_cost",
         "survival.durability",
         "vehicles.vehicle_damage"
+      ],
+      "repeat_playthrough": [
+        "meta.new_game_plus"
       ],
       "replayability": [
         "procedural_generation.biome_generation",
@@ -9594,6 +9770,9 @@
         "narrative.reputation_choice",
         "narrative.reputation_gating"
       ],
+      "research": [
+        "strategy.tech_tree"
+      ],
       "reset": [
         "puzzle.physics_weight_puzzle"
       ],
@@ -9602,15 +9781,15 @@
         "combat.shield",
         "economy.resource_conversion"
       ],
+      "resource_income": [
+        "strategy.territory_control"
+      ],
+      "resource_transaction": [
+        "strategy.tech_tree"
+      ],
       "respec": [
         "progression.respec",
         "progression.skill_tree"
-      ],
-      "retention": [
-        "meta.collection_log",
-        "meta.daily_challenge",
-        "meta.new_game_plus",
-        "meta.player_profile_stats"
       ],
       "reverse": [
         "vehicles.vehicle_braking"
@@ -9620,6 +9799,9 @@
       ],
       "reward_choice": [
         "roguelike.pick_one_upgrade_choice"
+      ],
+      "reward_claim": [
+        "meta.daily_challenge"
       ],
       "reward_pool": [
         "roguelike.random_powerups",
@@ -9652,10 +9834,10 @@
       ],
       "rhythm": [
         "rhythm.beat_matching",
-        "rhythm.combo_multiplier",
-        "rhythm.note_lane",
-        "rhythm.sync_window",
         "time.rhythm_timing"
+      ],
+      "rhythm_feedback": [
+        "rhythm.combo_multiplier"
       ],
       "risk_reward": [
         "roguelike.curse_modifier",
@@ -9688,6 +9870,9 @@
       "rope": [
         "physics.pendulum_swing",
         "traversal.rope_swing"
+      ],
+      "rotation_seed": [
+        "meta.daily_challenge"
       ],
       "run": [
         "movement.run"
@@ -9724,11 +9909,20 @@
       "sanity": [
         "horror.sanity_meter"
       ],
+      "save_migration": [
+        "meta.new_game_plus"
+      ],
       "schedule": [
         "time.day_night_schedule"
       ],
+      "scouting": [
+        "strategy.fog_of_war"
+      ],
       "scripted_event": [
         "horror.jump_scare_trigger"
+      ],
+      "scroll_profile": [
+        "rhythm.note_lane"
       ],
       "search": [
         "stealth.last_known_position_search"
@@ -9787,11 +9981,13 @@
       ],
       "simulation": [
         "ai.utility_scoring",
-        "simulation.needs_simulation",
-        "simulation.population_model",
-        "simulation.systemic_weather",
-        "simulation.traffic_flow",
         "time.day_night_schedule"
+      ],
+      "simulation_clock": [
+        "simulation.systemic_weather"
+      ],
+      "simulation_tick": [
+        "simulation.needs_simulation"
       ],
       "skeletal_physics": [
         "physics.ragdoll"
@@ -9842,6 +10038,9 @@
       ],
       "spatial_puzzle": [
         "puzzle.portal_pair"
+      ],
+      "spawn_budget": [
+        "simulation.population_model"
       ],
       "split": [
         "camera.split_screen"
@@ -9898,11 +10097,14 @@
       "storage": [
         "survival.inventory_limit"
       ],
-      "strategy": [
-        "strategy.fog_of_war",
-        "strategy.tech_tree",
-        "strategy.territory_control",
+      "strategy_balance": [
         "strategy.unit_counter_system"
+      ],
+      "strategy_progression": [
+        "strategy.tech_tree"
+      ],
+      "streak_scoring": [
+        "rhythm.combo_multiplier"
       ],
       "submerged_state": [
         "physics.buoyancy"
@@ -9932,18 +10134,6 @@
       "symbols": [
         "puzzle.color_matching"
       ],
-      "sync": [
-        "rhythm.sync_window"
-      ],
-      "systemic": [
-        "simulation.systemic_weather"
-      ],
-      "systems": [
-        "simulation.needs_simulation",
-        "simulation.population_model",
-        "simulation.systemic_weather",
-        "simulation.traffic_flow"
-      ],
       "takedown": [
         "combat.stealth_kill"
       ],
@@ -9969,7 +10159,7 @@
         "multiplayer.asymmetric_roles",
         "multiplayer.role_swap"
       ],
-      "tech": [
+      "tech_tree": [
         "strategy.tech_tree"
       ],
       "telegraph": [
@@ -9988,7 +10178,7 @@
       "terrain": [
         "procedural_generation.procedural_terrain"
       ],
-      "territory": [
+      "territory_control": [
         "strategy.territory_control"
       ],
       "text": [
@@ -10004,7 +10194,8 @@
         "horror.limited_visibility"
       ],
       "threshold_effects": [
-        "horror.sanity_meter"
+        "horror.sanity_meter",
+        "simulation.needs_simulation"
       ],
       "throttle": [
         "vehicles.vehicle_acceleration"
@@ -10025,11 +10216,10 @@
         "combat.parry",
         "combat.projectile_reflection",
         "puzzle.timed_door",
-        "rhythm.beat_matching",
-        "rhythm.combo_multiplier",
-        "rhythm.note_lane",
-        "rhythm.sync_window",
         "time.cooldown_time"
+      ],
+      "timing_window": [
+        "rhythm.sync_window"
       ],
       "toggle": [
         "accessibility.toggle_hold_option"
@@ -10046,7 +10236,7 @@
       "trading": [
         "economy.trading"
       ],
-      "traffic": [
+      "traffic_flow": [
         "simulation.traffic_flow"
       ],
       "transaction": [
@@ -10095,11 +10285,14 @@
       "undo": [
         "puzzle.sliding_block"
       ],
-      "unit": [
+      "unit_counters": [
         "strategy.unit_counter_system"
       ],
       "unlock": [
         "progression.skill_tree"
+      ],
+      "unlock_graph": [
+        "strategy.tech_tree"
       ],
       "unlock_pool": [
         "roguelike.random_powerups"
@@ -10178,7 +10371,8 @@
       ],
       "visibility": [
         "horror.light_resource",
-        "stealth.visibility_meter"
+        "stealth.visibility_meter",
+        "strategy.fog_of_war"
       ],
       "vitality": [
         "survival.health"
@@ -10199,6 +10393,7 @@
         "procedural_generation.wave_generation"
       ],
       "weather": [
+        "simulation.systemic_weather",
         "survival.temperature"
       ],
       "weight": [
@@ -10222,6 +10417,9 @@
       "world_clock": [
         "survival.day_night_cycle",
         "time.day_night_schedule"
+      ],
+      "world_state": [
+        "simulation.systemic_weather"
       ],
       "zipline": [
         "traversal.zipline"

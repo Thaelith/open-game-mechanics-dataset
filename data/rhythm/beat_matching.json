@@ -2,12 +2,12 @@
   "id": "rhythm.beat_matching",
   "name": "Beat Matching",
   "aliases": [
-    "beat matching mechanic",
-    "beat matching system",
-    "beat matching"
+    "on-beat input",
+    "beat timing",
+    "rhythm matching"
   ],
   "category": "rhythm",
-  "subcategory": "rhythm",
+  "subcategory": "beat_timing",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -21,98 +21,134 @@
   },
   "genres": [
     "rhythm",
+    "music",
     "action",
-    "music"
+    "arcade"
   ],
-  "description": "Beat Matching is a timing mechanic where player input, scoring, or simulation aligns with musical or beat-based windows.",
-  "design_notes": "Beat Matching should be designed around a clear player promise, a readable trigger, and a predictable result. For rhythm mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A mechanic where player inputs are evaluated against musical beat positions using an audio clock, chart data, and latency-adjusted judgment windows.",
+  "design_notes": "Beat matching depends on trust in the timing model. The player can forgive difficulty, but not inconsistent judgment. The design should define the authoritative audio clock, beat index conversion, latency calibration, pause behavior, dropped-frame tolerance, and how generous each judgment band should be.",
   "design_purpose": [
-    "Give the player a readable way to use beat matching as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect beat matching to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Make rhythmic precision the central expression of skill.",
+    "Connect music structure to input, scoring, enemy actions, or movement.",
+    "Give designers measurable timing bands for difficulty, assists, and score tiers."
   ],
-  "player_fantasy": "The player feels synchronized with music, timing, and responsive feedback.",
+  "player_fantasy": "The player feels locked into the music when their inputs land exactly on the intended beat.",
   "required_systems": [
     "audio_clock",
-    "timing_window",
-    "input_buffer",
-    "feedback_system"
+    "chart_parser",
+    "input_timestamping",
+    "latency_calibration",
+    "scoring_system"
   ],
   "parameters": [
     {
-      "name": "beats_per_minute",
-      "type": "float",
-      "typical_range": "60-220 BPM",
-      "description": "Tempo used by the mechanic."
+      "name": "song_id",
+      "type": "string",
+      "typical_range": "track or music cue id",
+      "description": "Audio track associated with the beat chart and playback clock."
     },
     {
-      "name": "perfect_window",
-      "type": "float",
-      "typical_range": "10-80 milliseconds",
-      "description": "Timing tolerance for the best outcome."
+      "name": "chart_id",
+      "type": "string",
+      "typical_range": "easy_chart, expert_chart, adaptive_chart",
+      "description": "Chart definition that maps beats to expected player actions."
     },
     {
-      "name": "miss_penalty",
+      "name": "beat_index",
       "type": "integer",
-      "typical_range": "0-100",
-      "description": "Penalty applied when input falls outside accepted timing."
+      "typical_range": "0 to song beat count",
+      "description": "Beat number currently evaluated by chart and input logic."
+    },
+    {
+      "name": "beat_timestamp_ms",
+      "type": "integer",
+      "typical_range": "track-relative milliseconds",
+      "description": "Audio-clock timestamp for the expected beat location."
+    },
+    {
+      "name": "bpm",
+      "type": "float",
+      "typical_range": "60-220",
+      "description": "Tempo used when the chart does not require a full tempo map."
+    },
+    {
+      "name": "input_event_timestamp_ms",
+      "type": "integer",
+      "typical_range": "platform input timestamp",
+      "description": "Input timestamp captured before render-frame delays affect judgment."
+    },
+    {
+      "name": "calibration_profile_id",
+      "type": "string",
+      "typical_range": "default, player_calibrated, device_profile",
+      "description": "Latency offset profile applied before scoring the input."
     }
   ],
   "common_variants": [
-    "beat_matching_strict_timing",
-    "beat_matching_forgiving_timing",
+    "single_button_beat",
+    "directional_beat_input",
     "call_and_response",
-    "score_combo_variant"
+    "combat_on_beat",
+    "adaptive_beat_assist"
   ],
   "edge_cases": [
-    "Beat Matching is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Beat Matching overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Beat Matching runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The audio device reports a playhead jump after pause, buffering, or output-device change.",
+    "A player input arrives between two valid beats and could be consumed by either note.",
+    "The game drops render frames while audio playback continues correctly.",
+    "A tempo map changes bpm mid-song and beat_index conversion needs to remain stable.",
+    "Calibration is changed during a song and should not alter already judged inputs."
   ],
   "common_bugs": [
-    "Beat Matching state does not reset correctly after interruption or reload.",
-    "Feedback for Beat Matching plays even when the mechanic fails or is rejected.",
-    "Beat Matching produces different results between frame rates, platforms, or network clients."
+    "Input is judged against frame delta instead of audio_playhead_ms, causing drift under load.",
+    "Latency offset is applied twice to held notes or repeated taps.",
+    "Pause resumes chart scrolling but not the audio clock baseline.",
+    "Floating-point beat accumulation creates different judgments across long tracks.",
+    "Replay data stores visual note positions instead of input timestamps and cannot reproduce scores."
   ],
   "balancing_notes": [
-    "Make Beat Matching strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Tighter windows increase mastery but magnify device latency and accessibility barriers.",
+    "Early and late feedback should be symmetrical unless the music or control scheme has a deliberate bias.",
+    "Assist modes can widen judgment windows without changing chart identity if scores mark assisted play clearly."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Beat Matching becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide audio latency calibration, visual latency calibration, and per-player offset profiles.",
+    "Offer wider timing windows or practice modes for players with motor or device-latency constraints.",
+    "Use visual beat markers and haptic cues as alternatives to audio-only timing."
   ],
   "implementation_notes": {
-    "unity": "Implement Beat Matching with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Beat Matching as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Beat Matching with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Beat Matching as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Use AudioSettings.dspTime or an equivalent audio clock as the timing authority, then convert chart beat positions into milliseconds using bpm or tempo_map_id. Capture input timestamps as close to the input event as possible and apply calibration_profile_id once during judgment.",
+    "godot": "Use AudioServer playback position plus output latency compensation for audio_playhead_ms. Keep chart_id data separate from rendered notes, and judge inputs from timestamped events rather than node positions on screen.",
+    "unreal": "Quartz clocks or audio component playback data can own beat scheduling. Route input_event_timestamp_ms through a rhythm subsystem, apply calibration offsets before hit judgment, and keep scoring deterministic for replay verification.",
+    "web": "Use Web Audio currentTime as the authoritative playhead and DOM or pointer event timestamps for input. Rendered animation should chase chart state, while scoring reads audio_playhead_ms and calibration offsets from data."
   },
   "related_mechanics": [
-    "rhythm.combo_multiplier",
-    "rhythm.note_lane",
     "time.rhythm_timing",
-    "ui_ux.damage_numbers"
+    "rhythm.sync_window",
+    "rhythm.note_lane",
+    "ui_ux.hit_marker"
   ],
   "combines_well_with": [
-    "rhythm.sync_window",
-    "time.rhythm_timing",
-    "ui_ux.damage_numbers"
+    "rhythm.combo_multiplier",
+    "camera.screen_shake",
+    "combat.combo_chain",
+    "accessibility.adjustable_difficulty"
   ],
   "example_games": [
     {
-      "title": "Crypt of the NecroDancer",
-      "note": "Links movement and action to a musical beat."
+      "title": "Beat Saber",
+      "note": "Evaluates player actions against musical timing and charted targets."
     },
     {
-      "title": "Hi-Fi Rush",
-      "note": "Rewards combat timing aligned with music."
+      "title": "Crypt of the NecroDancer",
+      "note": "Connects movement and combat actions to musical beats."
     }
   ],
   "tags": [
-    "beat",
-    "rhythm",
-    "timing"
+    "beat_matching",
+    "audio_clock",
+    "latency_calibration",
+    "input_judgment",
+    "rhythm"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

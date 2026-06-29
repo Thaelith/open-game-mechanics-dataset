@@ -2,12 +2,12 @@
   "id": "rhythm.note_lane",
   "name": "Note Lane",
   "aliases": [
-    "note lane mechanic",
-    "note lane system",
-    "note lane"
+    "track lane",
+    "rhythm lane",
+    "note highway"
   ],
   "category": "rhythm",
-  "subcategory": "rhythm",
+  "subcategory": "chart_lane",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,94 +16,138 @@
   ],
   "difficulty": {
     "design": "medium",
-    "implementation": "hard",
-    "tuning": "expert"
+    "implementation": "medium",
+    "tuning": "hard"
   },
   "genres": [
     "rhythm",
-    "action",
-    "music"
+    "music",
+    "arcade"
   ],
-  "description": "Note Lane is a timing mechanic where player input, scoring, or simulation aligns with musical or beat-based windows.",
-  "design_notes": "Note Lane should be designed around a clear player promise, a readable trigger, and a predictable result. For rhythm mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A visual and logical lane that maps charted notes to specific input channels, spawn positions, scroll behavior, and hit targets.",
+  "design_notes": "Note lanes turn chart data into readable action. The lane system should define note ids, lane ids, spawn timestamps, scroll behavior, hit target position, cleanup rules, and accessibility options for color, spacing, speed perception, and clutter reduction.",
   "design_purpose": [
-    "Give the player a readable way to use note lane as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect note lane to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Organize dense chart data into readable input channels.",
+    "Help players anticipate upcoming actions through spatial layout.",
+    "Support difficulty scaling through lane count, note density, and visual clarity."
   ],
-  "player_fantasy": "The player feels synchronized with music, timing, and responsive feedback.",
+  "player_fantasy": "The player feels they are reading a musical path and striking the correct lane at the right moment.",
   "required_systems": [
-    "audio_clock",
-    "timing_window",
-    "input_buffer",
-    "feedback_system"
+    "chart_parser",
+    "lane_renderer",
+    "input_mapping",
+    "judgment_system",
+    "accessibility_settings"
   ],
   "parameters": [
     {
-      "name": "beats_per_minute",
-      "type": "float",
-      "typical_range": "60-220 BPM",
-      "description": "Tempo used by the mechanic."
+      "name": "chart_id",
+      "type": "string",
+      "typical_range": "song difficulty chart id",
+      "description": "Chart source containing lane and note definitions."
     },
     {
-      "name": "perfect_window",
-      "type": "float",
-      "typical_range": "10-80 milliseconds",
-      "description": "Timing tolerance for the best outcome."
+      "name": "note_id",
+      "type": "string",
+      "typical_range": "unique note or hold-note identifier",
+      "description": "Chart note used for rendering, input matching, and replay."
     },
     {
-      "name": "miss_penalty",
+      "name": "note_lane_id",
+      "type": "string",
+      "typical_range": "lane_left, lane_2, drum_kick",
+      "description": "Input and visual lane assigned to the note."
+    },
+    {
+      "name": "note_spawn_timestamp_ms",
       "type": "integer",
-      "typical_range": "0-100",
-      "description": "Penalty applied when input falls outside accepted timing."
+      "typical_range": "track-relative milliseconds",
+      "description": "Audio-clock timestamp when the note should enter view."
+    },
+    {
+      "name": "chart_scroll_rate_id",
+      "type": "string",
+      "typical_range": "slow, normal, fast, player_custom",
+      "description": "Lane motion profile used to position upcoming notes."
+    },
+    {
+      "name": "hit_target_id",
+      "type": "string",
+      "typical_range": "judgment_line, drum_pad, gesture_zone",
+      "description": "Interaction target where lane input is evaluated."
+    },
+    {
+      "name": "lane_accessibility_profile_id",
+      "type": "string",
+      "typical_range": "high_contrast, reduced_clutter, enlarged_targets",
+      "description": "Visual and input adjustments applied to lane presentation."
     }
   ],
   "common_variants": [
-    "note_lane_strict_timing",
-    "note_lane_forgiving_timing",
-    "call_and_response",
-    "score_combo_variant"
+    "four_lane_highway",
+    "radial_lanes",
+    "drum_lanes",
+    "single_lane_runner",
+    "gesture_lanes"
   ],
   "edge_cases": [
-    "Note Lane is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Note Lane overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Note Lane runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Two notes in the same lane overlap visually but need separate input windows.",
+    "A scroll-rate change occurs while notes are already visible.",
+    "A hold note crosses a pause boundary or tempo-map transition.",
+    "Colorblind lane mode changes visual identifiers but not input mapping.",
+    "A chart update changes note_id order and invalidates saved replay data."
   ],
   "common_bugs": [
-    "Note Lane state does not reset correctly after interruption or reload.",
-    "Feedback for Note Lane plays even when the mechanic fails or is rejected.",
-    "Note Lane produces different results between frame rates, platforms, or network clients."
+    "Rendered note position drifts from audio-clock judgment because animation uses frame delta.",
+    "Lane input mapping changes in settings but existing spawned notes keep old lane ids.",
+    "Miss cleanup removes notes visually before the judgment system records the miss.",
+    "Hidden notes still block input in the same lane after being despawned.",
+    "Accessibility lane spacing changes hit-target placement but not collision or input zones."
   ],
   "balancing_notes": [
-    "Make Note Lane strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "More lanes increase reading difficulty even if note density stays the same.",
+    "Scroll profiles should preserve anticipation; very fast lanes need strong calibration and practice support.",
+    "Lane colors, shapes, and spacing can lower cognitive load without reducing scoring strictness."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Note Lane becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide high-contrast, colorblind-safe, enlarged-target, and reduced-clutter lane profiles.",
+    "Allow players to remap lane inputs and preview lane layout before songs.",
+    "Avoid relying only on color to distinguish simultaneous lanes."
   ],
   "implementation_notes": {
-    "unity": "Implement Note Lane with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Note Lane as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Note Lane with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Note Lane as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Render notes from chart timestamps relative to AudioSettings.dspTime rather than moving them by accumulated frame delta. Keep note_id and note_lane_id in the spawned view model so misses, hits, replay, and accessibility layout all refer to the same chart data.",
+    "godot": "Use Control or Node2D lane containers driven by audio_playhead_ms. Input actions should map to note_lane_id through a settings layer, and note cleanup should be requested by the judgment system rather than animation completion.",
+    "unreal": "UMG or world-space lanes can read a rhythm chart model with note ids, lane ids, and spawn timestamps. Keep hit-target geometry synchronized with accessibility layout changes and use deterministic note ordering for replay.",
+    "web": "Use Canvas, SVG, or DOM rendering as a projection of chart data. Compute note positions from audio playhead and chart_scroll_rate_id each frame, while scoring operates on note timestamps and lane ids."
   },
   "related_mechanics": [
     "rhythm.beat_matching",
+    "rhythm.sync_window",
     "rhythm.combo_multiplier",
-    "time.rhythm_timing",
-    "ui_ux.damage_numbers"
+    "ui_ux.cooldown_indicator"
   ],
   "combines_well_with": [
-    "rhythm.sync_window",
-    "time.rhythm_timing",
-    "ui_ux.damage_numbers"
+    "accessibility.colorblind_modes",
+    "accessibility.text_scaling",
+    "ui_ux.hit_marker",
+    "time.rhythm_timing"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Dance Dance Revolution",
+      "note": "Uses lane-like directional note tracks for timed input."
+    },
+    {
+      "title": "Guitar Hero",
+      "note": "Uses a note highway with lane-specific inputs."
+    }
+  ],
   "tags": [
-    "note",
-    "rhythm",
-    "timing"
+    "note_lane",
+    "chart_data",
+    "lane_input",
+    "scroll_profile",
+    "accessibility_layout"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

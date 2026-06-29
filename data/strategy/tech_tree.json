@@ -2,12 +2,12 @@
   "id": "strategy.tech_tree",
   "name": "Tech Tree",
   "aliases": [
-    "tech tree mechanic",
-    "tech tree system",
-    "tech tree"
+    "technology tree",
+    "research tree",
+    "unlock tree"
   ],
   "category": "strategy",
-  "subcategory": "strategy",
+  "subcategory": "research_unlocks",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,94 +16,139 @@
   ],
   "difficulty": {
     "design": "hard",
-    "implementation": "hard",
+    "implementation": "medium",
     "tuning": "expert"
   },
   "genres": [
     "strategy",
     "4x",
-    "real_time_strategy"
+    "real_time_strategy",
+    "simulation"
   ],
-  "description": "Tech Tree is a planning mechanic that governs territory, information, unit roles, resources, or long-horizon decisions.",
-  "design_notes": "Tech Tree should be designed around a clear player promise, a readable trigger, and a predictable result. For strategy mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A structured research or unlock graph where players spend resources, meet prerequisites, and unlock units, buildings, upgrades, policies, or strategic options.",
+  "design_notes": "Tech trees turn long-term planning into visible structure. The system should define prerequisite nodes, research transactions, unlock effects, branch exclusivity, migration behavior, and UI explanations for why a technology is available, blocked, queued, or completed.",
   "design_purpose": [
-    "Give the player a readable way to use tech tree as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect tech tree to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players strategic direction and long-term planning choices.",
+    "Gate advanced units, economies, territory tools, or victory paths behind readable prerequisites.",
+    "Let designers pace complexity and specialization across a match or campaign."
   ],
-  "player_fantasy": "The player feels they are winning through planning, information, and tradeoffs.",
+  "player_fantasy": "The player feels their faction is advancing from basic capabilities into a specialized strategic identity.",
   "required_systems": [
-    "map_state",
-    "unit_system",
-    "visibility_rules",
-    "ai_or_rules_engine"
+    "research_graph",
+    "resource_system",
+    "unlock_system",
+    "ui_tree_view",
+    "save_replay_state"
   ],
   "parameters": [
     {
-      "name": "decision_horizon",
+      "name": "faction_id",
+      "type": "string",
+      "typical_range": "faction_human, faction_alien, neutral",
+      "description": "Faction or player ruleset that owns the research graph."
+    },
+    {
+      "name": "tech_unlock_id",
+      "type": "string",
+      "typical_range": "bronze_working, plasma_weapons, rail_network",
+      "description": "Technology node being researched or completed."
+    },
+    {
+      "name": "prerequisite_node_ids",
+      "type": "array",
+      "typical_range": "zero or more tech ids",
+      "description": "Required completed nodes before this unlock can begin."
+    },
+    {
+      "name": "research_progress_points",
       "type": "integer",
-      "typical_range": "1-100 turns",
-      "description": "Number of future steps the mechanic asks players to plan around."
+      "typical_range": "0 to node requirement",
+      "description": "Accumulated research progress toward the current node."
     },
     {
-      "name": "information_radius",
-      "type": "float",
-      "typical_range": "1-200 tiles or units",
-      "description": "Area of map or state affected by information rules."
+      "name": "resource_spend_transaction_id",
+      "type": "string",
+      "typical_range": "unique per research spend",
+      "description": "Idempotent transaction for resource payment or research allocation."
     },
     {
-      "name": "resource_pressure",
-      "type": "float",
-      "typical_range": "0-10",
-      "description": "How strongly the mechanic pushes opportunity cost."
+      "name": "unlock_effect_id",
+      "type": "string",
+      "typical_range": "unit_unlock, stat_upgrade, policy_enable",
+      "description": "Effect applied when the technology completes."
+    },
+    {
+      "name": "research_queue_id",
+      "type": "string",
+      "typical_range": "player_queue, lab_queue, faction_queue",
+      "description": "Ordered queue that owns active and pending research."
     }
   ],
   "common_variants": [
-    "tech_tree_turn_based_variant",
-    "tech_tree_real_time_variant",
-    "hidden_information_variant",
-    "asymmetric_variant"
+    "linear_research_tree",
+    "branching_tech_tree",
+    "mutually_exclusive_branches",
+    "randomized_research_offers",
+    "faction_unique_tree"
   ],
   "edge_cases": [
-    "Tech Tree is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Tech Tree overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Tech Tree runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A technology is removed or renamed in an update while a save has it queued.",
+    "Two prerequisite branches complete on the same tick and unlock a dependent node.",
+    "A player loses the building or territory required to continue active research.",
+    "A research refund or respec interacts with already-created units or buildings.",
+    "Networked players issue queue changes simultaneously for shared faction research."
   ],
   "common_bugs": [
-    "Tech Tree state does not reset correctly after interruption or reload.",
-    "Feedback for Tech Tree plays even when the mechanic fails or is rejected.",
-    "Tech Tree produces different results between frame rates, platforms, or network clients."
+    "Unlock effects apply when research starts instead of when it completes.",
+    "Research queue UI accepts a node but server validation rejects missing prerequisites.",
+    "Progress is stored by display name and breaks after localization or balance updates.",
+    "Refunds return resources but leave unlock effects active.",
+    "Replay desyncs because research completion and resource income ticks resolve in different order."
   ],
   "balancing_notes": [
-    "Make Tech Tree strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Early tech choices should open options quickly; late tech choices can carry heavier commitment.",
+    "Mutually exclusive branches need enough information for players to understand what they are giving up.",
+    "Research pacing should account for income spikes, territory loss, and comeback paths."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Tech Tree becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide searchable tree views, prerequisite explanations, and clear blocked-state reasons.",
+    "Avoid communicating branch types only through color or tiny icons.",
+    "Let players inspect future unlocks without requiring memorization of tooltips."
   ],
   "implementation_notes": {
-    "unity": "Implement Tech Tree with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Tech Tree as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Tech Tree with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Tech Tree as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Represent tech nodes as data assets and active research as player or faction state. Validate prerequisite_node_ids and resource_spend_transaction_id before queue changes, then apply unlock_effect_id exactly once at completion.",
+    "godot": "Use Resources for tech definitions and a graph model for prerequisites. Store research queue, progress, and completed ids in save data, and have UI query validation reasons rather than duplicating prerequisite logic.",
+    "unreal": "Use Data Assets for tech nodes and a replicated research component for multiplayer factions. Server authority should order queue edits, resource spending, and completion effects by simulation tick for replay safety.",
+    "web": "Keep the tech graph in versioned JSON and process research through a deterministic reducer. Persist completed ids, queue ids, and migration version so browser saves survive balance and content updates."
   },
   "related_mechanics": [
-    "ai.patrol",
-    "strategy.fog_of_war",
-    "strategy.unit_counter_system",
-    "ui_ux.minimap"
+    "progression.skill_tree",
+    "progression.unlockable_abilities",
+    "economy.resource_conversion",
+    "strategy.territory_control"
   ],
   "combines_well_with": [
-    "ai.patrol",
-    "strategy.territory_control",
-    "ui_ux.minimap"
+    "strategy.unit_counter_system",
+    "strategy.fog_of_war",
+    "economy.shop",
+    "meta.new_game_plus"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Civilization VI",
+      "note": "Uses technology and civics trees for long-term strategic planning."
+    },
+    {
+      "title": "Age of Empires II",
+      "note": "Uses research unlocks to advance units, buildings, and strategies."
+    }
+  ],
   "tags": [
-    "planning",
-    "strategy",
-    "tech"
+    "tech_tree",
+    "research",
+    "unlock_graph",
+    "strategy_progression",
+    "resource_transaction"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

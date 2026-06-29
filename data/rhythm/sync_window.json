@@ -2,12 +2,12 @@
   "id": "rhythm.sync_window",
   "name": "Sync Window",
   "aliases": [
-    "sync window mechanic",
-    "sync window system",
-    "sync window"
+    "timing window",
+    "judgment window",
+    "input sync band"
   ],
   "category": "rhythm",
-  "subcategory": "rhythm",
+  "subcategory": "timing_judgment",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,94 +16,139 @@
   ],
   "difficulty": {
     "design": "medium",
-    "implementation": "hard",
+    "implementation": "medium",
     "tuning": "expert"
   },
   "genres": [
     "rhythm",
-    "action",
-    "music"
+    "music",
+    "arcade",
+    "action"
   ],
-  "description": "Sync Window is a timing mechanic where player input, scoring, or simulation aligns with musical or beat-based windows.",
-  "design_notes": "Sync Window should be designed around a clear player promise, a readable trigger, and a predictable result. For rhythm mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A set of latency-adjusted judgment bands that classify inputs as perfect, good, late, early, missed, or ignored relative to charted beat timestamps.",
+  "design_notes": "Sync windows are the fairness contract in rhythm games. The implementation should define exact window boundaries, input consumption rules, combo-break rules, calibration offsets, replay behavior, and how dropped frames affect visual feedback without changing scoring.",
   "design_purpose": [
-    "Give the player a readable way to use sync window as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect sync window to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Translate small timing differences into readable judgment tiers.",
+    "Give designers a structured way to tune difficulty and score generosity.",
+    "Support calibration and accessibility assists without rewriting chart data."
   ],
-  "player_fantasy": "The player feels synchronized with music, timing, and responsive feedback.",
+  "player_fantasy": "The player feels their precision is judged consistently and understands why an input was early, perfect, late, or missed.",
   "required_systems": [
     "audio_clock",
-    "timing_window",
-    "input_buffer",
-    "feedback_system"
+    "input_timestamping",
+    "judgment_system",
+    "latency_calibration",
+    "score_pipeline"
   ],
   "parameters": [
     {
-      "name": "beats_per_minute",
-      "type": "float",
-      "typical_range": "60-220 BPM",
-      "description": "Tempo used by the mechanic."
+      "name": "timing_window_id",
+      "type": "string",
+      "typical_range": "standard, lenient, expert, assist",
+      "description": "Named judgment profile applied to the current song or mode."
     },
     {
-      "name": "perfect_window",
-      "type": "float",
-      "typical_range": "10-80 milliseconds",
-      "description": "Timing tolerance for the best outcome."
-    },
-    {
-      "name": "miss_penalty",
+      "name": "perfect_window_ms",
       "type": "integer",
-      "typical_range": "0-100",
-      "description": "Penalty applied when input falls outside accepted timing."
+      "typical_range": "15-60 ms",
+      "description": "Maximum absolute offset for the highest judgment tier."
+    },
+    {
+      "name": "good_window_ms",
+      "type": "integer",
+      "typical_range": "50-120 ms",
+      "description": "Maximum absolute offset for an acceptable successful hit."
+    },
+    {
+      "name": "miss_window_ms",
+      "type": "integer",
+      "typical_range": "100-250 ms",
+      "description": "Boundary after which an unhit note becomes a miss."
+    },
+    {
+      "name": "input_latency_offset_ms",
+      "type": "integer",
+      "typical_range": "-250 to 250 ms",
+      "description": "Player or device calibration offset applied before classification."
+    },
+    {
+      "name": "hit_judgment_id",
+      "type": "string",
+      "typical_range": "perfect, good, early, late, miss",
+      "description": "Result assigned to a note or beat input after evaluation."
+    },
+    {
+      "name": "combo_break_rule_id",
+      "type": "string",
+      "typical_range": "miss_only, good_or_worse, ignore_assist_notes",
+      "description": "Rule that determines which judgments reset combo state."
     }
   ],
   "common_variants": [
-    "sync_window_strict_timing",
-    "sync_window_forgiving_timing",
-    "call_and_response",
-    "score_combo_variant"
+    "symmetric_window",
+    "early_late_split_window",
+    "assist_widened_window",
+    "ranked_strict_window",
+    "hidden_judgment_window"
   ],
   "edge_cases": [
-    "Sync Window is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Sync Window overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Sync Window runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Two notes are close enough that one input could fall inside both judgment windows.",
+    "A held note begins with a perfect hit but releases outside the allowed end band.",
+    "Calibration changes while a note is active and should apply only after the current chart segment.",
+    "A pause occurs after a note appears but before its miss boundary.",
+    "Replay verification runs on a device with different display refresh and audio latency."
   ],
   "common_bugs": [
-    "Sync Window state does not reset correctly after interruption or reload.",
-    "Feedback for Sync Window plays even when the mechanic fails or is rejected.",
-    "Sync Window produces different results between frame rates, platforms, or network clients."
+    "Judgment windows are checked in a non-deterministic note order and consume inputs inconsistently.",
+    "Miss cleanup uses render position instead of audio-clock position.",
+    "Early and late offsets are displayed with reversed signs.",
+    "Assist mode widens visual feedback but not actual hit_judgment_id calculation.",
+    "Combo break logic reads score tier text instead of the structured combo_break_rule_id."
   ],
   "balancing_notes": [
-    "Make Sync Window strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Window sizes should match song density, input device, and intended rank difficulty.",
+    "Perfect windows can be strict if good windows preserve playability and feedback is accurate.",
+    "Ranked modes may need fixed calibration policy while casual modes can be more forgiving."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Sync Window becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Offer adjustable timing windows or assist profiles separate from audiovisual latency calibration.",
+    "Show early and late feedback in text or clear symbols, not only color.",
+    "Support practice views that display input offset history without requiring external tools."
   ],
   "implementation_notes": {
-    "unity": "Implement Sync Window with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Sync Window as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Sync Window with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Sync Window as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store timing_window_id profiles as data and evaluate input_event_timestamp_ms against audio-clock beat timestamps after one calibration offset. Sort candidate notes by absolute offset and consume an input only once to keep replay scoring deterministic.",
+    "godot": "Use a rhythm judgment node that receives timestamped input events and chart note timestamps. Keep miss cleanup tied to audio_playhead_ms, and emit structured hit_judgment_id values for UI, combo, and scoring.",
+    "unreal": "A rhythm subsystem should own window profiles, calibration, and note-consumption order. Use fixed data ordering for replay and separate visual hit effects from authoritative judgment state.",
+    "web": "Use Web Audio currentTime plus event timestamps to compute offsets. Store judgment profiles in chart metadata, and process note hits in a deterministic sorted array rather than relying on DOM or render positions."
   },
   "related_mechanics": [
     "rhythm.beat_matching",
     "rhythm.note_lane",
-    "time.rhythm_timing",
-    "ui_ux.damage_numbers"
+    "rhythm.combo_multiplier",
+    "time.rhythm_timing"
   ],
   "combines_well_with": [
-    "rhythm.combo_multiplier",
-    "time.rhythm_timing",
-    "ui_ux.damage_numbers"
+    "ui_ux.hit_marker",
+    "accessibility.adjustable_difficulty",
+    "camera.screen_shake",
+    "progression.achievement_system"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Guitar Hero",
+      "note": "Uses timing windows to judge note hits against charted music."
+    },
+    {
+      "title": "osu!",
+      "note": "Uses timing judgments and offset feedback as part of scoring."
+    }
+  ],
   "tags": [
-    "rhythm",
-    "sync",
-    "timing"
+    "timing_window",
+    "judgment",
+    "latency_offset",
+    "combo_break",
+    "deterministic_scoring"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

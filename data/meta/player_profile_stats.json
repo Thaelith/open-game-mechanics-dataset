@@ -2,12 +2,12 @@
   "id": "meta.player_profile_stats",
   "name": "Player Profile Stats",
   "aliases": [
-    "player profile stats mechanic",
-    "player profile stats system",
-    "player profile stats"
+    "account statistics",
+    "profile records",
+    "lifetime stats"
   ],
   "category": "meta",
-  "subcategory": "meta",
+  "subcategory": "profile_records",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -17,93 +17,138 @@
   "difficulty": {
     "design": "medium",
     "implementation": "medium",
-    "tuning": "hard"
+    "tuning": "medium"
   },
   "genres": [
-    "roguelike",
-    "live_service",
-    "arcade"
+    "all_genres",
+    "rpg",
+    "simulation",
+    "competitive"
   ],
-  "description": "Player Profile Stats is a profile-level mechanic that operates across sessions, runs, or modes rather than only inside one encounter.",
-  "design_notes": "Player Profile Stats should be designed around a clear player promise, a readable trigger, and a predictable result. For meta mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "Long-term account or profile statistics that summarize play history, milestones, performance, preferences, and completion across sessions.",
+  "design_notes": "Profile stats are useful when they are trustworthy and explainable. The design should define which events increment counters, which values are private, how cross-save merges resolve conflicts, how platform services sync records, and whether stats can drive achievements, matchmaking, or personalization.",
   "design_purpose": [
-    "Give the player a readable way to use player profile stats as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect player profile stats to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players a durable record of activity, mastery, and preferences.",
+    "Support achievements, collection logs, matchmaking, recommendations, or social profile pages.",
+    "Provide designers and support tools with account-level state that is not tied to one save file."
   ],
-  "player_fantasy": "The player feels their history across sessions has visible meaning.",
+  "player_fantasy": "The player feels their profile reflects a history of choices, skill, discoveries, and personal milestones.",
   "required_systems": [
-    "player_profile",
-    "analytics_or_stats",
-    "reward_rules",
-    "save_state"
+    "account_profile",
+    "event_tracking",
+    "save_system",
+    "privacy_settings",
+    "platform_services"
   ],
   "parameters": [
     {
-      "name": "reset_period",
+      "name": "account_id",
       "type": "string",
-      "typical_range": "run, daily, weekly, season, permanent",
-      "description": "When the mechanic refreshes or resets."
+      "typical_range": "platform or game account identifier",
+      "description": "Account identity that owns profile records and sync state."
     },
     {
-      "name": "reward_tier_count",
-      "type": "integer",
-      "typical_range": "1-100",
-      "description": "Number of visible reward or stat tiers."
+      "name": "profile_id",
+      "type": "string",
+      "typical_range": "profile slot or character profile id",
+      "description": "Profile segment tracked independently under the account."
     },
     {
-      "name": "visibility_rule",
+      "name": "profile_stat_id",
       "type": "string",
-      "typical_range": "always, unlocked, discovered, hidden",
-      "description": "When the player can see the meta information."
+      "typical_range": "runs_completed, enemies_defeated, favorite_weapon",
+      "description": "Stable stat key used by UI, achievements, and migration code."
+    },
+    {
+      "name": "stat_increment_event_id",
+      "type": "string",
+      "typical_range": "match_end, boss_defeat, item_collected",
+      "description": "Committed gameplay event that changes a profile stat."
+    },
+    {
+      "name": "profile_snapshot_id",
+      "type": "string",
+      "typical_range": "local_snapshot, cloud_snapshot, support_export",
+      "description": "Saved profile revision used for sync and support comparisons."
+    },
+    {
+      "name": "cross_save_profile_id",
+      "type": "string",
+      "typical_range": "cloud profile mapping id",
+      "description": "Identifier used to merge profile data across platforms or devices."
+    },
+    {
+      "name": "privacy_visibility_id",
+      "type": "string",
+      "typical_range": "private, friends, public, anonymous",
+      "description": "Visibility rule for profile records shown outside local UI."
     }
   ],
   "common_variants": [
-    "player_profile_stats_daily_variant",
-    "player_profile_stats_seasonal_variant",
-    "account_wide",
-    "save_slot_specific"
+    "lifetime_stats",
+    "character_profile_stats",
+    "social_profile_stats",
+    "competitive_record",
+    "personal_best_records"
   ],
   "edge_cases": [
-    "Player Profile Stats is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Player Profile Stats overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Player Profile Stats runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "Two devices update the same profile stat offline and later sync with different snapshots.",
+    "A stat is renamed or split during a save migration.",
+    "An achievement checks a stat before the profile transaction commits.",
+    "Privacy settings change after profile data was already cached by a social page.",
+    "A support tool edits account data and must not break anti-cheat validation."
   ],
   "common_bugs": [
-    "Player Profile Stats state does not reset correctly after interruption or reload.",
-    "Feedback for Player Profile Stats plays even when the mechanic fails or is rejected.",
-    "Player Profile Stats produces different results between frame rates, platforms, or network clients."
+    "Stats increment from predicted events that later fail authoritative validation.",
+    "Cross-save merge keeps the newest snapshot and discards higher personal best records.",
+    "Profile exports include private stats despite privacy_visibility_id restrictions.",
+    "Counters are stored as localized display strings rather than numeric or structured state.",
+    "Platform API sync retries increment local stats again instead of resubmitting the same record."
   ],
   "balancing_notes": [
-    "Make Player Profile Stats strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Stats used for matchmaking or recommendations should be resistant to farming and clearly scoped.",
+    "Public stats can motivate mastery, but overexposure can pressure players away from experimentation.",
+    "Lifetime counters are often less meaningful than records tied to mode, difficulty, or rule set."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Player Profile Stats becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Let players hide or simplify public profile stats that create social pressure.",
+    "Provide searchable, sortable, and text-readable stats for large profiles.",
+    "Avoid presenting progress exclusively through small badges or color-coded medals."
   ],
   "implementation_notes": {
-    "unity": "Implement Player Profile Stats with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Player Profile Stats as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Player Profile Stats with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Player Profile Stats as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Route profile stat changes through an account-profile service that accepts stat_increment_event_id records after gameplay commits. Store profile_snapshot_id and privacy_visibility_id with the data used for platform sync or social display.",
+    "godot": "Keep profile stats in a versioned profile resource separate from moment-to-moment save data. Apply migrations by stable profile_stat_id and merge cross-save snapshots with per-stat policies such as max, sum, latest, or authoritative.",
+    "unreal": "Use SaveGame or backend profile records for local stats and Online Subsystem calls for platform service sync. Server-authoritative modes should submit validated stat events rather than accepting client-side counters directly.",
+    "web": "Store stats in account storage or IndexedDB with event ids and profile revisions. When offline play is supported, queue committed stat events and reconcile them against server state without replaying duplicate increments."
   },
   "related_mechanics": [
+    "progression.achievement_system",
     "meta.collection_log",
     "meta.daily_challenge",
-    "progression.meta_progression",
-    "roguelike.run_based_progression"
+    "multiplayer.matchmaking_lobby"
   ],
   "combines_well_with": [
-    "meta.new_game_plus",
-    "progression.meta_progression",
-    "roguelike.run_based_progression"
+    "ui_ux.damage_numbers",
+    "progression.level_up",
+    "economy.coins",
+    "accessibility.text_scaling"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Apex Legends",
+      "note": "Uses player banners and tracked profile statistics."
+    },
+    {
+      "title": "World of Warcraft",
+      "note": "Tracks long-term character and account achievements and statistics."
+    }
+  ],
   "tags": [
-    "meta",
-    "player",
-    "retention"
+    "profile_stats",
+    "account_state",
+    "cross_save",
+    "privacy",
+    "platform_sync"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

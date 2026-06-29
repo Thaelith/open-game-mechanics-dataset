@@ -2,12 +2,12 @@
   "id": "strategy.fog_of_war",
   "name": "Fog of War",
   "aliases": [
-    "fog of war mechanic",
-    "fog of war system",
-    "fog of war"
+    "map fog",
+    "hidden map",
+    "strategic visibility"
   ],
   "category": "strategy",
-  "subcategory": "strategy",
+  "subcategory": "map_visibility",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,104 +15,140 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
+    "design": "medium",
     "implementation": "hard",
-    "tuning": "expert"
+    "tuning": "hard"
   },
   "genres": [
     "strategy",
+    "real_time_strategy",
     "4x",
-    "real_time_strategy"
+    "tactical"
   ],
-  "description": "Fog of War is a planning mechanic that governs territory, information, unit roles, resources, or long-horizon decisions.",
-  "design_notes": "Fog of War should be designed around a clear player promise, a readable trigger, and a predictable result. For strategy mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A map information system where terrain, units, resources, or enemy actions are hidden until revealed by scouts, sensors, ownership, or shared team vision.",
+  "design_notes": "Fog of war creates strategy through uncertainty. The system should separate unexplored cells, explored-but-currently-hidden cells, visible cells, stale intel, team sharing, and replay state. UI and network authority must agree on what each player is allowed to know.",
   "design_purpose": [
-    "Give the player a readable way to use fog of war as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect fog of war to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Make scouting, positioning, stealth, and map control strategically valuable.",
+    "Limit perfect information so opponents can maneuver, expand, or hide plans.",
+    "Give designers a structured way to reveal terrain, objectives, threats, and stale intelligence."
   ],
-  "player_fantasy": "The player feels they are winning through planning, information, and tradeoffs.",
+  "player_fantasy": "The player feels they are building intelligence by sending units into uncertainty and watching the map come alive.",
   "required_systems": [
-    "map_state",
-    "unit_system",
-    "visibility_rules",
-    "ai_or_rules_engine"
+    "map_grid",
+    "visibility_system",
+    "team_state",
+    "unit_sensors",
+    "minimap_renderer"
   ],
   "parameters": [
     {
-      "name": "decision_horizon",
+      "name": "player_id",
+      "type": "string",
+      "typical_range": "local player or commander id",
+      "description": "Player whose visibility state is being queried or updated."
+    },
+    {
+      "name": "team_id",
+      "type": "string",
+      "typical_range": "team_a, team_blue, neutral",
+      "description": "Team used for shared vision and alliance rules."
+    },
+    {
+      "name": "fog_cell_id",
+      "type": "string",
+      "typical_range": "grid_x_y or chunk_cell id",
+      "description": "Map cell storing explored, visible, or stale intelligence state."
+    },
+    {
+      "name": "visibility_state",
+      "type": "string",
+      "typical_range": "unexplored, explored, visible, stale",
+      "description": "Information band currently available for the cell."
+    },
+    {
+      "name": "revealed_at_tick",
       "type": "integer",
-      "typical_range": "1-100 turns",
-      "description": "Number of future steps the mechanic asks players to plan around."
+      "typical_range": "simulation tick index",
+      "description": "Tick when the cell most recently entered visible state."
     },
     {
-      "name": "information_radius",
-      "type": "float",
-      "typical_range": "1-200 tiles or units",
-      "description": "Area of map or state affected by information rules."
+      "name": "scout_source_id",
+      "type": "string",
+      "typical_range": "unit_id, sensor_id, building_id, scripted_reveal",
+      "description": "Source that contributed visibility to the cell."
     },
     {
-      "name": "resource_pressure",
-      "type": "float",
-      "typical_range": "0-10",
-      "description": "How strongly the mechanic pushes opportunity cost."
+      "name": "stale_intel_policy_id",
+      "type": "string",
+      "typical_range": "keep_terrain, hide_units, ghost_last_seen",
+      "description": "Rule for what remains visible after current sight is lost."
     }
   ],
   "common_variants": [
-    "fog_of_war_turn_based_variant",
-    "fog_of_war_real_time_variant",
-    "hidden_information_variant",
-    "asymmetric_variant"
+    "exploration_fog",
+    "line_of_sight_fog",
+    "shared_team_vision",
+    "sensor_reveal",
+    "stale_intel_ghosts"
   ],
   "edge_cases": [
-    "Fog of War is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Fog of War overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Fog of War runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A unit dies or transfers ownership during the same tick it reveals enemy units.",
+    "Team alliances change and shared vision must update without leaking old enemy intel.",
+    "A replay or spectator view needs broader visibility than the active player had.",
+    "A stealthed unit enters a visible cell but should remain hidden without detection.",
+    "Late-joining multiplayer clients need fog state without receiving hidden enemy positions."
   ],
   "common_bugs": [
-    "Fog of War state does not reset correctly after interruption or reload.",
-    "Feedback for Fog of War plays even when the mechanic fails or is rejected.",
-    "Fog of War produces different results between frame rates, platforms, or network clients."
+    "Minimap fog and world fog use different cell grids and show conflicting information.",
+    "Hidden enemy units are sent to clients and can be exposed by modded UI or memory inspection.",
+    "Visibility updates after combat resolution, allowing attacks from unrevealed targets.",
+    "Stale intel keeps updating enemy building health even while out of vision.",
+    "Replay save data stores only final fog state and cannot reconstruct scouting history."
   ],
   "balancing_notes": [
-    "Make Fog of War strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Scout radius, terrain blockers, and unit mobility define how expensive information is.",
+    "Team-shared vision can reduce coordination friction but may weaken scouting roles.",
+    "Stale intel is useful when it preserves planning context without revealing current enemy decisions."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Fog of War becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Use texture, opacity, labels, or outlines in addition to color to distinguish fog states.",
+    "Keep minimap and main-map fog language consistent for players with low vision.",
+    "Provide readable alerts when important information becomes newly visible."
   ],
   "implementation_notes": {
-    "unity": "Implement Fog of War with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Fog of War as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Fog of War with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Fog of War as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store visibility per player or team in grid or chunk data keyed by fog_cell_id. Update scout sources in deterministic tick order, then render world masks and minimap overlays from the committed visibility_state without exposing hidden enemy entities to unauthorized clients.",
+    "godot": "Use TileMap or grid resources for fog cells and keep visibility state separate from rendered fog sprites. Multiplayer projects should replicate only allowed state per peer and avoid sending hidden unit data to clients that lack vision.",
+    "unreal": "Use replicated visibility components or server-side relevance rules for hidden actors. Fog rendering can use material masks, render targets, or grid textures, but authoritative visibility should stay in gameplay state for save and replay.",
+    "web": "Represent fog as per-player arrays or bitsets and draw masks on Canvas, WebGL, or DOM overlays. Keep visibility updates deterministic by sorting scout sources and cells before applying reveals."
   },
   "related_mechanics": [
-    "ai.patrol",
-    "strategy.tech_tree",
-    "strategy.unit_counter_system",
-    "ui_ux.minimap"
+    "ui_ux.minimap",
+    "ai.line_of_sight_detection",
+    "stealth.visibility_meter",
+    "multiplayer.team_objective"
   ],
   "combines_well_with": [
-    "ai.patrol",
     "strategy.territory_control",
-    "ui_ux.minimap"
+    "strategy.tech_tree",
+    "ai.patrol",
+    "simulation.traffic_flow"
   ],
   "example_games": [
     {
-      "title": "StarCraft",
-      "note": "Uses fog of war to create scouting and uncertainty."
+      "title": "StarCraft II",
+      "note": "Uses fog of war and scouting as core strategic information systems."
     },
     {
-      "title": "Civilization",
-      "note": "Uses undiscovered map areas to pace exploration."
+      "title": "Civilization VI",
+      "note": "Uses exploration and map visibility to gate strategic knowledge."
     }
   ],
   "tags": [
-    "fog",
-    "planning",
-    "strategy"
+    "fog_of_war",
+    "visibility",
+    "scouting",
+    "map_information",
+    "multiplayer_authority"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

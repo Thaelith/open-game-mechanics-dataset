@@ -2,12 +2,12 @@
   "id": "meta.new_game_plus",
   "name": "New Game Plus",
   "aliases": [
-    "new game plus mechanic",
-    "new game plus system",
-    "new game plus"
+    "ng plus",
+    "repeat playthrough",
+    "post-completion replay"
   ],
   "category": "meta",
-  "subcategory": "meta",
+  "subcategory": "repeat_playthrough",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,95 +15,140 @@
     "3D"
   ],
   "difficulty": {
-    "design": "medium",
-    "implementation": "medium",
-    "tuning": "hard"
+    "design": "hard",
+    "implementation": "hard",
+    "tuning": "expert"
   },
   "genres": [
-    "roguelike",
-    "live_service",
-    "arcade"
+    "rpg",
+    "action",
+    "adventure",
+    "soulslike"
   ],
-  "description": "New Game Plus is a profile-level mechanic that operates across sessions, runs, or modes rather than only inside one encounter.",
-  "design_notes": "New Game Plus should be designed around a clear player promise, a readable trigger, and a predictable result. For meta mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A post-completion mode that starts a new playthrough while carrying selected account, character, item, difficulty, or completion state forward.",
+  "design_notes": "New Game Plus is a migration problem disguised as a reward. The design should define carryover rules, reset rules, difficulty scaling, unlock eligibility, quest-state cleanup, duplicate reward prevention, and whether profile achievements can unlock retroactively in the new loop.",
   "design_purpose": [
-    "Give the player a readable way to use new game plus as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect new game plus to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Reward completion by letting players replay with retained identity or power.",
+    "Extend mastery through harder encounters, alternate routes, or new rewards.",
+    "Create a controlled boundary for migrating save data into a repeat playthrough."
   ],
-  "player_fantasy": "The player feels their history across sessions has visible meaning.",
+  "player_fantasy": "The player feels they are beginning again with hard-earned mastery, gear, knowledge, or account status intact.",
   "required_systems": [
-    "player_profile",
-    "analytics_or_stats",
-    "reward_rules",
-    "save_state"
+    "save_migration",
+    "profile_progression",
+    "difficulty_scaling",
+    "inventory_system",
+    "quest_state_manager"
   ],
   "parameters": [
     {
-      "name": "reset_period",
+      "name": "profile_id",
       "type": "string",
-      "typical_range": "run, daily, weekly, season, permanent",
-      "description": "When the mechanic refreshes or resets."
+      "typical_range": "save slot or account profile id",
+      "description": "Profile used as the source and destination for repeat playthrough state."
     },
     {
-      "name": "reward_tier_count",
+      "name": "ng_plus_cycle_index",
       "type": "integer",
-      "typical_range": "1-100",
-      "description": "Number of visible reward or stat tiers."
+      "typical_range": "1-99",
+      "description": "Repeat-playthrough cycle used for scaling and unlock rules."
     },
     {
-      "name": "visibility_rule",
+      "name": "carryover_rule_id",
       "type": "string",
-      "typical_range": "always, unlocked, discovered, hidden",
-      "description": "When the player can see the meta information."
+      "typical_range": "keep_level_items, keep_cosmetics, keep_all_but_keys",
+      "description": "Rule describing which state is copied into the new cycle."
+    },
+    {
+      "name": "reset_rule_id",
+      "type": "string",
+      "typical_range": "reset_quests, reset_map, reset_keys, reset_npcs",
+      "description": "Rule describing which completion state returns to initial conditions."
+    },
+    {
+      "name": "difficulty_scaling_curve_id",
+      "type": "string",
+      "typical_range": "ng_linear, ng_step_table, custom_cycle_curve",
+      "description": "Scaling profile for enemies, rewards, economy, or hazards."
+    },
+    {
+      "name": "migration_checkpoint_id",
+      "type": "string",
+      "typical_range": "pre_ng_plus_snapshot, post_migration_snapshot",
+      "description": "Rollback point used if playthrough migration fails."
+    },
+    {
+      "name": "duplicate_reward_policy_id",
+      "type": "string",
+      "typical_range": "convert_to_currency, block_duplicate, upgrade_existing",
+      "description": "Rule for rewards already owned when encountered again."
     }
   ],
   "common_variants": [
-    "new_game_plus_daily_variant",
-    "new_game_plus_seasonal_variant",
-    "account_wide",
-    "save_slot_specific"
+    "scaled_new_game_plus",
+    "cosmetic_carryover",
+    "gear_carryover",
+    "challenge_ng_plus",
+    "looping_cycles"
   ],
   "edge_cases": [
-    "New Game Plus is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "New Game Plus overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "New Game Plus runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A quest item carried forward unlocks a progression gate before the world is ready.",
+    "A content update changes carryover rules for saves that already entered New Game Plus.",
+    "The migration fails after deleting old world state but before writing the new cycle.",
+    "Platform achievements depend on story flags that were reset for the new cycle.",
+    "A duplicated unique reward is granted again and corrupts inventory or economy balance."
   ],
   "common_bugs": [
-    "New Game Plus state does not reset correctly after interruption or reload.",
-    "Feedback for New Game Plus plays even when the mechanic fails or is rejected.",
-    "New Game Plus produces different results between frame rates, platforms, or network clients."
+    "Carryover copies item instances but not their upgrade, durability, or ownership metadata.",
+    "Quest flags reset visually while NPC or world scripts still read completed state.",
+    "Difficulty scaling stacks each load because ng_plus_cycle_index is reapplied repeatedly.",
+    "Map reveal, tutorial, or codex state is wiped even though the profile should retain it.",
+    "Rollback snapshots omit account_unlock_id records and lose permanent unlocks."
   ],
   "balancing_notes": [
-    "Make New Game Plus strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Carryover power should justify replay without trivializing early progression unless that is the promise.",
+    "Rewards need duplicate policies before launch; repeated unique items become design debt quickly.",
+    "Scaling should account for carried tools and player knowledge, not only raw character stats."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when New Game Plus becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Explain carryover and reset rules before the player commits to the new cycle.",
+    "Provide confirmation and backup handling for irreversible migration steps.",
+    "Avoid hiding new accessibility settings behind a harder repeat mode."
   ],
   "implementation_notes": {
-    "unity": "Implement New Game Plus with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model New Game Plus as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement New Game Plus with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement New Game Plus as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Create a pre-migration save snapshot, then process carryover_rule_id and reset_rule_id through a migration service instead of ad hoc scene scripts. Validate item instances, quest flags, map state, and account unlocks before replacing the active save.",
+    "godot": "Represent save data with versioned dictionaries or Resources and run New Game Plus migration as a single profile operation. Keep ng_plus_cycle_index, carried inventory ids, and reset quest flags explicit so old saves can migrate safely.",
+    "unreal": "Use SaveGame migration steps with named checkpoints and data validation. Gameplay Ability, inventory, and quest systems should rebuild from migrated state rather than retaining live actors from the completed playthrough.",
+    "web": "Treat New Game Plus as a profile transformation that writes a new save revision. In local or server storage, keep pre_migration and post_migration records long enough to recover from interrupted browser sessions or sync conflicts."
   },
   "related_mechanics": [
-    "meta.collection_log",
-    "meta.daily_challenge",
     "progression.meta_progression",
-    "roguelike.run_based_progression"
+    "progression.prestige_reset",
+    "progression.unlockable_abilities",
+    "progression.equipment_rarity"
   ],
   "combines_well_with": [
-    "meta.player_profile_stats",
-    "progression.meta_progression",
-    "roguelike.run_based_progression"
+    "combat.critical_hit",
+    "economy.shop",
+    "meta.collection_log",
+    "strategy.tech_tree"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Dark Souls",
+      "note": "Uses New Game Plus cycles after completion with increased challenge."
+    },
+    {
+      "title": "Chrono Trigger",
+      "note": "Popularized New Game Plus as a replay mode with retained progress."
+    }
+  ],
   "tags": [
-    "meta",
-    "new",
-    "retention"
+    "new_game_plus",
+    "save_migration",
+    "carryover",
+    "repeat_playthrough",
+    "profile_state"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

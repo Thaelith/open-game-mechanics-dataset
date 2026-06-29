@@ -2,12 +2,12 @@
   "id": "meta.daily_challenge",
   "name": "Daily Challenge",
   "aliases": [
-    "daily challenge mechanic",
-    "daily challenge system",
-    "daily challenge"
+    "daily run",
+    "rotating challenge",
+    "daily objective"
   ],
   "category": "meta",
-  "subcategory": "meta",
+  "subcategory": "rotating_challenge",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -21,89 +21,134 @@
   },
   "genres": [
     "roguelike",
-    "live_service",
-    "arcade"
+    "platformer",
+    "racing",
+    "strategy"
   ],
-  "description": "Daily Challenge is a profile-level mechanic that operates across sessions, runs, or modes rather than only inside one encounter.",
-  "design_notes": "Daily Challenge should be designed around a clear player promise, a readable trigger, and a predictable result. For meta mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A profile-level challenge that rotates on a scheduled cadence, often using fixed modifiers, seeds, objectives, rewards, or leaderboard eligibility.",
+  "design_notes": "Daily challenges need a trusted clock and deterministic setup. Designers should define challenge identity, rotation seed, start and end timestamps, missed-claim policy, offline behavior, reward claim state, leaderboard eligibility, and whether players get one attempt or many.",
   "design_purpose": [
-    "Give the player a readable way to use daily challenge as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect daily challenge to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Give players a fresh recurring goal without adding new content every day.",
+    "Create shared community comparison through fixed seeds, modifiers, or score rules.",
+    "Encourage return visits while preserving fair reward claim and anti-cheat boundaries."
   ],
-  "player_fantasy": "The player feels their history across sessions has visible meaning.",
+  "player_fantasy": "The player feels they are taking on today's shared test and comparing their result against friends or the community.",
   "required_systems": [
-    "player_profile",
-    "analytics_or_stats",
-    "reward_rules",
-    "save_state"
+    "account_profile",
+    "challenge_scheduler",
+    "reward_claims",
+    "leaderboard_service",
+    "server_clock"
   ],
   "parameters": [
     {
-      "name": "reset_period",
+      "name": "daily_challenge_id",
       "type": "string",
-      "typical_range": "run, daily, weekly, season, permanent",
-      "description": "When the mechanic refreshes or resets."
+      "typical_range": "daily_2026_06_29",
+      "description": "Stable identifier for the current daily challenge."
     },
     {
-      "name": "reward_tier_count",
+      "name": "challenge_rotation_seed",
       "type": "integer",
-      "typical_range": "1-100",
-      "description": "Number of visible reward or stat tiers."
+      "typical_range": "date-derived or server-issued seed",
+      "description": "Seed used to choose modifiers, layouts, rewards, or objectives."
     },
     {
-      "name": "visibility_rule",
+      "name": "challenge_start_timestamp_ms",
+      "type": "integer",
+      "typical_range": "unix epoch milliseconds",
+      "description": "Server-clock opening timestamp for eligibility and display."
+    },
+    {
+      "name": "challenge_end_timestamp_ms",
+      "type": "integer",
+      "typical_range": "unix epoch milliseconds",
+      "description": "Server-clock closing timestamp for attempts and reward claims."
+    },
+    {
+      "name": "claim_transaction_id",
       "type": "string",
-      "typical_range": "always, unlocked, discovered, hidden",
-      "description": "When the player can see the meta information."
+      "typical_range": "unique per reward claim",
+      "description": "Idempotent operation that prevents duplicate reward grants."
+    },
+    {
+      "name": "reward_claim_state",
+      "type": "string",
+      "typical_range": "unearned, claimable, claimed, expired",
+      "description": "Profile state for completion rewards and missed-claim handling."
+    },
+    {
+      "name": "leaderboard_id",
+      "type": "string",
+      "typical_range": "daily_global, friends_daily, no_board",
+      "description": "Optional ranking target for challenge score submissions."
     }
   ],
   "common_variants": [
-    "daily_challenge_daily_variant",
-    "daily_challenge_seasonal_variant",
-    "account_wide",
-    "save_slot_specific"
+    "daily_seeded_run",
+    "daily_objective_list",
+    "weekly_challenge",
+    "one_attempt_daily",
+    "daily_leaderboard"
   ],
   "edge_cases": [
-    "Daily Challenge is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Daily Challenge overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Daily Challenge runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A player starts online, finishes offline, and reconnects after challenge_end_timestamp_ms.",
+    "Device clock differs from the server clock and shows the wrong challenge window.",
+    "The reward is claimable but the content definition changes before the claim transaction completes.",
+    "A leaderboard submission arrives after the daily board has closed.",
+    "Cross-save profiles complete the same daily challenge on two devices before sync."
   ],
   "common_bugs": [
-    "Daily Challenge state does not reset correctly after interruption or reload.",
-    "Feedback for Daily Challenge plays even when the mechanic fails or is rejected.",
-    "Daily Challenge produces different results between frame rates, platforms, or network clients."
+    "Daily challenge content is generated from local date and differs by time zone.",
+    "Rewards can be claimed multiple times because claim_transaction_id is not persisted before grant.",
+    "Leaderboard entries accept scores from modified clients without anti_cheat_validation.",
+    "Challenge UI shows the next daily while the backend still accepts the previous one.",
+    "Offline completion overwrites a better online result after late synchronization."
   ],
   "balancing_notes": [
-    "Make Daily Challenge strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Daily rewards should motivate return visits without feeling mandatory for core progression.",
+    "One-attempt dailies make leaderboards cleaner but can punish disconnects and accessibility interruptions.",
+    "Rotating modifiers should vary play style without requiring obscure build knowledge every day."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Daily Challenge becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show start and end timestamps in local-friendly text and avoid relying on countdown color alone.",
+    "Offer readable objective summaries and allow players to review modifiers before starting.",
+    "Consider practice mode or unranked retries for players who need to learn the challenge setup."
   ],
   "implementation_notes": {
-    "unity": "Implement Daily Challenge with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Daily Challenge as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Daily Challenge with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Daily Challenge as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Fetch daily_challenge_id, challenge_rotation_seed, and server timestamps from a backend or deterministic service before creating content. Persist reward_claim_state and claim_transaction_id locally and remotely before granting currency or items.",
+    "godot": "Store challenge definitions as Resources but resolve the active challenge from server-clock data or signed schedule files. Save local attempt state with profile_id so offline attempts can sync without duplicating claims.",
+    "unreal": "Use Online Subsystem or backend services for leaderboard_id, score submission, and platform account checks. Server authority should validate challenge ids, submission windows, and anti-cheat tokens before accepting ranked results.",
+    "web": "Avoid deriving eligibility from browser clock alone. Use server-issued challenge payloads, store attempt and claim states in account storage, and treat late syncs as reconciliation events rather than fresh completions."
   },
   "related_mechanics": [
-    "meta.collection_log",
-    "meta.player_profile_stats",
-    "progression.meta_progression",
-    "roguelike.run_based_progression"
+    "procedural_generation.seeded_generation",
+    "progression.achievement_system",
+    "roguelike.run_based_progression",
+    "meta.player_profile_stats"
   ],
   "combines_well_with": [
-    "meta.new_game_plus",
+    "economy.coins",
     "progression.meta_progression",
-    "roguelike.run_based_progression"
+    "ui_ux.quest_marker",
+    "roguelike.permadeath"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Spelunky 2",
+      "note": "Uses daily challenge runs for shared seeded competition."
+    },
+    {
+      "title": "Slay the Spire",
+      "note": "Uses daily climb runs with modifiers and leaderboards."
+    }
+  ],
   "tags": [
-    "daily",
-    "meta",
-    "retention"
+    "daily_challenge",
+    "rotation_seed",
+    "reward_claim",
+    "leaderboard",
+    "account_profile"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

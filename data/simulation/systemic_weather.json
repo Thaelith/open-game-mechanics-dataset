@@ -2,12 +2,12 @@
   "id": "simulation.systemic_weather",
   "name": "Systemic Weather",
   "aliases": [
-    "systemic weather mechanic",
-    "systemic weather system",
-    "systemic weather"
+    "weather simulation",
+    "dynamic weather",
+    "world weather system"
   ],
   "category": "simulation",
-  "subcategory": "simulation",
+  "subcategory": "weather_state",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -15,100 +15,140 @@
     "3D"
   ],
   "difficulty": {
-    "design": "hard",
+    "design": "medium",
     "implementation": "hard",
-    "tuning": "expert"
+    "tuning": "hard"
   },
   "genres": [
     "simulation",
-    "management",
-    "sandbox"
+    "survival",
+    "open_world",
+    "strategy"
   ],
-  "description": "Systemic Weather is a systemic mechanic where entities update according to rules and create emergent state over time.",
-  "design_notes": "Systemic Weather should be designed around a clear player promise, a readable trigger, and a predictable result. For simulation mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A world-state weather system where conditions transition over simulation time and affect visibility, movement, resources, AI, audio, or survival pressure.",
+  "design_notes": "Systemic weather should be more than a visual layer. It needs state ids, transition rules, regional or biome masks, gameplay modifiers, forecast cues, save restoration, and accessibility settings for visibility, audio, and flashing or storm effects.",
   "design_purpose": [
-    "Give the player a readable way to use systemic weather as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect systemic weather to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Make the world feel dynamic through conditions that affect play and planning.",
+    "Connect environment, survival, economy, AI, and strategy decisions through readable weather changes.",
+    "Give designers a pacing tool for exposure, travel, combat, production, or population effects."
   ],
-  "player_fantasy": "The player feels the world continues to operate through understandable systems.",
+  "player_fantasy": "The player feels the world has changing conditions that can be predicted, endured, exploited, or avoided.",
   "required_systems": [
-    "simulation_tick",
-    "entity_state",
-    "rule_system",
-    "persistence"
+    "simulation_clock",
+    "weather_state_machine",
+    "biome_system",
+    "visual_audio_effects",
+    "save_system"
   ],
   "parameters": [
     {
-      "name": "tick_rate",
-      "type": "float",
-      "typical_range": "1-120 updates/second",
-      "description": "Frequency at which the simulation updates."
+      "name": "weather_state_id",
+      "type": "string",
+      "typical_range": "clear, rain, storm, snow, heatwave, fog",
+      "description": "Current weather condition applied to a region or world."
     },
     {
-      "name": "entity_count",
+      "name": "weather_transition_rule_id",
+      "type": "string",
+      "typical_range": "seasonal_table, markov_chain, scripted_front",
+      "description": "Rule that chooses the next weather state."
+    },
+    {
+      "name": "simulation_clock_id",
+      "type": "string",
+      "typical_range": "world_clock, season_clock, mission_clock",
+      "description": "Clock source used for transition checks and forecasts."
+    },
+    {
+      "name": "biome_id",
+      "type": "string",
+      "typical_range": "desert, tundra, coast, city",
+      "description": "Biome or region profile that constrains weather options."
+    },
+    {
+      "name": "forecast_window_ms",
       "type": "integer",
-      "typical_range": "1-100000",
-      "description": "Number of entities the mechanic is expected to support."
+      "typical_range": "60000-3600000 ms",
+      "description": "Lookahead window shown to players or AI planners."
     },
     {
-      "name": "rule_weight",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "Strength of one rule compared with other simulation rules."
+      "name": "weather_effect_profile_id",
+      "type": "string",
+      "typical_range": "low_visibility, wet_roads, crop_growth, heat_stress",
+      "description": "Gameplay modifier bundle applied by the current weather state."
+    },
+    {
+      "name": "save_snapshot_id",
+      "type": "string",
+      "typical_range": "weather snapshot revision id",
+      "description": "Persisted weather state, forecast queue, and transition progress."
     }
   ],
   "common_variants": [
-    "systemic_weather_deterministic_variant",
-    "systemic_weather_probabilistic_variant",
-    "agent_based",
-    "aggregate_model"
+    "regional_weather",
+    "scripted_story_weather",
+    "seasonal_weather",
+    "forecast_weather",
+    "hazard_weather"
   ],
   "edge_cases": [
-    "Systemic Weather is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Systemic Weather overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Systemic Weather runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "The player saves during a transition between weather states.",
+    "Weather affects visibility but accessibility settings increase scene brightness.",
+    "A biome transition crosses two incompatible weather profiles.",
+    "Offline simulation advances weather past several queued forecasts.",
+    "Networked clients enter the area after the authoritative weather transition already occurred."
   ],
   "common_bugs": [
-    "Systemic Weather state does not reset correctly after interruption or reload.",
-    "Feedback for Systemic Weather plays even when the mechanic fails or is rejected.",
-    "Systemic Weather produces different results between frame rates, platforms, or network clients."
+    "Visual rain starts before gameplay wet-road or exposure modifiers are active.",
+    "Weather transition RNG is not saved and changes after reload.",
+    "Forecast UI reads planned state while gameplay uses current weather_state_id.",
+    "Particle and audio effects continue after moving to a biome where the state is invalid.",
+    "Weather updates every agent individually and exceeds performance budgets in large worlds."
   ],
   "balancing_notes": [
-    "Make Systemic Weather strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Weather penalties should be telegraphed before they invalidate plans or routes.",
+    "Frequent transitions make the world lively but can obscure player cause and effect.",
+    "Forecast reliability can be a strategic resource when uncertainty is communicated clearly."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Systemic Weather becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide reduced storm flash, reduced wind noise, and visibility assist settings.",
+    "Keep critical UI and subtitles readable during fog, rain, snow, or darkness effects.",
+    "Offer clear forecast text for players who cannot parse subtle sky or audio cues."
   ],
   "implementation_notes": {
-    "unity": "Implement Systemic Weather with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Systemic Weather as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Systemic Weather with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Systemic Weather as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Represent weather_state_id and forecast queues in a weather manager driven by simulation_clock_id. Apply visual, audio, physics, and gameplay modifiers from the same committed state, and persist transition progress in save_snapshot_id.",
+    "godot": "Use an autoload weather controller or world Resource to own state transitions. Scene nodes for particles, shaders, lighting, and audio should subscribe to weather state changes rather than choosing their own conditions.",
+    "unreal": "A world subsystem can own weather transitions, regional tags, and replicated weather_state_id. Gameplay effects, audio, Niagara systems, and post-process volumes should branch from the same profile id for consistency.",
+    "web": "Keep weather state in world simulation data and render effects as a projection. Use deterministic transition rules with saved RNG state so refreshes and server-client reconciliation preserve forecasts and current conditions."
   },
   "related_mechanics": [
-    "physics.wind_force",
-    "simulation.needs_simulation",
-    "simulation.traffic_flow",
-    "strategy.fog_of_war"
+    "survival.temperature",
+    "procedural_generation.biome_generation",
+    "time.day_night_schedule",
+    "simulation.traffic_flow"
   ],
   "combines_well_with": [
+    "horror.limited_visibility",
     "physics.wind_force",
-    "simulation.population_model",
-    "strategy.fog_of_war"
+    "survival.base_building",
+    "ui_ux.minimap"
   ],
   "example_games": [
     {
       "title": "The Legend of Zelda: Breath of the Wild",
-      "note": "Uses weather to affect traversal and combat choices."
+      "note": "Uses weather to affect traversal, combat, and visibility."
+    },
+    {
+      "title": "Frostpunk",
+      "note": "Uses weather and temperature pressure as part of city survival."
     }
   ],
   "tags": [
-    "simulation",
-    "systemic",
-    "systems"
+    "weather",
+    "world_state",
+    "forecast",
+    "biome",
+    "simulation_clock"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

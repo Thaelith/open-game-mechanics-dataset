@@ -2,12 +2,12 @@
   "id": "simulation.needs_simulation",
   "name": "Needs Simulation",
   "aliases": [
-    "needs simulation mechanic",
-    "needs simulation system",
-    "needs simulation"
+    "agent needs",
+    "needs model",
+    "survival needs simulation"
   ],
   "category": "simulation",
-  "subcategory": "simulation",
+  "subcategory": "agent_needs",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,94 +16,145 @@
   ],
   "difficulty": {
     "design": "hard",
-    "implementation": "hard",
+    "implementation": "medium",
     "tuning": "expert"
   },
   "genres": [
     "simulation",
+    "survival",
     "management",
-    "sandbox"
+    "rpg"
   ],
-  "description": "Needs Simulation is a systemic mechanic where entities update according to rules and create emergent state over time.",
-  "design_notes": "Needs Simulation should be designed around a clear player promise, a readable trigger, and a predictable result. For simulation mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A tick-based model where agents or player characters track needs such as hunger, rest, morale, hygiene, comfort, or safety and react to thresholds.",
+  "design_notes": "Needs simulation is useful when the player can understand why an agent is thriving or failing. The design should define decay profiles, recovery sources, threshold effects, offline policy, and whether needs drive direct control, AI priorities, production, or colony health.",
   "design_purpose": [
-    "Give the player a readable way to use needs simulation as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect needs simulation to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create cause-and-effect pressure between resources, environment, schedules, and agent behavior.",
+    "Give management and survival games long-term problems that emerge from simple state changes.",
+    "Make agents feel persistent without requiring bespoke scripting for every condition."
   ],
-  "player_fantasy": "The player feels the world continues to operate through understandable systems.",
+  "player_fantasy": "The player feels responsible for maintaining living systems whose needs react to their planning and neglect.",
   "required_systems": [
-    "simulation_tick",
-    "entity_state",
-    "rule_system",
-    "persistence"
+    "simulation_clock",
+    "agent_state",
+    "resource_system",
+    "event_queue",
+    "ui_status_display"
   ],
   "parameters": [
     {
-      "name": "tick_rate",
-      "type": "float",
-      "typical_range": "1-120 updates/second",
-      "description": "Frequency at which the simulation updates."
+      "name": "simulation_id",
+      "type": "string",
+      "typical_range": "colony_needs, pet_needs, party_needs",
+      "description": "Simulation instance that owns need definitions and update policy."
     },
     {
-      "name": "entity_count",
+      "name": "agent_id",
+      "type": "string",
+      "typical_range": "colonist_07, companion_a, player",
+      "description": "Entity whose need state is being updated."
+    },
+    {
+      "name": "need_state_id",
+      "type": "string",
+      "typical_range": "hunger, rest, morale, warmth, hygiene",
+      "description": "Specific need tracked by the simulation."
+    },
+    {
+      "name": "need_decay_profile_id",
+      "type": "string",
+      "typical_range": "normal_day, cold_weather, injured, sleeping",
+      "description": "Decay profile selected from agent condition and environment."
+    },
+    {
+      "name": "recovery_source_id",
+      "type": "string",
+      "typical_range": "meal, bed, shelter, medicine, entertainment",
+      "description": "Action, resource, or zone that restores the need."
+    },
+    {
+      "name": "threshold_effect_id",
+      "type": "string",
+      "typical_range": "warning, work_penalty, panic, health_loss",
+      "description": "Effect triggered when the need crosses a threshold band."
+    },
+    {
+      "name": "simulation_tick_index",
       "type": "integer",
-      "typical_range": "1-100000",
-      "description": "Number of entities the mechanic is expected to support."
+      "typical_range": "monotonic tick counter",
+      "description": "Ordered update index used for deterministic and saved updates."
     },
     {
-      "name": "rule_weight",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "Strength of one rule compared with other simulation rules."
+      "name": "offline_simulation_policy",
+      "type": "string",
+      "typical_range": "none, capped_progress, full_elapsed",
+      "description": "Rule for applying needs while the game is not actively running."
     }
   ],
   "common_variants": [
-    "needs_simulation_deterministic_variant",
-    "needs_simulation_probabilistic_variant",
-    "agent_based",
-    "aggregate_model"
+    "player_survival_needs",
+    "colony_agent_needs",
+    "pet_or_companion_needs",
+    "morale_needs",
+    "offline_needs_decay"
   ],
   "edge_cases": [
-    "Needs Simulation is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Needs Simulation overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Needs Simulation runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "An agent is asleep, injured, traveling, or in storage while needs continue to update.",
+    "A recovery source is consumed but the target need state changed before the transaction commits.",
+    "Offline progress would kill or permanently disable agents before the player can react.",
+    "Need thresholds trigger several events in one tick after a long pause or load.",
+    "Agents share a resource queue and all choose the same recovery source at once."
   ],
   "common_bugs": [
-    "Needs Simulation state does not reset correctly after interruption or reload.",
-    "Feedback for Needs Simulation plays even when the mechanic fails or is rejected.",
-    "Needs Simulation produces different results between frame rates, platforms, or network clients."
+    "Needs update in render frames instead of simulation ticks and vary by frame rate.",
+    "Threshold effects fire repeatedly because the previous band is not stored.",
+    "Recovery consumes inventory client-side before the simulation accepts the state change.",
+    "Save snapshots store display bars but not raw need states or pending events.",
+    "Offline progress ignores capacity caps and drains every need to failure."
   ],
   "balancing_notes": [
-    "Make Needs Simulation strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Need decay should create planning pressure before it creates unavoidable failure.",
+    "More need categories increase systemic depth but also increase UI and cognitive load.",
+    "Offline decay should usually be capped or staged so players do not return to irreversible collapse."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Needs Simulation becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide readable need labels, threshold warnings, and sortable agent lists.",
+    "Avoid requiring players to infer urgent needs from tiny icons alone.",
+    "Offer relaxed decay or pause-on-crisis settings for players who need more planning room."
   ],
   "implementation_notes": {
-    "unity": "Implement Needs Simulation with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Needs Simulation as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Needs Simulation with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Needs Simulation as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Update needs from a simulation scheduler rather than MonoBehaviour frame updates. Store agent_id, need_state_id, previous threshold band, pending recovery transactions, and simulation_tick_index in save snapshots so reloads do not repeat events.",
+    "godot": "Use an autoload simulation manager or Resource-backed model for need updates. Run deterministic ticks, enqueue threshold events once per band crossing, and keep Control UI subscribed to committed state rather than editing need bars directly.",
+    "unreal": "A subsystem can own need state while Actors expose UI and behavior hooks. For networked or authoritative simulations, process recovery requests server-side and replicate threshold changes, not raw client-side guesses.",
+    "web": "Use a fixed-step reducer for need changes and serialize agent need records to local or server storage. Cap offline_simulation_policy results and include pending events in save_snapshot_id data for consistent resume behavior."
   },
   "related_mechanics": [
-    "physics.wind_force",
-    "simulation.systemic_weather",
-    "simulation.traffic_flow",
-    "strategy.fog_of_war"
+    "survival.hunger",
+    "survival.thirst",
+    "survival.stamina",
+    "simulation.population_model"
   ],
   "combines_well_with": [
-    "physics.wind_force",
-    "simulation.population_model",
-    "strategy.fog_of_war"
+    "time.day_night_schedule",
+    "economy.resource_conversion",
+    "ai.utility_scoring",
+    "ui_ux.cooldown_indicator"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Sims",
+      "note": "Uses character needs to drive behavior and player decisions."
+    },
+    {
+      "title": "RimWorld",
+      "note": "Uses colonist needs and moods as part of colony simulation."
+    }
+  ],
   "tags": [
-    "needs",
-    "simulation",
-    "systems"
+    "needs_simulation",
+    "agent_state",
+    "simulation_tick",
+    "threshold_effects",
+    "offline_policy"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

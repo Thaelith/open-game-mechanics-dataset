@@ -2,12 +2,12 @@
   "id": "simulation.population_model",
   "name": "Population Model",
   "aliases": [
-    "population model mechanic",
-    "population model system",
-    "population model"
+    "population simulation",
+    "citizen model",
+    "ecology population"
   ],
   "category": "simulation",
-  "subcategory": "simulation",
+  "subcategory": "population_dynamics",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -21,89 +21,140 @@
   },
   "genres": [
     "simulation",
+    "strategy",
     "management",
-    "sandbox"
+    "survival"
   ],
-  "description": "Population Model is a systemic mechanic where entities update according to rules and create emergent state over time.",
-  "design_notes": "Population Model should be designed around a clear player promise, a readable trigger, and a predictable result. For simulation mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A world-state model that tracks groups of agents, citizens, creatures, or factions through spawning, migration, growth, attrition, demand, and capacity rules.",
+  "design_notes": "Population models become useful when players can see how space, resources, safety, demand, and policies change group behavior. The system should define update order, spawn budgets, capacity limits, migration rules, save snapshots, and debug views before it drives economy or ecology.",
   "design_purpose": [
-    "Give the player a readable way to use population model as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect population model to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create living-world behavior from group-level rules rather than individual scripting.",
+    "Connect resources, buildings, hazards, territory, weather, and player policy to population outcomes.",
+    "Give designers scalable control over crowds, colonies, wildlife, or city residents."
   ],
-  "player_fantasy": "The player feels the world continues to operate through understandable systems.",
+  "player_fantasy": "The player feels the world responds to pressure as populations grow, move, decline, or recover over time.",
   "required_systems": [
-    "simulation_tick",
-    "entity_state",
-    "rule_system",
-    "persistence"
+    "simulation_clock",
+    "entity_registry",
+    "spawn_manager",
+    "resource_model",
+    "debug_visualization"
   ],
   "parameters": [
     {
-      "name": "tick_rate",
-      "type": "float",
-      "typical_range": "1-120 updates/second",
-      "description": "Frequency at which the simulation updates."
+      "name": "simulation_id",
+      "type": "string",
+      "typical_range": "city_population, wildlife_region, colony_group",
+      "description": "Simulation instance owning population groups and update policy."
     },
     {
-      "name": "entity_count",
+      "name": "population_group_id",
+      "type": "string",
+      "typical_range": "workers, deer_herd, refugees, faction_a",
+      "description": "Group whose count, needs, or behavior is modeled."
+    },
+    {
+      "name": "region_id",
+      "type": "string",
+      "typical_range": "district_03, forest_north, shelter_zone",
+      "description": "Spatial or logical area containing the population group."
+    },
+    {
+      "name": "spawn_budget",
       "type": "integer",
-      "typical_range": "1-100000",
-      "description": "Number of entities the mechanic is expected to support."
+      "typical_range": "0-10000 agents",
+      "description": "Cap used to create representative entities from group state."
     },
     {
-      "name": "rule_weight",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "Strength of one rule compared with other simulation rules."
+      "name": "despawn_policy_id",
+      "type": "string",
+      "typical_range": "distance_pooling, offscreen_fold, never",
+      "description": "Rule for folding visible agents back into aggregate state."
+    },
+    {
+      "name": "demand_curve_id",
+      "type": "string",
+      "typical_range": "jobs, food, shelter, territory, safety",
+      "description": "Curve that converts conditions into growth or migration pressure."
+    },
+    {
+      "name": "capacity_rule_id",
+      "type": "string",
+      "typical_range": "housing_slots, biome_capacity, food_supply",
+      "description": "Rule that limits sustainable population in a region."
+    },
+    {
+      "name": "deterministic_update_order",
+      "type": "array",
+      "typical_range": "growth, migration, spawning, needs",
+      "description": "Ordered passes used so runs and saves update consistently."
     }
   ],
   "common_variants": [
-    "population_model_deterministic_variant",
-    "population_model_probabilistic_variant",
-    "agent_based",
-    "aggregate_model"
+    "city_population",
+    "wildlife_ecology",
+    "colony_population",
+    "faction_population",
+    "abstract_population_pool"
   ],
   "edge_cases": [
-    "Population Model is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Population Model overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Population Model runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A region loses capacity after a disaster and must decide which agents migrate or despawn.",
+    "Visible agents and aggregate population counts diverge after pooling or save/load.",
+    "Population growth runs offline and exceeds food, shelter, or performance budgets.",
+    "A faction is eliminated in one system but still has scheduled spawn events.",
+    "Migration and territory control update in different orders and produce contradictory ownership."
   ],
   "common_bugs": [
-    "Population Model state does not reset correctly after interruption or reload.",
-    "Feedback for Population Model plays even when the mechanic fails or is rejected.",
-    "Population Model produces different results between frame rates, platforms, or network clients."
+    "Spawned agents are counted again as population growth when folded back into aggregate state.",
+    "Despawn pooling removes quest-critical or player-targeted entities.",
+    "Population ticks use unordered region maps and produce non-reproducible results.",
+    "Capacity changes are not saved, so population rebounds after reload.",
+    "Debug displays show visible agents only and hide aggregate population pressure."
   ],
   "balancing_notes": [
-    "Make Population Model strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Aggregate populations let designers simulate scale, but players need enough visible agents to believe the model.",
+    "Hard capacity caps are readable; soft caps can feel more organic but need explanation.",
+    "Growth and migration should react slowly enough for players to notice causes before outcomes."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Population Model becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide readable dashboards, map overlays, and alert thresholds for population changes.",
+    "Avoid relying on dense crowd visuals alone to communicate population state.",
+    "Allow pausing or slow simulation modes when many population alerts arrive together."
   ],
   "implementation_notes": {
-    "unity": "Implement Population Model with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Population Model as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Population Model with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Population Model as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Keep aggregate population state in data containers and spawn visible agents through a pooling manager. Update regions in deterministic_update_order, then write save snapshots containing population_group_id counts, region capacity, and queued spawn events.",
+    "godot": "Use Resources for population groups and a simulation manager for region passes. Fold despawned agents back into population data explicitly, and provide debug overlays for region_id, capacity, demand, and spawn budget.",
+    "unreal": "Mass Entity or custom subsystems can represent large populations while Actors are only the visible subset. Server or simulation authority should own migration, spawning, and despawn policy to keep save and replay state consistent.",
+    "web": "Model populations as aggregate records and materialize visible agents only near the player or camera. Use sorted region ids and fixed update passes so browser refreshes and deterministic replays preserve population outcomes."
   },
   "related_mechanics": [
-    "physics.wind_force",
     "simulation.needs_simulation",
-    "simulation.systemic_weather",
-    "strategy.fog_of_war"
+    "economy.dynamic_pricing",
+    "strategy.territory_control",
+    "ai.flocking"
   ],
   "combines_well_with": [
-    "physics.wind_force",
     "simulation.traffic_flow",
-    "strategy.fog_of_war"
+    "simulation.systemic_weather",
+    "procedural_generation.biome_generation",
+    "ui_ux.minimap"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Cities: Skylines",
+      "note": "Uses population and demand models to shape city growth."
+    },
+    {
+      "title": "Dwarf Fortress",
+      "note": "Uses population, creatures, and settlement state in systemic simulation."
+    }
+  ],
   "tags": [
-    "population",
-    "simulation",
-    "systems"
+    "population_model",
+    "aggregate_state",
+    "spawn_budget",
+    "capacity",
+    "deterministic_updates"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

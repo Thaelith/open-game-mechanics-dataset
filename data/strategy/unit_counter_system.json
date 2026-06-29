@@ -2,12 +2,12 @@
   "id": "strategy.unit_counter_system",
   "name": "Unit Counter System",
   "aliases": [
-    "unit counter system mechanic",
-    "unit counter system system",
-    "unit counter system"
+    "counter units",
+    "matchup table",
+    "rock paper scissors combat"
   ],
   "category": "strategy",
-  "subcategory": "strategy",
+  "subcategory": "unit_matchups",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -16,94 +16,139 @@
   ],
   "difficulty": {
     "design": "hard",
-    "implementation": "hard",
+    "implementation": "medium",
     "tuning": "expert"
   },
   "genres": [
     "strategy",
-    "4x",
-    "real_time_strategy"
+    "real_time_strategy",
+    "tactical",
+    "4x"
   ],
-  "description": "Unit Counter System is a planning mechanic that governs territory, information, unit roles, resources, or long-horizon decisions.",
-  "design_notes": "Unit Counter System should be designed around a clear player promise, a readable trigger, and a predictable result. For strategy mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A strategic combat relationship model where unit types, weapons, armor, abilities, or formations gain advantages and disadvantages against specific opponent categories.",
+  "design_notes": "Counter systems create readable strategic adaptation when matchup rules are discoverable and consistent. The implementation should use structured counter_type_id and damage_modifier_table_id data rather than hidden special cases, with UI that explains why a unit wins or loses a matchup.",
   "design_purpose": [
-    "Give the player a readable way to use unit counter system as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect unit counter system to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Encourage scouting, tech choices, mixed armies, and tactical positioning.",
+    "Prevent one unit type from solving every strategic problem.",
+    "Give designers explicit matchup data for balance tests and AI decision-making."
   ],
-  "player_fantasy": "The player feels they are winning through planning, information, and tradeoffs.",
+  "player_fantasy": "The player feels clever when they identify an opponent's plan and field the right counter at the right moment.",
   "required_systems": [
-    "map_state",
-    "unit_system",
-    "visibility_rules",
-    "ai_or_rules_engine"
+    "unit_database",
+    "combat_resolution",
+    "damage_modifiers",
+    "ui_tooltips",
+    "balance_testing"
   ],
   "parameters": [
     {
-      "name": "decision_horizon",
-      "type": "integer",
-      "typical_range": "1-100 turns",
-      "description": "Number of future steps the mechanic asks players to plan around."
+      "name": "unit_id",
+      "type": "string",
+      "typical_range": "spearman, tank_destroyer, anti_air",
+      "description": "Unit or archetype participating in matchup evaluation."
     },
     {
-      "name": "information_radius",
-      "type": "float",
-      "typical_range": "1-200 tiles or units",
-      "description": "Area of map or state affected by information rules."
+      "name": "counter_type_id",
+      "type": "string",
+      "typical_range": "cavalry, armored, flying, infantry, shielded",
+      "description": "Strategic category used for counter rules."
     },
     {
-      "name": "resource_pressure",
-      "type": "float",
-      "typical_range": "0-10",
-      "description": "How strongly the mechanic pushes opportunity cost."
+      "name": "damage_modifier_table_id",
+      "type": "string",
+      "typical_range": "standard_matchups, expansion_balance_v2",
+      "description": "Data table mapping attacker and defender categories to modifiers."
+    },
+    {
+      "name": "target_entity_id",
+      "type": "string",
+      "typical_range": "enemy unit, structure, squad, monster",
+      "description": "Target being evaluated for counter effects."
+    },
+    {
+      "name": "matchup_explanation_id",
+      "type": "string",
+      "typical_range": "bonus_vs_armor, weak_vs_air, outranged",
+      "description": "Player-facing reason shown in tooltips or combat preview."
+    },
+    {
+      "name": "tech_unlock_id",
+      "type": "string",
+      "typical_range": "armor_piercing, pikes, anti_air_training",
+      "description": "Optional research unlock that changes the matchup table."
+    },
+    {
+      "name": "balance_test_case_id",
+      "type": "string",
+      "typical_range": "spears_vs_cavalry_20v20",
+      "description": "Scenario used by designers to verify matchup tuning."
     }
   ],
   "common_variants": [
-    "unit_counter_system_turn_based_variant",
-    "unit_counter_system_real_time_variant",
-    "hidden_information_variant",
-    "asymmetric_variant"
+    "hard_counter_units",
+    "soft_counter_modifiers",
+    "armor_damage_types",
+    "formation_counters",
+    "tech_unlocked_counters"
   ],
   "edge_cases": [
-    "Unit Counter System is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Unit Counter System overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Unit Counter System runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A unit has multiple counter types and receives conflicting modifiers.",
+    "A tech unlock changes a matchup while projectiles or attacks are already in flight.",
+    "A shapeshifted, upgraded, or garrisoned unit should expose different counter categories.",
+    "A hidden counter modifier affects combat without being visible to the opponent or owner.",
+    "AI chooses a counter from outdated scouting information."
   ],
   "common_bugs": [
-    "Unit Counter System state does not reset correctly after interruption or reload.",
-    "Feedback for Unit Counter System plays even when the mechanic fails or is rejected.",
-    "Unit Counter System produces different results between frame rates, platforms, or network clients."
+    "Damage modifiers apply twice because both weapon and target code read the same table.",
+    "Tooltip matchup text uses old data after balance patches.",
+    "Unit categories are localized strings and do not match damage_modifier_table_id keys.",
+    "Replay combat diverges because tech unlocks and attack resolution use different tick order.",
+    "AI evaluates counters using raw unit names instead of counter_type_id tags."
   ],
   "balancing_notes": [
-    "Make Unit Counter System strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Hard counters create clear decisions but can punish players who lack scouting or production flexibility.",
+    "Soft counters preserve unit identity while leaving room for upgrades, terrain, and micro decisions.",
+    "Every counter rule should have a readable exception policy for heroes, bosses, structures, or neutral units."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Unit Counter System becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Show matchup explanations in text and icon form, not only through color-coded arrows.",
+    "Provide compact and expanded tooltip modes for high information density.",
+    "Keep combat previews readable for players who need more time to compare unit choices."
   ],
   "implementation_notes": {
-    "unity": "Implement Unit Counter System with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Unit Counter System as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Unit Counter System with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Unit Counter System as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Store unit counter tags and damage_modifier_table_id in data assets, then resolve combat through one modifier pipeline. Tooltips, AI, and combat math should all read the same table and expose matchup_explanation_id for debugging.",
+    "godot": "Use Resources for units and counter tables, with stable counter_type_id keys. Combat code should evaluate structured tags, while UI preview queries the same resolver used by damage application.",
+    "unreal": "Gameplay Tags can represent counter types and tech unlocks. A combat component or subsystem should resolve damage modifiers authoritatively, replicate relevant results, and preserve tick order for replay.",
+    "web": "Keep matchup tables in versioned JSON and process combat in deterministic entity order. Use the same resolver for AI planning, UI previews, and final damage so browser and server simulations agree."
   },
   "related_mechanics": [
-    "ai.patrol",
-    "strategy.fog_of_war",
     "strategy.tech_tree",
-    "ui_ux.minimap"
+    "combat.critical_hit",
+    "combat.block",
+    "progression.equipment_rarity"
   ],
   "combines_well_with": [
-    "ai.patrol",
+    "strategy.fog_of_war",
     "strategy.territory_control",
-    "ui_ux.minimap"
+    "ai.utility_scoring",
+    "ui_ux.hit_marker"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Age of Empires II",
+      "note": "Uses unit classes and bonuses to create strategic counters."
+    },
+    {
+      "title": "StarCraft II",
+      "note": "Uses unit matchups, upgrades, and scouting to drive counterplay."
+    }
+  ],
   "tags": [
-    "planning",
-    "strategy",
-    "unit"
+    "unit_counters",
+    "matchups",
+    "damage_modifiers",
+    "strategy_balance",
+    "combat_preview"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"

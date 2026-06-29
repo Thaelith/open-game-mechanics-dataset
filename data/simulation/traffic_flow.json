@@ -2,12 +2,12 @@
   "id": "simulation.traffic_flow",
   "name": "Traffic Flow",
   "aliases": [
-    "traffic flow mechanic",
-    "traffic flow system",
-    "traffic flow"
+    "road traffic simulation",
+    "vehicle traffic",
+    "traffic model"
   ],
   "category": "simulation",
-  "subcategory": "simulation",
+  "subcategory": "traffic_network",
   "status": "draft",
   "dimensions": [
     "2D",
@@ -22,88 +22,139 @@
   "genres": [
     "simulation",
     "management",
-    "sandbox"
+    "strategy",
+    "open_world"
   ],
-  "description": "Traffic Flow is a systemic mechanic where entities update according to rules and create emergent state over time.",
-  "design_notes": "Traffic Flow should be designed around a clear player promise, a readable trigger, and a predictable result. For simulation mechanics, the important design work is deciding when the mechanic is allowed, how much commitment it creates, what feedback confirms success, and what counter-pressure keeps it from solving every situation. Strong tuning makes the mechanic feel intentional even when it is used repeatedly or combined with adjacent systems.",
+  "description": "A network simulation where vehicles, agents, or abstract traffic units choose routes, occupy lanes, respond to signals, and create congestion or throughput effects.",
+  "design_notes": "Traffic flow matters when players can see how roads, signals, demand, accidents, weather, and population pressure create congestion. The implementation should separate aggregate flow from visible vehicles, define pathing constraints, pooling, update order, and debug overlays for bottlenecks.",
   "design_purpose": [
-    "Give the player a readable way to use traffic flow as part of the core loop.",
-    "Create meaningful choices around timing, cost, risk, positioning, or long-term planning.",
-    "Connect traffic flow to adjacent systems so it supports the larger game design instead of acting as an isolated feature."
+    "Create readable cause and effect between network layout and movement outcomes.",
+    "Support city, base, factory, or open-world simulation with scalable vehicle behavior.",
+    "Give players feedback about congestion, capacity, route choices, and infrastructure upgrades."
   ],
-  "player_fantasy": "The player feels the world continues to operate through understandable systems.",
+  "player_fantasy": "The player feels the transport network breathe as traffic responds to their layout and management decisions.",
   "required_systems": [
-    "simulation_tick",
-    "entity_state",
-    "rule_system",
-    "persistence"
+    "traffic_network",
+    "pathfinding",
+    "vehicle_pooling",
+    "simulation_clock",
+    "debug_visualization"
   ],
   "parameters": [
     {
-      "name": "tick_rate",
-      "type": "float",
-      "typical_range": "1-120 updates/second",
-      "description": "Frequency at which the simulation updates."
+      "name": "traffic_network_id",
+      "type": "string",
+      "typical_range": "city_roads, factory_belts, space_lanes",
+      "description": "Network graph containing route segments and intersections."
     },
     {
-      "name": "entity_count",
+      "name": "vehicle_agent_id",
+      "type": "string",
+      "typical_range": "car_001, bus_22, abstract_commuter",
+      "description": "Visible or abstract unit moving through the traffic network."
+    },
+    {
+      "name": "route_segment_id",
+      "type": "string",
+      "typical_range": "road_a_b, lane_04, intersection_north",
+      "description": "Current network segment used for occupancy and congestion."
+    },
+    {
+      "name": "traffic_demand_profile_id",
+      "type": "string",
+      "typical_range": "rush_hour, event_exit, industrial_shift",
+      "description": "Demand profile that creates route requests for agents."
+    },
+    {
+      "name": "congestion_index",
+      "type": "float",
+      "typical_range": "0.0-1.0",
+      "description": "Normalized occupancy pressure for a segment or region."
+    },
+    {
+      "name": "signal_phase_id",
+      "type": "string",
+      "typical_range": "north_south_green, all_stop, priority_bus",
+      "description": "Intersection control state affecting route movement."
+    },
+    {
+      "name": "despawn_policy_id",
+      "type": "string",
+      "typical_range": "destination_fold, offscreen_pool, never",
+      "description": "Rule for removing visible vehicles from the world."
+    },
+    {
+      "name": "simulation_tick_rate",
       "type": "integer",
-      "typical_range": "1-100000",
-      "description": "Number of entities the mechanic is expected to support."
-    },
-    {
-      "name": "rule_weight",
-      "type": "float",
-      "typical_range": "0-1",
-      "description": "Strength of one rule compared with other simulation rules."
+      "typical_range": "5-60 ticks per second",
+      "description": "Update cadence for route, lane, and signal decisions."
     }
   ],
   "common_variants": [
-    "traffic_flow_deterministic_variant",
-    "traffic_flow_probabilistic_variant",
-    "agent_based",
-    "aggregate_model"
+    "city_road_traffic",
+    "factory_conveyor_flow",
+    "pedestrian_crowd_flow",
+    "abstract_commute_model",
+    "emergency_vehicle_priority"
   ],
   "edge_cases": [
-    "Traffic Flow is triggered during a scene transition, pause, respawn, or save/load boundary.",
-    "Traffic Flow overlaps with another high-priority state such as damage, stun, dialogue, menu focus, or cutscene control.",
-    "Traffic Flow runs at extreme frame rates, high latency, very large coordinates, or after long play sessions."
+    "A route becomes invalid after the player deletes a road or changes direction rules.",
+    "Visible vehicles reach a blocked intersection while aggregate flow still assumes capacity.",
+    "An emergency or scripted vehicle needs priority without corrupting normal traffic order.",
+    "Weather changes friction or visibility while vehicles are midway through intersections.",
+    "A save occurs with vehicles inside temporary construction or detour segments."
   ],
   "common_bugs": [
-    "Traffic Flow state does not reset correctly after interruption or reload.",
-    "Feedback for Traffic Flow plays even when the mechanic fails or is rejected.",
-    "Traffic Flow produces different results between frame rates, platforms, or network clients."
+    "Vehicle agents choose paths before updated road ownership or lane closures are committed.",
+    "Despawning offscreen vehicles loses passengers, cargo, or delivery state.",
+    "Traffic signals update after vehicles move and allow impossible intersection overlaps.",
+    "Congestion overlays read visual vehicle count but ignore abstract queued demand.",
+    "Pathfinding reroutes every tick and consumes excessive CPU on large maps."
   ],
   "balancing_notes": [
-    "Make Traffic Flow strong enough to justify attention but limited enough that other mechanics keep their purpose.",
-    "Tune costs, cooldowns, ranges, and feedback together; changing only one number can shift the mechanic from optional to dominant."
+    "Traffic should expose bottlenecks early enough for players to diagnose them.",
+    "Fully realistic traffic can be less playable than a model with clear capacity and routing rules.",
+    "Abstract agents improve scale but need visible samples and overlays to maintain trust."
   ],
   "accessibility_notes": [
-    "Provide clear visual, audio, or haptic feedback when Traffic Flow becomes available, succeeds, or fails.",
-    "Avoid relying on a single sensory cue or extremely narrow timing unless the game offers assists or alternate settings."
+    "Provide colorblind-safe congestion overlays with numeric or patterned alternatives.",
+    "Let players slow or pause the simulation while inspecting complex intersections.",
+    "Use clear icons and filters for road classes, signal states, and route failures."
   ],
   "implementation_notes": {
-    "unity": "Implement Traffic Flow with engine-agnostic state first, then bind it to MonoBehaviour, CharacterController, Rigidbody, UI Toolkit, or Netcode systems as appropriate.",
-    "godot": "Model Traffic Flow as a node or resource-driven state and update deterministic pieces from _physics_process when timing or collision matters.",
-    "unreal": "Implement Traffic Flow with Actor Components, CharacterMovement, Gameplay Ability System, UMG, or replicated gameplay state depending on the mechanic scope.",
-    "web": "Implement Traffic Flow as data-owned state updated from the main loop; keep rendering, input, and simulation boundaries explicit for Canvas, Phaser, Three.js, or custom JavaScript."
+    "unity": "Represent the traffic network as graph data and use pooled vehicle agents for visible samples. Process signal phases, route movement, despawn folding, and congestion metrics in deterministic order, then draw debug overlays for route_segment_id pressure.",
+    "godot": "Use graph resources for roads and a simulation node for tick updates. Keep visible VehicleBody or CharacterBody nodes as projections of route state, and fold them back into aggregate demand through despawn_policy_id.",
+    "unreal": "Mass Entity, StateTree, or custom systems can scale vehicle agents while Actors represent nearby traffic. Run signal and route updates from an authoritative subsystem and replicate aggregate congestion or visible agents as needed.",
+    "web": "Store traffic graph state in arrays keyed by route_segment_id and update with a fixed tick. Render only nearby agents in Canvas, Phaser, or Three.js, and keep pathing caches invalidated by explicit network revision ids."
   },
   "related_mechanics": [
-    "physics.wind_force",
-    "simulation.needs_simulation",
+    "simulation.population_model",
     "simulation.systemic_weather",
-    "strategy.fog_of_war"
+    "vehicles.vehicle_acceleration",
+    "ai.flocking"
   ],
   "combines_well_with": [
-    "physics.wind_force",
-    "simulation.population_model",
-    "strategy.fog_of_war"
+    "strategy.territory_control",
+    "ui_ux.minimap",
+    "physics.moving_platform",
+    "procedural_generation.procedural_terrain"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Cities: Skylines",
+      "note": "Uses traffic flow as a major city planning system."
+    },
+    {
+      "title": "OpenTTD",
+      "note": "Uses transport networks and route throughput as central play."
+    }
+  ],
   "tags": [
-    "simulation",
-    "systems",
-    "traffic"
+    "traffic_flow",
+    "network_simulation",
+    "congestion",
+    "pathfinding",
+    "debug_overlay"
   ],
   "source_confidence": "medium",
   "last_updated": "2026-06-29"
