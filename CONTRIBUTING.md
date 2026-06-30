@@ -28,6 +28,12 @@ IDs use `<category>.<mechanic_name>`. Use lowercase letters, numbers, and unders
 
 Put the mechanic where a developer would expect to find its primary design purpose. If a mechanic crosses categories, use one primary category and link related mechanics. For example, `platforming.wall_jump` can relate to `movement.dash` and `camera.smooth_follow_camera`.
 
+## Mechanic, Variant, Or Parameter
+
+Before adding a new mechanic, check whether it should instead be a variant or parameter of an existing entry. A separate mechanic should usually have distinct behavior, state, implementation concerns, edge cases, common bugs, relationships, or design purpose beyond a simple number change.
+
+See [`docs/taxonomy-and-categorization-criteria.md`](docs/taxonomy-and-categorization-criteria.md) for the current criteria. If the boundary is unclear, explain the tradeoff in the pull request instead of assuming the taxonomy is objective.
+
 ## Writing Style
 
 Use direct, original, practical writing. The short description should explain the mechanic in one sentence. Put why it matters in `design_notes` and `design_purpose`. Put engine hints in `implementation_notes`. Avoid vague phrases like "makes it better" or "adds fun" unless you explain the exact player-facing effect.

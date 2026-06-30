@@ -166,3 +166,7 @@ Recommended Batch 1 candidates:
 Reviewed Core Batch 1 has started with the five recommended mechanics. The pass strengthened `edge_cases`, `common_bugs`, and selected implementation/relationship details while keeping all five mechanics in `draft` with `source_confidence: "medium"`.
 
 Batch 1 report: [`reports/reviewed-core-batch-1-v0.3.md`](reports/reviewed-core-batch-1-v0.3.md)
+
+Maintainer review: [`reports/reviewed-core-batch-1-maintainer-review-v0.3.md`](reports/reviewed-core-batch-1-maintainer-review-v0.3.md)
+
+Time rewind architecture checklist: [`reports/time-rewind-architecture-review-v0.3.md`](reports/time-rewind-architecture-review-v0.3.md)

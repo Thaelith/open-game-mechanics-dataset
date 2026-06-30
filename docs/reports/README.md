@@ -60,6 +60,34 @@ Documents the first v0.3 reviewed-core improvement pass for `movement.dash`, `pl
 
 Why it matters: this report records exactly what changed, which edge cases and common bugs improved, and what still blocks reviewed status.
 
+## Reviewed Core Batch 1 Maintainer Review
+
+[`reviewed-core-batch-1-maintainer-review-v0.3.md`](reviewed-core-batch-1-maintainer-review-v0.3.md)
+
+Records maintainer recommendations, conservative source-confidence rationale, relationship-direction notes, and reviewed-status readiness for the five Batch 1 mechanics.
+
+## Time Rewind Architecture Review
+
+[`time-rewind-architecture-review-v0.3.md`](time-rewind-architecture-review-v0.3.md)
+
+Lists the architecture questions that must be resolved before `time.time_rewind` can be considered for reviewed status or higher confidence.
+
+## Taxonomy Review v0.3
+
+[`taxonomy-review-v0.3.md`](taxonomy-review-v0.3.md)
+
+Reviews borderline or important entries against the mechanic, variant, and parameter criteria documented in [`../taxonomy-and-categorization-criteria.md`](../taxonomy-and-categorization-criteria.md).
+
+Why it matters: taxonomy choices affect mechanic IDs, relationship quality, Mixer suggestions, contribution review, and whether entries are useful checklists or just duplicated tuning values.
+
+## Locomotion Taxonomy Review v0.3
+
+[`locomotion-taxonomy-review-v0.3.md`](locomotion-taxonomy-review-v0.3.md)
+
+Applies the taxonomy criteria to locomotion entries, especially `movement.walk`, `movement.run`, `movement.sprint`, `movement.stamina_movement`, `movement.dash`, `movement.air_dash`, and `movement.dodge_roll`.
+
+Why it matters: locomotion entries are common enough that over-splitting, under-splitting, or treating speed values as separate mechanics would affect contributor expectations and future data migration.
+
 ## When To Regenerate
 
 - After changing mechanic JSON files.

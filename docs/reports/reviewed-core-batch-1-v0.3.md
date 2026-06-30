@@ -10,6 +10,10 @@ The pass focused on prototype-breaking details: input/state priority, collision,
 
 No mechanic is marked `reviewed` by this report.
 
+Maintainer review: [`reviewed-core-batch-1-maintainer-review-v0.3.md`](reviewed-core-batch-1-maintainer-review-v0.3.md)
+
+Time rewind architecture checklist: [`time-rewind-architecture-review-v0.3.md`](time-rewind-architecture-review-v0.3.md)
+
 ## Mechanics Reviewed
 
 - `movement.dash`
