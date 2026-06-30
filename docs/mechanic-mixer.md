@@ -4,6 +4,13 @@ The Mechanic Mixer is a static, client-side planning tool in `site/index.html`. 
 
 It does not call an AI backend, generate random game ideas, estimate production hours, or decide whether a concept will be fun. Every suggestion is traceable to selected mechanic IDs, typed `relationships`, legacy browse links, `required_systems`, or `scope_profile`.
 
+Related docs:
+
+- [How to use the Mixer](how-to-use-the-mixer.md)
+- [Typed relationships and scope metadata](relationships-and-scope.md)
+- [Mixer scenario QA report](reports/mechanic-mixer-scenario-qa-v0.2.md)
+- [Scenario fixtures](../tools/fixtures/mixer_scenarios_v0_2.json)
+
 ## What It Does
 
 - Tracks a selected set of mechanics in the browser.
@@ -80,7 +87,7 @@ The tests cover conflict detection, missing dependency suggestions, required-sys
 
 ## Scenario QA
 
-Real-world concept fixtures live in `tools/fixtures/mixer_scenarios_v0_2.json`. They exercise 10 deterministic mixes such as mobility combat, online co-op rewind risk, survival resource loops, roguelike runs, strategy fog/tech, horror stealth, crafting economy, physics puzzles, vehicle upgrades, and accessibility-heavy platforming.
+Real-world concept fixtures live in [`tools/fixtures/mixer_scenarios_v0_2.json`](../tools/fixtures/mixer_scenarios_v0_2.json). They exercise 10 deterministic mixes such as mobility combat, online co-op rewind risk, survival resource loops, roguelike runs, strategy fog/tech, horror stealth, crafting economy, physics puzzles, vehicle upgrades, and accessibility-heavy platforming.
 
 Run scenario checks with:
 
@@ -95,6 +102,8 @@ node tools/test_mixer_scenarios.mjs --report docs/reports/mechanic-mixer-scenari
 ```
 
 These checks are meant to catch misleading dependency suggestions, missing conflict warnings, unstable scope labels, overly aggressive trim suggestions, and related additions that drift away from the selected concept.
+
+The generated scenario report is saved at [`docs/reports/mechanic-mixer-scenario-qa-v0.2.md`](reports/mechanic-mixer-scenario-qa-v0.2.md).
 
 ## Limitations
 

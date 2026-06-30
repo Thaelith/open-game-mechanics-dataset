@@ -1,6 +1,17 @@
 # Open Game Mechanics Dataset
 
-One-sentence pitch: an engine-agnostic, machine-readable dataset of game mechanics for developers, students, researchers, and AI coding or design agents.
+An engine-agnostic, machine-readable dataset of game mechanics for developers, students, researchers, technical designers, and AI coding or design agents.
+
+The v0.2 release adds typed mechanic relationships, rough scope metadata, graph validation, a static browser, and the first client-side Mechanic Mixer MVP.
+
+## Start Here
+
+- Browse the dataset on GitHub Pages: [thaelith.github.io/open-game-mechanics-dataset/site/](https://thaelith.github.io/open-game-mechanics-dataset/site/)
+- Browse locally: [`site/index.html`](site/index.html)
+- Learn the Mixer: [`docs/how-to-use-the-mixer.md`](docs/how-to-use-the-mixer.md)
+- Read v0.2 release notes: [`docs/releases/v0.2.0.md`](docs/releases/v0.2.0.md)
+- Inspect reports: [`docs/reports/README.md`](docs/reports/README.md)
+- Validate locally: see [Validate Locally](#validate-locally)
 
 ## Why This Exists
 
@@ -10,19 +21,33 @@ This is not a claim to contain every mechanic ever made. The current state is a 
 
 ## Current Status
 
-v0.2 dataset foundation. The repository currently includes:
+| Signal | Status |
+| --- | --- |
+| Version | v0.2.0 dataset foundation |
+| Mechanics | 223 schema-valid JSON files |
+| Schema | `schema_version: "0.2.0"` |
+| License | CC0 dataset, MIT tooling |
+| Browser | Static, dependency-free GitHub Pages browser |
+| Mixer | Deterministic client-side MVP |
+| Quality report | 0 advisory warnings |
+| Graph coverage | 175 mechanics with typed relationships and scope profiles |
+| Typed relationships | 526 |
+| Scenario QA | 10/10 Mixer scenarios passing |
 
-- 223 schema-valid mechanic files
-- `schema_version: "0.2.0"` in `dataset.json`
-- A strict JSON Schema in `schema/mechanic.schema.json`
-- A generated `dataset.json` index for search and tooling
-- Optional typed `relationships` and `scope_profile` fields for graph-aware planning
-- Graph validation and graph coverage reporting tools
-- Validation tooling plus advisory quality lint with the current quality report at 0 advisory warnings
-- A dependency-free static browser and first Mechanic Mixer MVP
-- Engine-agnostic implementation notes for Unity, Godot, Unreal, Web/JavaScript, and other engines where practical
+The repository also includes a strict JSON Schema, generated `dataset.json` index, graph validation/reporting tools, advisory quality lint, and engine-agnostic implementation notes for Unity, Godot, Unreal, Web/JavaScript, and other engines where practical.
 
 Recommended GitHub topics: `game-design`, `game-development`, `dataset`, `json-schema`, `unity`, `godot`, `unreal`, `ai-agents`, `mechanics`.
+
+## Public Review Links
+
+- [v0.2.0 release notes](docs/releases/v0.2.0.md)
+- [Mechanic Mixer documentation](docs/mechanic-mixer.md)
+- [How to use the Mixer](docs/how-to-use-the-mixer.md)
+- [Typed relationships and scope metadata](docs/relationships-and-scope.md)
+- [Quality report](docs/reports/quality-report-v0.1.md)
+- [Graph coverage report](docs/reports/mechanic-graph-report-v0.2.md)
+- [Mixer scenario QA report](docs/reports/mechanic-mixer-scenario-qa-v0.2.md)
+- [Public v0.2 checklist](docs/public-v0.2-checklist.md)
 
 ## Dataset Format
 
@@ -72,9 +97,9 @@ The canonical schema is `schema/mechanic.schema.json`. The generated search inde
 
 ## Browse the Dataset
 
-A dependency-free static browser is available at [site/index.html](site/index.html). It loads `dataset.json`, searches and filters mechanics, and fetches individual mechanic JSON files for expanded details including typed relationships and scope profiles.
+A dependency-free static browser is available on GitHub Pages at [thaelith.github.io/open-game-mechanics-dataset/site/](https://thaelith.github.io/open-game-mechanics-dataset/site/) and in the repo at [site/index.html](site/index.html). It loads `dataset.json`, searches and filters mechanics, and fetches individual mechanic JSON files for expanded details including typed relationships and scope profiles.
 
-The browser also includes a client-side [Mechanic Mixer](docs/mechanic-mixer.md) for deterministic concept planning from selected mechanics, typed relationships, required systems, and scope metadata.
+The browser also includes a client-side [Mechanic Mixer](docs/mechanic-mixer.md) for deterministic concept planning from selected mechanics, typed relationships, required systems, and scope metadata. See [How to use the Mixer](docs/how-to-use-the-mixer.md) for examples and limitations.
 
 To test locally, serve the repository root over HTTP:
 
