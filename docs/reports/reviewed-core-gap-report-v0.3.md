@@ -67,7 +67,7 @@ The set is strong enough to begin reviewed-core work, but every candidate still 
 
 ## Cross-Cutting Review Gaps
 
-- No selected mechanic has a written `source_confidence` rationale yet.
+- Batch 1 mechanics now have report-level `source_confidence` rationale in [`reviewed-core-batch-1-maintainer-review-v0.3.md`](reviewed-core-batch-1-maintainer-review-v0.3.md), but rationale is not schema-enforced or stored in mechanic JSON yet.
 - All selected mechanics are still `draft`.
 - Relationship coverage is present, but relationship quality still needs human review.
 - `scope_profile` values exist, but high-risk mechanics need calibration against scenario QA.
