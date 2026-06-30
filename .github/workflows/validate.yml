@@ -51,7 +51,9 @@ jobs:
           node --check site/app.js
 
       - name: Test Mechanic Mixer analysis
-        run: node tools/test_mixer_analysis.mjs
+        run: |
+          node tools/test_mixer_analysis.mjs
+          node tools/test_mixer_scenarios.mjs
 
       - name: Smoke test dataset search
         run: python tools/search_dataset.py --query jump_assist --limit 5

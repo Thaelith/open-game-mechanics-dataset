@@ -1,0 +1,289 @@
+{
+  "version": "0.2",
+  "scenarios": [
+    {
+      "id": "mobility_combat_platformer",
+      "title": "Mobility Combat Platformer",
+      "intent": "A small action-platformer prototype focused on aerial movement, ranged combat, reload pacing, and readable cooldown feedback.",
+      "selected_mechanic_ids": [
+        "movement.air_dash",
+        "platforming.double_jump",
+        "combat.ranged_attack",
+        "combat.reload",
+        "ui_ux.cooldown_indicator"
+      ],
+      "expected": {
+        "must_suggest_any": [
+          "movement.dash"
+        ],
+        "must_not_warn_hard_conflict": true,
+        "expected_scope_labels": [
+          "Medium",
+          "High",
+          "Very High"
+        ],
+        "trim_should_not_include_any": [
+          "movement.air_dash",
+          "platforming.double_jump",
+          "combat.ranged_attack"
+        ],
+        "notes": "Should produce useful support and dependency suggestions without treating the concept as impossible."
+      }
+    },
+    {
+      "id": "online_coop_time_rewind_risk",
+      "title": "Online Co-op Time Rewind Risk",
+      "intent": "A risky co-op prototype exploring rewind with shared traversal state and physics-heavy movement.",
+      "selected_mechanic_ids": [
+        "time.time_rewind",
+        "multiplayer.online_coop",
+        "physics.moving_platform",
+        "traversal.grappling_hook"
+      ],
+      "expected": {
+        "must_warn_conflict_any": [
+          [
+            "time.time_rewind",
+            "multiplayer.online_coop"
+          ]
+        ],
+        "expected_scope_labels": [
+          "High",
+          "Very High"
+        ],
+        "trim_should_include_any": [
+          "time.time_rewind",
+          "multiplayer.online_coop"
+        ],
+        "prompt_must_include_any": [
+          "authority",
+          "rollback",
+          "timeline"
+        ],
+        "notes": "Should surface the explicit time-rewind and online co-op conflict, plus high scope pressure from rewind/network state."
+      }
+    },
+    {
+      "id": "survival_resource_loop",
+      "title": "Survival Resource Loop",
+      "intent": "A survival loop built around hunger, thirst, temperature, day-night pressure, and readable meter feedback.",
+      "selected_mechanic_ids": [
+        "survival.hunger",
+        "survival.thirst",
+        "survival.temperature",
+        "survival.day_night_cycle",
+        "time.day_night_schedule",
+        "ui_ux.cooldown_indicator"
+      ],
+      "expected": {
+        "must_suggest_any": [
+          "survival.health",
+          "survival.stamina",
+          "survival.base_building"
+        ],
+        "must_not_warn_hard_conflict": true,
+        "expected_scope_labels": [
+          "Medium",
+          "High",
+          "Very High"
+        ],
+        "trim_should_not_include_any": [
+          "survival.hunger",
+          "survival.thirst"
+        ],
+        "notes": "Should show save/load and UI risk while keeping the survival core intact."
+      }
+    },
+    {
+      "id": "roguelike_run_builder",
+      "title": "Roguelike Run Builder",
+      "intent": "A run-based roguelike concept with procedural floors, upgrade choices, relic synergy, shops, and meta progression.",
+      "selected_mechanic_ids": [
+        "roguelike.procedural_floor",
+        "roguelike.random_powerups",
+        "roguelike.pick_one_upgrade_choice",
+        "roguelike.relic_synergy",
+        "economy.shop",
+        "progression.meta_progression"
+      ],
+      "expected": {
+        "must_suggest_any": [
+          "procedural_generation.loot_generation",
+          "procedural_generation.procedural_level_rooms",
+          "roguelike.run_based_progression"
+        ],
+        "must_not_warn_hard_conflict": true,
+        "expected_scope_labels": [
+          "High",
+          "Very High"
+        ],
+        "trim_should_include_any": [
+          "progression.meta_progression",
+          "economy.shop"
+        ],
+        "notes": "Should identify procedural and reward-pool dependencies and flag tuning-heavy progression/synergy risk."
+      }
+    },
+    {
+      "id": "strategy_fog_tech_concept",
+      "title": "Strategy Fog/Tech Concept",
+      "intent": "A small strategy prototype combining fog of war, tech progression, unit counters, minimap readability, and unlockable abilities.",
+      "selected_mechanic_ids": [
+        "strategy.fog_of_war",
+        "strategy.tech_tree",
+        "strategy.unit_counter_system",
+        "ui_ux.minimap",
+        "progression.unlockable_abilities"
+      ],
+      "expected": {
+        "must_suggest_any": [
+          "camera.top_down_camera",
+          "progression.skill_tree",
+          "ui_ux.quest_marker"
+        ],
+        "must_not_warn_hard_conflict": true,
+        "expected_scope_labels": [
+          "Medium",
+          "High",
+          "Very High"
+        ],
+        "notes": "Should connect visibility, progression, UI, and counter-system support without inventing conflicts."
+      }
+    },
+    {
+      "id": "horror_stealth_loop",
+      "title": "Horror Stealth Loop",
+      "intent": "A stealth-horror loop with sanity, limited light, hiding, AI patrol, line-of-sight detection, and safe-room relief.",
+      "selected_mechanic_ids": [
+        "horror.sanity_meter",
+        "horror.light_resource",
+        "horror.hiding",
+        "ai.patrol",
+        "ai.line_of_sight_detection",
+        "horror.safe_room"
+      ],
+      "expected": {
+        "must_suggest_any": [
+          "horror.limited_visibility",
+          "horror.monster_patrol",
+          "stealth.visibility_meter",
+          "ai.investigate_noise"
+        ],
+        "must_not_warn_hard_conflict": true,
+        "expected_scope_labels": [
+          "Medium",
+          "High",
+          "Very High"
+        ],
+        "notes": "Should keep suggestions focused on horror, AI, and stealth readability rather than unrelated economy/progression systems."
+      }
+    },
+    {
+      "id": "crafting_economy_progression",
+      "title": "Crafting Economy Progression",
+      "intent": "A crafting-heavy loop with recipes, queued production, material wallets, shop access, crafting unlocks, and inventory grid UX.",
+      "selected_mechanic_ids": [
+        "crafting.recipe_crafting",
+        "crafting.crafting_queue",
+        "economy.crafting_materials",
+        "economy.shop",
+        "progression.crafting_unlocks",
+        "ui_ux.inventory_grid"
+      ],
+      "expected": {
+        "must_suggest_any": [
+          "crafting.workbench",
+          "economy.resource_conversion",
+          "economy.coins"
+        ],
+        "must_not_warn_hard_conflict": true,
+        "expected_scope_labels": [
+          "Medium",
+          "High",
+          "Very High"
+        ],
+        "notes": "Should show inventory, material transaction, UI, and save-load pressure without presenting the concept as conflict-heavy."
+      }
+    },
+    {
+      "id": "physics_puzzle_room",
+      "title": "Physics Puzzle Room",
+      "intent": "A small puzzle room using pressure plates, keys, push-pull physics, one-way platforms, and interaction prompts.",
+      "selected_mechanic_ids": [
+        "puzzle.pressure_plate",
+        "puzzle.key_and_lock",
+        "physics.physics_push_pull",
+        "physics.one_way_platform",
+        "ui_ux.interaction_prompt"
+      ],
+      "expected": {
+        "must_suggest_any": [
+          "puzzle.sliding_block",
+          "puzzle.timed_door",
+          "platforming.drop_through_platform"
+        ],
+        "must_not_warn_hard_conflict": true,
+        "expected_scope_labels": [
+          "Medium",
+          "High"
+        ],
+        "notes": "Should treat the room as a medium-to-high puzzle/physics implementation, not as a hard-conflict concept."
+      }
+    },
+    {
+      "id": "vehicle_upgrade_arcade",
+      "title": "Vehicle Upgrade Arcade",
+      "intent": "An arcade vehicle concept with boost, upgradeable parts, suspension handling, coins, an upgrade shop, and readable damage feedback.",
+      "selected_mechanic_ids": [
+        "vehicles.vehicle_boost",
+        "vehicles.upgradeable_vehicle",
+        "vehicles.suspension_physics",
+        "economy.coins",
+        "progression.upgrade_shop",
+        "ui_ux.damage_numbers"
+      ],
+      "expected": {
+        "must_suggest_any": [
+          "economy.shop",
+          "economy.dynamic_pricing",
+          "vehicles.vehicle_damage"
+        ],
+        "must_not_warn_hard_conflict": true,
+        "expected_scope_labels": [
+          "Medium",
+          "High",
+          "Very High"
+        ],
+        "notes": "Should connect vehicle tuning with economy/progression support and not surface unrelated hard conflicts."
+      }
+    },
+    {
+      "id": "accessibility_heavy_platformer",
+      "title": "Accessibility-heavy Platformer",
+      "intent": "A precision-platformer prototype that deliberately includes input forgiveness and player-facing accessibility settings.",
+      "selected_mechanic_ids": [
+        "platforming.coyote_time",
+        "platforming.jump_buffering",
+        "accessibility.assist_mode",
+        "accessibility.toggle_hold_option",
+        "accessibility.adjustable_difficulty",
+        "movement.air_dash"
+      ],
+      "expected": {
+        "must_suggest_any": [
+          "platforming.variable_jump_height",
+          "ui_ux.accessibility_remap_controls",
+          "movement.dash"
+        ],
+        "expected_scope_labels": [
+          "Medium",
+          "High"
+        ],
+        "trim_should_not_include_any": [
+          "accessibility.toggle_hold_option"
+        ],
+        "notes": "Should recognize accessibility mechanics as intentional support, not disposable filler."
+      }
+    }
+  ]
+}

@@ -112,6 +112,7 @@ python tools/check_mechanic_graph.py
 node --check site/mixer-analysis.js
 node --check site/app.js
 node tools/test_mixer_analysis.mjs
+node tools/test_mixer_scenarios.mjs
 ```
 
 On Windows PowerShell:
@@ -128,6 +129,7 @@ python tools\check_mechanic_graph.py
 node --check site\mixer-analysis.js
 node --check site\app.js
 node tools\test_mixer_analysis.mjs
+node tools\test_mixer_scenarios.mjs
 ```
 
 ## Add a New Mechanic
@@ -156,6 +158,7 @@ python tools/generate_index.py
 - Help AI agents produce grounded implementation plans that cite mechanic IDs.
 - Compare mechanics when building prototypes or design documents.
 - Explore deterministic concept mixes with dependency, conflict, scope, and MVP trim signals in the static Mechanic Mixer.
+- Run scenario QA against realistic Mechanic Mixer concept mixes before changing scoring or relationship data.
 
 ## Scope and Non-Goals
 

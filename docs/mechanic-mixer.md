@@ -78,6 +78,24 @@ node tools/test_mixer_analysis.mjs
 
 The tests cover conflict detection, missing dependency suggestions, required-system aggregation, scope pressure, export/import shape, and empty selections.
 
+## Scenario QA
+
+Real-world concept fixtures live in `tools/fixtures/mixer_scenarios_v0_2.json`. They exercise 10 deterministic mixes such as mobility combat, online co-op rewind risk, survival resource loops, roguelike runs, strategy fog/tech, horror stealth, crafting economy, physics puzzles, vehicle upgrades, and accessibility-heavy platforming.
+
+Run scenario checks with:
+
+```bash
+node tools/test_mixer_scenarios.mjs
+```
+
+Regenerate the saved scenario report with:
+
+```bash
+node tools/test_mixer_scenarios.mjs --report docs/reports/mechanic-mixer-scenario-qa-v0.2.md
+```
+
+These checks are meant to catch misleading dependency suggestions, missing conflict warnings, unstable scope labels, overly aggressive trim suggestions, and related additions that drift away from the selected concept.
+
 ## Limitations
 
 - The first MVP uses full mechanic JSON loaded by the existing static browser.
