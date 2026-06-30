@@ -160,3 +160,9 @@ Recommended Batch 1 candidates:
 - `combat.reload`
 - `ui_ux.cooldown_indicator`
 - `time.time_rewind`
+
+## Batch 1 Progress
+
+Reviewed Core Batch 1 has started with the five recommended mechanics. The pass strengthened `edge_cases`, `common_bugs`, and selected implementation/relationship details while keeping all five mechanics in `draft` with `source_confidence: "medium"`.
+
+Batch 1 report: [`reports/reviewed-core-batch-1-v0.3.md`](reports/reviewed-core-batch-1-v0.3.md)

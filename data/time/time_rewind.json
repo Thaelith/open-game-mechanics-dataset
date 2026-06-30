@@ -83,13 +83,19 @@
     "A rewind tries to restore an object that has been destroyed, pooled, unloaded, or replaced by a streamed chunk.",
     "Random events, loot drops, or network messages occurred during the rewound interval and must not be duplicated.",
     "The restored collision pose intersects moving platforms, doors, enemies, or newly spawned objects.",
+    "Inventory grants, quest flags, currency rewards, achievements, or irreversible narrative choices occur during the rewound interval and need exclusion or compensation rules.",
+    "Projectiles, status effects, summons, and enemy AI blackboard state must restore owner_id, lifetime, target_id, and last_known_position in a deterministic order.",
+    "Save, checkpoint, autosave, or scene streaming events occur while the player is actively rewinding.",
     "Audio and camera rewind smoothly while authority gameplay snaps to a discrete snapshot."
   ],
   "common_bugs": [
     "Only transform state is recorded, so velocity, animation phase, health, cooldowns, and AI blackboard state resume incorrectly.",
     "Snapshot buffers grow without bounds when multiple actors enter the recorded_state_channel set.",
     "Restored physics bodies wake with stale contact pairs and launch the player after the first solver step.",
-    "Rewinding through save, checkpoint, or achievement events grants rewards more than once."
+    "Rewinding through save, checkpoint, or achievement events grants rewards more than once.",
+    "Projectiles are restored without source owner, team, or remaining lifetime and damage the wrong target after rewind.",
+    "Enemy AI resumes with a stale target_id or last_known_position that no longer matches restored world state.",
+    "The RNG stream is not restored, so loot, encounters, or procedural events diverge from the visible rewound history."
   ],
   "balancing_notes": [
     "Long buffers encourage experimentation but can remove tension unless objectives or resources define what remains irreversible.",
@@ -130,6 +136,12 @@
       "type": "soft_conflicts_with",
       "reason": "Rewind snapshots must include grapple attachment, rope length, velocity, and collision state to replay traversal safely.",
       "strength": "medium"
+    },
+    {
+      "target": "physics.moving_platform",
+      "type": "soft_conflicts_with",
+      "reason": "Rewind restore order must handle platform position, carried passengers, contact state, and velocity transfer together.",
+      "strength": "strong"
     },
     {
       "target": "multiplayer.online_coop",

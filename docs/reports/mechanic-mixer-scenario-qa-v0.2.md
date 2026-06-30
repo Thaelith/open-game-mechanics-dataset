@@ -76,7 +76,7 @@ _None._
 | Mechanic | Category | Reasons |
 | --- | --- | --- |
 | time.cooldown_time | time | Critical dependency: combat.reload requires time.cooldown_time.; Critical dependency: ui_ux.cooldown_indicator requires time.cooldown_time.; time.cooldown_time supports selected ui_ux.cooldown_indicator. |
-| movement.dash | movement | Support option: ui_ux.cooldown_indicator supports movement.dash.; Contextual link: movement.air_dash extends movement.dash.; movement.dash unlocks selected movement.air_dash. |
+| movement.dash | movement | Support option: ui_ux.cooldown_indicator supports movement.dash.; Contextual link: movement.air_dash extends movement.dash.; movement.dash supports selected ui_ux.cooldown_indicator. |
 | platforming.variable_jump_height | platforming | Contextual link: platforming.double_jump extends platforming.variable_jump_height.; platforming.variable_jump_height enhances selected platforming.double_jump.; platforming.double_jump lists it in related_mechanics. |
 | progression.unlockable_abilities | progression | Contextual link: platforming.double_jump unlocks progression.unlockable_abilities.; progression.unlockable_abilities unlocks selected platforming.double_jump.; platforming.double_jump lists it in combines_well_with. |
 | ui_ux.hit_marker | ui_ux | Support option: combat.ranged_attack supports ui_ux.hit_marker.; combat.ranged_attack lists it in related_mechanics.; combat.reload lists it in combines_well_with. |
@@ -137,6 +137,7 @@ Very High overall (4.4); implementation 4.8, design 4.3, tuning 5.0, content 3.0
 | --- | --- | --- | --- |
 | Hard conflict | multiplayer.online_coop | time.time_rewind | Authoritative online co-op is structurally hard to combine with player-controlled rewinds without rollback architecture. |
 | Hard conflict | time.time_rewind | multiplayer.online_coop | Player-controlled rewind conflicts with ordinary online co-op authority unless rollback and shared timeline rules are designed first. |
+| Soft conflict | time.time_rewind | physics.moving_platform | Rewind restore order must handle platform position, carried passengers, contact state, and velocity transfer together. |
 | Soft conflict | physics.moving_platform | time.time_rewind | Rewind snapshots must capture platform phase, passenger carry state, and velocity transfer to replay correctly. |
 | Soft conflict | time.time_rewind | traversal.grappling_hook | Rewind snapshots must include grapple attachment, rope length, velocity, and collision state to replay traversal safely. |
 | Soft conflict | traversal.grappling_hook | time.time_rewind | Grapple state is difficult to rewind unless attachment, rope length, velocity, and collision state are sampled. |
@@ -222,13 +223,13 @@ _None._
 | Priority | Target | Type | Strength | Source | Reason |
 | --- | --- | --- | --- | --- | --- |
 | Critical dependency | time.cooldown_time | requires | strong | ui_ux.cooldown_indicator | Cooldown indicators need remaining duration, charge count, and authoritative ready state from cooldown timers. |
+| Support option | combat.reload | supports | medium | ui_ux.cooldown_indicator | Long reloads and staged reloads benefit from visible progress, cancellation, and ready-state feedback. |
 | Support option | movement.dash | supports | medium | ui_ux.cooldown_indicator | Dash availability is easier to read when cooldown or charge state is visible near the action prompt. |
 | Support option | survival.base_building | supports | medium | survival.temperature | Shelter volumes and base structures can provide insulation, safe zones, or recovery sources. |
 | Support option | survival.stamina | balances | medium | survival.hunger | Low hunger can cap stamina recovery so long-term resource planning affects moment-to-moment exertion. |
 | Contextual link | survival.health | feeds | medium | survival.hunger | Hunger depletion can produce health penalties after warning thresholds are crossed. |
 | Contextual link | survival.health | feeds | medium | survival.temperature | Extreme exposure can apply health penalties after cold or heat thresholds persist. |
 | Contextual link | survival.health | feeds | medium | survival.thirst | Thirst depletion can trigger health loss or impairment after hydration thresholds expire. |
-| Contextual link | procedural_generation.random_encounters | enhances | medium | survival.day_night_cycle | Night phases can alter encounter pools, danger windows, and route-planning decisions. |
 
 ### Related Additions
 
@@ -238,10 +239,10 @@ _None._
 | time.cooldown_time | time | Critical dependency: ui_ux.cooldown_indicator requires time.cooldown_time.; time.cooldown_time supports selected ui_ux.cooldown_indicator.; time.day_night_schedule lists it in combines_well_with. |
 | survival.base_building | survival | Support option: survival.temperature supports survival.base_building.; survival.thirst lists it in combines_well_with.; survival.temperature lists it in related_mechanics. |
 | survival.stamina | survival | Support option: survival.hunger balances survival.stamina.; survival.stamina supports selected ui_ux.cooldown_indicator.; survival.hunger lists it in related_mechanics. |
+| combat.reload | combat | Support option: ui_ux.cooldown_indicator supports combat.reload.; combat.reload supports selected ui_ux.cooldown_indicator.; ui_ux.cooldown_indicator lists it in related_mechanics. |
+| movement.dash | movement | Support option: ui_ux.cooldown_indicator supports movement.dash.; movement.dash supports selected ui_ux.cooldown_indicator.; ui_ux.cooldown_indicator lists it in related_mechanics. |
 | procedural_generation.random_encounters | procedural_generation | Contextual link: survival.day_night_cycle enhances procedural_generation.random_encounters.; procedural_generation.random_encounters enhances selected survival.day_night_cycle. |
-| movement.dash | movement | Support option: ui_ux.cooldown_indicator supports movement.dash.; ui_ux.cooldown_indicator lists it in related_mechanics. |
 | simulation.systemic_weather | simulation | simulation.systemic_weather feeds selected survival.temperature.; survival.temperature lists it in combines_well_with.; time.day_night_schedule lists it in related_mechanics. |
-| combat.reload | combat | combat.reload supports selected ui_ux.cooldown_indicator.; ui_ux.cooldown_indicator lists it in related_mechanics. |
 
 ### MVP Trim Suggestions
 
@@ -773,10 +774,10 @@ Medium overall (3.0); implementation 2.5, design 3.0, tuning 3.8, content 1.5, r
 | Useful support | platforming.variable_jump_height | supports | strong | platforming.jump_buffering | Buffered jump starts must feed the same press and release timestamps used by variable jump height. |
 | Useful support | ui_ux.accessibility_remap_controls | supports | strong | accessibility.toggle_hold_option | Toggle and hold preferences should live beside remapping so each input action has a consistent control profile. |
 | Support option | platforming.double_jump | supports | medium | movement.air_dash | Air dash pairs with double jump when aerial verbs need separate counters and reset rules. |
+| Support option | platforming.double_jump | supports | medium | platforming.jump_buffering | Buffered jumps need shared jump-consumption priority so landing, air-jump, and wall-jump states do not spend the wrong jump. |
 | Support option | traversal.vehicle_mount | supports | medium | accessibility.toggle_hold_option | Mount, interact, and channel actions need toggle or hold options for players who cannot sustain long presses. |
 | Support option | ui_ux.tutorial_prompt | supports | medium | accessibility.adjustable_difficulty | Tutorial and settings prompts can explain difficulty changes without forcing players to infer hidden rule changes. |
 | Contextual link | movement.dash | extends | strong | movement.air_dash | Air dash reuses dash displacement and cooldown rules while applying them during airborne movement state. |
-| Support option | ui_ux.tutorial_prompt | supports | weak | platforming.coyote_time | Tutorial prompts can explain forgiving jump windows without exposing hidden frame rules directly. |
 
 ### Related Additions
 
@@ -784,9 +785,9 @@ Medium overall (3.0); implementation 2.5, design 3.0, tuning 3.8, content 1.5, r
 | --- | --- | --- |
 | platforming.variable_jump_height | platforming | Useful support: platforming.coyote_time supports platforming.variable_jump_height.; Useful support: platforming.jump_buffering supports platforming.variable_jump_height.; platforming.variable_jump_height supports selected platforming.coyote_time. |
 | ui_ux.tutorial_prompt | ui_ux | Support option: accessibility.adjustable_difficulty supports ui_ux.tutorial_prompt.; Support option: platforming.coyote_time supports ui_ux.tutorial_prompt.; ui_ux.tutorial_prompt supports selected platforming.coyote_time. |
+| platforming.double_jump | platforming | Support option: movement.air_dash supports platforming.double_jump.; Support option: platforming.jump_buffering supports platforming.double_jump.; platforming.coyote_time lists it in related_mechanics. |
 | movement.dash | movement | Contextual link: movement.air_dash extends movement.dash.; movement.dash unlocks selected movement.air_dash.; platforming.coyote_time lists it in combines_well_with. |
 | ui_ux.accessibility_remap_controls | ui_ux | Useful support: accessibility.toggle_hold_option supports ui_ux.accessibility_remap_controls.; ui_ux.accessibility_remap_controls supports selected accessibility.toggle_hold_option.; accessibility.toggle_hold_option lists it in related_mechanics. |
-| platforming.double_jump | platforming | Support option: movement.air_dash supports platforming.double_jump.; platforming.coyote_time lists it in related_mechanics.; platforming.jump_buffering lists it in related_mechanics. |
 | combat.aim_down_sights | combat | Contextual link: accessibility.toggle_hold_option enhances combat.aim_down_sights.; combat.aim_down_sights supports selected accessibility.toggle_hold_option.; accessibility.toggle_hold_option lists it in related_mechanics. |
 | platforming.wall_jump | platforming | platforming.wall_jump supports selected platforming.coyote_time.; platforming.coyote_time lists it in combines_well_with.; platforming.jump_buffering lists it in related_mechanics. |
 | traversal.vehicle_mount | traversal | Support option: accessibility.toggle_hold_option supports traversal.vehicle_mount. |

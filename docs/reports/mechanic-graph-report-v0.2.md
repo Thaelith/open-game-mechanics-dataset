@@ -9,14 +9,14 @@
 | Relationship coverage | 78.48% |
 | Mechanics with scope_profile | 175 |
 | Scope profile coverage | 78.48% |
-| Typed relationships | 526 |
+| Typed relationships | 531 |
 
 ## Most Common Relationship Types
 
 | Type | Count |
 | --- | --- |
-| supports | 165 |
-| soft_conflicts_with | 103 |
+| supports | 169 |
+| soft_conflicts_with | 104 |
 | requires | 74 |
 | enhances | 59 |
 | feeds | 48 |
@@ -31,7 +31,10 @@
 
 | Mechanic | Outgoing typed relationships |
 | --- | --- |
-| movement.dash | 4 |
+| movement.dash | 5 |
+| platforming.jump_buffering | 5 |
+| time.time_rewind | 4 |
+| ui_ux.cooldown_indicator | 4 |
 | accessibility.adjustable_difficulty | 3 |
 | accessibility.assist_mode | 3 |
 | accessibility.colorblind_modes | 3 |
@@ -48,9 +51,6 @@
 | camera.camera_lock_on | 3 |
 | camera.cinematic_camera | 3 |
 | camera.dynamic_fov | 3 |
-| camera.screen_shake | 3 |
-| camera.smooth_follow_camera | 3 |
-| camera.split_screen | 3 |
 
 ## Category Relationship Coverage
 

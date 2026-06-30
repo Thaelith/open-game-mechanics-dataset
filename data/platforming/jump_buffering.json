@@ -65,14 +65,20 @@
     "assist_mode_buffer"
   ],
   "edge_cases": [
-    "Buffered jump during hit stun should usually expire before control returns.",
+    "Buffered jump during hit stun, ladder attach, ledge climb, or other animation locks should usually expire before control returns.",
+    "Cutscenes, dialogue choices, pause menus, and UI focus changes must clear or suspend the buffer so a stale jump does not fire after control resumes.",
+    "Landing, coyote time, wall contact, and double-jump eligibility can become true in the same simulation tick and need a deterministic priority order.",
     "A buffered jump on a drop-through platform can conflict with downward input.",
-    "Multiple queued actions need a priority rule so jump does not steal dash or interact inputs."
+    "Assist settings that increase jump_buffer_ms should not let a press survive respawn, checkpoint restore, room transition, or save/load.",
+    "Multiple queued actions need a priority rule so jump does not steal dash, attack, or interact inputs."
   ],
   "common_bugs": [
     "The buffer never clears after an invalid jump and fires seconds later.",
     "Hold-to-jump creates repeated buffered jumps every frame.",
-    "The buffer consumes input before variable jump height can read button release."
+    "The buffer consumes input before variable jump height can read button release.",
+    "A buffered jump fires after a cutscene or menu closes because focus-loss events did not clear input history.",
+    "Ground detection becomes true one physics step late, so a landing buffer spends a double jump instead of a ground jump.",
+    "Coyote time and jump buffering both consume the same input and produce two jump impulses from one button press."
   ],
   "balancing_notes": [
     "A small buffer improves feel without changing challenge; a large buffer can make rhythmic timing automatic.",
@@ -82,10 +88,10 @@
     "Expose stronger buffering in assist settings for games with frequent precision jumps."
   ],
   "implementation_notes": {
-    "unity": "Record jump-press timestamps from the Input System, then consume the newest buffered press when ground, wall, or ledge jump eligibility becomes true inside the fixed movement update.",
-    "godot": "Capture Input.is_action_just_pressed for jump into a short-lived buffer and resolve it after floor and wall checks so buffered jumps use the correct movement state.",
-    "unreal": "Queue jump input in the character or ability component and consume it from CharacterMovement state after landing, wall contact, or custom movement eligibility is confirmed.",
-    "web": "Store jump_pressed_ms in the input state, expire it after jump_buffer_ms, and let the simulation consume the buffer once a legal jump transition is available."
+    "unity": "Record jump-press timestamps from the Input System, then consume the newest buffered press after ground, wall, ledge, and animation-lock state are resolved in the fixed movement update. Clear buffered input on UI focus, cutscene control, respawn, and scene load.",
+    "godot": "Capture Input.is_action_just_pressed for jump into a short-lived buffer and resolve it after floor and wall checks so buffered jumps use the correct movement state. Reset the buffer when control_mode, pause_state, or cutscene ownership changes.",
+    "unreal": "Queue jump input in the character or ability component and consume it from CharacterMovement state after landing, wall contact, or custom movement eligibility is confirmed. Include the consumed input sequence in prediction so rollback does not replay the same jump twice.",
+    "web": "Store jump_pressed_ms and input_sequence_id in the input state, expire it after jump_buffer_ms, and let the simulation consume it once a legal jump transition is available. Clear it when focus changes or checkpoint restore rewinds movement state."
   },
   "related_mechanics": [
     "platforming.coyote_time",
@@ -109,6 +115,18 @@
       "type": "supports",
       "reason": "Buffered jump starts must feed the same press and release timestamps used by variable jump height.",
       "strength": "strong"
+    },
+    {
+      "target": "platforming.double_jump",
+      "type": "supports",
+      "reason": "Buffered jumps need shared jump-consumption priority so landing, air-jump, and wall-jump states do not spend the wrong jump.",
+      "strength": "medium"
+    },
+    {
+      "target": "accessibility.toggle_hold_option",
+      "type": "supports",
+      "reason": "Hold, toggle, and assisted input settings can change how long jump intent should remain buffered.",
+      "strength": "medium"
     },
     {
       "target": "movement.dash",

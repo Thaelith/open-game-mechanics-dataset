@@ -70,6 +70,7 @@ See [`docs/trust-and-review-status.md`](docs/trust-and-review-status.md) for det
 - [Trust and review status](docs/trust-and-review-status.md)
 - [Reviewed core subset v0.3 plan](docs/reviewed-core-subset-v0.3.md)
 - [Reviewed core gap report](docs/reports/reviewed-core-gap-report-v0.3.md)
+- [Reviewed core Batch 1 report](docs/reports/reviewed-core-batch-1-v0.3.md)
 - [Typed relationships and scope metadata](docs/relationships-and-scope.md)
 - [Quality report](docs/reports/quality-report-v0.1.md)
 - [Graph coverage report](docs/reports/mechanic-graph-report-v0.2.md)

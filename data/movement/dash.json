@@ -82,15 +82,19 @@
   ],
   "edge_cases": [
     "Dashing into a concave corner should stop or slide consistently without tunneling through thin collision.",
+    "High dash_distance over one physics step needs sweep, sub-step, or truncation rules so thin walls and small hazards are not skipped.",
     "A buffered dash pressed before landing must choose whether to use ground rules, air rules, or be rejected.",
-    "Dash direction should remain stable if the character flips, target lock changes, or input device changes mid-burst.",
-    "Knockback, stun, teleport, or cutscene control must cancel dash state without leaving recharge or invulnerability stuck."
+    "Dash direction should remain stable if the character flips, target lock changes, camera mode changes, or input device changes mid-burst.",
+    "Respawn, checkpoint restore, or save/load during dash must restore movement_state_id, cooldown charge state, collision capsule, and invulnerability window consistently.",
+    "Knockback, stun, teleport, or cutscene control must cancel dash state without leaving recharge, animation lock, or invulnerability stuck."
   ],
   "common_bugs": [
     "Dash moves by transform position and bypasses collision sweeps, causing wall clips at low frame rates.",
     "Recharge starts on button press instead of successful activation, rewarding invalid repeated inputs.",
+    "Dash cooldown or charge state resets after scene reload while the UI still shows the action unavailable.",
     "Invulnerability frames outlast the visual dash because damage immunity is cleared by animation events.",
-    "Slope projection changes dash distance enough that uphill and downhill dashes feel like different mechanics."
+    "Slope projection or wall-normal correction changes dash distance enough that uphill, downhill, and wall-adjacent dashes feel like different mechanics.",
+    "Network correction restores position but not dash cooldown, input buffer, or i-frame state, causing client and server to disagree about the next legal dash."
   ],
   "balancing_notes": [
     "Short recharge and long invulnerability turn dash into a primary defense; long recharge makes it a tactical escape.",
@@ -102,10 +106,10 @@
     "Pair readiness with visual, audio, and optional haptic cues so players are not forced to track a tiny UI element."
   ],
   "implementation_notes": {
-    "unity": "Use an explicit movement-state enum and feed the final desired velocity into CharacterController.Move or Rigidbody movement from FixedUpdate; keep dash and jump assists outside animation callbacks. For Dash, validate this path with parameters such as dash_distance and dash_travel_ms.",
-    "godot": "Keep the mechanic state on CharacterBody2D or CharacterBody3D, update velocity in _physics_process, and separate input buffering from collision response. For Dash, validate this path with parameters such as dash_distance and dash_travel_ms.",
-    "unreal": "Use CharacterMovement with a custom movement state or Gameplay Ability; gate activation through prediction-safe input and reconcile movement corrections cleanly in networked play. For Dash, validate this path with parameters such as dash_distance and dash_travel_ms.",
-    "web": "Represent the mechanic as deterministic state in the simulation loop, then apply resolved displacement before rendering through Canvas, Phaser, Three.js, or a custom engine. For Dash, validate this path with parameters such as dash_distance and dash_travel_ms."
+    "unity": "Use an explicit dash_state with dash_started_at_ms, dash_vector, charge_count, and i_frame_end_ms. Resolve displacement through CharacterController.Move, Rigidbody sweep, or fixed-step sub-movement, then clear the buffer, capsule override, and immunity in one exit path for cancel, respawn, and load.",
+    "godot": "Keep dash state on CharacterBody2D or CharacterBody3D with captured input direction and expiry timestamps. Update velocity in _physics_process, use move_and_slide or shape casts for truncation, and restore gravity/collision layers when dash is interrupted by stun, teleport, or scene reload.",
+    "unreal": "Use CharacterMovement custom movement or a Gameplay Ability with prediction-safe activation. Store cooldown and i-frame state outside montage notifies, validate activation on the server, and reconcile SavedMove corrections with dash charge and input-buffer state.",
+    "web": "Represent dash as deterministic simulation state with dash_started_ms, dash_end_ms, direction, cooldown_group_id, and collision sweep result. Apply resolved displacement before rendering and serialize enough state for replay, rollback, and checkpoint restore."
   },
   "related_mechanics": [
     "movement.air_dash",
@@ -135,6 +139,12 @@
       "strength": "weak"
     },
     {
+      "target": "ui_ux.cooldown_indicator",
+      "type": "supports",
+      "reason": "Dash charges and cooldowns need readable availability feedback when the action is gated by recharge state.",
+      "strength": "medium"
+    },
+    {
       "target": "movement.air_dash",
       "type": "unlocks",
       "reason": "A ground or omnidirectional dash is often the base action upgraded into an airborne dash variant.",
@@ -143,7 +153,7 @@
     {
       "target": "combat.invincibility_frames",
       "type": "soft_conflicts_with",
-      "reason": "Combining dash with invulnerability can dominate defensive play unless windows, recovery, and cooldowns are constrained.",
+      "reason": "Dash variants that include invulnerability can dominate defensive play unless immunity windows, recovery, and cooldowns are constrained together.",
       "strength": "medium"
     }
   ],

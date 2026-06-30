@@ -72,13 +72,19 @@
   ],
   "edge_cases": [
     "Reload interrupted by sprint, damage, weapon swap, or cutscene needs ammo transfer rules.",
+    "Save/load, reconnect, or rollback during reload must restore reload_started_at_ms, commit state, magazine count, reserve count, and cancel policy together.",
+    "Per-shell or staged reloads need rules for partial completion when reserve ammo runs out mid-sequence.",
     "Client prediction must not duplicate ammo on cancel.",
-    "Auto-reload at zero ammo can conflict with manual reload input."
+    "Auto-reload at zero ammo can conflict with manual reload input, buffered firing, or weapon-swap input in the same tick.",
+    "Death, stun, weapon drop, or equipment removal after the commit frame but before the animation ends needs a clear final ammo state."
   ],
   "common_bugs": [
     "Ammo is added at animation start and duplicated after cancel.",
     "Reload finishes visually but weapon state remains unable to fire.",
-    "Inventory reserve can go negative after rapid weapon switching."
+    "Inventory reserve can go negative after rapid weapon switching.",
+    "Firing is accepted on the same frame as reload cancel because weapon_state changes before the ammo transaction resolves.",
+    "Saving during reload restores magazine and reserve counts but not reload progress, allowing a free instant reload after load.",
+    "Ammo UI shows predicted loaded rounds after the server rejects reload because reserve ammo, range, or weapon ownership changed."
   ],
   "balancing_notes": [
     "Long reload windows create tactical exposure; short reloads make ammo mostly cosmetic.",
@@ -88,10 +94,10 @@
     "Use clear magazine and reserve indicators and avoid relying only on click sounds for empty weapons."
   ],
   "implementation_notes": {
-    "unity": "Represent reload as a weapon state with a commit frame or per-round insert event; transfer ammo from reserve to magazine only at the configured commit point.",
-    "godot": "Store magazine and reserve counts on the weapon resource or node, drive reload timers from _physics_process, and apply per-shell inserts from explicit state events.",
-    "unreal": "Implement reload in the weapon or Gameplay Ability state machine, using montage notifies for commit points while keeping ammo authority on the server.",
-    "web": "Model reload as a timed weapon state with reload_started_ms, commit frame, and cancel policy, then update magazine and reserve counts in one deterministic transaction."
+    "unity": "Represent reload as weapon_state with reload_started_at_ms, commit_frame, cancel_policy, magazine_count, reserve_count, and transaction_id. Transfer ammo only at configured commit points, then reconcile animation events, UI, and save/load from that authoritative state.",
+    "godot": "Store magazine and reserve counts on the weapon resource or node, drive reload timers from _physics_process, and apply per-shell inserts from explicit state events. Clear or persist reload_state deliberately when changing scenes, swapping weapons, or losing player control.",
+    "unreal": "Implement reload in the weapon or Gameplay Ability state machine, using montage notifies for visual commit cues while keeping ammo authority on the server. Replicate reload_state, commit index, and reserve deltas so prediction and reconnect do not duplicate ammunition.",
+    "web": "Model reload as a timed weapon state with reload_started_ms, commit frame, cancel policy, and ammo transaction id. Update magazine and reserve counts in one deterministic transaction before rendering UI or accepting buffered fire input."
   },
   "related_mechanics": [
     "combat.ranged_attack",

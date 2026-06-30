@@ -82,13 +82,17 @@
     "Cooldown resets, haste effects, pause, slow motion, and server correction can change the remaining time mid-animation.",
     "Shared cooldown groups need one visible source of truth across multiple abilities.",
     "Charge-based abilities should show partial readiness without implying all charges are restored.",
-    "Controller, keyboard, touch, and remapped inputs need glyphs that update while cooldown is visible."
+    "Controller, keyboard, touch, and remapped inputs need glyphs that update while cooldown is visible.",
+    "An ability can be disabled by silence, stun, equipment swap, missing resource, or zone rules while its cooldown is technically ready.",
+    "Reconnect, rollback correction, or late authority updates can jump the displayed remaining time backward or forward and need non-misleading feedback."
   ],
   "common_bugs": [
     "UI countdown uses local time while gameplay cooldown uses simulation time and drifts during pause.",
     "Cooldown fill reaches zero visually before the server accepts the action.",
     "Ready flash plays after the ability was removed, swapped, or disabled by silence.",
-    "Color-only ready/unready states are unreadable for some players."
+    "Color-only ready/unready states are unreadable for some players.",
+    "Charge pips show the full ability as ready when only one partial charge has recovered.",
+    "A recycled widget remains subscribed to the old ability_id after loadout change and displays another action's cooldown."
   ],
   "balancing_notes": [
     "Exact timers make optimization easier; vague fills preserve uncertainty and reduce UI pressure.",
@@ -127,6 +131,12 @@
       "target": "movement.dash",
       "type": "supports",
       "reason": "Dash availability is easier to read when cooldown or charge state is visible near the action prompt.",
+      "strength": "medium"
+    },
+    {
+      "target": "combat.reload",
+      "type": "supports",
+      "reason": "Long reloads and staged reloads benefit from visible progress, cancellation, and ready-state feedback.",
       "strength": "medium"
     },
     {

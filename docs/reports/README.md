@@ -52,6 +52,14 @@ Summarizes the proposed v0.3 reviewed core subset candidates, with special atten
 
 Why it matters: reviewed status should depend on practical prototype-breaking detail, not only schema validity or broad coverage.
 
+## Reviewed Core Batch 1 Report
+
+[`reviewed-core-batch-1-v0.3.md`](reviewed-core-batch-1-v0.3.md)
+
+Documents the first v0.3 reviewed-core improvement pass for `movement.dash`, `platforming.jump_buffering`, `combat.reload`, `ui_ux.cooldown_indicator`, and `time.time_rewind`.
+
+Why it matters: this report records exactly what changed, which edge cases and common bugs improved, and what still blocks reviewed status.
+
 ## When To Regenerate
 
 - After changing mechanic JSON files.
