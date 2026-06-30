@@ -1,6 +1,6 @@
 # Relationships And Scope
 
-This project now supports optional typed mechanic relationships and rough scope metadata. These fields are a v0.2 foundation for future planning tools such as a Mechanic Mixer, MVP trimmer, dependency checker, conflict detector, and missing-mechanic recommender.
+This project supports optional typed mechanic relationships and rough scope metadata. These fields are the v0.2 foundation used by the static Mechanic Mixer MVP and future planning tools such as an MVP trimmer, dependency checker, conflict detector, and missing-mechanic recommender.
 
 The fields are optional. Existing mechanics remain valid without them.
 
@@ -159,7 +159,7 @@ Risk fields use `0-5`:
 
 ## How Future Tools Should Use This
 
-A Mechanic Mixer can use `requires` and `supports` edges to suggest missing prerequisites, `conflicts_with` and `soft_conflicts_with` edges to warn about risky combinations, and `scope_profile` to estimate MVP pressure.
+The Mechanic Mixer can use `requires` and `supports` edges to suggest missing prerequisites, `conflicts_with` and `soft_conflicts_with` edges to warn about risky combinations, and `scope_profile` to estimate MVP pressure.
 
 A Game Concept Builder can cite mechanic ids and relationship reasons instead of inventing unsupported dependencies.
 

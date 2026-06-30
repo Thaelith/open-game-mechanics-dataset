@@ -47,6 +47,7 @@ const RELATIONSHIP_SUGGESTION_TYPES = new Set([
   "is_variant_of"
 ]);
 const CONFLICT_TYPES = new Set(["conflicts_with", "soft_conflicts_with"]);
+const MixerAnalysis = window.MixerAnalysis;
 
 async function fetchJson(url) {
   const response = await fetch(url);
@@ -752,53 +753,7 @@ function generateAiPlanningPrompt(records, analysis) {
 }
 
 function analyzeMixerSelection(records) {
-  const categories = uniqueSorted(records.map((mechanic) => mechanic.category));
-  const roleCounts = {
-    core: 0,
-    support: 0,
-    optional: 0,
-    polish: 0,
-    unknown: 0
-  };
-  let missingScopeCount = 0;
-  let graphCount = 0;
-
-  for (const mechanic of records) {
-    if (asArray(mechanic.relationships).length) {
-      graphCount += 1;
-    }
-    if (!mechanic.scope_profile) {
-      missingScopeCount += 1;
-      continue;
-    }
-    const role = mechanic.scope_profile.mvp_role || "unknown";
-    roleCounts[role] = (roleCounts[role] || 0) + 1;
-  }
-
-  const requiredSystems = collectRequiredSystems(records);
-  const missingRelationshipTargets = collectMissingRelationshipTargets(records);
-  const conflictWarnings = collectConflictWarnings(records);
-  const scopePressure = calculateScopePressure(records);
-  const trimSuggestions = generateTrimSuggestions(records, missingRelationshipTargets, conflictWarnings);
-  const relatedAdditions = generateRelatedAdditions(records, missingRelationshipTargets);
-  const analysis = {
-    summary: {
-      selectedCount: records.length,
-      categories,
-      roleCounts,
-      missingScopeCount,
-      graphCount,
-      noGraphIds: records.filter((mechanic) => !asArray(mechanic.relationships).length).map((mechanic) => mechanic.id)
-    },
-    requiredSystems,
-    missingRelationshipTargets,
-    conflictWarnings,
-    scopePressure,
-    trimSuggestions,
-    relatedAdditions
-  };
-  analysis.aiPlanningPrompt = generateAiPlanningPrompt(records, analysis);
-  return analysis;
+  return MixerAnalysis.analyzeMixerSelection(records, { allMechanics: state.mechanics });
 }
 
 function renderPills(values, className = "") {
@@ -942,6 +897,82 @@ function relatedMarkup(values) {
         })
         .join("")}
     </div>
+  `;
+}
+
+function relationshipGroupLabel(type) {
+  if (type === "requires" || type === "supports" || type === "balances") {
+    return "Dependency / support";
+  }
+  if (type === "conflicts_with" || type === "soft_conflicts_with") {
+    return "Conflict / risk";
+  }
+  if (type === "feeds" || type === "consumes" || type === "unlocks") {
+    return "Flow / progression";
+  }
+  return "Context";
+}
+
+function typedRelationshipsMarkup(relationships) {
+  const items = asArray(relationships);
+  if (!items.length) {
+    return "";
+  }
+
+  return `
+    <div class="relationship-grid">
+      ${items
+        .map((relationship) => {
+          const target = mechanicById(relationship.target);
+          const targetControl = target
+            ? `<button class="inline-link relationship-target" type="button" data-related-id="${escapeHtml(relationship.target)}">${escapeHtml(target.name)} (${escapeHtml(relationship.target)})</button>`
+            : `<span class="muted-pill relationship-target">${escapeHtml(relationship.target)}</span>`;
+          const externalLabel = isExternalReference(relationship.target) ? '<span class="pill muted-pill">External/future</span>' : "";
+          return `
+            <article class="relationship-card ${relationship.type === "conflicts_with" ? "is-hard-conflict" : ""}">
+              <div class="analysis-card-heading">
+                <strong>${escapeHtml(relationshipGroupLabel(relationship.type))}</strong>
+                <span>${escapeHtml(relationship.type)} / ${escapeHtml(strongestLabel(relationship.strength))}</span>
+              </div>
+              <p>${targetControl} ${externalLabel}</p>
+              <p>${escapeHtml(relationship.reason || "No reason provided.")}</p>
+            </article>
+          `;
+        })
+        .join("")}
+    </div>
+  `;
+}
+
+function scopeProfileMarkup(scope) {
+  if (!scope) {
+    return "";
+  }
+  const maxRisk = Math.max(scope.networking_risk, scope.save_load_risk, scope.ui_risk);
+  const metrics = [
+    ["MVP role", roleLabel(scope.mvp_role)],
+    ["Implementation", `${scope.implementation_cost} / ${pressureLabel(scope.implementation_cost)}`],
+    ["Design", `${scope.design_cost} / ${pressureLabel(scope.design_cost)}`],
+    ["Tuning", `${scope.tuning_cost} / ${pressureLabel(scope.tuning_cost)}`],
+    ["Content", `${scope.content_cost} / ${pressureLabel(scope.content_cost)}`],
+    ["Networking risk", `${scope.networking_risk} / ${pressureLabel(scope.networking_risk)}`],
+    ["Save/load risk", `${scope.save_load_risk} / ${pressureLabel(scope.save_load_risk)}`],
+    ["UI risk", `${scope.ui_risk} / ${pressureLabel(scope.ui_risk)}`],
+    ["Max risk", `${maxRisk} / ${pressureLabel(maxRisk)}`]
+  ];
+
+  return `
+    <div class="detail-grid">
+      ${metrics
+        .map(([label, value]) => `
+          <div class="detail-metric">
+            <span>${escapeHtml(label)}</span>
+            <strong>${escapeHtml(value)}</strong>
+          </div>
+        `)
+        .join("")}
+    </div>
+    <p class="muted-text">Relative planning signal, not an hour estimate.</p>
   `;
 }
 
@@ -1204,26 +1235,7 @@ function renderMixer() {
 
 function buildMixerExport() {
   const records = selectedMechanics();
-  const analysis = analyzeMixerSelection(records);
-  return {
-    version: "ogmd-mechanic-mixer-mvp-0.1",
-    selected_mechanic_ids: records.map((mechanic) => mechanic.id),
-    selected_mechanics: records.map((mechanic) => ({
-      id: mechanic.id,
-      name: mechanic.name,
-      category: mechanic.category,
-      mvp_role: mechanic.scope_profile?.mvp_role || null
-    })),
-    categories: analysis.summary.categories,
-    required_systems: analysis.requiredSystems,
-    missing_dependency_support_suggestions: analysis.missingRelationshipTargets.missing,
-    external_future_suggestions: analysis.missingRelationshipTargets.external,
-    conflict_warnings: analysis.conflictWarnings,
-    scope_summary: analysis.scopePressure,
-    mvp_trim_suggestions: analysis.trimSuggestions,
-    related_additions: analysis.relatedAdditions,
-    ai_planning_prompt: analysis.aiPlanningPrompt
-  };
+  return MixerAnalysis.buildMixerExport(records, { allMechanics: state.mechanics });
 }
 
 async function copyMixerConceptJson() {
@@ -1258,23 +1270,7 @@ async function copyMixerPrompt() {
 }
 
 function mechanicIdsFromImport(value) {
-  const parsed = JSON.parse(value);
-  if (Array.isArray(parsed)) {
-    return parsed.map((item) => (typeof item === "string" ? item : item?.id)).filter(Boolean);
-  }
-  if (Array.isArray(parsed.selected_mechanic_ids)) {
-    return parsed.selected_mechanic_ids;
-  }
-  if (Array.isArray(parsed.selectedMechanicIds)) {
-    return parsed.selectedMechanicIds;
-  }
-  if (Array.isArray(parsed.selected_mechanics)) {
-    return parsed.selected_mechanics.map((item) => item?.id).filter(Boolean);
-  }
-  if (Array.isArray(parsed.selectedMechanics)) {
-    return parsed.selectedMechanics.map((item) => (typeof item === "string" ? item : item?.id)).filter(Boolean);
-  }
-  return [];
+  return MixerAnalysis.parseImportedMechanicIds(value);
 }
 
 function importMixerConcept() {
@@ -1334,6 +1330,8 @@ function renderDetail(mechanic) {
     ${sectionMarkup("Balancing Notes", listMarkup(mechanic.balancing_notes))}
     ${sectionMarkup("Accessibility Notes", listMarkup(mechanic.accessibility_notes))}
     ${sectionMarkup("Implementation Notes", implementationMarkup(mechanic.implementation_notes), "implementation-section")}
+    ${sectionMarkup("Typed Relationships", typedRelationshipsMarkup(mechanic.relationships))}
+    ${sectionMarkup("Scope Profile", scopeProfileMarkup(mechanic.scope_profile))}
     ${sectionMarkup("Related Mechanics", relatedMarkup(mechanic.related_mechanics))}
     ${sectionMarkup("Combines Well With", relatedMarkup(mechanic.combines_well_with))}
     ${sectionMarkup("JSON Path", `<p><a class="path-link" href="${escapeHtml(pathHref)}">${escapeHtml(mechanic.path)}</a></p>`)}

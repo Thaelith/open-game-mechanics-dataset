@@ -14,6 +14,7 @@ It does not call an AI backend, generate random game ideas, estimate production 
 - Suggests deterministic MVP trim candidates.
 - Generates a copyable implementation-planning prompt for another AI coding or design agent.
 - Exports and imports concept JSON.
+- Uses shared deterministic analysis helpers covered by `tools/test_mixer_analysis.mjs`.
 
 ## Scoring
 
@@ -65,7 +66,17 @@ Trim suggestions are deterministic. They consider:
 - missing required relationship targets
 - very high tuning, implementation, networking, save/load, or UI risk
 
-The tool says “consider trimming or deferring,” not “must remove.” Core mechanics are preserved unless they are part of a hard conflict.
+The tool says "consider trimming or deferring," not "must remove." Core mechanics are preserved unless they are part of a hard conflict.
+
+## QA
+
+The core analysis logic lives in `site/mixer-analysis.js` so it can be used by both the static browser and the Node test harness. Run:
+
+```bash
+node tools/test_mixer_analysis.mjs
+```
+
+The tests cover conflict detection, missing dependency suggestions, required-system aggregation, scope pressure, export/import shape, and empty selections.
 
 ## Limitations
 
@@ -74,12 +85,13 @@ The tool says “consider trimming or deferring,” not “must remove.” Core 
 - Legacy `related_mechanics` and `combines_well_with` are lower-priority suggestion sources.
 - The exported prompt is intended for planning and prototyping, not final code generation.
 - The Mixer does not replace design review, playtesting, accessibility review, or technical validation.
+- Scope labels and trim suggestions should be calibrated through real-world concept QA before they are treated as stable product guidance.
 
 ## Future Improvements
 
 - Dedicated graph visualization.
 - More nuanced dependency grouping.
 - Better concept templates for common genres.
-- Explicit “must have / nice to have” user intent.
+- Explicit "must have / nice to have" user intent.
 - Saved share links with compact encoded selections.
-- Test fixtures for scoring edge cases.
+- More test fixtures for scoring edge cases and larger concept mixes.

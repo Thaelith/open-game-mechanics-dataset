@@ -6,16 +6,20 @@ One-sentence pitch: an engine-agnostic, machine-readable dataset of game mechani
 
 Game mechanics knowledge is often scattered across tutorials, design talks, source code, wikis, and personal notes. This project turns that knowledge into a structured open dataset where each mechanic has consistent metadata, implementation hints, design notes, edge cases, tuning parameters, accessibility notes, and short factual game references.
 
-This is not a claim to contain every mechanic ever made. The current state is an early MVP with a strong seed set that is designed to grow through community review and contributions.
+This is not a claim to contain every mechanic ever made. The current state is a v0.2 open dataset with a strong seed set, typed graph metadata for many core mechanics, and tooling designed to support community review and contributions.
 
 ## Current Status
 
-Early MVP / v0.1 release candidate. The repository currently includes:
+v0.2 dataset foundation. The repository currently includes:
 
 - 223 schema-valid mechanic files
+- `schema_version: "0.2.0"` in `dataset.json`
 - A strict JSON Schema in `schema/mechanic.schema.json`
 - A generated `dataset.json` index for search and tooling
-- Validation tooling plus advisory quality lint
+- Optional typed `relationships` and `scope_profile` fields for graph-aware planning
+- Graph validation and graph coverage reporting tools
+- Validation tooling plus advisory quality lint with the current quality report at 0 advisory warnings
+- A dependency-free static browser and first Mechanic Mixer MVP
 - Engine-agnostic implementation notes for Unity, Godot, Unreal, Web/JavaScript, and other engines where practical
 
 Recommended GitHub topics: `game-design`, `game-development`, `dataset`, `json-schema`, `unity`, `godot`, `unreal`, `ai-agents`, `mechanics`.
@@ -28,39 +32,47 @@ Example snippet:
 
 ```json
 {
-  "id": "movement.dash",
-  "name": "Dash",
+  "id": "movement.air_dash",
+  "name": "Air Dash",
   "category": "movement",
   "subcategory": "burst_movement",
   "dimensions": ["2D", "2.5D", "3D"],
-  "difficulty": {
-    "design": "easy",
-    "implementation": "medium",
-    "tuning": "medium"
-  },
-  "description": "A short committed burst of movement in a chosen direction.",
   "parameters": [
-    "dash_distance",
-    "dash_travel_ms",
-    "dash_recharge_seconds",
-    "dash_input_buffer_ms",
-    "dash_invulnerability_frames"
+    {
+      "name": "air_dash_travel_ms",
+      "type": "integer",
+      "typical_range": "80-220",
+      "description": "Time window for the committed airborne dash movement."
+    }
   ],
-  "related_mechanics": [
-    "movement.air_dash",
-    "movement.dodge_roll",
-    "platforming.double_jump",
-    "ui_ux.cooldown_indicator"
+  "relationships": [
+    {
+      "target": "movement.dash",
+      "type": "extends",
+      "reason": "Air dash reuses dash displacement and cooldown rules while applying them during airborne movement state.",
+      "strength": "strong"
+    }
   ],
-  "tags": ["mobility", "burst_movement", "cooldown", "i_frames"]
+  "scope_profile": {
+    "mvp_role": "core",
+    "implementation_cost": 3,
+    "design_cost": 3,
+    "tuning_cost": 5,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 1,
+    "ui_risk": 1
+  }
 }
 ```
+
+Actual mechanic files include the full required schema fields: descriptions, design purpose, required systems, edge cases, common bugs, balancing notes, accessibility notes, implementation notes, related mechanics, example games, tags, status, source confidence, and update metadata.
 
 The canonical schema is `schema/mechanic.schema.json`. The generated search index is `dataset.json`.
 
 ## Browse the Dataset
 
-A dependency-free static browser is available at [site/index.html](site/index.html). It loads `dataset.json`, searches and filters mechanics, and fetches individual mechanic JSON files for expanded details.
+A dependency-free static browser is available at [site/index.html](site/index.html). It loads `dataset.json`, searches and filters mechanics, and fetches individual mechanic JSON files for expanded details including typed relationships and scope profiles.
 
 The browser also includes a client-side [Mechanic Mixer](docs/mechanic-mixer.md) for deterministic concept planning from selected mechanics, typed relationships, required systems, and scope metadata.
 
@@ -94,6 +106,12 @@ python -m venv .venv
 pip install -r requirements.txt
 python tools/validate_dataset.py
 python tools/generate_index.py --check
+python tools/check_links.py
+python tools/generic_lint.py --limit 50
+python tools/check_mechanic_graph.py
+node --check site/mixer-analysis.js
+node --check site/app.js
+node tools/test_mixer_analysis.mjs
 ```
 
 On Windows PowerShell:
@@ -104,6 +122,12 @@ py -3.11 -m venv .venv
 pip install -r requirements.txt
 python tools\validate_dataset.py
 python tools\generate_index.py --check
+python tools\check_links.py
+python tools\generic_lint.py --limit 50
+python tools\check_mechanic_graph.py
+node --check site\mixer-analysis.js
+node --check site\app.js
+node tools\test_mixer_analysis.mjs
 ```
 
 ## Add a New Mechanic
@@ -131,6 +155,7 @@ python tools/generate_index.py
 - Teach design students how mechanics connect to systems, parameters, bugs, and accessibility.
 - Help AI agents produce grounded implementation plans that cite mechanic IDs.
 - Compare mechanics when building prototypes or design documents.
+- Explore deterministic concept mixes with dependency, conflict, scope, and MVP trim signals in the static Mechanic Mixer.
 
 ## Scope and Non-Goals
 
@@ -138,7 +163,7 @@ This project stores structured design and implementation knowledge. It does not 
 
 ## Roadmap
 
-See `ROADMAP.md` and `docs/roadmap.md` for planned review passes, category expansion, examples, and richer query tooling.
+See `ROADMAP.md`, `docs/roadmap.md`, and `docs/reports/mechanic-graph-report-v0.2.md` for planned review passes, graph coverage gaps, category expansion, examples, and richer query tooling.
 
 ## License
 

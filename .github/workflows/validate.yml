@@ -16,6 +16,11 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Install dependencies
         run: pip install -r requirements.txt
 
@@ -39,6 +44,14 @@ jobs:
 
       - name: Print mechanic graph coverage report
         run: python tools/mechanic_graph_report.py --json
+
+      - name: Check static site JavaScript
+        run: |
+          node --check site/mixer-analysis.js
+          node --check site/app.js
+
+      - name: Test Mechanic Mixer analysis
+        run: node tools/test_mixer_analysis.mjs
 
       - name: Smoke test dataset search
         run: python tools/search_dataset.py --query jump_assist --limit 5
