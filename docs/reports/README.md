@@ -44,6 +44,14 @@ Regenerate with:
 node tools/test_mixer_scenarios.mjs --report docs/reports/mechanic-mixer-scenario-qa-v0.2.md
 ```
 
+## Reviewed Core Gap Report
+
+[`reviewed-core-gap-report-v0.3.md`](reviewed-core-gap-report-v0.3.md)
+
+Summarizes the proposed v0.3 reviewed core subset candidates, with special attention to `edge_cases`, `common_bugs`, relationship coverage, scope profile coverage, and source-confidence gaps.
+
+Why it matters: reviewed status should depend on practical prototype-breaking detail, not only schema validity or broad coverage.
+
 ## When To Regenerate
 
 - After changing mechanic JSON files.

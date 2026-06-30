@@ -31,6 +31,8 @@ At v0.2, the mechanic entries use draft-level status. `draft` means an entry is 
 
 The next maturity step is a reviewed core subset: a smaller group of high-value mechanics with stronger review notes, confidence rationale, and relationship QA.
 
+The v0.3 planning target is documented in [`reviewed-core-subset-v0.3.md`](reviewed-core-subset-v0.3.md), with current gaps tracked in [`reports/reviewed-core-gap-report-v0.3.md`](reports/reviewed-core-gap-report-v0.3.md).
+
 ## Source Confidence
 
 Each mechanic has a `source_confidence` field:

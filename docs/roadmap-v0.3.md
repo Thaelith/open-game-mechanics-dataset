@@ -4,11 +4,14 @@ This roadmap focuses on trust, review quality, relationship quality, and Mixer u
 
 It does not promise timelines.
 
+The initial reviewed-core planning artifact is [`reviewed-core-subset-v0.3.md`](reviewed-core-subset-v0.3.md). Current candidate gaps are tracked in [`reports/reviewed-core-gap-report-v0.3.md`](reports/reviewed-core-gap-report-v0.3.md).
+
 ## Must Do
 
-- Create a reviewed core subset of 20-30 high-value mechanics.
+- Create a reviewed core subset of 20-30 high-value mechanics. See [`reviewed-core-subset-v0.3.md`](reviewed-core-subset-v0.3.md).
 - Define a trust, provenance, and review workflow.
 - Clarify confidence rationale for `source_confidence`.
+- Treat `edge_cases` and `common_bugs` as first-class review signals, not secondary cleanup fields.
 - Improve parameter structure for future tooling.
 - Reduce Mixer suggestion noise with intent filters or domain filters.
 - Review relationship quality in lower-coverage or high-risk categories.
@@ -20,6 +23,7 @@ It does not promise timelines.
 - Expand AI-agent usage examples.
 - Improve contribution workflow for mechanic review.
 - Add relationship QA checks for suspicious cross-domain suggestions.
+- Track reviewed-core gaps in [`reports/reviewed-core-gap-report-v0.3.md`](reports/reviewed-core-gap-report-v0.3.md).
 
 ## Nice To Have
 

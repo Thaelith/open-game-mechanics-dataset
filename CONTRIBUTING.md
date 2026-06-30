@@ -34,6 +34,8 @@ Use direct, original, practical writing. The short description should explain th
 
 Include at least three tunable parameters, three edge cases, three common bugs, two balancing notes, one accessibility note, tags, and implementation notes for at least two engines or platforms.
 
+Treat `edge_cases` and `common_bugs` as first-class quality fields. They should describe concrete prototype-breaking situations such as stale input buffers, bad state reset, collision tunneling, save/load restoration errors, UI desync, network authority mismatch, or animation/state priority bugs.
+
 ## What Not to Include
 
 Do not copy text from wikis, tutorials, books, articles, store pages, game scripts, or proprietary design documents. Do not include copyrighted images, sprites, audio, code, level data, or long quotes. Do not add personal opinions about a game as if they are factual design analysis.
