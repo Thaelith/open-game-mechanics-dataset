@@ -14,6 +14,8 @@ Taxonomy and categorization criteria are now tracked in [`taxonomy-and-categoriz
 
 Locomotion-specific taxonomy follow-up is tracked in [`reports/locomotion-taxonomy-review-v0.3.md`](reports/locomotion-taxonomy-review-v0.3.md), focused on walk/run/sprint boundaries and nearby movement mechanics.
 
+Relationship semantics and direction criteria are tracked in [`relationship-semantics-and-direction.md`](relationship-semantics-and-direction.md), with Batch 1 concerns reviewed in [`reports/relationship-semantics-review-v0.3.md`](reports/relationship-semantics-review-v0.3.md).
+
 ## Must Do
 
 - Create a reviewed core subset of 20-30 high-value mechanics. See [`reviewed-core-subset-v0.3.md`](reviewed-core-subset-v0.3.md).
@@ -24,6 +26,7 @@ Locomotion-specific taxonomy follow-up is tracked in [`reports/locomotion-taxono
 - Improve parameter structure for future tooling.
 - Reduce Mixer suggestion noise with intent filters or domain filters.
 - Review relationship quality in lower-coverage or high-risk categories.
+- Apply relationship direction criteria before rewriting typed relationship data.
 
 ## Should Do
 

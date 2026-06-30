@@ -62,6 +62,8 @@ When contributing or revising a mechanic, please explain:
 
 Keep relationship reasons concrete. A reviewer should be able to understand what dependency, support, conflict, resource flow, unlock, or planning risk the relationship is meant to express.
 
+Check relationship type and direction against [`docs/relationship-semantics-and-direction.md`](docs/relationship-semantics-and-direction.md) before adding or changing typed `relationships`.
+
 ## Pull Request Checklist
 
 - The mechanic ID is unique and follows the naming convention.

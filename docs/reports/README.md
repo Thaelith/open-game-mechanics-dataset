@@ -88,6 +88,14 @@ Applies the taxonomy criteria to locomotion entries, especially `movement.walk`,
 
 Why it matters: locomotion entries are common enough that over-splitting, under-splitting, or treating speed values as separate mechanics would affect contributor expectations and future data migration.
 
+## Relationship Semantics Review v0.3
+
+[`relationship-semantics-review-v0.3.md`](relationship-semantics-review-v0.3.md)
+
+Reviews Batch 1 and related relationship direction concerns against the direction criteria in [`../relationship-semantics-and-direction.md`](../relationship-semantics-and-direction.md).
+
+Why it matters: typed relationship direction affects dependency suggestions, support mechanics, conflict warnings, and whether the Mechanic Mixer recommends helpful or noisy additions.
+
 ## When To Regenerate
 
 - After changing mechanic JSON files.

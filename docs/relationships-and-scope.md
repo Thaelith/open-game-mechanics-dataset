@@ -14,6 +14,8 @@ The fields are optional. Existing mechanics remain valid without them.
 
 `scope_profile` is rough relative planning metadata. It is not an hour estimate, production guarantee, or statement that every game will pay the same cost.
 
+For v0.3 direction rules and type-specific guidance, see [`relationship-semantics-and-direction.md`](relationship-semantics-and-direction.md).
+
 ## Relationship Object
 
 ```json
@@ -34,13 +36,13 @@ The fields are optional. Existing mechanics remain valid without them.
 | Type | Meaning |
 | --- | --- |
 | `requires` | The source mechanic depends on the target to function or make sense. |
-| `supports` | The target helps the source work reliably, readably, or ergonomically. |
+| `supports` | The source helps the target work reliably, readably, accessibly, or ergonomically. |
 | `enhances` | The target makes the source more expressive, satisfying, or useful, but is not required. |
 | `extends` | The source builds a larger mechanic from the target. |
 | `is_variant_of` | The source is a specialized form of the target. |
 | `conflicts_with` | The mechanics create a hard design, technical, or rule conflict when combined. |
 | `soft_conflicts_with` | The mechanics can work together, but need extra constraints or careful tuning. |
-| `balances` | The target limits, counterweights, or stabilizes the source. |
+| `balances` | The source limits, counterweights, or stabilizes the target. |
 | `feeds` | The source produces resources, state, pressure, or content consumed by the target. |
 | `consumes` | The source spends or uses state/resources provided by the target. |
 | `unlocks` | The source grants access to the target through progression or state. |
