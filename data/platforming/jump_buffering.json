@@ -123,12 +123,6 @@
       "strength": "medium"
     },
     {
-      "target": "accessibility.toggle_hold_option",
-      "type": "supports",
-      "reason": "Hold, toggle, and assisted input settings can change how long jump intent should remain buffered.",
-      "strength": "medium"
-    },
-    {
       "target": "movement.dash",
       "type": "soft_conflicts_with",
       "reason": "Buffered jumps and dash inputs can conflict when both consume the same button timing or cancel windows.",

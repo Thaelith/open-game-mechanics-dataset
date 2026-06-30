@@ -90,10 +90,10 @@ test("suggests base/support mechanics for air dash", () => {
   assert.equal(new Set(select(["movement.air_dash"]).map((mechanic) => mechanic.id)).size, 1);
 });
 
-test("suggests cooldown support for reload and ranged attack", () => {
+test("keeps cooldown timing dependency for reload and ranged attack", () => {
   const analysis = analyze(["combat.reload", "combat.ranged_attack"]);
   assert.ok(hasSuggestion(analysis, "time.cooldown_time", "requires", "combat.reload"));
-  assert.ok(hasSuggestion(analysis, "ui_ux.cooldown_indicator", "supports", "combat.reload"));
+  assert.equal(hasSuggestion(analysis, "ui_ux.cooldown_indicator", "supports", "combat.reload"), false);
   assert.equal(analysis.conflictWarnings.filter((warning) => warning.type === "conflicts_with").length, 0);
 });
 

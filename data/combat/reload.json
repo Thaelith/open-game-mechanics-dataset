@@ -117,12 +117,6 @@
       "strength": "strong"
     },
     {
-      "target": "ui_ux.cooldown_indicator",
-      "type": "supports",
-      "reason": "Reload state benefits from visible progress, cancellation, and ready feedback for weapons with longer cycles.",
-      "strength": "medium"
-    },
-    {
       "target": "combat.ranged_attack",
       "type": "supports",
       "reason": "Reload restores firing availability and should share ammo authority with ranged attack validation.",

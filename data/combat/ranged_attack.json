@@ -126,12 +126,6 @@
   ],
   "relationships": [
     {
-      "target": "combat.reload",
-      "type": "supports",
-      "reason": "Ranged attacks need reload or ammo recovery rules when shots are limited by magazines or charge cycles.",
-      "strength": "strong"
-    },
-    {
       "target": "ui_ux.hit_marker",
       "type": "supports",
       "reason": "Ranged impacts benefit from hit confirmation when targets are distant, occluded, or partly outside the camera focus.",

@@ -33,7 +33,7 @@ This is not a claim to contain every mechanic ever made. The current state is a 
 | Mixer | Deterministic client-side MVP |
 | Quality report | 0 advisory warnings |
 | Graph coverage | 175 mechanics with typed relationships and scope profiles |
-| Typed relationships | 531 |
+| Typed relationships | 528 |
 | Scenario QA | 10/10 Mixer scenarios passing |
 
 The repository also includes a strict JSON Schema, generated `dataset.json` index, graph validation/reporting tools, advisory quality lint, and engine-agnostic implementation notes for Unity, Godot, Unreal, Web/JavaScript, and other engines where practical.

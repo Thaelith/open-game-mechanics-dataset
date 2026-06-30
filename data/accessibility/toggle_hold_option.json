@@ -138,6 +138,12 @@
       "strength": "medium"
     },
     {
+      "target": "platforming.jump_buffering",
+      "type": "supports",
+      "reason": "Toggle and hold input settings can change how long jump intent remains active, so jump buffering should define how assisted timing is consumed and cleared.",
+      "strength": "medium"
+    },
+    {
       "target": "combat.aim_down_sights",
       "type": "enhances",
       "reason": "Aim-down-sights controls commonly offer hold or toggle modes to fit different devices and motor needs.",

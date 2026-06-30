@@ -139,12 +139,6 @@
       "strength": "weak"
     },
     {
-      "target": "ui_ux.cooldown_indicator",
-      "type": "supports",
-      "reason": "Dash charges and cooldowns need readable availability feedback when the action is gated by recharge state.",
-      "strength": "medium"
-    },
-    {
       "target": "movement.air_dash",
       "type": "unlocks",
       "reason": "A ground or omnidirectional dash is often the base action upgraded into an airborne dash variant.",

@@ -7,7 +7,7 @@ It is a planning report only. It does not change mechanic JSON, schema, site beh
 ## Summary
 
 - Reviewed relationship groups: dash/cooldown UI/time, reload/ranged/cooldown UI/time, jump buffering/accessibility, and time rewind conflicts.
-- Immediate data changes recommended: none.
+- Cleanup Pass 1 applied targeted low-risk changes to the four cleanup candidates only.
 - Main finding: `requires`, `conflicts_with`, `soft_conflicts_with`, `extends`, `consumes`, `unlocks`, and `balances` are generally easier to read directionally than `supports`.
 - Primary future cleanup target: `supports` edges where the source is the mechanic receiving support rather than the support provider.
 
@@ -75,12 +75,17 @@ Before rewriting relationships:
 - Check whether edge reasons are specific enough for review.
 - Prefer small batches with before/after graph checks over broad graph rewrites.
 
-## Recommended Next Cleanup Candidates
+## Cleanup Pass 1 Result
 
-- `movement.dash -> ui_ux.cooldown_indicator`
-- `combat.reload -> ui_ux.cooldown_indicator`
-- `combat.ranged_attack -> combat.reload`
-- `platforming.jump_buffering -> accessibility.toggle_hold_option`
+| Old edge | Action taken | Reason | Relationship count impact | Mixer behavior impact |
+| --- | --- | --- | --- | --- |
+| `movement.dash -> ui_ux.cooldown_indicator` as `supports` | removed | The reverse `ui_ux.cooldown_indicator -> movement.dash` support edge already captures the useful planning meaning that cooldown UI supports dash readability. | -1 | Dash no longer suggests cooldown indicator through this typed edge; the reverse UI support edge remains available when the indicator is selected. |
+| `combat.reload -> ui_ux.cooldown_indicator` as `supports` | removed | The reverse `ui_ux.cooldown_indicator -> combat.reload` support edge already captures the useful planning meaning that cooldown/progress UI supports reload readability. | -1 | Reload no longer suggests cooldown indicator through this typed edge; the reverse UI support edge remains available when the indicator is selected. |
+| `combat.ranged_attack -> combat.reload` as `supports` | removed | The edge overgeneralized reload/ammo recovery for all ranged attacks. `combat.reload` remains in `related_mechanics` for browsing, and `combat.reload -> combat.ranged_attack` remains as the clearer support edge. | -1 | Ranged attack no longer treats reload as a typed support suggestion; browse context remains through `related_mechanics`. |
+| `platforming.jump_buffering -> accessibility.toggle_hold_option` as `supports` | reversed | The original direction read as if jump buffering supported the accessibility setting. The new `accessibility.toggle_hold_option -> platforming.jump_buffering` edge says toggle/hold settings support jump buffering by changing assisted input timing assumptions. | 0 net for this candidate | Accessibility toggle/hold now suggests jump buffering as an affected input mechanic; jump buffering no longer points at toggle/hold as a support target. |
 
-These are candidates only. They should not be changed until a small relationship data cleanup pass confirms the preferred direction and impact on Mixer suggestions.
+Total typed relationships changed from 531 to 528. Relationship coverage remained 175 mechanics with typed relationships.
 
+## Remaining Relationship Cleanup Candidates
+
+No additional cleanup candidates from this review should be changed without a new focused pass. Future work should re-run this process on another small group of edges rather than broad-rewriting the graph.
