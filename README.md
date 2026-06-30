@@ -9,6 +9,8 @@ The v0.2 release adds typed mechanic relationships, rough scope metadata, graph 
 - Browse the dataset on GitHub Pages: [thaelith.github.io/open-game-mechanics-dataset/site/](https://thaelith.github.io/open-game-mechanics-dataset/site/)
 - Browse locally: [`site/index.html`](site/index.html)
 - Learn the Mixer: [`docs/how-to-use-the-mixer.md`](docs/how-to-use-the-mixer.md)
+- Try demo mixes: [`docs/demo-mixes.md`](docs/demo-mixes.md)
+- Use with AI agents: [`docs/ai-agent-usage.md`](docs/ai-agent-usage.md)
 - Read v0.2 release notes: [`docs/releases/v0.2.0.md`](docs/releases/v0.2.0.md)
 - Inspect reports: [`docs/reports/README.md`](docs/reports/README.md)
 - Validate locally: see [Validate Locally](#validate-locally)
@@ -38,16 +40,40 @@ The repository also includes a strict JSON Schema, generated `dataset.json` inde
 
 Recommended GitHub topics: `game-design`, `game-development`, `dataset`, `json-schema`, `unity`, `godot`, `unreal`, `ai-agents`, `mechanics`.
 
+## Trust & Review Status
+
+This is a v0.2 structured seed dataset, not an authoritative encyclopedia. Entries are schema-valid and quality-checked, but many are still draft-level and open to review.
+
+Use it for mechanic discovery, planning, AI-agent context, and prototype checklists. Do not treat scope scores as production estimates or example games as proprietary implementation evidence.
+
+This project is:
+
+- A structured dataset for planning, browsing, contribution review, and tool context.
+- A practical reference for prototypes, checklists, and early concept analysis.
+- A deterministic source for the static Mechanic Mixer MVP.
+
+This project is not:
+
+- A drop-in code library.
+- A complete or authoritative encyclopedia.
+- A substitute for playtesting, accessibility review, technical review, or human design judgment.
+
+See [`docs/trust-and-review-status.md`](docs/trust-and-review-status.md) for details on `status`, `source_confidence`, `example_games`, `relationships`, and `scope_profile`.
+
 ## Public Review Links
 
 - [v0.2.0 release notes](docs/releases/v0.2.0.md)
 - [Mechanic Mixer documentation](docs/mechanic-mixer.md)
 - [How to use the Mixer](docs/how-to-use-the-mixer.md)
+- [Demo mixes](docs/demo-mixes.md)
+- [AI-agent usage](docs/ai-agent-usage.md)
+- [Trust and review status](docs/trust-and-review-status.md)
 - [Typed relationships and scope metadata](docs/relationships-and-scope.md)
 - [Quality report](docs/reports/quality-report-v0.1.md)
 - [Graph coverage report](docs/reports/mechanic-graph-report-v0.2.md)
 - [Mixer scenario QA report](docs/reports/mechanic-mixer-scenario-qa-v0.2.md)
 - [Public v0.2 checklist](docs/public-v0.2-checklist.md)
+- [v0.3 trust roadmap](docs/roadmap-v0.3.md)
 
 ## Dataset Format
 

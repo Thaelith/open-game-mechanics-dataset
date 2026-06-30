@@ -42,6 +42,18 @@ Do not copy text from wikis, tutorials, books, articles, store pages, game scrip
 
 Example games should be short factual references: a title and a brief note about the visible mechanic. Good: "Celeste uses dash as a core precision-platforming action." Avoid copying explanations, ranking games, or describing hidden implementation details unless you can support them.
 
+## Review and Trust Expectations
+
+When contributing or revising a mechanic, please explain:
+
+- Why the mechanic entry is useful.
+- Whether it is based on observable game behavior, common design knowledge, implementation experience, or community review.
+- Why typed relationships use their chosen type and strength.
+- Why `source_confidence` should be `low`, `medium`, or `high`.
+- Whether example games are brief factual examples only.
+
+Keep relationship reasons concrete. A reviewer should be able to understand what dependency, support, conflict, resource flow, unlock, or planning risk the relationship is meant to express.
+
 ## Pull Request Checklist
 
 - The mechanic ID is unique and follows the naming convention.

@@ -27,7 +27,7 @@ The fields are optional. Existing mechanics remain valid without them.
 
 `target` must be an existing mechanic id, `external.*`, or `future.*`.
 
-`reason` should explain the relationship in concrete design or implementation terms. Avoid filler such as “works well together.”
+`reason` should explain the relationship in concrete design or implementation terms. Avoid filler such as "works well together."
 
 ## Relationship Types
 

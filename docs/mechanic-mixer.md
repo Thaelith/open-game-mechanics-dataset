@@ -7,6 +7,8 @@ It does not call an AI backend, generate random game ideas, estimate production 
 Related docs:
 
 - [How to use the Mixer](how-to-use-the-mixer.md)
+- [Demo mixes](demo-mixes.md)
+- [AI-agent usage](ai-agent-usage.md)
 - [Typed relationships and scope metadata](relationships-and-scope.md)
 - [Mixer scenario QA report](reports/mechanic-mixer-scenario-qa-v0.2.md)
 - [Scenario fixtures](../tools/fixtures/mixer_scenarios_v0_2.json)

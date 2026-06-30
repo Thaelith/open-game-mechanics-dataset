@@ -10,6 +10,10 @@ GitHub Pages:
 
 [https://thaelith.github.io/open-game-mechanics-dataset/site/](https://thaelith.github.io/open-game-mechanics-dataset/site/)
 
+Demo mixes:
+
+[`docs/demo-mixes.md`](demo-mixes.md)
+
 Local path:
 
 [`site/index.html`](../site/index.html)
@@ -36,6 +40,8 @@ http://localhost:8000/site/
 6. Use `Copy Concept JSON` to save or share the deterministic analysis.
 
 The Mixer selection is stored locally in the browser and can also be shared with a `?mix=` URL.
+
+For AI-agent planning workflows, see [`docs/ai-agent-usage.md`](ai-agent-usage.md).
 
 ## Read The Analysis
 
