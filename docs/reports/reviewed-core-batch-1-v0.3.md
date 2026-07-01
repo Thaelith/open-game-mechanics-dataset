@@ -46,13 +46,15 @@ Time rewind architecture checklist: [`time-rewind-architecture-review-v0.3.md`](
 
 ## Review Table
 
+The `Confidence Rationale Status` column records the state at the end of the Batch 1 rewrite. A later maintainer review added report-level rationale in [`reviewed-core-batch-1-maintainer-review-v0.3.md`](reviewed-core-batch-1-maintainer-review-v0.3.md), while all five mechanic JSON files remained `source_confidence: "medium"`.
+
 | Mechanic | Edge Cases Before/After | Common Bugs Before/After | Relationship Review | Scope Review | Confidence Rationale Status | ready_for_review | Remaining Gaps |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `movement.dash` | 4 to 6; added thin-wall sweep/sub-step and respawn/checkpoint/load restoration. | 4 to 6; added cooldown/UI reload mismatch and network correction state drift. | Added `ui_ux.cooldown_indicator`; clarified i-frame soft-conflict reason. | No change; values remain plausible for core movement with moderate network/UI risk. | Missing; still `medium`. | yes | Needs maintainer review of relationship strengths and confidence rationale. |
-| `platforming.jump_buffering` | 3 to 6; added animation locks, UI focus/cutscene clearing, simultaneous eligibility, and assist-setting boundaries. | 3 to 6; added cutscene stale input, landing/double-jump mis-consumption, and coyote-buffer double-consumption. | Added `platforming.double_jump` and `accessibility.toggle_hold_option` support edges. | No change; low implementation and low risk still plausible. | Missing; still `medium`. | yes | Needs final review of priority ordering across coyote time, double jump, wall jump, and dash. |
-| `combat.reload` | 3 to 6; added save/load, reconnect, rollback, staged reload, buffered firing, and death/stun/equipment removal cases. | 3 to 6; added cancel-to-fire, save/load progress loss, and predicted UI rejection bugs. | Existing relationships remained appropriate. | No change; networking risk remains high, save/load risk remains moderate. | Missing; still `medium`. | yes | Needs review across non-magazine ammo models and active reload variants. |
-| `ui_ux.cooldown_indicator` | 4 to 6; added disabled-ready mismatch and authority correction jumps. | 4 to 6; added charge-pip readiness and recycled-widget subscription bugs. | Added `combat.reload` support edge. | No change; high UI risk remains plausible. | Missing; still `medium`. | yes | Needs accessibility review for reduced motion, color-independent states, and scaled layouts. |
-| `time.time_rewind` | 4 to 7; added inventory/reward/quest/narrative state, projectile/status/AI restore order, and save/checkpoint/streaming during rewind. | 4 to 7; added projectile ownership, stale AI target, and RNG divergence bugs. | Added `physics.moving_platform` soft-conflict edge. | No change; expert/high-risk profile remains appropriate. | Missing; still `medium`. | no | Needs dedicated architecture review before reviewed status because rewind affects persistence, rewards, physics, AI, and multiplayer authority. |
+| `movement.dash` | 4 to 6; added thin-wall sweep/sub-step and respawn/checkpoint/load restoration. | 4 to 6; added cooldown/UI reload mismatch and network correction state drift. | Added `ui_ux.cooldown_indicator`; later Cleanup Pass 1 removed that dash-side support edge because the reverse UI support edge covers the planning need. Clarified i-frame soft-conflict reason. | No change; values remain plausible for core movement with moderate network/UI risk. | Report-level rationale added later; JSON remains `medium`. | yes | Needs final relationship-direction review before any status change. |
+| `platforming.jump_buffering` | 3 to 6; added animation locks, UI focus/cutscene clearing, simultaneous eligibility, and assist-setting boundaries. | 3 to 6; added cutscene stale input, landing/double-jump mis-consumption, and coyote-buffer double-consumption. | Added `platforming.double_jump`; later Cleanup Pass 1 reversed the accessibility toggle/hold edge to the clearer support direction. | No change; low implementation and low risk still plausible. | Report-level rationale added later; JSON remains `medium`. | yes | Needs final review of priority ordering across coyote time, double jump, wall jump, and dash. |
+| `combat.reload` | 3 to 6; added save/load, reconnect, rollback, staged reload, buffered firing, and death/stun/equipment removal cases. | 3 to 6; added cancel-to-fire, save/load progress loss, and predicted UI rejection bugs. | Existing relationships remained appropriate; later Cleanup Pass 1 removed one backwards reload-to-cooldown-UI support edge. | No change; networking risk remains high, save/load risk remains moderate. | Report-level rationale added later; JSON remains `medium`. | yes | Needs review across non-magazine ammo models and active reload variants. |
+| `ui_ux.cooldown_indicator` | 4 to 6; added disabled-ready mismatch and authority correction jumps. | 4 to 6; added charge-pip readiness and recycled-widget subscription bugs. | Added `combat.reload` support edge; this remains the preferred direction after Cleanup Pass 1. | No change; high UI risk remains plausible. | Report-level rationale added later; JSON remains `medium`. | yes | Needs accessibility review for reduced motion, color-independent states, and scaled layouts. |
+| `time.time_rewind` | 4 to 7; added inventory/reward/quest/narrative state, projectile/status/AI restore order, and save/checkpoint/streaming during rewind. | 4 to 7; added projectile ownership, stale AI target, and RNG divergence bugs. | Added `physics.moving_platform` soft-conflict edge. | No change; expert/high-risk profile remains appropriate. | Report-level rationale added later; JSON remains `medium`. | no | Needs dedicated architecture review before reviewed status because rewind affects persistence, rewards, physics, AI, and multiplayer authority. |
 
 ## Edge Cases Summary
 
@@ -72,8 +74,8 @@ Time rewind architecture checklist: [`time-rewind-architecture-review-v0.3.md`](
 
 ## Relationship Changes Summary
 
-- `movement.dash`: added `supports` edge to `ui_ux.cooldown_indicator`; clarified `soft_conflicts_with` edge to `combat.invincibility_frames`.
-- `platforming.jump_buffering`: added `supports` edges to `platforming.double_jump` and `accessibility.toggle_hold_option`.
+- `movement.dash`: added `supports` edge to `ui_ux.cooldown_indicator`; Cleanup Pass 1 later removed that dash-side edge because `ui_ux.cooldown_indicator -> movement.dash` is the clearer direction. Clarified `soft_conflicts_with` edge to `combat.invincibility_frames`.
+- `platforming.jump_buffering`: added `supports` edges to `platforming.double_jump` and `accessibility.toggle_hold_option`; Cleanup Pass 1 later reversed the accessibility edge to `accessibility.toggle_hold_option -> platforming.jump_buffering`.
 - `combat.reload`: no relationship changes.
 - `ui_ux.cooldown_indicator`: added `supports` edge to `combat.reload`.
 - `time.time_rewind`: added `soft_conflicts_with` edge to `physics.moving_platform`.
@@ -92,7 +94,7 @@ The existing profiles still look plausible for this pass:
 
 ## Remaining Review Gaps
 
-- No selected mechanic has a written source-confidence rationale because the schema does not yet support one.
+- Batch 1 initially lacked written source-confidence rationale. A later maintainer review added report-level rationale, but rationale is not schema-enforced or stored in mechanic JSON yet.
 - All five mechanics remain `draft`.
 - `time.time_rewind` still needs a separate architecture-focused review before any reviewed-status consideration.
 - Relationship direction semantics should be reviewed across the broader dataset before v0.3 finalization.

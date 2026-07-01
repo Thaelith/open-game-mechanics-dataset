@@ -2,7 +2,7 @@
 
 This report applies the v0.3 relationship direction criteria to Batch 1 and nearby relationship concerns.
 
-It is a planning report only. It does not change mechanic JSON, schema, site behavior, Mixer logic, mechanic status, or source confidence.
+This report started as a planning review and now also records Cleanup Pass 1 results. Cleanup Pass 1 changed only the four targeted relationship candidates documented below; it did not change schema, site behavior, Mixer logic, mechanic status, or source confidence.
 
 ## Summary
 

@@ -96,6 +96,22 @@ Reviews Batch 1 and related relationship direction concerns against the directio
 
 Why it matters: typed relationship direction affects dependency suggestions, support mechanics, conflict warnings, and whether the Mechanic Mixer recommends helpful or noisy additions.
 
+## v0.3 Docs Snapshot Review
+
+[`v0.3-docs-snapshot-review.md`](v0.3-docs-snapshot-review.md)
+
+Reviews the v0.3 preparation docs and reports for consistency after the reviewed-core, taxonomy, relationship semantics, locomotion taxonomy, and relationship cleanup passes.
+
+Why it matters: this snapshot keeps public positioning conservative by confirming that the project remains a v0.2.0 dataset foundation with v0.3 review work in progress.
+
+## Mechanic Boundary, Prerequisite, And Failure Mode Audit v0.3
+
+[`mechanic-boundary-prerequisite-failure-mode-audit-v0.3.md`](mechanic-boundary-prerequisite-failure-mode-audit-v0.3.md)
+
+Audits all 223 mechanics for groups that may look like duplicate mechanics, variants, parameters, presentation variants, overbroad mechanics, or entries that need stronger prerequisite/state/failure-mode proof.
+
+Why it matters: v0.3 review should prove mechanic boundaries through practical implementation assumptions and prototype-breaking failure modes, not just familiar mechanic names.
+
 ## When To Regenerate
 
 - After changing mechanic JSON files.

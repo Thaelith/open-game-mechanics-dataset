@@ -16,6 +16,8 @@ Locomotion-specific taxonomy follow-up is tracked in [`reports/locomotion-taxono
 
 Relationship semantics and direction criteria are tracked in [`relationship-semantics-and-direction.md`](relationship-semantics-and-direction.md), with Batch 1 concerns reviewed in [`reports/relationship-semantics-review-v0.3.md`](reports/relationship-semantics-review-v0.3.md).
 
+Dataset-wide boundary and failure-mode risks are tracked in [`reports/mechanic-boundary-prerequisite-failure-mode-audit-v0.3.md`](reports/mechanic-boundary-prerequisite-failure-mode-audit-v0.3.md). This audit makes explicit prerequisites, state/input assumptions, and prototype-breaking failure modes a v0.3 review priority.
+
 ## Must Do
 
 - Create a reviewed core subset of 20-30 high-value mechanics. See [`reviewed-core-subset-v0.3.md`](reviewed-core-subset-v0.3.md).
@@ -23,6 +25,7 @@ Relationship semantics and direction criteria are tracked in [`relationship-sema
 - Use the taxonomy and categorization criteria to review mechanic vs variant vs parameter boundaries.
 - Clarify confidence rationale for `source_confidence`.
 - Treat `edge_cases` and `common_bugs` as first-class review signals, not secondary cleanup fields.
+- Require future boundary decisions to be justified by explicit prerequisites, state/input assumptions, and concrete failure modes.
 - Improve parameter structure for future tooling.
 - Reduce Mixer suggestion noise with intent filters or domain filters.
 - Review relationship quality in lower-coverage or high-risk categories.

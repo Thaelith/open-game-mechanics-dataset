@@ -71,6 +71,14 @@ Examples:
 
 A parameter should not become a separate mechanic unless it creates significantly different behavior, implementation risk, edge cases, common bugs, design purpose, or relationship behavior.
 
+## Prerequisites And Failure Modes
+
+Boundary decisions should be supported by practical prerequisites and failure modes, not only by familiar names.
+
+When deciding whether an entry is a mechanic, variant, parameter, or overbroad system, reviewers should ask what the entry needs to work, what state and input assumptions it owns, what timing/resource/save/load/network assumptions matter, and what usually breaks during prototyping.
+
+If two entries share nearly identical prerequisites, state assumptions, edge cases, and common bugs, they may be variants or parameters even if their names are familiar. If a separate entry exposes distinct failure modes that help developers write better tests, the split is easier to justify.
+
 ## When To Split Entries
 
 Split a mechanic into a separate entry when:
@@ -140,3 +148,4 @@ Current v0.3 review reports applying these criteria:
 
 - [`reports/taxonomy-review-v0.3.md`](reports/taxonomy-review-v0.3.md)
 - [`reports/locomotion-taxonomy-review-v0.3.md`](reports/locomotion-taxonomy-review-v0.3.md)
+- [`reports/mechanic-boundary-prerequisite-failure-mode-audit-v0.3.md`](reports/mechanic-boundary-prerequisite-failure-mode-audit-v0.3.md)
