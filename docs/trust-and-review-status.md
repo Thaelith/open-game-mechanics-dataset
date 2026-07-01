@@ -31,7 +31,7 @@ At v0.2, the mechanic entries use draft-level status. `draft` means an entry is 
 
 The next maturity step is a reviewed core subset: a smaller group of high-value mechanics with stronger review notes, confidence rationale, and relationship QA.
 
-The v0.3 planning target is documented in [`reviewed-core-subset-v0.3.md`](reviewed-core-subset-v0.3.md), with current gaps tracked in [`reports/reviewed-core-gap-report-v0.3.md`](reports/reviewed-core-gap-report-v0.3.md).
+The v0.3 planning target is documented in [`reviewed-core-subset-v0.3.md`](reviewed-core-subset-v0.3.md), with current gaps tracked in [`reports/reviewed-core-gap-report-v0.3.md`](reports/reviewed-core-gap-report-v0.3.md). The proposed workflow for future status and confidence changes is documented in [`reviewed-core-confidence-workflow-v0.3.md`](reviewed-core-confidence-workflow-v0.3.md).
 
 ## Source Confidence
 
@@ -75,7 +75,7 @@ They help tools and reviewers detect likely pressure in implementation, design, 
 
 v0.2 is a strong structured seed dataset. It is useful for exploration, tool experiments, AI-agent context, and planning checklists.
 
-It is not yet a fully reviewed authoritative reference. The next maturity step is a reviewed core subset and a better provenance/review workflow.
+It is not yet a fully reviewed authoritative reference. The next maturity step is a reviewed core subset and the confidence workflow described in [`reviewed-core-confidence-workflow-v0.3.md`](reviewed-core-confidence-workflow-v0.3.md).
 
 ## Taxonomy Choices
 

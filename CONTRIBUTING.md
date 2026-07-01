@@ -64,6 +64,8 @@ Keep relationship reasons concrete. A reviewer should be able to understand what
 
 Check relationship type and direction against [`docs/relationship-semantics-and-direction.md`](docs/relationship-semantics-and-direction.md) before adding or changing typed `relationships`.
 
+Do not change `status` to `reviewed` or raise `source_confidence` without following [`docs/reviewed-core-confidence-workflow-v0.3.md`](docs/reviewed-core-confidence-workflow-v0.3.md). Review rationale can live in docs or reports until the schema supports structured rationale fields.
+
 ## Pull Request Checklist
 
 - The mechanic ID is unique and follows the naming convention.

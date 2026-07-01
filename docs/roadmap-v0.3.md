@@ -4,7 +4,7 @@ This roadmap focuses on trust, review quality, relationship quality, and Mixer u
 
 It does not promise timelines.
 
-The initial reviewed-core planning artifact is [`reviewed-core-subset-v0.3.md`](reviewed-core-subset-v0.3.md). Current candidate gaps are tracked in [`reports/reviewed-core-gap-report-v0.3.md`](reports/reviewed-core-gap-report-v0.3.md).
+The initial reviewed-core planning artifact is [`reviewed-core-subset-v0.3.md`](reviewed-core-subset-v0.3.md). Current candidate gaps are tracked in [`reports/reviewed-core-gap-report-v0.3.md`](reports/reviewed-core-gap-report-v0.3.md). Future status and confidence changes should follow [`reviewed-core-confidence-workflow-v0.3.md`](reviewed-core-confidence-workflow-v0.3.md).
 
 The current v0.3 preparation decisions are consolidated in [`reports/v0.3-review-summary.md`](reports/v0.3-review-summary.md). That summary covers Reviewed Core Batch 1, the time rewind architecture gate, taxonomy/boundary criteria, locomotion Batch A, survival-meter Batch B, UI feedback Batch C, procedural generation Batch D, relationship semantics cleanup, and the dataset-wide boundary/prerequisite/failure-mode audit.
 
@@ -15,7 +15,7 @@ Detailed criteria remain in [`taxonomy-and-categorization-criteria.md`](taxonomy
 - Create a reviewed core subset of 20-30 high-value mechanics. See [`reviewed-core-subset-v0.3.md`](reviewed-core-subset-v0.3.md).
 - Define a trust, provenance, and review workflow.
 - Use the taxonomy and categorization criteria to review mechanic vs variant vs parameter boundaries.
-- Clarify confidence rationale for `source_confidence`.
+- Apply the reviewed-core confidence workflow before changing `status` or `source_confidence`.
 - Treat `edge_cases` and `common_bugs` as first-class review signals, not secondary cleanup fields.
 - Require future boundary decisions to be justified by explicit prerequisites, state/input assumptions, and concrete failure modes.
 - Improve parameter structure for future tooling.

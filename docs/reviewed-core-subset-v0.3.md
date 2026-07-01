@@ -147,6 +147,8 @@ Examples:
 
 ## Review Process For v0.3
 
+Future status and confidence changes should follow [`reviewed-core-confidence-workflow-v0.3.md`](reviewed-core-confidence-workflow-v0.3.md).
+
 1. Pick 5 mechanics from this candidate set.
 2. Review edge cases and common bugs first.
 3. Check parameters, required systems, implementation notes, example games, relationships, and scope profile.
@@ -170,3 +172,5 @@ Batch 1 report: [`reports/reviewed-core-batch-1-v0.3.md`](reports/reviewed-core-
 Consolidated v0.3 review summary: [`reports/v0.3-review-summary.md`](reports/v0.3-review-summary.md)
 
 Current reviewed-core gap table: [`reports/reviewed-core-gap-report-v0.3.md`](reports/reviewed-core-gap-report-v0.3.md)
+
+Reviewed-core confidence workflow: [`reviewed-core-confidence-workflow-v0.3.md`](reviewed-core-confidence-workflow-v0.3.md)

@@ -20,7 +20,11 @@ Runs realistic concept mixes through the deterministic Mixer analysis module and
 
 [`v0.3-review-summary.md`](v0.3-review-summary.md)
 
-Consolidates the v0.3 reviewed-core, taxonomy, locomotion, relationship-semantics, and boundary/failure-mode review decisions into one public summary.
+Consolidates the v0.3 reviewed-core, taxonomy, boundary hardening, relationship-semantics, and failure-mode review decisions into one public summary.
+
+[`../reviewed-core-confidence-workflow-v0.3.md`](../reviewed-core-confidence-workflow-v0.3.md)
+
+Defines the proposed workflow for future reviewed-status and source-confidence changes. It is a planning document, not a schema change or status change.
 
 [`reviewed-core-gap-report-v0.3.md`](reviewed-core-gap-report-v0.3.md)
 
