@@ -24,8 +24,8 @@
     "sandbox",
     "survival"
   ],
-  "description": "A generation process that assigns biome identities, boundaries, resources, hazards, and visual rules across a map or world.",
-  "design_notes": "Biome generation gives procedural space identity. Useful biome systems track biome_id, noise masks, climate inputs, adjacency rules, transition widths, content_version, and validation so the world reads as varied without producing impossible resource or traversal combinations.",
+  "description": "A region and content-distribution generator that assigns biome identities, boundaries, environment rules, resources, hazards, encounter pools, and visual themes across a map or world.",
+  "design_notes": "Biome generation owns what kind of region a chunk, room, or area belongs to; it does not own exact room placement. Useful biome systems track biome_id, region weights, climate inputs, resource and encounter pools, adjacency rules, transition widths, content_version, deterministic seed streams, and validation so the world reads as varied without producing impossible resource or traversal combinations.",
   "design_purpose": [
     "Create recognizable regions with distinct visuals, resources, enemies, and traversal constraints.",
     "Control pacing by placing safer, harsher, richer, or more specialized zones in meaningful patterns.",
@@ -37,7 +37,11 @@
     "biome_rules",
     "resource_placement",
     "terrain_generation",
-    "validation_pass"
+    "validation_pass",
+    "seeded_generation",
+    "content_pool_rules",
+    "content_versioning",
+    "save_load_state"
   ],
   "parameters": [
     {
@@ -51,6 +55,24 @@
       "type": "float",
       "typical_range": "0.001-0.5",
       "description": "Noise sampling scale used to define biome regions or masks."
+    },
+    {
+      "name": "biome_seed_stream_key",
+      "type": "string",
+      "typical_range": "climate_mask, region_weights, transition_noise",
+      "description": "RNG stream used for biome assignment so region layout can be replayed independently from encounters or loot."
+    },
+    {
+      "name": "region_weight_table_id",
+      "type": "string",
+      "typical_range": "starter_world, arid_campaign, late_game_mixed",
+      "description": "Weight table that controls biome frequency by progression, climate band, or world region."
+    },
+    {
+      "name": "biome_content_pool_id",
+      "type": "string",
+      "typical_range": "forest_resources_v4, desert_enemies_v2, tundra_hazards",
+      "description": "Content pool used for resources, enemies, hazards, props, or weather inside the biome."
     },
     {
       "name": "transition_width_tiles",
@@ -69,6 +91,12 @@
       "type": "float",
       "typical_range": "0.1-5.0",
       "description": "Biome-specific modifier for resource, loot, or encounter placement density."
+    },
+    {
+      "name": "biome_content_version",
+      "type": "string",
+      "typical_range": "biomes_v09, resource_patch_14",
+      "description": "Version of biome rules and content pools used to keep old saves and debug seeds reproducible."
     }
   ],
   "common_variants": [
@@ -82,13 +110,18 @@
     "A required resource appears only in a biome that the seed failed to place near reachable progression routes.",
     "Biome transitions create narrow hazard strips, visual seams, or mismatched collision/navigation rules.",
     "Adjacent biome rules reject every candidate and require fallback_template_id or repair passes.",
-    "Content patches change biome_id rules and old saves need compatibility for discovered map regions."
+    "Content patches change biome_id rules and old saves need compatibility for discovered map regions.",
+    "Hazardous biome placement can gate critical resources behind temperature, oxygen, traversal, or equipment requirements.",
+    "Chunk streaming can sample neighboring biome masks at different content versions and create seams or duplicated resources.",
+    "Transition zones need clear ownership for weather, enemy pools, music, minimap color, and survival exposure effects."
   ],
   "common_bugs": [
     "Biome masks use different coordinates than terrain chunks, causing decoration and ground textures to disagree.",
     "Resource placement samples biome_id before transition blending and spawns desert resources in forest visuals.",
     "RNG stream sharing means adding a new biome changes loot or encounter generation elsewhere.",
-    "Debug maps show colors but not adjacency_rule_id or rejected placement reasons."
+    "Debug maps show colors but not adjacency_rule_id or rejected placement reasons.",
+    "Only biome_id is saved, so changed region weights regenerate resources or hazards differently after reload.",
+    "Transition tiles inherit visuals from one biome and collision, weather, or encounter rules from another."
   ],
   "balancing_notes": [
     "Biome size should support travel goals: tiny regions feel noisy, while huge regions can starve players of needed resources.",
@@ -100,10 +133,10 @@
     "Avoid dense procedural decoration that hides hazards, enemies, or interactables without visibility options."
   ],
   "implementation_notes": {
-    "unity": "Generate biome masks from chunk_coordinate and generation_seed, then pass biome_id into terrain, foliage, resource, and encounter systems; draw editor overlays for masks and adjacency failures.",
-    "godot": "Keep biome rules in Resources or JSON and sample them before TileMap or mesh decoration; save content_version and discovered biome IDs for map compatibility.",
-    "unreal": "Use PCG graphs or custom runtime systems with biome_id metadata; validate biome adjacency, navigation, and spawn/resource rules before streaming a region active.",
-    "web": "Use deterministic noise and integer chunk coordinates to assign biome_id; export biome masks in debug views so bad seeds can be reproduced from seed and content_version."
+    "unity": "Generate biome masks from chunk_coordinate, biome_seed_stream_key, and biome_content_version, then pass biome_id into terrain, foliage, resource, weather, and encounter systems; draw editor overlays for masks and adjacency failures.",
+    "godot": "Keep biome rules in Resources or JSON and sample them before TileMap or mesh decoration; save biome_content_version, discovered biome IDs, and transition ownership for map compatibility.",
+    "unreal": "Use PCG graphs or custom runtime systems with biome_id metadata; validate biome adjacency, navigation, hazard gates, and spawn/resource rules before streaming a region active.",
+    "web": "Use deterministic noise and integer chunk coordinates to assign biome_id; export biome masks, region weights, and rejected adjacency reasons so bad seeds can be reproduced from seed and content version."
   },
   "related_mechanics": [
     "procedural_generation.procedural_terrain",
@@ -117,6 +150,42 @@
     "ui_ux.minimap",
     "ai.enemy_spawn_director"
   ],
+  "relationships": [
+    {
+      "target": "procedural_generation.seeded_generation",
+      "type": "requires",
+      "reason": "Biome masks, region weights, and content pools need deterministic seed streams and content versions for reproducible worlds.",
+      "strength": "strong"
+    },
+    {
+      "target": "procedural_generation.procedural_terrain",
+      "type": "feeds",
+      "reason": "Biome generation produces region masks and biome IDs that terrain, materials, props, and hazards consume.",
+      "strength": "strong"
+    },
+    {
+      "target": "procedural_generation.random_encounters",
+      "type": "supports",
+      "reason": "Biome state constrains encounter pools so enemies, hazards, and rewards fit the current region.",
+      "strength": "medium"
+    },
+    {
+      "target": "survival.temperature",
+      "type": "feeds",
+      "reason": "Biome climate and weather rules can drive exposure, heat, cold, and shelter pressure in survival loops.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "support",
+    "implementation_cost": 4,
+    "design_cost": 4,
+    "tuning_cost": 5,
+    "content_cost": 5,
+    "networking_risk": 2,
+    "save_load_risk": 5,
+    "ui_risk": 2
+  },
   "example_games": [
     {
       "title": "Minecraft",
@@ -134,5 +203,5 @@
     "replayability"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-07-01"
 }

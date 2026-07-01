@@ -24,8 +24,8 @@
     "adventure",
     "dungeon_crawler"
   ],
-  "description": "A graph structure that defines rooms as nodes and doorways, corridors, locks, or transitions as edges before or during level assembly.",
-  "design_notes": "Room connection graphs determine whether a generated level is navigable, paced, and solvable. A useful graph records graph_node_id, graph_edge_id, critical_path_node_count, branch_probability, loop_connection_budget, lock/key ordering, and validation failures.",
+  "description": "A topology generator that defines rooms as graph nodes and doorways, corridors, locks, keys, exits, or transitions as validated graph edges before room content is placed.",
+  "design_notes": "Room connection graphs own solvable topology, not room art placement. A useful graph records graph_node_id, graph_edge_id, entrance and exit nodes, critical_path_node_count, branch_probability, loop_connection_budget, lock/key ordering, graph seed stream, and validation failures before any room templates are instantiated.",
   "design_purpose": [
     "Control progression through generated rooms before detailed geometry is placed.",
     "Guarantee reachable starts, goals, keys, locks, shops, secrets, and exits.",
@@ -37,9 +37,17 @@
     "room_templates",
     "doorway_sockets",
     "connectivity_validation",
-    "debug_visualization"
+    "debug_visualization",
+    "seeded_generation",
+    "graph_serialization"
   ],
   "parameters": [
+    {
+      "name": "graph_seed_stream_key",
+      "type": "string",
+      "typical_range": "topology, locks, branch_repair, loop_edges",
+      "description": "RNG stream used for graph shape so topology can be reproduced independently from room art placement."
+    },
     {
       "name": "graph_node_id",
       "type": "string",
@@ -51,6 +59,18 @@
       "type": "string",
       "typical_range": "door_12, locked_gate_a, corridor_4",
       "description": "Identifier for a connection between two graph nodes."
+    },
+    {
+      "name": "entrance_node_id",
+      "type": "string",
+      "typical_range": "start, elevator_in, spawn_room",
+      "description": "Node that must be reachable before all required progression checks begin."
+    },
+    {
+      "name": "exit_node_id",
+      "type": "string",
+      "typical_range": "boss_exit, stairs_down, extraction_gate",
+      "description": "Goal node that reachability and critical-path validation must preserve."
     },
     {
       "name": "critical_path_node_count",
@@ -82,13 +102,18 @@
     "A lock appears before its key or ability gate, causing a soft-lock.",
     "Doorway sockets selected by room_template_id do not physically align even though the graph edge exists.",
     "Optional branches consume all valid room templates and leave no fallback for the critical path.",
-    "Loop connections bypass required tutorial, boss, or reward nodes."
+    "Loop connections bypass required tutorial, boss, or reward nodes.",
+    "A graph is topologically reachable but no room template exists for a required node tag, size, or socket count.",
+    "Graph repair creates a shortcut that makes entrance_node_id or exit_node_id validation pass while lock/key order is still impossible.",
+    "A saved run restores visited-room state but not graph_edge_id lock state, reopening or resealing the wrong path."
   ],
   "common_bugs": [
     "Connectivity validation checks graph edges but not actual spawned doorway collisions or navmesh reachability.",
     "Random graph traversal uses unordered sets and produces different topology from the same seed.",
     "Dead-end treasure rooms are selected for mandatory objectives because room tags are too broad.",
-    "Debug maps show room layout but not graph_edge_id reasons for rejected connections."
+    "Debug maps show room layout but not graph_edge_id reasons for rejected connections.",
+    "Graph node identifiers are regenerated after load, breaking minimap reveal, visited flags, and quest target references.",
+    "Cycle repair adds duplicate graph_edge_id values, so one door opens multiple unrelated connections."
   ],
   "balancing_notes": [
     "Critical path length drives session duration more reliably than total room count.",
@@ -100,10 +125,10 @@
     "Avoid procedurally creating maze-like graphs without landmarks, map tools, or pathfinding support."
   ],
   "implementation_notes": {
-    "unity": "Generate a logical graph first, validate lock/key ordering, then instantiate room_template_id prefabs by doorway sockets; draw graph_node_id and graph_edge_id overlays in editor tools.",
-    "godot": "Represent topology as data dictionaries or Resources before scene instancing; run reachability and soft-lock validation before adding room scenes to the tree.",
-    "unreal": "Use DataAssets for room templates and a generator subsystem that builds graph nodes/edges, validates critical path and loops, then spawns level instances or PCG content.",
-    "web": "Keep the graph as JSON-serializable data with stable node and edge IDs; export failed seeds with graph and validation_retries for reproducible bug reports."
+    "unity": "Generate a logical graph first from graph_seed_stream_key, validate lock/key ordering, then instantiate room_template_id prefabs by doorway sockets; draw graph_node_id and graph_edge_id overlays in editor tools.",
+    "godot": "Represent topology as data dictionaries or Resources before scene instancing; run reachability and soft-lock validation before adding room scenes to the tree, then serialize graph nodes and edge states for saves.",
+    "unreal": "Use DataAssets for room templates and a generator subsystem that builds graph nodes/edges, validates critical path, branches, loops, and lock order, then spawns level instances or PCG content.",
+    "web": "Keep the graph as JSON-serializable data with stable node and edge IDs; export failed seeds with graph_seed_stream_key and validation_retries for reproducible bug reports."
   },
   "related_mechanics": [
     "procedural_generation.procedural_level_rooms",
@@ -121,7 +146,13 @@
     {
       "target": "procedural_generation.procedural_level_rooms",
       "type": "supports",
-      "reason": "A room connection graph gives room generation route constraints, branch counts, loops, and reachability validation.",
+      "reason": "A room connection graph gives room placement route constraints, branch roles, loop budgets, lock order, and reachability validation.",
+      "strength": "strong"
+    },
+    {
+      "target": "procedural_generation.seeded_generation",
+      "type": "requires",
+      "reason": "Graph topology needs deterministic RNG streams and serialized node identifiers so bad seeds, saves, and replays reproduce the same routes.",
       "strength": "strong"
     },
     {
@@ -165,5 +196,5 @@
     "validation"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-30"
+  "last_updated": "2026-07-01"
 }

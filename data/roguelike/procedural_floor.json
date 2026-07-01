@@ -25,8 +25,8 @@
     "action",
     "rpg"
   ],
-  "description": "A generated floor layout made from rooms, corridors, encounters, rewards, and exits selected for the current run and floor position.",
-  "design_notes": "A roguelike floor needs more than random rooms. It should provide a viable critical path, optional risk branches, encounter pacing, reward placement, and a reliable exit while preserving enough uncertainty for repeated runs. The floor generator should log seed, content version, room graph, and validation failures so designers can reproduce bad layouts.",
+  "description": "A run-scoped floor generator that combines topology, placed rooms, encounters, rewards, shops, bosses, exits, difficulty pacing, and persistence for the current roguelike run.",
+  "design_notes": "A roguelike procedural floor owns run pacing, not just room generation. It should combine run_seed, floor_index, content version, graph topology, room placement, encounter budgets, reward cadence, shops, bosses, exits, and meta-progression constraints into a floor that can be saved, resumed, replayed, and debugged. The generator should log seed streams, selected content, and validation failures so designers can reproduce bad layouts.",
   "design_purpose": [
     "Create replayable layouts with authored pacing constraints.",
     "Control the mix of combat, shops, events, treasure, exits, and recovery nodes per floor.",
@@ -38,7 +38,10 @@
     "room_graph_generator",
     "encounter_tables",
     "layout_validation",
-    "debug_seed_logging"
+    "debug_seed_logging",
+    "run_state_persistence",
+    "reward_distribution",
+    "content_versioning"
   ],
   "parameters": [
     {
@@ -52,6 +55,12 @@
       "type": "integer",
       "typical_range": "0-20",
       "description": "Run position used to select difficulty, biome, and room pools."
+    },
+    {
+      "name": "generated_floor_id",
+      "type": "string",
+      "typical_range": "run_948_floor_03, daily_20260701_f2",
+      "description": "Stable floor identity used for save/quit/resume, map state, and replay logs."
     },
     {
       "name": "rng_stream_id",
@@ -78,6 +87,12 @@
       "description": "Weighted likelihood of optional graph branches during layout build."
     },
     {
+      "name": "floor_reward_budget_id",
+      "type": "string",
+      "typical_range": "early_run_safe, mid_run_high_risk, boss_prelude",
+      "description": "Reward and shop budget applied to rooms, branches, bosses, and exits on this floor."
+    },
+    {
       "name": "validation_retries",
       "type": "integer",
       "typical_range": "1-50 attempts",
@@ -96,14 +111,19 @@
     "The only exit is generated behind an encounter that can despawn or become unreachable.",
     "A shop, rest room, or boss node occupies a layout socket too small for required actors.",
     "Content version changes make an old run save point to a removed room_template_id.",
-    "An optional branch creates a loop that bypasses intended floor_index pacing or boss requirements."
+    "An optional branch creates a loop that bypasses intended floor_index pacing or boss requirements.",
+    "Save/quit/resume occurs after rewards are generated but before visited rooms, shops, or exit state are serialized.",
+    "Daily seeds or reroll effects need clear rules for whether the same run_seed can produce a repaired or replaced floor.",
+    "Meta-progression unlocks change available room, relic, shop, or boss pools while an old run is still resumable."
   ],
   "common_bugs": [
     "Layout RNG and reward RNG share a stream, so adding a decoration changes combat rewards.",
     "Validation checks connectivity but not collision, navmesh, or camera framing inside room templates.",
     "Room graph ids are regenerated on load, breaking map reveal and visited-room persistence.",
     "Fallback generation uses the same invalid constraints and repeats the same failure.",
-    "Debug logs record the run_seed but not floor_index, content_version, or rng_stream_id cursor."
+    "Debug logs record the run_seed but not floor_index, content_version, or rng_stream_id cursor.",
+    "A shop or boss room is selected correctly by topology but missing from the reward budget, leaving an empty required node.",
+    "Save reload rerolls unopened rewards because generated_floor_id stores layout but not reward stream cursors."
   ],
   "balancing_notes": [
     "Longer critical paths increase commitment and resource attrition; optional branches should compensate with meaningful rewards or information.",
@@ -116,10 +136,10 @@
     "Keep fallback layouts available for modes that reduce disorientation or maze complexity."
   ],
   "implementation_notes": {
-    "unity": "Build a floor graph from ScriptableObject room templates using separate RNG streams for layout, encounters, and rewards. Validate doorway sockets, navmesh bake, required keys, and exit reachability before instantiating, then persist room_node_id mappings for save/load.",
-    "godot": "Represent room templates as PackedScenes with doorway metadata and graph tags. Generate the room graph from run_seed and floor_index, run connectivity and collision validation, and store node ids in the run save so map reveal survives reloads.",
-    "unreal": "Use Data Assets or level instances for rooms and a server-authoritative floor generation subsystem for networked runs. Log run_seed, content_version, floor_index, and selected room_template_id values to make bad floors reproducible.",
-    "web": "Generate graph data first, then render Phaser tilemaps or Three.js room chunks from the validated graph. Keep sorted template ids and deterministic RNG streams so browser, server, and replay tools produce matching floors."
+    "unity": "Build a floor graph from ScriptableObject room templates using separate RNG streams for layout, encounters, shops, bosses, and rewards. Validate doorway sockets, navmesh bake, required keys, and exit reachability before instantiating, then persist room_node_id and generated_floor_id mappings for save/load.",
+    "godot": "Represent room templates as PackedScenes with doorway metadata and graph tags. Generate the room graph from run_seed and floor_index, run connectivity and collision validation, and store node ids, reward picks, and shop state in the run save so map reveal survives reloads.",
+    "unreal": "Use Data Assets or level instances for rooms and a server-authoritative floor generation subsystem for networked runs. Log run_seed, content_version, floor_index, generated_floor_id, selected room_template_id values, and reward budgets to make bad floors reproducible.",
+    "web": "Generate graph data first, then render Phaser tilemaps or Three.js room chunks from the validated graph. Keep sorted template ids and deterministic RNG streams so browser, server, save, and replay tools produce matching floors."
   },
   "related_mechanics": [
     "procedural_generation.room_connection_graph",
@@ -137,13 +157,19 @@
     {
       "target": "procedural_generation.procedural_level_rooms",
       "type": "requires",
-      "reason": "Procedural floors depend on room templates, connection rules, and path validation.",
+      "reason": "Procedural floors depend on placed room templates, socket compatibility, and room-level path validation.",
       "strength": "strong"
     },
     {
       "target": "procedural_generation.room_connection_graph",
       "type": "requires",
       "reason": "Floor layouts need graph nodes, doors, critical path checks, and branch validation.",
+      "strength": "strong"
+    },
+    {
+      "target": "procedural_generation.seeded_generation",
+      "type": "requires",
+      "reason": "Run-scoped floors need deterministic seed streams, content versioning, and debug logs for replay, daily seeds, and save/resume.",
       "strength": "strong"
     },
     {
@@ -181,5 +207,5 @@
     "soft_lock_prevention"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-30"
+  "last_updated": "2026-07-01"
 }

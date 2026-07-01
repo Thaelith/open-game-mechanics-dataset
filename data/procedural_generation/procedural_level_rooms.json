@@ -24,8 +24,8 @@
     "sandbox",
     "survival"
   ],
-  "description": "A level generation method that places authored or parameterized room templates into a generated layout with sockets, rules, and validation.",
-  "design_notes": "Procedural rooms work when authored chunks and generated topology agree. The generator needs room_template_id, doorway sockets, room tags, placement_rule_id, lock/key ordering, spawn validation, and fallback rooms for failed constraints.",
+  "description": "A room-selection and placement generator that instantiates authored or parameterized room templates into a validated layout with sockets, collision checks, and fallback rules.",
+  "design_notes": "Procedural level rooms own the concrete content placement layer: choose room_pool_id entries, align doorway sockets, reserve critical-path and optional-branch rooms, run overlap and navigation checks, then commit a room layout that can be saved. The topology should come from a room connection graph; this entry is about selecting and placing actual room content against that topology.",
   "design_purpose": [
     "Create replayable dungeon, mission, or building layouts from reusable room content.",
     "Let designers author high-quality room pieces while the generator controls order, branches, and pacing.",
@@ -37,9 +37,18 @@
     "room_connection_graph",
     "doorway_sockets",
     "placement_rules",
-    "validation_pass"
+    "validation_pass",
+    "seeded_generation",
+    "content_versioning",
+    "save_load_state"
   ],
   "parameters": [
+    {
+      "name": "room_pool_id",
+      "type": "string",
+      "typical_range": "castle_floor_1, cave_combat_set, shop_and_reward_rooms",
+      "description": "Content pool used to select eligible authored room templates for the current layout role."
+    },
     {
       "name": "room_template_id",
       "type": "string",
@@ -69,6 +78,18 @@
       "type": "integer",
       "typical_range": "0-100 attempts",
       "description": "Attempts to place or repair a room before falling back."
+    },
+    {
+      "name": "room_layout_stream_key",
+      "type": "string",
+      "typical_range": "room_selection, socket_rotation, decoration_pass",
+      "description": "RNG stream used for room choice and placement so content changes do not disturb unrelated rolls."
+    },
+    {
+      "name": "room_content_version",
+      "type": "string",
+      "typical_range": "rooms_v12, castle_pack_03",
+      "description": "Version of the room pool used to reload old layouts and reproduce bad seeds."
     }
   ],
   "common_variants": [
@@ -82,13 +103,18 @@
     "A required doorway socket is blocked by props, hazards, or collision after decoration.",
     "The room pool runs out of templates matching the needed size, tag, or critical path role.",
     "A lock room appears before the key room or ability unlock that opens it.",
-    "Spawn points inside a valid room fail because they are too close to the player or outside navmesh."
+    "Spawn points inside a valid room fail because they are too close to the player or outside navmesh.",
+    "Socket rotation or mirroring makes rooms appear connected while one-way doors, stairs, or vertical links face the wrong direction.",
+    "A content patch removes or renames a room_template_id used by an in-progress save.",
+    "Fallback room retries use the same invalid pool and never escape the failed placement constraint."
   ],
   "common_bugs": [
     "Rooms align visually but their navigation meshes, collision, or door triggers do not connect.",
     "Template IDs are selected by array index, so adding a room changes old seeds unpredictably.",
     "Validation checks only room graph connectivity and misses actual unreachable areas after decoration.",
-    "Fallback rooms lack required tags and break quest, loot, or boss placement later in the pipeline."
+    "Fallback rooms lack required tags and break quest, loot, or boss placement later in the pipeline.",
+    "Only the seed is saved, so a content-version change regenerates a different room layout after reload.",
+    "Door trigger ownership is copied from the previous prefab instance and opens the wrong connected room."
   ],
   "balancing_notes": [
     "Room pool variety should be tuned against session length; too few templates expose repetition quickly.",
@@ -100,10 +126,10 @@
     "Avoid narrow procedural routes that require precision movement unless the game clearly supports it."
   ],
   "implementation_notes": {
-    "unity": "Instantiate room prefabs by room_template_id and doorway_socket_id, then run validation for door triggers, collision, navmesh links, spawn points, and objective reachability before committing the layout.",
-    "godot": "Use PackedScene room templates with exported socket markers; build a logical room graph first, then instance scenes and run navigation/connectivity checks.",
-    "unreal": "Use level instances, DataAssets, or PCG components for room templates; validate sockets, navmesh, gameplay tags, and lock/key ordering before making the level playable.",
-    "web": "Represent rooms and sockets as data, use deterministic template selection by ID, and export graph plus placement failures for reproducible seed debugging."
+    "unity": "Instantiate room prefabs by room_pool_id, room_template_id, and doorway_socket_id, then run validation for door triggers, collision, navmesh links, spawn points, and objective reachability before committing the layout.",
+    "godot": "Use PackedScene room templates with exported socket markers; build a logical room graph first, then instance scenes, persist selected room_template_id values, and run navigation/connectivity checks.",
+    "unreal": "Use level instances, DataAssets, or PCG components for room templates; validate sockets, navmesh, gameplay tags, lock/key ordering, and content version before making the level playable.",
+    "web": "Represent rooms and sockets as data, use deterministic template selection by room_layout_stream_key, and export graph plus placement failures for reproducible seed debugging."
   },
   "related_mechanics": [
     "procedural_generation.room_connection_graph",
@@ -121,7 +147,13 @@
     {
       "target": "procedural_generation.room_connection_graph",
       "type": "requires",
-      "reason": "Room generation needs a connection graph to prove reachability and route structure before placement commits.",
+      "reason": "Room placement needs a connection graph to define route structure, branch roles, and reachability before room templates commit.",
+      "strength": "strong"
+    },
+    {
+      "target": "procedural_generation.seeded_generation",
+      "type": "requires",
+      "reason": "Room selection and socket placement need stable RNG streams, content versioning, and seed logs for reproducible layouts.",
       "strength": "strong"
     },
     {
@@ -163,5 +195,5 @@
     "replayability"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-30"
+  "last_updated": "2026-07-01"
 }
