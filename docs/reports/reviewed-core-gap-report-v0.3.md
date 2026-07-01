@@ -67,7 +67,7 @@ The set is strong enough to begin reviewed-core work, but every candidate still 
 
 ## Cross-Cutting Review Gaps
 
-- Batch 1 mechanics now have report-level `source_confidence` rationale in [`reviewed-core-batch-1-maintainer-review-v0.3.md`](reviewed-core-batch-1-maintainer-review-v0.3.md), but rationale is not schema-enforced or stored in mechanic JSON yet.
+- Batch 1 mechanics now have report-level `source_confidence` rationale summarized in [`v0.3-review-summary.md`](v0.3-review-summary.md), but rationale is not schema-enforced or stored in mechanic JSON yet.
 - All selected mechanics are still `draft`.
 - Relationship coverage is present, but relationship quality still needs human review.
 - `scope_profile` values exist, but high-risk mechanics need calibration against scenario QA.
@@ -87,6 +87,4 @@ Batch 1 should improve edge cases and common bugs first, then review implementat
 
 Batch 1 report: [`reviewed-core-batch-1-v0.3.md`](reviewed-core-batch-1-v0.3.md)
 
-Maintainer review: [`reviewed-core-batch-1-maintainer-review-v0.3.md`](reviewed-core-batch-1-maintainer-review-v0.3.md)
-
-Time rewind architecture review: [`time-rewind-architecture-review-v0.3.md`](time-rewind-architecture-review-v0.3.md)
+Consolidated v0.3 review summary: [`v0.3-review-summary.md`](v0.3-review-summary.md)

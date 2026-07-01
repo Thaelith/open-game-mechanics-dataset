@@ -79,6 +79,6 @@ It is not yet a fully reviewed authoritative reference. The next maturity step i
 
 ## Taxonomy Choices
 
-Mechanic categories and entry boundaries are practical choices, not objective laws. The dataset now tracks the current mechanic, variant, and parameter criteria in [`taxonomy-and-categorization-criteria.md`](taxonomy-and-categorization-criteria.md), with a small v0.3 borderline review in [`reports/taxonomy-review-v0.3.md`](reports/taxonomy-review-v0.3.md).
+Mechanic categories and entry boundaries are practical choices, not objective laws. The dataset now tracks the current mechanic, variant, and parameter criteria in [`taxonomy-and-categorization-criteria.md`](taxonomy-and-categorization-criteria.md), with current v0.3 review decisions summarized in [`reports/v0.3-review-summary.md`](reports/v0.3-review-summary.md).
 
 These criteria should help reviewers discuss cases such as walk/run/sprint without implying that the dataset is complete or universally authoritative.

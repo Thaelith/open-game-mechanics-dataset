@@ -144,8 +144,6 @@ Use these questions when adding, reviewing, splitting, merging, or reframing ent
 
 ## Applied Reviews
 
-Current v0.3 review reports applying these criteria:
+Current v0.3 review summary applying these criteria:
 
-- [`reports/taxonomy-review-v0.3.md`](reports/taxonomy-review-v0.3.md)
-- [`reports/locomotion-taxonomy-review-v0.3.md`](reports/locomotion-taxonomy-review-v0.3.md)
-- [`reports/mechanic-boundary-prerequisite-failure-mode-audit-v0.3.md`](reports/mechanic-boundary-prerequisite-failure-mode-audit-v0.3.md)
+- [`reports/v0.3-review-summary.md`](reports/v0.3-review-summary.md)

@@ -10,9 +10,9 @@ The pass focused on prototype-breaking details: input/state priority, collision,
 
 No mechanic is marked `reviewed` by this report.
 
-Maintainer review: [`reviewed-core-batch-1-maintainer-review-v0.3.md`](reviewed-core-batch-1-maintainer-review-v0.3.md)
+Consolidated v0.3 review summary: [`v0.3-review-summary.md`](v0.3-review-summary.md)
 
-Time rewind architecture checklist: [`time-rewind-architecture-review-v0.3.md`](time-rewind-architecture-review-v0.3.md)
+Current reviewed-core gap table: [`reviewed-core-gap-report-v0.3.md`](reviewed-core-gap-report-v0.3.md)
 
 ## Mechanics Reviewed
 
@@ -46,7 +46,7 @@ Time rewind architecture checklist: [`time-rewind-architecture-review-v0.3.md`](
 
 ## Review Table
 
-The `Confidence Rationale Status` column records the state at the end of the Batch 1 rewrite. A later maintainer review added report-level rationale in [`reviewed-core-batch-1-maintainer-review-v0.3.md`](reviewed-core-batch-1-maintainer-review-v0.3.md), while all five mechanic JSON files remained `source_confidence: "medium"`.
+The `Confidence Rationale Status` column records the state at the end of the Batch 1 rewrite. The consolidated [`v0.3-review-summary.md`](v0.3-review-summary.md) preserves the maintainer-level rationale, while all five mechanic JSON files remain `source_confidence: "medium"`.
 
 | Mechanic | Edge Cases Before/After | Common Bugs Before/After | Relationship Review | Scope Review | Confidence Rationale Status | ready_for_review | Remaining Gaps |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -94,7 +94,7 @@ The existing profiles still look plausible for this pass:
 
 ## Remaining Review Gaps
 
-- Batch 1 initially lacked written source-confidence rationale. A later maintainer review added report-level rationale, but rationale is not schema-enforced or stored in mechanic JSON yet.
+- Batch 1 source-confidence rationale is now summarized in [`v0.3-review-summary.md`](v0.3-review-summary.md), but rationale is not schema-enforced or stored in mechanic JSON yet.
 - All five mechanics remain `draft`.
 - `time.time_rewind` still needs a separate architecture-focused review before any reviewed-status consideration.
 - Relationship direction semantics should be reviewed across the broader dataset before v0.3 finalization.

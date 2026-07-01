@@ -167,6 +167,6 @@ Reviewed Core Batch 1 has started with the five recommended mechanics. The pass 
 
 Batch 1 report: [`reports/reviewed-core-batch-1-v0.3.md`](reports/reviewed-core-batch-1-v0.3.md)
 
-Maintainer review: [`reports/reviewed-core-batch-1-maintainer-review-v0.3.md`](reports/reviewed-core-batch-1-maintainer-review-v0.3.md)
+Consolidated v0.3 review summary: [`reports/v0.3-review-summary.md`](reports/v0.3-review-summary.md)
 
-Time rewind architecture checklist: [`reports/time-rewind-architecture-review-v0.3.md`](reports/time-rewind-architecture-review-v0.3.md)
+Current reviewed-core gap table: [`reports/reviewed-core-gap-report-v0.3.md`](reports/reviewed-core-gap-report-v0.3.md)

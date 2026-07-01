@@ -6,19 +6,9 @@ It does not promise timelines.
 
 The initial reviewed-core planning artifact is [`reviewed-core-subset-v0.3.md`](reviewed-core-subset-v0.3.md). Current candidate gaps are tracked in [`reports/reviewed-core-gap-report-v0.3.md`](reports/reviewed-core-gap-report-v0.3.md).
 
-Reviewed Core Batch 1 has started and is documented in [`reports/reviewed-core-batch-1-v0.3.md`](reports/reviewed-core-batch-1-v0.3.md). It focuses on stronger `edge_cases`, `common_bugs`, implementation notes, and relationship review for five core mechanics.
+The current v0.3 preparation decisions are consolidated in [`reports/v0.3-review-summary.md`](reports/v0.3-review-summary.md). That summary covers Reviewed Core Batch 1, the time rewind architecture gate, taxonomy/boundary criteria, locomotion Batch A, relationship semantics cleanup, and the dataset-wide boundary/prerequisite/failure-mode audit.
 
-Batch 1 maintainer rationale and the dedicated time-rewind architecture checklist are tracked in reports so source-confidence decisions remain reviewable without adding schema fields prematurely.
-
-Taxonomy and categorization criteria are now tracked in [`taxonomy-and-categorization-criteria.md`](taxonomy-and-categorization-criteria.md), with current borderline cases reviewed in [`reports/taxonomy-review-v0.3.md`](reports/taxonomy-review-v0.3.md).
-
-Locomotion-specific taxonomy follow-up is tracked in [`reports/locomotion-taxonomy-review-v0.3.md`](reports/locomotion-taxonomy-review-v0.3.md), focused on walk/run/sprint boundaries and nearby movement mechanics.
-
-Relationship semantics and direction criteria are tracked in [`relationship-semantics-and-direction.md`](relationship-semantics-and-direction.md), with Batch 1 concerns reviewed in [`reports/relationship-semantics-review-v0.3.md`](reports/relationship-semantics-review-v0.3.md).
-
-Dataset-wide boundary and failure-mode risks are tracked in [`reports/mechanic-boundary-prerequisite-failure-mode-audit-v0.3.md`](reports/mechanic-boundary-prerequisite-failure-mode-audit-v0.3.md). This audit makes explicit prerequisites, state/input assumptions, and prototype-breaking failure modes a v0.3 review priority.
-
-Batch A of that work has completed the first hardening pass for `movement.walk`, `movement.run`, and `movement.sprint`, with results documented in [`reports/locomotion-taxonomy-review-v0.3.md`](reports/locomotion-taxonomy-review-v0.3.md).
+Detailed criteria remain in [`taxonomy-and-categorization-criteria.md`](taxonomy-and-categorization-criteria.md) and [`relationship-semantics-and-direction.md`](relationship-semantics-and-direction.md). Explicit prerequisites, state/input assumptions, and prototype-breaking failure modes are now first-class v0.3 review priorities.
 
 ## Must Do
 

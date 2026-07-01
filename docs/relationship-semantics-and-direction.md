@@ -15,6 +15,8 @@ They are not universal design laws. A relationship can be useful in one genre, e
 
 Relationship quality matters more than relationship count. A useful edge should help a maintainer, designer, developer, or tool ask a better review question.
 
+Current v0.3 relationship-semantics cleanup decisions are summarized in [`reports/v0.3-review-summary.md`](reports/v0.3-review-summary.md).
+
 ## Relationship Direction Principle
 
 A relationship entry lives on the source mechanic: the mechanic currently being described.
@@ -311,4 +313,3 @@ Before changing existing relationship data, review the edge against:
 - Whether the edge would still make sense outside one specific game.
 
 Prefer small, reviewable cleanup batches over broad graph rewrites.
-
