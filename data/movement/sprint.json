@@ -25,20 +25,24 @@
     "survival",
     "shooter"
   ],
-  "description": "A faster locomotion mode that usually carries a cost, commitment, or noise tradeoff.",
-  "design_notes": "Sprint changes traversal pacing and encounter spacing. It can be a convenience mode, a stamina-limited escape tool, or a riskier movement state that affects stealth and aim. Its start and stop behavior matter as much as its top pace because players feel sprint through acceleration, camera framing, footsteps, and recovery.",
+  "description": "High-output locomotion modifier that increases traversal pace only when extra cost, exhaustion, noise, camera, input, or recovery rules make it more than a speed multiplier.",
+  "design_notes": "Sprint should earn its separate entry by changing player commitment, not only velocity. Define the sprint_state_id, stamina spend or other cost, exhaustion transition, hold/toggle input policy, cancellation rules, footstep or AI noise output, camera/FOV comfort settings, and the states where sprint is forbidden. Its start, stop, and recovery behavior matter as much as top pace because players feel sprint through acceleration, stamina pressure, camera framing, audio, and delayed re-entry.",
   "design_purpose": [
-    "Let players cross known spaces quickly without making baseline movement feel sluggish.",
-    "Create pressure through stamina, noise, aim spread, or delayed recovery.",
-    "Support chase, escape, and traversal pacing in larger areas."
+    "Let players cross known spaces quickly without making baseline run feel sluggish.",
+    "Create commitment through stamina drain, exhaustion, noise, aim limits, recovery delay, or state restrictions.",
+    "Support chase, escape, stealth-risk, and traversal pacing in larger areas."
   ],
   "player_fantasy": "The player feels urgent and athletic, choosing when to spend effort for faster repositioning.",
   "required_systems": [
     "movement_state",
-    "stamina_system",
+    "stamina_resource",
+    "exhaustion_state",
     "input_abstraction",
+    "sprint_input_policy",
     "camera_controller",
-    "audio_footstep_system"
+    "audio_footstep_system",
+    "ai_perception_events",
+    "network_prediction"
   ],
   "parameters": [
     {
@@ -64,6 +68,24 @@
       "type": "float",
       "typical_range": "2-30 world units",
       "description": "Noise radius reported to AI perception while sprinting."
+    },
+    {
+      "name": "sprint_min_stamina_to_start",
+      "type": "float",
+      "typical_range": "5-30 stamina units",
+      "description": "Minimum stamina_resource required before sprint activation is accepted."
+    },
+    {
+      "name": "sprint_regen_delay_ms",
+      "type": "integer",
+      "typical_range": "300-2000 ms",
+      "description": "Recovery delay after sprint ends before stamina regeneration begins."
+    },
+    {
+      "name": "sprint_cancel_policy_id",
+      "type": "string",
+      "typical_range": "stop_on_aim, stop_on_reload, allow_slide_cancel, state_priority_table",
+      "description": "Rule set that decides which combat, traversal, stance, or UI states cancel sprint."
     }
   ],
   "common_variants": [
@@ -74,30 +96,35 @@
     "auto_sprint"
   ],
   "edge_cases": [
-    "Sprint input during reload, crouch, ladder climb, swimming, or aiming needs a clear priority rule.",
-    "Stamina exhaustion should transition to normal movement without repeatedly starting and stopping each frame.",
-    "Sprint camera effects must blend out before cutscenes, menus, or dialogue take camera control.",
-    "AI hearing and player footstep audio should agree on when sprint is actually active."
+    "Sprint input during reload, crouch, prone, ladder climb, swimming, aiming, or interaction prompts needs a clear sprint_cancel_policy_id.",
+    "Stamina exhaustion should transition to run or walk without repeatedly starting and stopping each frame.",
+    "Hold-to-sprint, toggle sprint, and auto-sprint need identical exhaustion and cancellation rules after remapping.",
+    "Sprint camera effects must blend out before cutscenes, menus, dialogue, or lock-on cameras take camera control.",
+    "AI hearing, player footstep audio, and noise UI should agree on whether sprint_state_id is actually active.",
+    "Save/load, respawn, or reconnect during sprint must restore stamina_resource, active sprint state, exhaustion_state, and regeneration delay consistently."
   ],
   "common_bugs": [
     "Sprint drains stamina while blocked by a wall because input is active but movement is zero.",
     "Toggle sprint remains set after stamina exhaustion and restarts unexpectedly when stamina recovers.",
     "Animation stride length does not match locomotion, causing foot sliding.",
-    "Sprint modifies aim or FOV on the client but not the authoritative combat state."
+    "Sprint modifies aim or FOV on the client but not the authoritative combat state.",
+    "Stamina regeneration starts immediately after sprint release because sprint_regen_delay_ms is ignored on cancel.",
+    "Server correction restores position but not sprint_state_id, causing clients to keep sprint speed after stamina is rejected."
   ],
   "balancing_notes": [
     "Unlimited sprint is mainly a traversal convenience; stamina sprint becomes a resource decision.",
-    "High sprint noise can make stealth routes riskier without forbidding fast movement entirely."
+    "High sprint noise can make stealth routes riskier without forbidding fast movement entirely.",
+    "If sprint has no cost, recovery, noise, camera, or state restriction, document it as a run variant or parameter rather than a separate mechanic."
   ],
   "accessibility_notes": [
     "Offer hold, toggle, or auto-sprint settings to reduce sustained button pressure.",
     "Avoid using only camera FOV changes to communicate sprint; include posture, audio, or UI state."
   ],
   "implementation_notes": {
-    "unity": "Use an explicit movement-state enum and feed the final desired velocity into CharacterController.Move or Rigidbody movement from FixedUpdate; keep dash and jump assists outside animation callbacks. For Sprint, validate this path with parameters such as sprint_velocity_multiplier and sprint_acceleration_ms.",
-    "godot": "Keep the mechanic state on CharacterBody2D or CharacterBody3D, update velocity in _physics_process, and separate input buffering from collision response. For Sprint, validate this path with parameters such as sprint_velocity_multiplier and sprint_acceleration_ms.",
-    "unreal": "Use CharacterMovement with a custom movement state or Gameplay Ability; gate activation through prediction-safe input and reconcile movement corrections cleanly in networked play. For Sprint, validate this path with parameters such as sprint_velocity_multiplier and sprint_acceleration_ms.",
-    "web": "Represent the mechanic as deterministic state in the simulation loop, then apply resolved displacement before rendering through Canvas, Phaser, Three.js, or a custom engine. For Sprint, validate this path with parameters such as sprint_velocity_multiplier and sprint_acceleration_ms."
+    "unity": "Use an explicit sprint_state_id and request stamina_resource spend before applying sprint_velocity_multiplier in FixedUpdate. Apply CharacterController.Move or Rigidbody movement only after sprint activation succeeds, replicate sprint_state_id in networked play, and clear toggle sprint on exhaustion, respawn, or focus loss.",
+    "godot": "Keep sprint state and exhaustion_state on CharacterBody2D or CharacterBody3D. In _physics_process, resolve hold/toggle input, spend stamina_resource, apply sprint acceleration, emit footstep noise events, and save the regeneration delay tick with checkpoint data.",
+    "unreal": "Use CharacterMovement plus a replicated sprint flag or Gameplay Ability. Commit stamina cost before increasing MaxWalkSpeed, let the server validate sprint_cancel_policy_id, and reconcile predicted sprint speed, FOV, and aim restrictions when stamina or authority rejects activation.",
+    "web": "Represent sprint_state_id, stamina_resource, exhaustion_state, and sprint_regen_delay_ms in the deterministic simulation loop. Apply resolved displacement before rendering, emit AI noise events from accepted sprint state only, and restore sprint state carefully after save/load or reconnect."
   },
   "related_mechanics": [
     "movement.stamina_movement",
@@ -129,6 +156,12 @@
       "type": "enhances",
       "reason": "Dynamic FOV can reinforce sprint intensity while remaining optional for motion-comfort settings.",
       "strength": "weak"
+    },
+    {
+      "target": "stealth.noise_meter",
+      "type": "feeds",
+      "reason": "Sprint can emit louder footstep noise events that stealth meters and AI hearing use for detection risk.",
+      "strength": "medium"
     }
   ],
   "scope_profile": {
@@ -150,5 +183,5 @@
     "accessibility"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-30"
+  "last_updated": "2026-07-01"
 }

@@ -24,12 +24,12 @@
     "action",
     "adventure"
   ],
-  "description": "Default faster ground locomotion that converts directional input into responsive travel while preserving collision, animation, and camera readability.",
-  "design_notes": "Run usually becomes the main locomotion state, so it must support repeated use without hiding important environment reads. Decide how quickly characters reach full pace, how they stop, how they rotate, and how slopes or surface materials alter the movement response. It should be fast enough for traversal but restrained enough that sprint, dash, mounts, and traversal tools still matter.",
+  "description": "Default higher-speed ground traversal that converts directional input into sustained travel while preserving collision, animation, camera, and prediction readability.",
+  "design_notes": "Run is the ordinary traversal state in many games, not a stamina sprint by default. Decide how quickly characters reach run pace, how they brake or reverse, how camera-relative input is resolved, and how slopes, steps, moving platforms, and surface materials alter the final velocity. It should be fast enough for arenas, hubs, and exploration spaces while leaving sprint to handle high-output cost, exhaustion, noise, or recovery rules.",
   "design_purpose": [
-    "Make ordinary navigation efficient across combat arenas, hubs, and exploration spaces.",
-    "Provide a default locomotion state that remains readable for animation, camera, and collision.",
-    "Create a stable base for modifiers such as sprint, crouch, stamina drain, or aiming movement."
+    "Make ordinary navigation efficient across combat arenas, hubs, traversal routes, and exploration spaces.",
+    "Provide a default locomotion state with reliable collision sweeps, camera-relative input, and animation blending.",
+    "Create a stable base that sprint, slide, aim movement, mounts, and traversal tools can override without inheriting stale velocity."
   ],
   "player_fantasy": "The player feels capable and responsive, moving through the world with confidence rather than waiting on the avatar.",
   "required_systems": [
@@ -37,7 +37,10 @@
     "input_processing",
     "ground_detection",
     "animation_blend_tree",
-    "network_prediction"
+    "network_prediction",
+    "collision_sweeps",
+    "surface_materials",
+    "camera_relative_input"
   ],
   "parameters": [
     {
@@ -75,6 +78,18 @@
       "type": "integer",
       "typical_range": "80-180 ms",
       "description": "Client-side movement window reconciled against server_tick in networked games."
+    },
+    {
+      "name": "run_collision_sweep_margin_units",
+      "type": "float",
+      "typical_range": "0.01-0.25 world units",
+      "description": "Extra sweep margin used to prevent higher-speed run movement from clipping through thin collision."
+    },
+    {
+      "name": "run_surface_modifier_policy_id",
+      "type": "string",
+      "typical_range": "replace, multiply, highest_priority",
+      "description": "Rule for applying mud, ice, slope, or moving-platform modifiers to run velocity."
     }
   ],
   "common_variants": [
@@ -85,16 +100,20 @@
     "analog_run"
   ],
   "edge_cases": [
-    "Run should not preserve full velocity when stepping from ground into a ladder, ledge grab, or scripted traversal state.",
+    "Run should not preserve full velocity when stepping from ground into a ladder, ledge grab, vehicle mount, or scripted traversal state.",
     "Sharp input reversal near thin collision can create oscillation if deceleration and collision projection fight each other.",
-    "Camera-relative input must update correctly when lock-on or cinematic camera changes orientation mid-run.",
-    "Server correction can snap a running player backward if client_input_sequence ordering is not deterministic."
+    "Camera-relative input must update correctly when lock-on, split screen, or cinematic camera changes orientation mid-run.",
+    "Running across mud, ice, slopes, or moving platforms needs one run_surface_modifier_policy_id so modifiers do not stack unpredictably.",
+    "Run state should be cleared or downgraded when dialogue, interaction focus, aiming, stun, or menu focus takes input ownership.",
+    "Server correction can snap a running player backward if client_input_sequence ordering and prediction_window_ms are not deterministic."
   ],
   "common_bugs": [
     "Run pace is applied directly to transform position and bypasses collision sweeps on fast frames.",
     "Animation blend trees use raw stick magnitude and never match resolved ground velocity on slopes.",
     "Surface material modifiers stack permanently after crossing mud, ice, or moving platforms.",
-    "Input buffering from dodge, slide, or sprint leaves run state active after stun or menu focus."
+    "Input buffering from dodge, slide, or sprint leaves run state active after stun or menu focus.",
+    "Camera-relative input is sampled after the camera rotates, causing a one-frame sideways snap.",
+    "Server reconciliation corrects position but not run animation phase, producing visible foot skating after network correction."
   ],
   "balancing_notes": [
     "Run pace sets the expected density of levels; increasing it may require wider lanes and earlier enemy telegraphs.",
@@ -106,22 +125,22 @@
     "Keep camera sway, field-of-view shifts, and head bob optional or adjustable during sustained running."
   ],
   "implementation_notes": {
-    "unity": "Resolve run state before movement integration, then apply acceleration curves inside FixedUpdate. Use CharacterController.Move or Rigidbody motion with collision sweeps, keep Animator parameters tied to post-collision velocity, and include server_tick plus client_input_sequence for network reconciliation.",
-    "godot": "Use CharacterBody velocity as the source of truth. Apply run acceleration in _physics_process, pass floor normals into slope checks, and update AnimationTree after move_and_slide returns collision information.",
-    "unreal": "Configure CharacterMovement for running but keep sprint, aim, root motion, and traversal overrides as explicit state transitions. In replicated play, let the server validate movement mode changes and reconcile predicted run inputs.",
-    "web": "Update run in a fixed-step controller using input_vector, acceleration_curve_id, and collision layer masks. Render interpolation should never feed back into simulation position, especially when prediction_window_ms is active."
+    "unity": "Resolve run state before movement integration, then apply acceleration and deceleration curves inside FixedUpdate. Use CharacterController.Move or Rigidbody motion with collision sweeps and run_collision_sweep_margin_units, tie Animator parameters to post-collision velocity, and include server_tick plus client_input_sequence for network reconciliation.",
+    "godot": "Use CharacterBody velocity as the source of truth. Apply camera_relative_input before run acceleration in _physics_process, pass floor normals into slope checks, apply run_surface_modifier_policy_id once, and update AnimationTree after move_and_slide returns collision information.",
+    "unreal": "Configure CharacterMovement for the default run pace while keeping sprint, aim, root motion, and traversal overrides as explicit state transitions. In replicated play, let the server validate movement mode changes and reconcile predicted run inputs without applying stamina costs in the run state itself.",
+    "web": "Update run in a fixed-step controller using input_vector, camera_relative_input, acceleration_curve_id, surface_material_id, and collision layer masks. Render interpolation should never feed back into simulation position, especially when prediction_window_ms is active."
   },
   "related_mechanics": [
     "movement.walk",
     "movement.sprint",
     "movement.slide",
-    "movement.stamina_movement"
+    "movement.dash"
   ],
   "combines_well_with": [
     "camera.dynamic_fov",
     "camera.smooth_follow_camera",
     "traversal.parkour_vault",
-    "survival.stamina"
+    "ui_ux.interaction_prompt"
   ],
   "relationships": [
     {
@@ -129,12 +148,6 @@
       "type": "extends",
       "reason": "Run builds on the same ground locomotion state as walk while changing acceleration, max velocity, and animation blend thresholds.",
       "strength": "strong"
-    },
-    {
-      "target": "movement.stamina_movement",
-      "type": "consumes",
-      "reason": "Run often drains stamina or uses stamina gates when it acts as a sustained high-output movement state.",
-      "strength": "medium"
     },
     {
       "target": "camera.dynamic_fov",
@@ -171,5 +184,5 @@
     "animation_blend"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-30"
+  "last_updated": "2026-07-01"
 }

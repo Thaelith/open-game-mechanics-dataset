@@ -18,6 +18,8 @@ Relationship semantics and direction criteria are tracked in [`relationship-sema
 
 Dataset-wide boundary and failure-mode risks are tracked in [`reports/mechanic-boundary-prerequisite-failure-mode-audit-v0.3.md`](reports/mechanic-boundary-prerequisite-failure-mode-audit-v0.3.md). This audit makes explicit prerequisites, state/input assumptions, and prototype-breaking failure modes a v0.3 review priority.
 
+Batch A of that work has completed the first hardening pass for `movement.walk`, `movement.run`, and `movement.sprint`, with results documented in [`reports/locomotion-taxonomy-review-v0.3.md`](reports/locomotion-taxonomy-review-v0.3.md).
+
 ## Must Do
 
 - Create a reviewed core subset of 20-30 high-value mechanics. See [`reviewed-core-subset-v0.3.md`](reviewed-core-subset-v0.3.md).

@@ -19,8 +19,8 @@
 | soft_conflicts_with | 104 |
 | requires | 74 |
 | enhances | 59 |
-| feeds | 48 |
-| consumes | 27 |
+| feeds | 49 |
+| consumes | 26 |
 | balances | 19 |
 | extends | 13 |
 | unlocks | 8 |
@@ -33,6 +33,7 @@
 | --- | --- |
 | accessibility.toggle_hold_option | 4 |
 | movement.dash | 4 |
+| movement.sprint | 4 |
 | platforming.jump_buffering | 4 |
 | time.time_rewind | 4 |
 | ui_ux.cooldown_indicator | 4 |
@@ -50,7 +51,6 @@
 | ai.utility_scoring | 3 |
 | camera.camera_lock_on | 3 |
 | camera.cinematic_camera | 3 |
-| camera.dynamic_fov | 3 |
 
 ## Category Relationship Coverage
 

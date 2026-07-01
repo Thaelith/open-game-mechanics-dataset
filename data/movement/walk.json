@@ -24,12 +24,12 @@
     "action",
     "adventure"
   ],
-  "description": "Controlled low-commitment ground locomotion that lets the player position precisely without entering a faster run, sprint, or evasive state.",
-  "design_notes": "Walk is the baseline for readable locomotion. Define how input_vector becomes character motion, how acceleration and deceleration curves feel on different surface materials, how slope limits clamp movement, and which animation blend states own foot placement. It should be dependable enough for precision positioning, stealth pacing, and interaction alignment without stealing the role of run or sprint.",
+  "description": "Baseline precision ground locomotion that turns low-intensity input into stable positioning, interaction alignment, and camera-readable movement without entering faster or committed states.",
+  "design_notes": "Walk is the control reference for the rest of the locomotion stack, not just a smaller speed value. Define dead-zone policy, analog magnitude handling, digital input fallback, ground_contact_state, step and slope behavior, and the input priority rules for aim, dialogue, interact prompts, and menus. It should be dependable enough for precision positioning, stealth pacing, and close object alignment while leaving run and sprint to handle faster traversal and high-output movement.",
   "design_purpose": [
-    "Give players precise positioning for exploration, stealth, platform setup, and interaction alignment.",
-    "Provide a predictable baseline for comparing faster or more committed locomotion states.",
-    "Support animation readability, camera framing, and low-pressure navigation through dense spaces."
+    "Give players precise positioning for exploration, stealth setup, platform alignment, and interaction prompts.",
+    "Provide the baseline locomotion state used to compare run, sprint, crouch, aim-walk, and other modifiers.",
+    "Make low-speed collision, camera framing, and animation blend thresholds predictable enough for close spaces."
   ],
   "player_fantasy": "The player feels fully in control of the character, able to approach, line up, and stop exactly where intended.",
   "required_systems": [
@@ -37,7 +37,9 @@
     "input_processing",
     "ground_detection",
     "animation_blend_tree",
-    "camera_follow"
+    "camera_follow",
+    "dead_zone_policy",
+    "interaction_focus"
   ],
   "parameters": [
     {
@@ -75,6 +77,18 @@
       "type": "string",
       "typical_range": "exploration, stealth, precision",
       "description": "Camera follow profile used while the character is in walk state."
+    },
+    {
+      "name": "walk_dead_zone_threshold",
+      "type": "float",
+      "typical_range": "0.05-0.25 input magnitude",
+      "description": "Minimum input magnitude accepted before walk state begins moving the character."
+    },
+    {
+      "name": "walk_step_offset_units",
+      "type": "float",
+      "typical_range": "0.05-0.5 world units",
+      "description": "Maximum precision-step height resolved as walkable ground instead of blocked collision."
     }
   ],
   "common_variants": [
@@ -85,16 +99,20 @@
     "grid_walk"
   ],
   "edge_cases": [
-    "Tiny analog stick drift should not move character_id unless it passes the dead-zone policy.",
-    "Slope transitions need a consistent ground_contact_state when the character crosses edges or stairs.",
-    "Walk should choose a clear priority when aim lock, dialogue focus, or interact prompts also consume input_vector.",
+    "Tiny analog stick drift should not move character_id unless it passes walk_dead_zone_threshold and the active control scheme allows analog walking.",
+    "Digital keyboard or d-pad input needs a defined walk modifier or it becomes indistinguishable from run.",
+    "Slope, stair, and step transitions need a consistent ground_contact_state when the character crosses edges at low speed.",
+    "Walk should choose a clear priority when aim lock, dialogue focus, radial menus, or interact prompts also consume input_vector.",
+    "Interaction prompts should use the post-collision walk position, not the pre-move target point, when deciding whether the player is aligned.",
     "Networked walking needs client_input_sequence reconciliation without visible foot sliding after correction."
   ],
   "common_bugs": [
     "Movement uses render delta instead of fixed-step simulation and becomes inconsistent at unusual frame rates.",
     "Acceleration resets every frame because input_vector is normalized after applying analog magnitude.",
     "Animation blend thresholds do not match walk_pace_units_per_second, causing foot skating.",
-    "Ground detection sticks to steep collision and lets characters walk up surfaces beyond walk_slope_limit_degrees."
+    "Ground detection sticks to steep collision and lets characters walk up surfaces beyond walk_slope_limit_degrees.",
+    "Dead-zone filtering runs after camera-relative conversion and makes tiny camera changes move the character.",
+    "Interact prompts flicker because prompt targeting samples before walk collision and the final resolved position differs."
   ],
   "balancing_notes": [
     "Walk pace defines the scale of rooms, interaction spacing, patrol avoidance, and camera comfort.",
@@ -106,10 +124,10 @@
     "Avoid tying precise walking to narrow stick angles without calibration and dead-zone settings."
   ],
   "implementation_notes": {
-    "unity": "Store movement_state_id as walk and resolve input_vector before FixedUpdate motion. Feed target velocity through CharacterController.Move or Rigidbody.MovePosition, apply slope checks from contact normals, and drive Animator blend parameters from the resolved walk pace rather than raw input.",
-    "godot": "Keep walk as an explicit locomotion_mode_id on CharacterBody2D or CharacterBody3D. In _physics_process, apply acceleration and deceleration curves to velocity, call move_and_slide with floor limits, and update AnimationTree blend values after collision resolution.",
-    "unreal": "Use CharacterMovement walking mode with custom run data separated from animation. For multiplayer, send client_input_sequence and reconcile server corrections without letting animation root motion override correction frames.",
-    "web": "Represent walk state in the fixed simulation loop with input_vector, ground_contact_state, and surface_material_id. Resolve collision before render interpolation, then pass the final velocity into Canvas, Phaser, Three.js, or a custom animation layer."
+    "unity": "Store movement_state_id as walk and resolve input_vector, dead-zone filtering, and interaction focus before FixedUpdate motion. Feed target velocity through CharacterController.Move or Rigidbody.MovePosition, apply slope and step checks from contact normals, and drive Animator blend parameters from resolved walk velocity rather than raw input.",
+    "godot": "Keep walk as an explicit locomotion_mode_id on CharacterBody2D or CharacterBody3D. In _physics_process, apply dead-zone policy before acceleration, call move_and_slide with floor and step limits, then update AnimationTree blend values from post-collision velocity.",
+    "unreal": "Use CharacterMovement walking mode with custom run and sprint modifiers kept outside baseline walk data. For multiplayer, send client_input_sequence and reconcile server corrections without letting animation root motion or interaction focus consume movement twice.",
+    "web": "Represent walk state in the fixed simulation loop with input_vector, walk_dead_zone_threshold, ground_contact_state, and surface_material_id. Resolve low-speed collision before render interpolation, then pass final velocity and prompt alignment data into Canvas, Phaser, Three.js, or a custom animation layer."
   },
   "related_mechanics": [
     "movement.run",
@@ -127,7 +145,7 @@
     {
       "target": "movement.run",
       "type": "supports",
-      "reason": "Walk provides the baseline locomotion state that run usually extends with higher acceleration and animation blending.",
+      "reason": "Walk provides the baseline ground locomotion state, input filtering, and animation thresholds that run can extend for faster traversal.",
       "strength": "strong"
     },
     {
@@ -139,7 +157,7 @@
     {
       "target": "camera.smooth_follow_camera",
       "type": "supports",
-      "reason": "Smooth follow cameras commonly tune their dead zones and damping around the default walk pace.",
+      "reason": "Smooth follow cameras commonly tune dead zones, damping, and interaction framing around stable walk movement.",
       "strength": "medium"
     }
   ],
@@ -171,5 +189,5 @@
     "camera_comfort"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-30"
+  "last_updated": "2026-07-01"
 }

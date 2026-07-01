@@ -217,6 +217,8 @@ For every mechanic entry, future hardening should answer:
 
 Goal: decide whether the current separate entries can clearly earn their IDs through distinct prerequisites, assumptions, edge cases, and failure modes.
 
+Status: completed first hardening pass on 2026-07-01. Walk was reframed around baseline precision/control locomotion, run was reframed around default traversal/collision/camera/prediction, and sprint was reframed around cost, exhaustion, noise, input, camera, and recovery rules. The entries remain separate, draft, and medium-confidence; no IDs, schema, status, or source-confidence values changed.
+
 ### Batch B - Survival Meters
 
 - `survival.health`
@@ -260,6 +262,6 @@ Goal: reduce duplicated movement edge cases while preserving true differences in
 
 ## Final Assessment
 
-`movement.walk` / `movement.run` / `movement.sprint` remains the top boundary issue because it is the easiest public example of a mechanic/variant/parameter ambiguity.
+`movement.walk` / `movement.run` / `movement.sprint` remains the most visible boundary issue because it is the easiest public example of a mechanic/variant/parameter ambiguity, but Batch A has now made the current separate-entry rationale more explicit.
 
 It is not the only issue. The broader dataset should now treat boundary clarity, prerequisites, state/input assumptions, and failure modes as core v0.3 review signals. A mechanic entry should not earn trust because it has a familiar name; it should earn trust because it helps a developer understand what needs to exist, what can break, and why the entry is not just a number, variant, or UI skin.
