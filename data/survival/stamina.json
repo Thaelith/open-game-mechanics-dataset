@@ -142,12 +142,6 @@
       "type": "balances",
       "reason": "Stamina costs can limit repeated charged attacks and make commitment meaningful.",
       "strength": "medium"
-    },
-    {
-      "target": "ui_ux.cooldown_indicator",
-      "type": "enhances",
-      "reason": "Visible recovery and exhaustion indicators improve stamina readability when the pool gates major actions.",
-      "strength": "medium"
     }
   ],
   "scope_profile": {

@@ -142,12 +142,6 @@
       "type": "feeds",
       "reason": "Health depletion can enter a downed state that enables teammate revive interactions.",
       "strength": "strong"
-    },
-    {
-      "target": "ui_ux.checkpoint_notification",
-      "type": "enhances",
-      "reason": "Checkpoint feedback improves health failure recovery by showing where vitality, downed state, and pending damage will restore.",
-      "strength": "weak"
     }
   ],
   "scope_profile": {

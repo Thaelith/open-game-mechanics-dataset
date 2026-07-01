@@ -9,18 +9,18 @@
 | Relationship coverage | 79.82% |
 | Mechanics with scope_profile | 178 |
 | Scope profile coverage | 79.82% |
-| Typed relationships | 541 |
+| Typed relationships | 534 |
 
 ## Most Common Relationship Types
 
 | Type | Count |
 | --- | --- |
-| supports | 162 |
+| supports | 160 |
 | soft_conflicts_with | 106 |
 | requires | 77 |
-| enhances | 63 |
+| enhances | 59 |
 | feeds | 52 |
-| consumes | 30 |
+| consumes | 29 |
 | balances | 20 |
 | extends | 13 |
 | unlocks | 8 |
@@ -36,8 +36,6 @@
 | movement.sprint | 4 |
 | platforming.jump_buffering | 4 |
 | procedural_generation.biome_generation | 4 |
-| procedural_generation.procedural_level_rooms | 4 |
-| procedural_generation.room_connection_graph | 4 |
 | roguelike.procedural_floor | 4 |
 | time.time_rewind | 4 |
 | ui_ux.cooldown_indicator | 4 |
@@ -51,6 +49,8 @@
 | ai.flee | 3 |
 | ai.investigate_noise | 3 |
 | ai.line_of_sight_detection | 3 |
+| ai.patrol | 3 |
+| ai.utility_scoring | 3 |
 
 ## Category Relationship Coverage
 
@@ -116,7 +116,7 @@
 
 ## No Incoming Typed Relationships
 
-ai.boss_phase_transition, ai.companion_follow, camera.camera_zoom, camera.third_person_camera, combat.stealth_kill, crafting.ingredient_quality, economy.gacha_pull, meta.collection_log, meta.new_game_plus, meta.player_profile_stats, movement.climbing, multiplayer.asymmetric_roles, multiplayer.ping_system, multiplayer.role_swap, physics.ragdoll, platforming.wall_jump, progression.prestige_reset, puzzle.lever_switch, puzzle.mirror_light_reflection, puzzle.physics_weight_puzzle, puzzle.portal_pair, rhythm.note_lane, roguelike.shop_between_levels, simulation.systemic_weather, simulation.traffic_flow, strategy.unit_counter_system, survival.thirst, time.time_freeze, traversal.gliding, traversal.ladder_climb, traversal.parkour_vault, traversal.teleport_blink, traversal.zipline, ui_ux.radial_menu, vehicles.suspension_physics, vehicles.upgradeable_vehicle, vehicles.vehicle_boost
+ai.boss_phase_transition, ai.companion_follow, camera.camera_zoom, camera.third_person_camera, combat.stealth_kill, crafting.ingredient_quality, economy.gacha_pull, meta.collection_log, meta.new_game_plus, meta.player_profile_stats, movement.climbing, multiplayer.asymmetric_roles, multiplayer.ping_system, multiplayer.role_swap, physics.ragdoll, platforming.wall_jump, progression.prestige_reset, puzzle.lever_switch, puzzle.mirror_light_reflection, puzzle.physics_weight_puzzle, puzzle.portal_pair, rhythm.note_lane, roguelike.risk_reward_room, roguelike.shop_between_levels, simulation.systemic_weather, simulation.traffic_flow, strategy.unit_counter_system, survival.thirst, time.time_freeze, traversal.gliding, traversal.ladder_climb, traversal.parkour_vault, traversal.teleport_blink, traversal.zipline, ui_ux.radial_menu, vehicles.suspension_physics, vehicles.upgradeable_vehicle, vehicles.vehicle_boost
 
 ## No Outgoing Typed Relationships
 

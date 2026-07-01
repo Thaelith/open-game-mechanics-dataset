@@ -143,12 +143,6 @@
   ],
   "relationships": [
     {
-      "target": "movement.run",
-      "type": "supports",
-      "reason": "Walk provides the baseline ground locomotion state, input filtering, and animation thresholds that run can extend for faster traversal.",
-      "strength": "strong"
-    },
-    {
       "target": "movement.stamina_movement",
       "type": "balances",
       "reason": "A low-cost walk state gives exhausted players a fallback when stamina-gated movement is unavailable.",

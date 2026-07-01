@@ -161,12 +161,6 @@
       "type": "soft_conflicts_with",
       "reason": "Lock-and-key puzzles can soft-lock procedural rooms unless dependency order and fallback rooms are validated.",
       "strength": "medium"
-    },
-    {
-      "target": "roguelike.procedural_floor",
-      "type": "supports",
-      "reason": "Procedural floor generation can assemble room templates into run-scale layouts using the room generator.",
-      "strength": "medium"
     }
   ],
   "scope_profile": {

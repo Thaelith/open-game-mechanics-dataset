@@ -142,12 +142,6 @@
       "type": "feeds",
       "reason": "Oxygen depletion can convert into health damage once the breath reserve is exhausted.",
       "strength": "strong"
-    },
-    {
-      "target": "ui_ux.cooldown_indicator",
-      "type": "enhances",
-      "reason": "Visible remaining-capacity feedback improves breath planning before drowning or suffocation damage begins.",
-      "strength": "medium"
     }
   ],
   "scope_profile": {

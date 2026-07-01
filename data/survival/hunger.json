@@ -142,12 +142,6 @@
       "type": "balances",
       "reason": "Low hunger can cap stamina recovery so long-term resource planning affects moment-to-moment exertion.",
       "strength": "medium"
-    },
-    {
-      "target": "ui_ux.cooldown_indicator",
-      "type": "enhances",
-      "reason": "Readable decay bands, warning thresholds, and recovery feedback improve hunger planning before depletion becomes critical.",
-      "strength": "weak"
     }
   ],
   "scope_profile": {

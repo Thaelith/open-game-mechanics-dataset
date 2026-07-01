@@ -136,8 +136,8 @@
   "relationships": [
     {
       "target": "narrative.reputation_gating",
-      "type": "consumes",
-      "reason": "Quest markers can consume reputation gate state to decide whether faction objectives should appear, hide, or update.",
+      "type": "enhances",
+      "reason": "Reputation-aware visibility rules can make quest markers reflect faction access without making reputation gating a baseline marker dependency.",
       "strength": "medium"
     },
     {

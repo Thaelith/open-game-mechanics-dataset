@@ -160,12 +160,6 @@
       "type": "supports",
       "reason": "Graph ordering can validate that keys, locks, and critical path gates appear in solvable order.",
       "strength": "medium"
-    },
-    {
-      "target": "roguelike.risk_reward_room",
-      "type": "enhances",
-      "reason": "Optional branches in the graph can host risk-reward rooms without blocking the critical path.",
-      "strength": "medium"
     }
   ],
   "scope_profile": {
