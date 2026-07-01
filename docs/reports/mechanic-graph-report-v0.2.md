@@ -15,13 +15,13 @@
 
 | Type | Count |
 | --- | --- |
-| supports | 166 |
+| supports | 158 |
 | soft_conflicts_with | 104 |
 | requires | 74 |
-| enhances | 59 |
-| feeds | 49 |
-| consumes | 26 |
-| balances | 19 |
+| enhances | 62 |
+| feeds | 50 |
+| consumes | 29 |
+| balances | 20 |
 | extends | 13 |
 | unlocks | 8 |
 | is_variant_of | 6 |

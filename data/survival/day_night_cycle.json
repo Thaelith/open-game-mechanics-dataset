@@ -25,8 +25,8 @@
     "horror",
     "simulation"
   ],
-  "description": "A day and night rhythm changes survival pressure through visibility, enemy activity, temperature, and safety.",
-  "design_notes": "In survival games, day/night is not only lighting; it is a pressure schedule. Designers should define survival_phase_id values, night escalation, safe zones, sleep or skip rules, and how temperature, hunger, thirst, AI spawning, and crafting availability react to phase changes.",
+  "description": "A survival world-clock driver changes pressure through visibility, enemy activity, temperature, sleep rules, safe zones, and scheduled resource consequences.",
+  "design_notes": "In survival games, day/night is not only lighting; it is a pressure schedule built on a world clock. Designers should define survival_phase_id values, night escalation, safe zones, pause and sleep-skip rules, deterministic event scheduling, and how temperature, hunger, thirst, AI spawning, crafting availability, and UI warnings react to phase changes.",
   "design_purpose": [
     "Create a preparation loop where players gather by day and manage risk by night.",
     "Make shelter, light, sleep, base defense, and route timing valuable.",
@@ -38,7 +38,9 @@
     "lighting_controller",
     "ai_spawn_director",
     "safe_zone_detection",
-    "ui_warning_bands"
+    "ui_warning_bands",
+    "save_load_state",
+    "multiplayer_clock_sync"
   ],
   "parameters": [
     {
@@ -88,14 +90,18 @@
   "edge_cases": [
     "A player enters a dungeon, cave, or base where world lighting changes should not fully apply.",
     "Multiplayer players disagree on sleeping, skipping, or accelerating the night phase.",
-    "Night starts while crafting queues, raids, or AI spawn groups are already pending.",
-    "A save loads at dusk and phase-change warning events need to resume without firing twice."
+    "Night starts while crafting queues, raids, temperature shifts, or AI spawn groups are already pending.",
+    "Pause, photo mode, or a cutscene freezes presentation while the authoritative world clock continues or stops by policy.",
+    "A save loads at dusk and phase-change warning events need to resume without firing twice.",
+    "A server restart or reconnect restores phase time but not spawned encounter, sleep vote, or safe-zone state."
   ],
   "common_bugs": [
     "Lighting phase changes but AI and temperature still use the previous survival_phase_id.",
     "Sleep skip advances the world clock but does not advance hunger, thirst, crafting queues, or enemy despawn rules consistently.",
     "Night warnings repeat after load because the previous warning timestamp was not persisted.",
-    "Safe-zone checks use visual base bounds rather than actual shelter or claim volumes."
+    "Safe-zone checks use visual base bounds rather than actual shelter or claim volumes.",
+    "Clients integrate their own day clock and drift from server spawn, temperature, or darkness rules.",
+    "Scheduled events fire twice when a load lands exactly on a phase boundary."
   ],
   "balancing_notes": [
     "Night should be threatening enough to change behavior, but not so punishing that players simply wait through it.",
@@ -139,8 +145,8 @@
     },
     {
       "target": "procedural_generation.random_encounters",
-      "type": "enhances",
-      "reason": "Night phases can alter encounter pools, danger windows, and route-planning decisions.",
+      "type": "feeds",
+      "reason": "Night phases can feed encounter pools, danger windows, and route-planning decisions.",
       "strength": "medium"
     }
   ],
@@ -172,5 +178,5 @@
     "world_clock"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-30"
+  "last_updated": "2026-07-01"
 }

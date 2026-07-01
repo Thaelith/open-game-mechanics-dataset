@@ -25,8 +25,8 @@
     "simulation",
     "adventure"
   ],
-  "description": "Environmental heat, cold, wetness, shelter, and insulation affect player exposure and survival penalties.",
-  "design_notes": "Temperature works when players can read the exposure equation: temperature_zone_id, clothing insulation, wetness_state, wind or shelter modifiers, and threshold effects. The mechanic should explain why the player is cold, hot, protected, or recovering before health loss begins.",
+  "description": "An environmental exposure state samples zones, weather, wetness, shelter, clothing, and heat or cold sources before applying survival penalties.",
+  "design_notes": "Temperature works when players can read the exposure equation: temperature_zone_id, clothing insulation, wetness_state, wind or shelter modifiers, heat/cold sources, sampling tick rate, and threshold effects. The mechanic should explain why the player is cold, hot, protected, or recovering before health loss begins.",
   "design_purpose": [
     "Make biomes, weather, clothing, shelter, and campfires matter in route planning.",
     "Create survival pressure that changes with location and preparation rather than only inventory stockpiles.",
@@ -38,7 +38,9 @@
     "equipment_modifiers",
     "shelter_detection",
     "weather_system",
-    "ui_warning_bands"
+    "ui_warning_bands",
+    "save_load_state",
+    "exposure_sampling"
   ],
   "parameters": [
     {
@@ -88,14 +90,18 @@
   "edge_cases": [
     "The player crosses multiple temperature zones while inside a vehicle, cave, or player-built shelter.",
     "Wetness from swimming or rain persists through fast travel, sleeping, or save/load restoration.",
-    "A heat source warms the player but does not protect food, water, or nearby crafting stations.",
+    "A heat source warms the player but does not protect food, water, companions, or nearby crafting stations.",
+    "A scene transition loads the player into a cold biome before clothing, shelter, and wetness modifiers have restored.",
+    "Exposure sampling changes from outdoor weather to indoor shelter while warning UI and health damage are mid-tick.",
     "Multiplayer bases update shelter coverage while clients are standing inside partially built structures."
   ],
   "common_bugs": [
     "Exposure damage starts before UI warning thresholds appear because warning and penalty tables use different ids.",
     "Shelter detection checks only roof collision and ignores open walls, wind direction, or structure ownership.",
     "Insulation modifiers stack permanently when equipment is swapped quickly.",
-    "Wetness drying runs during pause or offline progress and removes intended survival pressure."
+    "Wetness drying runs during pause or offline progress and removes intended survival pressure.",
+    "Overheating and freezing penalties can both be active because the previous exposure_threshold_id was not cleared.",
+    "Safe-zone warmth persists after leaving a campfire or shelter volume because the source id was cached instead of resampled."
   ],
   "balancing_notes": [
     "Exposure should ramp through warning, penalty, and danger bands rather than jumping directly to health loss.",
@@ -127,14 +133,14 @@
   "relationships": [
     {
       "target": "survival.day_night_cycle",
-      "type": "feeds",
-      "reason": "Day and night phases can drive exposure changes that raise or lower temperature pressure.",
+      "type": "consumes",
+      "reason": "Temperature exposure can consume day-night phase state to raise or lower heat, cold, and shelter pressure.",
       "strength": "strong"
     },
     {
       "target": "survival.base_building",
-      "type": "supports",
-      "reason": "Shelter volumes and base structures can provide insulation, safe zones, or recovery sources.",
+      "type": "consumes",
+      "reason": "Temperature exposure can consume shelter-volume state from base structures to apply insulation, safe zones, or recovery sources.",
       "strength": "medium"
     },
     {
@@ -172,5 +178,5 @@
     "weather"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-30"
+  "last_updated": "2026-07-01"
 }

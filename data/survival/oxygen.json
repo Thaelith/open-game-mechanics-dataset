@@ -25,8 +25,8 @@
     "horror",
     "sandbox"
   ],
-  "description": "A limited breathing supply depletes in unsafe volumes such as underwater, vacuum, smoke, or toxic air.",
-  "design_notes": "Oxygen is a deadline mechanic tied to volumes and recovery sources. Designers need clear breathable_volume_id rules, depletion while swimming or exerting, refill behavior at air pockets or tanks, and warning thresholds that leave time for recovery before drowning or suffocation damage begins.",
+  "description": "A breath and volume state depletes in unsafe spaces such as underwater, vacuum, smoke, or toxic air, then recovers through breathable volumes or refill sources.",
+  "design_notes": "Oxygen is a deadline mechanic tied to volume detection and recovery sources. Designers need clear breathable_volume_id rules, depletion while swimming or exerting, refill behavior at air pockets or tanks, boundary transitions across water and air, and warning thresholds that leave time for recovery before drowning or suffocation damage begins.",
   "design_purpose": [
     "Add tension to underwater, space, smoke, or hazardous-air exploration.",
     "Make equipment, routes, air pockets, and preparation matter in risky environments.",
@@ -38,7 +38,9 @@
     "survival_stat_system",
     "movement_controller",
     "ui_warning_bands",
-    "damage_system"
+    "damage_system",
+    "save_load_state",
+    "volume_authority"
   ],
   "parameters": [
     {
@@ -88,14 +90,18 @@
   "edge_cases": [
     "The player crosses the waterline repeatedly and the oxygen UI flickers between drain and refill states.",
     "A vehicle, base, or cave counts as breathable while the surrounding volume remains hazardous.",
+    "Surfacing, climbing out, or entering an air pocket restores breath while drowning damage is already queued.",
     "A cutscene, dialogue, or inventory menu opens while the player is already running out of oxygen.",
+    "Checkpoint or save/load restores oxygen_remaining_ms but places the player inside a hazardous volume.",
     "Client prediction refills oxygen at the surface but the server still considers the player submerged."
   ],
   "common_bugs": [
     "Oxygen drains while the player is paused or in loading screens because the unsafe volume state remains active.",
     "Refill logic runs every frame and repeatedly plays warning-clear audio or particles.",
     "Drowning damage begins before the zero-oxygen warning animation has completed.",
-    "Save/load restores oxygen points but not whether the current volume is breathable."
+    "Save/load restores oxygen points but not whether the current volume is breathable.",
+    "Leaving water clears the UI warning but not the suffocation_effect_id, so health damage continues on land.",
+    "Waterline overlaps apply drain and refill in the same tick because volume priority is not deterministic."
   ],
   "balancing_notes": [
     "Short oxygen windows create strong tension but need nearby readable recovery options.",
@@ -127,8 +133,8 @@
   "relationships": [
     {
       "target": "movement.swimming",
-      "type": "supports",
-      "reason": "Oxygen pressure is most readable when it is tied to underwater movement and resurfacing transitions.",
+      "type": "balances",
+      "reason": "Oxygen limits underwater swimming duration and turns resurfacing routes into survival planning decisions.",
       "strength": "strong"
     },
     {
@@ -139,8 +145,8 @@
     },
     {
       "target": "ui_ux.cooldown_indicator",
-      "type": "supports",
-      "reason": "Breath reserves need visible remaining-capacity feedback before drowning damage begins.",
+      "type": "enhances",
+      "reason": "Visible remaining-capacity feedback improves breath planning before drowning or suffocation damage begins.",
       "strength": "medium"
     }
   ],
@@ -172,5 +178,5 @@
     "countdown"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-30"
+  "last_updated": "2026-07-01"
 }

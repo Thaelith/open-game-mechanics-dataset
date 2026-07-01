@@ -25,8 +25,8 @@
     "horror",
     "rpg"
   ],
-  "description": "A core vitality stat absorbs damage from combat, hazards, disease, starvation, dehydration, and exposure.",
-  "design_notes": "Survival health is the final consequence layer for many systems, so damage channels and recovery sources must be traceable. Designers should decide how hunger, thirst, temperature, poison, injuries, armor, and healing transactions feed health without hiding why the player is losing vitality.",
+  "description": "A core vitality and failure state that resolves damage, healing, downed/death transitions, and recovery from combat, hazards, disease, starvation, dehydration, and exposure.",
+  "design_notes": "Survival health is the final consequence layer for many systems, so damage channels, recovery sources, and death transitions must be traceable. Designers should decide which damage_resolver owns health transactions, how hunger, thirst, temperature, poison, injuries, armor, invulnerability, and healing feed health, and which UI message explains why vitality changed.",
   "design_purpose": [
     "Represent survivability and make damage or neglect carry meaningful stakes.",
     "Connect combat, environment, status effects, medicine, rest, and food systems.",
@@ -34,11 +34,13 @@
   ],
   "player_fantasy": "The player feels fragile enough to respect danger but capable of recovering through preparation.",
   "required_systems": [
-    "damage_system",
+    "damage_resolver",
     "survival_stat_system",
     "status_effects",
     "healing_items",
-    "death_or_downed_state"
+    "death_or_downed_state",
+    "save_load_state",
+    "ui_damage_feedback"
   ],
   "parameters": [
     {
@@ -57,7 +59,7 @@
       "name": "damage_channel_id",
       "type": "string",
       "typical_range": "bleed, starvation, cold, melee, poison, fall",
-      "description": "Source channel used for resistance, logging, UI explanation, and effect routing."
+      "description": "Source channel used for resistance, invulnerability checks, logging, UI explanation, and effect routing."
     },
     {
       "name": "recovery_source_id",
@@ -69,7 +71,7 @@
       "name": "downed_state_threshold_id",
       "type": "string",
       "typical_range": "zero_health, bleedout_10s, revive_window",
-      "description": "Rule that decides whether depletion causes death, downed state, or a revival window."
+      "description": "Rule that decides whether depletion commits death, enters downed state, or opens a revival window."
     },
     {
       "name": "anti_burst_buffer_ms",
@@ -86,16 +88,20 @@
     "permanent_wound_system"
   ],
   "edge_cases": [
-    "Starvation, dehydration, cold, poison, and combat damage resolve on the same tick.",
-    "A healing item is used while the player is entering a downed or death transition.",
-    "Temporary max-health reduction changes current health and UI warnings after save/load.",
-    "Client prediction shows recovery but server authority rejects the item or downed-state transition."
+    "Starvation, dehydration, cold, poison, and combat damage resolve on the same tick and must produce one ordered health transaction.",
+    "A healing item is used while the player is entering a downed, revive, or death transition.",
+    "Temporary max-health reduction changes current health, death threshold, and UI warnings after save/load.",
+    "Invulnerability frames, armor, or resistance modifiers change after a damage event is queued but before it resolves.",
+    "Checkpoint or respawn restoration must clear bleedout, pending damage ticks, duplicate death rewards, and low-health UI state.",
+    "Client prediction shows recovery but server authority rejects the item, damage transaction, or downed-state transition."
   ],
   "common_bugs": [
-    "Damage over time stacks every frame because survival ticks are not rate-limited by damage_channel_id.",
+    "Damage over time stacks every frame because survival ticks are not rate-limited by damage_channel_id or damage_transaction_id.",
     "Healing consumes items but fails when max health modifiers update during the same transaction.",
-    "Death logic fires twice and creates duplicate drops, ragdolls, or respawn prompts.",
-    "UI health bars hide the source of survival damage, making hunger or temperature feel like random health loss."
+    "Death logic fires twice and creates duplicate drops, ragdolls, revive prompts, or respawn checkpoints.",
+    "Health is clamped after UI update, so the bar briefly shows negative health or overheal that gameplay already rejected.",
+    "Save/load restores current health but not pending bleedout, poison, revive, or invulnerability state.",
+    "UI health bars hide the source of survival damage, making hunger, thirst, or temperature feel like random health loss."
   ],
   "balancing_notes": [
     "Health should give players enough buffer to diagnose survival problems before dying.",
@@ -127,8 +133,8 @@
   "relationships": [
     {
       "target": "combat.hit_stun",
-      "type": "supports",
-      "reason": "Health damage events often trigger hit-stun or recovery rules after damage resolution.",
+      "type": "feeds",
+      "reason": "Health damage transactions can produce hit-stun or recovery events after damage resolution.",
       "strength": "medium"
     },
     {
@@ -139,8 +145,8 @@
     },
     {
       "target": "ui_ux.checkpoint_notification",
-      "type": "supports",
-      "reason": "Checkpoint feedback helps players understand where health and recovery state will restore after failure.",
+      "type": "enhances",
+      "reason": "Checkpoint feedback improves health failure recovery by showing where vitality, downed state, and pending damage will restore.",
       "strength": "weak"
     }
   ],
@@ -172,5 +178,5 @@
     "survival_stat"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-30"
+  "last_updated": "2026-07-01"
 }

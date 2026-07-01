@@ -25,8 +25,8 @@
     "rpg",
     "simulation"
   ],
-  "description": "A food-related survival stat decays over play and applies thresholds, recovery, or penalties based on nutrition state.",
-  "design_notes": "Hunger should create planning pressure without becoming constant menu maintenance. The important decisions are which survival_stat_id decays, how activity changes hunger_decay_per_minute, which food recovery sources are safe, and whether low hunger reduces stamina, healing, maximum health, or eventually causes starvation damage.",
+  "description": "A long-term metabolic survival stat that decays through a survival clock, recovers through food transactions, and applies nutrition thresholds or starvation penalties.",
+  "design_notes": "Hunger should create long-term planning pressure without becoming constant menu maintenance. The important decisions are which survival_stat_id owns decay, how activity changes hunger_decay_per_minute, whether food_recovery_source_id grants saturation or buffs, and whether low hunger reduces stamina, healing, maximum health, or eventually causes starvation damage.",
   "design_purpose": [
     "Encourage food gathering, cooking, farming, trading, or route planning.",
     "Connect exploration length to preparation and inventory decisions.",
@@ -38,7 +38,9 @@
     "consumable_items",
     "ui_warning_bands",
     "save_load_state",
-    "status_effects"
+    "status_effects",
+    "inventory_transactions",
+    "survival_clock"
   ],
   "parameters": [
     {
@@ -88,14 +90,18 @@
   "edge_cases": [
     "A player consumes food while taking starvation damage in the same simulation tick.",
     "Offline decay, sleeping, or fast travel advances hunger without giving the player a chance to respond.",
-    "Food restores hunger but also applies poison, spoilage, warmth, or hydration effects.",
+    "Food restores hunger but also applies poison, spoilage, warmth, hydration, or temporary well-fed effects.",
+    "A starvation threshold lowers stamina recovery or healing while a food transaction is still pending.",
+    "Checkpoint restore must decide whether hunger returns to saved value, safe minimum, or current world-clock value.",
     "Multiplayer authority rejects food consumption after the client already played the eating animation."
   ],
   "common_bugs": [
     "Hunger decay runs during paused menus or loading screens because it reads a wall clock instead of survival clock state.",
     "Food is removed from inventory but recovery is not applied when a capacity or status-effect transaction fails.",
     "UI warning bands display stale hunger after server correction or save-load restoration.",
-    "Starvation damage stacks every frame instead of on a controlled tick interval."
+    "Starvation damage stacks every frame instead of on a controlled tick interval.",
+    "Well-fed or saturation buffs persist after the hunger stat is lowered by save migration or difficulty changes.",
+    "Eating during an animation lock consumes food twice because both item-use completion and survival recovery listen to the same event."
   ],
   "balancing_notes": [
     "Fast decay can make survival tense, but it quickly becomes busywork if food sources are common and decisions are shallow.",
@@ -139,8 +145,8 @@
     },
     {
       "target": "ui_ux.cooldown_indicator",
-      "type": "supports",
-      "reason": "Survival meters need readable decay bands, warning thresholds, and recovery feedback before depletion becomes critical.",
+      "type": "enhances",
+      "reason": "Readable decay bands, warning thresholds, and recovery feedback improve hunger planning before depletion becomes critical.",
       "strength": "weak"
     }
   ],
@@ -172,5 +178,5 @@
     "consumable"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-30"
+  "last_updated": "2026-07-01"
 }

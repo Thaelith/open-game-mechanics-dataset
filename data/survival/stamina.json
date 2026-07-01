@@ -25,8 +25,8 @@
     "rpg",
     "adventure"
   ],
-  "description": "A regenerating exertion pool limits repeated movement, attacks, blocks, climbs, or survival actions.",
-  "design_notes": "Stamina is an action gate, so every stamina_cost_event_id needs a clear purpose and recovery rule. Designers should decide which actions spend stamina, how stamina_regen_delay_ms interacts with input buffering, and what exhaustion_state_id prevents without making the player feel arbitrarily locked out.",
+  "description": "A regenerating exertion resource gates accepted actions, exhaustion lockout, and recovery timing for movement, attacks, blocks, climbs, or survival tasks.",
+  "design_notes": "Stamina is an action-acceptance gate, not just a meter. Every stamina_cost_event_id needs a clear owner, validation order, recovery rule, and exhaustion_state_id. Designers should decide which systems can spend stamina, how stamina_regen_delay_ms interacts with input buffering, and what partial-threshold actions remain available so exhaustion never feels like arbitrary input loss.",
   "design_purpose": [
     "Limit repeated high-output actions such as sprinting, climbing, blocking, dodging, or harvesting.",
     "Create tactical pacing by asking players to alternate exertion and recovery.",
@@ -38,7 +38,9 @@
     "action_cost_events",
     "movement_controller",
     "input_buffer",
-    "ui_warning_bands"
+    "ui_warning_bands",
+    "save_load_state",
+    "server_action_validation"
   ],
   "parameters": [
     {
@@ -87,7 +89,9 @@
   ],
   "edge_cases": [
     "A buffered dodge, attack, or jump becomes valid on the same frame stamina recovers above the action threshold.",
-    "Sprinting spends stamina while climbing, swimming, or carrying weight also applies modifiers.",
+    "Sprinting spends stamina while climbing, swimming, blocking, or carrying weight also applies modifiers.",
+    "A partial-threshold action such as light attack, short climb, or slow swim remains valid while full-cost actions are exhausted.",
+    "A wall-blocked sprint, invalid dodge, or interrupted block tries to spend stamina even though the action produced no benefit.",
     "A server correction rewinds stamina after the client already played an accepted action animation.",
     "Stamina reaches zero while the player is over a pit, underwater, or midway through a ladder transition."
   ],
@@ -95,6 +99,8 @@
     "Regeneration starts immediately after a spend because stamina_regen_delay_ms is checked against render frames.",
     "Failed actions still spend stamina when validation order is input, cost, then collision or state rejection.",
     "Exhaustion state never clears after save/load because last spend tick or regen lockout was not persisted.",
+    "Holding an input retriggers the same rejected action every frame and repeatedly drains or flashes stamina warnings.",
+    "Server authority accepts the movement correction but rejects the stamina spend, leaving action animation and pool state out of sync.",
     "UI shows enough stamina due to prediction but the server rejects the action and leaves input feeling dropped."
   ],
   "balancing_notes": [
@@ -139,8 +145,8 @@
     },
     {
       "target": "ui_ux.cooldown_indicator",
-      "type": "supports",
-      "reason": "Stamina recovery and exhaustion states need readable UI when they gate major actions.",
+      "type": "enhances",
+      "reason": "Visible recovery and exhaustion indicators improve stamina readability when the pool gates major actions.",
       "strength": "medium"
     }
   ],
@@ -172,5 +178,5 @@
     "survival_stat"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-30"
+  "last_updated": "2026-07-01"
 }

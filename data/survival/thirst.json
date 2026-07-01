@@ -25,8 +25,8 @@
     "simulation",
     "horror"
   ],
-  "description": "A hydration stat decays over play and must be restored through water sources, drinks, or environmental access.",
-  "design_notes": "Thirst is most effective when it shapes route planning around safe water, containers, purification, and temperature exposure. Designers need clear decay rules, contaminated water behavior, recovery transactions, and UI warning thresholds so players can distinguish manageable dehydration from sudden punishment.",
+  "description": "A hydration survival stat that usually decays faster than hunger, reacts to heat or exertion, and recovers through validated water sources, drinks, or containers.",
+  "design_notes": "Thirst is most effective when it shapes route planning around safe water, containers, purification, and temperature exposure. Designers need clear decay rules, heat or exertion modifiers, contaminated water behavior, recovery transactions, and UI warning thresholds so players can distinguish manageable dehydration from sudden punishment.",
   "design_purpose": [
     "Make water sources, containers, purification, and shelter choices matter.",
     "Create exploration pressure that differs from hunger because hydration often has shorter recovery windows.",
@@ -38,7 +38,9 @@
     "consumable_items",
     "water_source_registry",
     "status_effects",
-    "ui_warning_bands"
+    "ui_warning_bands",
+    "inventory_transactions",
+    "server_action_validation"
   ],
   "parameters": [
     {
@@ -88,14 +90,18 @@
   "edge_cases": [
     "A player drinks from a source while inventory capacity changes the container or empty bottle state.",
     "Rain, swimming, or shelter changes hydration context but should not automatically refill the stat.",
-    "Hot temperature zones multiply thirst decay while a pause, sleep, or fast-travel state is active.",
-    "A water source is depleted or contaminated between client preview and server confirmation."
+    "Hot temperature zones, fever, or sprinting multiply thirst decay while pause, sleep, or fast-travel policy is active.",
+    "A water source is depleted, boiled, filtered, or contaminated between client preview and server confirmation.",
+    "Dehydration blocks sprint or stamina recovery while the player is already in a high-output action.",
+    "Checkpoint restore must decide whether container contents, source depletion, and hydration warning bands roll back together."
   ],
   "common_bugs": [
     "Drinking consumes a container but fails to apply hydration because source validation happens after item mutation.",
     "Contamination effects apply even when the purification recipe or filter item was used successfully.",
     "Thirst warnings spam every frame near the same threshold instead of using threshold crossing events.",
-    "Offline decay empties hydration repeatedly after each login because last_decay_tick is not updated."
+    "Offline decay empties hydration repeatedly after each login because last_decay_tick is not updated.",
+    "Heat or exertion modifiers stay active after leaving the zone because the drain multiplier was cached on the stat.",
+    "Client UI shows clean water recovery while server validation applies disease or rejects the source."
   ],
   "balancing_notes": [
     "Thirst usually feels more urgent than hunger; tune warnings early enough for players to seek water before penalties start.",
@@ -133,8 +139,8 @@
     },
     {
       "target": "time.day_night_schedule",
-      "type": "supports",
-      "reason": "Schedule phases can alter thirst pacing through heat, travel windows, or activity modifiers.",
+      "type": "consumes",
+      "reason": "Thirst can consume schedule phase state to alter hydration drain through heat, travel windows, or activity modifiers.",
       "strength": "medium"
     },
     {
@@ -172,5 +178,5 @@
     "decay"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-30"
+  "last_updated": "2026-07-01"
 }
