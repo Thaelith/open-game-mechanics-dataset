@@ -6,7 +6,7 @@ It does not promise timelines.
 
 The initial reviewed-core planning artifact is [`reviewed-core-subset-v0.3.md`](reviewed-core-subset-v0.3.md). Current candidate gaps are tracked in [`reports/reviewed-core-gap-report-v0.3.md`](reports/reviewed-core-gap-report-v0.3.md).
 
-The current v0.3 preparation decisions are consolidated in [`reports/v0.3-review-summary.md`](reports/v0.3-review-summary.md). That summary covers Reviewed Core Batch 1, the time rewind architecture gate, taxonomy/boundary criteria, locomotion Batch A, survival-meter Batch B, relationship semantics cleanup, and the dataset-wide boundary/prerequisite/failure-mode audit.
+The current v0.3 preparation decisions are consolidated in [`reports/v0.3-review-summary.md`](reports/v0.3-review-summary.md). That summary covers Reviewed Core Batch 1, the time rewind architecture gate, taxonomy/boundary criteria, locomotion Batch A, survival-meter Batch B, UI feedback Batch C, relationship semantics cleanup, and the dataset-wide boundary/prerequisite/failure-mode audit.
 
 Detailed criteria remain in [`taxonomy-and-categorization-criteria.md`](taxonomy-and-categorization-criteria.md) and [`relationship-semantics-and-direction.md`](relationship-semantics-and-direction.md). Explicit prerequisites, state/input assumptions, and prototype-breaking failure modes are now first-class v0.3 review priorities.
 
@@ -22,7 +22,7 @@ Detailed criteria remain in [`taxonomy-and-categorization-criteria.md`](taxonomy
 - Reduce Mixer suggestion noise with intent filters or domain filters.
 - Review relationship quality in lower-coverage or high-risk categories.
 - Apply relationship direction criteria before rewriting typed relationship data.
-- Continue hardening high-priority boundary groups after Batch B, especially UI feedback widgets and procedural generation boundaries.
+- Continue hardening high-priority boundary groups after Batch C, especially procedural generation boundaries.
 
 ## Should Do
 

@@ -24,8 +24,8 @@
     "strategy",
     "action"
   ],
-  "description": "A UI marker that points players toward an objective, point of interest, or quest-relevant target.",
-  "design_notes": "Quest markers guide attention, but they can also flatten exploration. The design should decide whether markers show exact positions, approximate areas, distance, verticality, objective state, and whether players can disable or filter them.",
+  "description": "An objective-state projection that maps quest, mission, or task targets into world, map, compass, or screen-space markers with priority and visibility rules.",
+  "design_notes": "Quest markers guide attention, but they can also flatten exploration or leak spoilers. The design should decide which objective_id owns the marker, whether markers show exact positions or search areas, how fog/discovery gating works, how distance and verticality are localized, and whether markers are shared, personal, disabled, or filtered.",
   "design_purpose": [
     "Help players locate active objectives without searching menus repeatedly.",
     "Communicate objective distance, direction, and completion state.",
@@ -37,9 +37,23 @@
     "world_marker_system",
     "ui_framework",
     "map_system",
-    "accessibility_settings"
+    "accessibility_settings",
+    "objective_state_source",
+    "save_load_state"
   ],
   "parameters": [
+    {
+      "name": "objective_id",
+      "type": "string",
+      "typical_range": "main_quest_03_find_gate, bounty_target_22, optional_cache",
+      "description": "Quest objective, mission step, or task state that owns marker visibility and completion."
+    },
+    {
+      "name": "marker_target_id",
+      "type": "string",
+      "typical_range": "npc_merchant, cave_entrance, area_search_04",
+      "description": "World entity, area, or map location used for projection and stale-target cleanup."
+    },
     {
       "name": "marker_screen_edge_padding",
       "type": "integer",
@@ -82,13 +96,17 @@
     "Objectives inside caves, buildings, or stacked floors need vertical and pathing cues, not only straight-line direction.",
     "Multiple active quests can flood the HUD unless filtered or prioritized.",
     "Moving objectives and NPCs need marker smoothing without lying about position.",
-    "Markers should handle hidden, failed, completed, and optional objectives distinctly."
+    "Fog-of-war, discovery, stealth, or spoiler rules may hide the target even though the quest state is active.",
+    "Shared multiplayer objectives and personal objectives need different ownership, color, and completion rules.",
+    "Markers should handle hidden, failed, completed, inactive, and optional objectives distinctly across save/load."
   ],
   "common_bugs": [
     "Marker points to world origin after the quest target despawns.",
     "Straight-line distance sends players toward cliffs or locked doors without context.",
     "Completed markers remain on compass because quest state and marker state update in different systems.",
-    "Offscreen clamping overlaps subtitles or critical combat UI."
+    "Offscreen clamping overlaps subtitles or critical combat UI.",
+    "A marker reveals an undiscovered cave, enemy, or quest branch because fog or spoiler gating was not checked.",
+    "Multiplayer clients show different marker completion because objective_id progress is local for one player and shared for another."
   ],
   "balancing_notes": [
     "Exact markers reduce friction but can remove exploration and environmental reading.",
@@ -99,9 +117,9 @@
     "Allow players to reduce marker clutter or pin only one objective at a time."
   ],
   "implementation_notes": {
-    "unity": "Bind markers to objective_id plus target entity, world position, or objective area. Project world-to-screen after camera update and remove markers when quest state changes to completed, failed, or hidden.",
-    "godot": "Store marker state as objective_id, target NodePath or area center, and marker mode. Update screen-edge clamps after camera transforms and handle above/below indicators from world height delta.",
-    "unreal": "Feed UMG marker widgets from a quest tracker component that owns objective IDs, target actors, and area radii. Use weak actor references and clear widgets when replicated quest state changes.",
+    "unity": "Bind markers to objective_id plus target entity, world position, or objective area. Project world-to-screen after camera update, apply fog/spoiler gating, and remove markers when quest state changes to completed, failed, hidden, or unloaded.",
+    "godot": "Store marker state as objective_id, target NodePath or area center, and marker mode. Update screen-edge clamps after camera transforms, apply discovery gates, and handle above/below indicators from world height delta.",
+    "unreal": "Feed UMG marker widgets from a quest tracker component that owns objective IDs, target actors, and area radii. Use weak actor references, clear widgets when replicated quest state changes, and separate personal versus shared objective state.",
     "web": "Keep quest markers in normalized state keyed by objective_id. Resolve target position each frame, clamp offscreen markers with padding, and hide stale markers when target or quest state is invalid."
   },
   "related_mechanics": [
@@ -118,8 +136,8 @@
   "relationships": [
     {
       "target": "narrative.reputation_gating",
-      "type": "supports",
-      "reason": "Quest markers need reputation gate state when objectives should appear only after faction thresholds are met.",
+      "type": "consumes",
+      "reason": "Quest markers can consume reputation gate state to decide whether faction objectives should appear, hide, or update.",
       "strength": "medium"
     },
     {
@@ -163,5 +181,5 @@
     "accessibility"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-30"
+  "last_updated": "2026-07-01"
 }

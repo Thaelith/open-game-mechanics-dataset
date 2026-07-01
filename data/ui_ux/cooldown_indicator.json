@@ -24,8 +24,8 @@
     "strategy",
     "action"
   ],
-  "description": "A UI element that shows when an ability, item, weapon, or action is unavailable and when it becomes ready again.",
-  "design_notes": "Cooldown indicators need to answer two questions quickly: can I use this now, and when will it be ready? The design should work at a glance during stress, support multiple input devices, and avoid relying only on tiny radial fills or color changes.",
+  "description": "A state-bound UI element that projects authoritative action availability, remaining cooldown, charge count, and disabled state for an ability, item, weapon, or input action.",
+  "design_notes": "Cooldown indicators need to answer two questions quickly: can I use this now, and when will it be ready? The widget should bind to an ability_id, action_id, or shared_recharge_group_key from gameplay state, not to a local animation timer. It is not a generic stat bar; use it for timed recovery, charge refill, or action availability where stale feedback would cause bad inputs.",
   "design_purpose": [
     "Communicate temporary unavailability without forcing players to memorize timers.",
     "Help players plan ability rotations, defensive options, and resource timing.",
@@ -37,9 +37,23 @@
     "ui_framework",
     "game_state_binding",
     "input_glyphs",
-    "accessibility_settings"
+    "accessibility_settings",
+    "authoritative_timer",
+    "widget_lifecycle"
   ],
   "parameters": [
+    {
+      "name": "ability_id",
+      "type": "string",
+      "typical_range": "dash, reload, heal_potion, shield_bash",
+      "description": "Gameplay ability, item, weapon, or action identity that owns the displayed availability state."
+    },
+    {
+      "name": "shared_recharge_group_key",
+      "type": "string",
+      "typical_range": "global, dodge_group, weapon_reload_group, potion_shared",
+      "description": "Shared recharge binding used when several actions should display one authoritative ready state."
+    },
     {
       "name": "action_ready_remaining_ms",
       "type": "integer",
@@ -80,10 +94,11 @@
   ],
   "edge_cases": [
     "Cooldown resets, haste effects, pause, slow motion, and server correction can change the remaining time mid-animation.",
-    "Shared cooldown groups need one visible source of truth across multiple abilities.",
+    "Shared cooldown groups need one visible source of truth across multiple abilities and loadout slots.",
     "Charge-based abilities should show partial readiness without implying all charges are restored.",
     "Controller, keyboard, touch, and remapped inputs need glyphs that update while cooldown is visible.",
     "An ability can be disabled by silence, stun, equipment swap, missing resource, or zone rules while its cooldown is technically ready.",
+    "A recycled HUD slot or inventory widget must clear the previous ability_id before binding to a new cooldown source.",
     "Reconnect, rollback correction, or late authority updates can jump the displayed remaining time backward or forward and need non-misleading feedback."
   ],
   "common_bugs": [
@@ -92,7 +107,8 @@
     "Ready flash plays after the ability was removed, swapped, or disabled by silence.",
     "Color-only ready/unready states are unreadable for some players.",
     "Charge pips show the full ability as ready when only one partial charge has recovered.",
-    "A recycled widget remains subscribed to the old ability_id after loadout change and displays another action's cooldown."
+    "A recycled widget remains subscribed to the old ability_id after loadout change and displays another action's cooldown.",
+    "The disabled state is overwritten by ready state, so missing resource, silence, or equipment restrictions look usable."
   ],
   "balancing_notes": [
     "Exact timers make optimization easier; vague fills preserve uncertainty and reduce UI pressure.",
@@ -103,10 +119,10 @@
     "Allow scaling or simplified cooldown displays when many abilities are visible at once."
   ],
   "implementation_notes": {
-    "unity": "Bind each widget to ability_id, cooldown_group_id, remaining_cooldown_seconds, and charge count from gameplay state. Drive ready flashes from cooldown-complete events, not animation timers.",
-    "godot": "Expose cooldown state as signals or a view model with ability_id, remaining time, max time, and charges. Control nodes render radial, numeric, or icon states from the same values gameplay uses.",
+    "unity": "Bind each widget to ability_id, shared_recharge_group_key, remaining_cooldown_seconds, charge count, and disabled reason from gameplay state. Unsubscribe on slot reuse and drive ready flashes from cooldown-complete events, not animation timers.",
+    "godot": "Expose cooldown state as signals or a view model with ability_id, remaining time, max time, charges, and disabled state. Control nodes render radial, numeric, or icon states from the same values gameplay uses.",
     "unreal": "Feed UMG/CommonUI from ability cooldown tags, Gameplay Effect durations, or replicated ability state. Treat the server cooldown as authoritative and correct predicted UI when ability activation is rejected.",
-    "web": "Store cooldowns by ability_id and cooldown_group_id in simulation state. Render fill and numeric countdown from remaining time, and pulse unavailable input only after a rejected use event."
+    "web": "Store cooldowns by ability_id and shared_recharge_group_key in simulation state. Render fill and numeric countdown from remaining time, and pulse unavailable input only after a rejected use event."
   },
   "related_mechanics": [
     "ui_ux.hit_marker",
@@ -174,5 +190,5 @@
     "accessibility"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-30"
+  "last_updated": "2026-07-01"
 }

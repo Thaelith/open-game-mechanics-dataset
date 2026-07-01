@@ -25,8 +25,8 @@
     "action",
     "simulation"
   ],
-  "description": "A contextual UI cue that identifies the current interactable object and the input needed to use it.",
-  "design_notes": "Interaction prompts sit between world affordances and input. They should be stable, localized, remap-aware, and honest about what will happen when the player presses the button. Candidate selection is often the hard part, especially in dense scenes.",
+  "description": "A target-bound affordance cue that projects the current interactable_id, action_id, input binding, enabled state, and hold/tap requirement for the player who owns focus.",
+  "design_notes": "Interaction prompts sit between world affordances and input. They should be stable, localized, remap-aware, and honest about what will happen when the player presses the button. Candidate selection and focus ownership are often the hard parts, especially in dense scenes, split-screen play, or when interactables change state during a hold.",
   "design_purpose": [
     "Reveal available interactions at the moment they are reachable.",
     "Disambiguate which nearby object will respond to the input.",
@@ -38,9 +38,23 @@
     "input_glyphs",
     "ui_framework",
     "localization_support",
-    "candidate_priority"
+    "candidate_priority",
+    "input_binding_state",
+    "focus_ownership"
   ],
   "parameters": [
+    {
+      "name": "interactable_id",
+      "type": "string",
+      "typical_range": "door_12, npc_blacksmith, loot_crate_04",
+      "description": "World object or actor currently selected as the prompt target."
+    },
+    {
+      "name": "interaction_action_id",
+      "type": "string",
+      "typical_range": "open, talk, pickup, mount, repair",
+      "description": "Action identity shown to the player and revalidated when input is pressed or held."
+    },
     {
       "name": "prompt_activation_distance",
       "type": "float",
@@ -80,16 +94,20 @@
     "multi_action_prompt"
   ],
   "edge_cases": [
-    "Overlapping interactables need stable candidate selection and optional cycling.",
-    "A target can become invalid after button press but before hold completion.",
-    "Prompts must update when controls are remapped or input devices change.",
-    "Prompt placement should avoid hiding subtitles, crosshairs, or loot labels."
+    "Overlapping interactables need stable candidate selection, focus ownership, and optional cycling.",
+    "A target can become invalid, locked, destroyed, or authority-rejected after button press but before hold completion.",
+    "Prompts must update when controls are remapped, input devices change, or local co-op players swap focus.",
+    "Line of sight, range, camera focus, and UI modal focus can disagree about which interactable should own the prompt.",
+    "Prompt placement should avoid hiding subtitles, crosshairs, loot labels, or split-screen safe areas.",
+    "Localized prompt text can become longer than the available HUD space, especially for hold/toggle variants."
   ],
   "common_bugs": [
     "Prompt displays one binding while the input system expects another.",
     "Focus flickers between objects at the edge of activation distance.",
     "The prompt says open but the interaction performs pick up because candidate data is stale.",
-    "Hold progress keeps filling after the target leaves range."
+    "Hold progress keeps filling after the target leaves range.",
+    "Prompt remains visible after the target object is destroyed, unloaded, disabled, or owned by another player.",
+    "A local multiplayer prompt uses player one input glyphs for player two because focus_owner_id is missing."
   ],
   "balancing_notes": [
     "More prompts improve readability but can make the world feel like a checklist.",
@@ -100,8 +118,8 @@
     "Do not rely only on proximity; combine world highlight, text, and prompt positioning where possible."
   ],
   "implementation_notes": {
-    "unity": "Select a focused interactable_id from raycasts or trigger candidates, stabilize it with candidate_stability_ms, and display action IDs from the input system. Validate the interactable again on tap or hold completion.",
-    "godot": "Maintain candidate interactables from Area2D/Area3D or raycasts with priority scores. The prompt Control displays the current focus target, while interaction execution rechecks range and enabled state.",
+    "unity": "Select a focused interactable_id from raycasts or trigger candidates, stabilize it with candidate_stability_ms, and display action IDs from the input system. Track focus_owner_id in local multiplayer and validate the interactable again on tap or hold completion.",
+    "godot": "Maintain candidate interactables from Area2D/Area3D or raycasts with priority scores. The prompt Control displays the current focus target and input binding, while interaction execution rechecks range, owner, and enabled state.",
     "unreal": "Use interfaces or Gameplay Tags to expose interaction candidates. Store focused actor, action tag, and hold progress in a component, then validate authority before executing the interaction.",
     "web": "Keep focus_target_id and action_id in state after candidate scoring. Render the prompt from that focus state and cancel hold progress if the target leaves range or becomes disabled."
   },
@@ -125,8 +143,8 @@
     },
     {
       "target": "ui_ux.accessibility_remap_controls",
-      "type": "requires",
-      "reason": "Prompts need remapped input glyphs so displayed actions match the active binding profile.",
+      "type": "enhances",
+      "reason": "Remap-aware input glyphs make prompts match the active binding profile across keyboard, controller, touch, and assist settings.",
       "strength": "strong"
     },
     {
@@ -160,5 +178,5 @@
     "accessibility"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-30"
+  "last_updated": "2026-07-01"
 }

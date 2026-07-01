@@ -24,8 +24,8 @@
     "action",
     "rpg"
   ],
-  "description": "A short visual or audio confirmation that an attack connected with a valid target and produced a combat result.",
-  "design_notes": "Hit markers should be driven by confirmed damage outcomes, not raw collision. They can communicate armor, shield, critical, weak point, kill, or immunity, but too many categories can become noisy. Multiplayer games must distinguish predicted feedback from server-confirmed results.",
+  "description": "A short visual or audio confirmation projected from an authoritative hit or damage result, keyed by attacker, target, projectile, and combat outcome.",
+  "design_notes": "Hit markers should be driven by confirmed hit or damage outcomes, not raw collision. They can communicate armor, shield, critical, weak point, kill, immunity, or friendly-fire rejection, but too many categories become noisy. Multiplayer games must distinguish predicted feedback from server-confirmed results and clear false positives quickly.",
   "design_purpose": [
     "Confirm successful hits quickly, especially at range or through effects.",
     "Differentiate blocked, armored, critical, weak-point, or kill results.",
@@ -37,9 +37,23 @@
     "ui_framework",
     "audio_feedback",
     "combat_metadata",
-    "network_prediction"
+    "network_prediction",
+    "target_identity",
+    "team_rules"
   ],
   "parameters": [
+    {
+      "name": "attack_instance_id",
+      "type": "string",
+      "typical_range": "shot_1024, melee_018, explosion_77",
+      "description": "Attack or projectile instance that produced the hit-confirm event."
+    },
+    {
+      "name": "hit_target_id",
+      "type": "string",
+      "typical_range": "enemy_42, shield_03, weakpoint_core",
+      "description": "Target, shield, armor plate, or weak-point identity used to avoid wrong-target feedback."
+    },
     {
       "name": "marker_linger_ms",
       "type": "integer",
@@ -82,13 +96,17 @@
     "Damage over time should not spam hit markers every tick unless the design intentionally wants that feedback.",
     "Stealth, smoke, darkness, or hidden targets may need suppressed markers to avoid revealing information.",
     "Shotguns and area effects need merge rules so audio and markers do not stack excessively.",
+    "Armor, block, immunity, shield break, weak-point, friendly-fire, and no-damage hits need distinct eligibility rules.",
+    "Delayed projectiles can confirm a hit after the attacker has swapped weapons, died, or lost line of sight.",
     "Network prediction should correct false positives without producing distracting marker pops."
   ],
   "common_bugs": [
     "Marker plays on blocked, immune, or friendly hits because any overlap counts.",
     "Critical marker appears for overkill damage rather than weak-point metadata.",
     "Marker sound is mixed too loudly when many pellets hit at once.",
-    "Predicted marker remains after the server rejects the hit."
+    "Predicted marker remains after the server rejects the hit.",
+    "The marker uses the current crosshair target instead of hit_target_id, so delayed projectiles confirm the wrong enemy.",
+    "Kill-confirm feedback plays twice because both damage resolution and death-state transition emit marker events."
   ],
   "balancing_notes": [
     "Strong hit markers improve readability but can reveal targets through smoke, darkness, or cover.",
@@ -99,8 +117,8 @@
     "Allow hit marker size, opacity, and sound volume to be adjusted separately from damage numbers."
   ],
   "implementation_notes": {
-    "unity": "Spawn markers from a confirmed DamageResult event that includes target_id, hit_category, blocked_or_immune flags, and prediction status. Use predicted_hit_opacity only until the authoritative result arrives.",
-    "godot": "Emit a hit_confirmed signal from the damage resolver, not projectile overlap. Include critical, shielded, blocked, and immune metadata so the Control node can filter or style the marker correctly.",
+    "unity": "Spawn markers from a confirmed DamageResult event that includes attack_instance_id, target_id, hit_category, blocked_or_immune flags, team result, and prediction status. Use predicted_hit_opacity only until the authoritative result arrives.",
+    "godot": "Emit a hit_confirmed signal from the damage resolver, not projectile overlap. Include attack_instance_id, target_id, critical, shielded, blocked, friendly, and immune metadata so the Control node can filter or style the marker correctly.",
     "unreal": "Route server-confirmed damage through Gameplay Cues or UI messages and keep a separate predicted marker path for local responsiveness. Merge pellet or multi-hit events before playing marker audio.",
     "web": "Queue hit-marker events from the simulation damage result with attack_instance_id and target_id. Coalesce events inside multi_hit_merge_window_ms and suppress markers for blocked or immune outcomes."
   },
@@ -115,6 +133,36 @@
     "combat.damage_over_time",
     "combat.combo_chain"
   ],
+  "relationships": [
+    {
+      "target": "combat.ranged_attack",
+      "type": "supports",
+      "reason": "Hit markers make distant ranged impacts readable when projectile travel, occlusion, or recoil makes confirmation hard to see.",
+      "strength": "strong"
+    },
+    {
+      "target": "combat.critical_hit",
+      "type": "supports",
+      "reason": "Hit markers can distinguish critical, weak-point, armored, blocked, or immune outcomes without requiring full damage numbers.",
+      "strength": "medium"
+    },
+    {
+      "target": "stealth.visibility_meter",
+      "type": "soft_conflicts_with",
+      "reason": "Hit confirmation can reveal hidden or obscured targets unless marker suppression follows stealth, fog, and team-visibility rules.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "polish",
+    "implementation_cost": 2,
+    "design_cost": 2,
+    "tuning_cost": 3,
+    "content_cost": 2,
+    "networking_risk": 3,
+    "save_load_risk": 0,
+    "ui_risk": 3
+  },
   "example_games": [
     {
       "title": "Call of Duty 4: Modern Warfare",
@@ -133,5 +181,5 @@
     "network_prediction"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-07-01"
 }

@@ -5,22 +5,22 @@
 | Metric | Value |
 | --- | --- |
 | Mechanics | 223 |
-| Mechanics with relationships | 175 |
-| Relationship coverage | 78.48% |
-| Mechanics with scope_profile | 175 |
-| Scope profile coverage | 78.48% |
-| Typed relationships | 528 |
+| Mechanics with relationships | 177 |
+| Relationship coverage | 79.37% |
+| Mechanics with scope_profile | 177 |
+| Scope profile coverage | 79.37% |
+| Typed relationships | 534 |
 
 ## Most Common Relationship Types
 
 | Type | Count |
 | --- | --- |
-| supports | 158 |
-| soft_conflicts_with | 104 |
-| requires | 74 |
-| enhances | 62 |
+| supports | 161 |
+| soft_conflicts_with | 106 |
+| requires | 73 |
+| enhances | 63 |
 | feeds | 50 |
-| consumes | 29 |
+| consumes | 30 |
 | balances | 20 |
 | extends | 13 |
 | unlocks | 8 |
@@ -80,7 +80,7 @@
 | survival | 10 | 9 | 90.00% |
 | time | 7 | 6 | 85.71% |
 | traversal | 11 | 6 | 54.55% |
-| ui_ux | 12 | 10 | 83.33% |
+| ui_ux | 12 | 12 | 100.00% |
 | vehicles | 8 | 5 | 62.50% |
 
 ## Category Scope Profile Coverage
@@ -111,13 +111,13 @@
 | survival | 10 | 9 | 90.00% |
 | time | 7 | 6 | 85.71% |
 | traversal | 11 | 6 | 54.55% |
-| ui_ux | 12 | 10 | 83.33% |
+| ui_ux | 12 | 12 | 100.00% |
 | vehicles | 8 | 5 | 62.50% |
 
 ## No Incoming Typed Relationships
 
-ai.boss_phase_transition, ai.companion_follow, camera.camera_zoom, camera.third_person_camera, combat.critical_hit, combat.stealth_kill, crafting.ingredient_quality, economy.gacha_pull, meta.collection_log, meta.new_game_plus, meta.player_profile_stats, movement.climbing, multiplayer.asymmetric_roles, multiplayer.ping_system, multiplayer.role_swap, physics.ragdoll, platforming.wall_jump, procedural_generation.procedural_terrain, progression.prestige_reset, puzzle.lever_switch, puzzle.mirror_light_reflection, puzzle.physics_weight_puzzle, puzzle.portal_pair, rhythm.note_lane, roguelike.shop_between_levels, simulation.systemic_weather, simulation.traffic_flow, strategy.unit_counter_system, survival.thirst, time.time_freeze, traversal.gliding, traversal.ladder_climb, traversal.parkour_vault, traversal.teleport_blink, traversal.zipline, ui_ux.radial_menu, vehicles.suspension_physics, vehicles.upgradeable_vehicle, vehicles.vehicle_boost
+ai.boss_phase_transition, ai.companion_follow, camera.camera_zoom, camera.third_person_camera, combat.stealth_kill, crafting.ingredient_quality, economy.gacha_pull, meta.collection_log, meta.new_game_plus, meta.player_profile_stats, movement.climbing, multiplayer.asymmetric_roles, multiplayer.ping_system, multiplayer.role_swap, physics.ragdoll, platforming.wall_jump, procedural_generation.procedural_terrain, progression.prestige_reset, puzzle.lever_switch, puzzle.mirror_light_reflection, puzzle.physics_weight_puzzle, puzzle.portal_pair, rhythm.note_lane, roguelike.shop_between_levels, simulation.systemic_weather, simulation.traffic_flow, strategy.unit_counter_system, survival.thirst, time.time_freeze, traversal.gliding, traversal.ladder_climb, traversal.parkour_vault, traversal.teleport_blink, traversal.zipline, ui_ux.radial_menu, vehicles.suspension_physics, vehicles.upgradeable_vehicle, vehicles.vehicle_boost
 
 ## No Outgoing Typed Relationships
 
-ai.boss_phase_transition, ai.companion_follow, ai.flocking, camera.camera_zoom, camera.first_person_camera, camera.third_person_camera, combat.critical_hit, combat.lock_on_targeting, combat.stealth_kill, economy.crafting_materials, economy.gacha_pull, economy.loot_table, economy.repair_cost, horror.jump_scare_trigger, horror.limited_visibility, horror.sound_lure, movement.prone, multiplayer.asymmetric_roles, multiplayer.friendly_fire, multiplayer.ping_system, multiplayer.role_swap, multiplayer.team_objective, physics.low_gravity_zone, physics.wind_force, platforming.drop_through_platform, platforming.wall_slide, procedural_generation.biome_generation, procedural_generation.procedural_quests, procedural_generation.procedural_terrain, progression.prestige_reset, puzzle.lever_switch, puzzle.physics_weight_puzzle, puzzle.sequence_memory, roguelike.curse_modifier, roguelike.shop_between_levels, stealth.last_known_position_search, survival.inventory_limit, time.rhythm_timing, traversal.mantling, traversal.parkour_vault, traversal.rope_swing, traversal.teleport_blink, traversal.wall_run, ui_ux.damage_numbers, ui_ux.hit_marker, vehicles.suspension_physics, vehicles.upgradeable_vehicle, vehicles.vehicle_boost
+ai.boss_phase_transition, ai.companion_follow, ai.flocking, camera.camera_zoom, camera.first_person_camera, camera.third_person_camera, combat.critical_hit, combat.lock_on_targeting, combat.stealth_kill, economy.crafting_materials, economy.gacha_pull, economy.loot_table, economy.repair_cost, horror.jump_scare_trigger, horror.limited_visibility, horror.sound_lure, movement.prone, multiplayer.asymmetric_roles, multiplayer.friendly_fire, multiplayer.ping_system, multiplayer.role_swap, multiplayer.team_objective, physics.low_gravity_zone, physics.wind_force, platforming.drop_through_platform, platforming.wall_slide, procedural_generation.biome_generation, procedural_generation.procedural_quests, procedural_generation.procedural_terrain, progression.prestige_reset, puzzle.lever_switch, puzzle.physics_weight_puzzle, puzzle.sequence_memory, roguelike.curse_modifier, roguelike.shop_between_levels, stealth.last_known_position_search, survival.inventory_limit, time.rhythm_timing, traversal.mantling, traversal.parkour_vault, traversal.rope_swing, traversal.teleport_blink, traversal.wall_run, vehicles.suspension_physics, vehicles.upgradeable_vehicle, vehicles.vehicle_boost

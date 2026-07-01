@@ -24,8 +24,8 @@
     "strategy",
     "action"
   ],
-  "description": "Floating or anchored numbers that communicate damage, healing, shields, critical hits, or resisted effects.",
-  "design_notes": "Damage numbers can teach combat math, sell impact, and reward optimization, but they can also clutter the screen. Decide which combat results deserve numbers, how long they stay visible, and whether players can reduce or disable them.",
+  "description": "Floating, anchored, or logged combat values projected from committed damage events to explain amount, type, mitigation, healing, shields, critical hits, or resisted effects.",
+  "design_notes": "Damage numbers can teach combat math, sell impact, and reward optimization, but they can also clutter the screen or leak hidden information. Decide which committed damage_result_id values deserve numbers, how events aggregate by target and source, how long they stay visible, and whether players can reduce or disable them.",
   "design_purpose": [
     "Confirm combat results and relative attack strength.",
     "Differentiate damage types, healing, shields, critical hits, and resisted values.",
@@ -37,9 +37,23 @@
     "ui_framework",
     "combat_metadata",
     "accessibility_settings",
-    "localization_support"
+    "localization_support",
+    "target_identity",
+    "object_pooling"
   ],
   "parameters": [
+    {
+      "name": "damage_result_id",
+      "type": "string",
+      "typical_range": "hit_2048, poison_tick_15, heal_07",
+      "description": "Committed combat result carrying final hit value, damage type, mitigation flags, and display eligibility."
+    },
+    {
+      "name": "damage_number_target_id",
+      "type": "string",
+      "typical_range": "enemy_42, player_1, shield_plate_2",
+      "description": "Target identity used for anchoring, aggregation, privacy, and stale-widget cleanup."
+    },
     {
       "name": "number_lifetime_ms",
       "type": "integer",
@@ -51,6 +65,12 @@
       "type": "integer",
       "typical_range": "0-500 ms",
       "description": "Window for combining rapid repeated damage into one number."
+    },
+    {
+      "name": "aggregation_key_id",
+      "type": "string",
+      "typical_range": "target_source_type, target_only, effect_instance",
+      "description": "Grouping rule that decides which repeated events merge into one displayed number."
     },
     {
       "name": "critical_scale_multiplier",
@@ -82,13 +102,17 @@
     "Damage over time and area attacks can create dozens of numbers per second unless merged or rate-limited.",
     "Large enemies need anchor points so numbers do not appear inside geometry or offscreen.",
     "Negative, immune, absorbed, overheal, and blocked results need different display rules.",
-    "Localization and font choices must handle separators, abbreviations, and right-to-left text where supported."
+    "Localization and font choices must handle separators, abbreviations, compact notation, and right-to-left text where supported.",
+    "Hidden, stealthed, fogged, or offscreen enemies may need suppressed or delayed numbers to avoid leaking information.",
+    "Rollback or server correction can change the final damage amount after a predicted number already appeared."
   ],
   "common_bugs": [
     "Numbers spawn from raw collision events and appear even when damage was blocked.",
     "World-space labels sort behind walls or enemy meshes.",
     "Stacked values merge across different targets because the grouping key is incomplete.",
-    "Critical number animation hides the exact value before the player can read it."
+    "Critical number animation hides the exact value before the player can read it.",
+    "Pooled text widgets keep old color, crit, or damage_type state after being reused for a new target.",
+    "Localized compact numbers round differently from combat logs, making damage appear inconsistent."
   ],
   "balancing_notes": [
     "Verbose numbers encourage optimization and build comparison; minimal numbers preserve immersion and reduce clutter.",
@@ -99,8 +123,8 @@
     "Use text labels or icons for damage categories instead of color alone."
   ],
   "implementation_notes": {
-    "unity": "Create number events from confirmed DamageResult payloads with target_id, damage_type, amount_after_mitigation, and critical metadata. Anchor world-space labels to target sockets and merge repeated ticks by source effect.",
-    "godot": "Emit damage_number events after health or shield state changes, carrying final amount and category. Render Control or Node2D labels from those events and pool them to avoid allocation spikes.",
+    "unity": "Create number events from confirmed DamageResult payloads with damage_result_id, target_id, damage_type, amount_after_mitigation, and critical metadata. Anchor world-space labels to target sockets, reset pooled widget state, and merge repeated ticks by source effect.",
+    "godot": "Emit damage_number events after health or shield state changes, carrying final amount, target id, and category. Render Control or Node2D labels from those events and pool them to avoid allocation spikes.",
     "unreal": "Send final damage data from the damage component or Gameplay Effect execution to UMG/CommonUI. Use target actor, damage type, crit flag, and stack merge keys instead of reading values from floating text widgets.",
     "web": "Generate floating-number events from committed combat state, keyed by target_id and damage_source_id. Apply stack_merge_window_ms before rendering so damage-over-time and shotgun hits do not flood the UI."
   },
@@ -115,6 +139,36 @@
     "progression.skill_tree",
     "camera.screen_shake"
   ],
+  "relationships": [
+    {
+      "target": "combat.critical_hit",
+      "type": "supports",
+      "reason": "Damage numbers make critical, weak-point, armor, shield, and immunity outcomes visible through amount and category styling.",
+      "strength": "medium"
+    },
+    {
+      "target": "combat.damage_over_time",
+      "type": "soft_conflicts_with",
+      "reason": "Damage-over-time ticks can flood the screen unless aggregation windows and rate limits are defined.",
+      "strength": "medium"
+    },
+    {
+      "target": "combat.area_of_effect_attack",
+      "type": "supports",
+      "reason": "Aggregated damage numbers help explain multi-target area results without requiring players to inspect combat logs.",
+      "strength": "medium"
+    }
+  ],
+  "scope_profile": {
+    "mvp_role": "polish",
+    "implementation_cost": 2,
+    "design_cost": 3,
+    "tuning_cost": 3,
+    "content_cost": 2,
+    "networking_risk": 2,
+    "save_load_risk": 0,
+    "ui_risk": 4
+  },
   "example_games": [
     {
       "title": "Diablo III",
@@ -133,5 +187,5 @@
     "accessibility"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-29"
+  "last_updated": "2026-07-01"
 }

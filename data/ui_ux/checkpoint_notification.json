@@ -24,8 +24,8 @@
     "strategy",
     "action"
   ],
-  "description": "A notification that confirms checkpoint or save progress using queued UI, icon, text, audio, and failure-state handling.",
-  "design_notes": "Checkpoint notification should communicate save state without interrupting play. Define checkpoint_id, save transaction timing, notification queue priority, duplicate suppression, failure messaging, and whether the UI confirms start, commit, or completion. Players should know when progress is safe without needing to parse a tiny spinner.",
+  "description": "A save-state feedback notification that projects authoritative checkpoint, autosave, or manual save transaction status through queued UI, icon, text, audio, and failure-state handling.",
+  "design_notes": "Checkpoint notification should communicate save state without interrupting play. Define checkpoint_id, save_slot_id, save transaction timing, notification queue priority, duplicate suppression, failure messaging, and whether the UI confirms start, commit, remote sync, or completion. Players should know when progress is safe without needing to parse a tiny spinner.",
   "design_purpose": [
     "Confirm that progress, location, inventory, or narrative state has been saved.",
     "Reduce anxiety around quitting, death, or retries by making save state readable.",
@@ -37,7 +37,9 @@
     "notification_queue",
     "hud_layering",
     "localization_support",
-    "audio_visual_cues"
+    "audio_visual_cues",
+    "save_transaction_state",
+    "scene_transition_state"
   ],
   "parameters": [
     {
@@ -45,6 +47,12 @@
       "type": "string",
       "typical_range": "level_03_gate, boss_retry, autosave_12",
       "description": "Checkpoint or save record being communicated."
+    },
+    {
+      "name": "save_slot_id",
+      "type": "string",
+      "typical_range": "profile_1_autosave, manual_slot_02, cloud_shadow_slot",
+      "description": "Save slot, profile, or platform record that owns the checkpoint transaction."
     },
     {
       "name": "checkpoint_saved_at_ms",
@@ -88,13 +96,17 @@
     "The save starts but fails after the notification has already shown success.",
     "Repeated checkpoint triggers in one room should not spam the notification queue.",
     "Cloud sync, cross-save, or network profiles can have local commit success and remote sync failure.",
+    "A checkpoint fires during death, respawn, cutscene, or scene transition while save data is still mutating.",
+    "Autosave and manual save complete close together and need distinct notification_id, save_slot_id, and priority behavior.",
     "A player quits during a pending save and needs truthful UI about commit status."
   ],
   "common_bugs": [
     "Notification fires when checkpoint trigger is entered, not when the save transaction commits.",
     "Save failed messages are hidden behind higher-priority combat or quest notifications.",
     "Checkpoint icon persists forever because duplicate suppression cancels the hide event.",
-    "Localized text or text scaling overflows the safe-area padding on small screens."
+    "Localized text or text scaling overflows the safe-area padding on small screens.",
+    "A failed cloud sync is reported as saved because local write success and remote sync success share one notification_id.",
+    "Respawn reloads an older checkpoint than the most recent notification because checkpoint_id and save_slot_id diverged."
   ],
   "balancing_notes": [
     "Checkpoint feedback should be noticeable enough to reassure players but not so large that it interrupts repeated retries.",
@@ -106,8 +118,8 @@
     "Respect reduced-motion settings for pulsing save icons and support readable text scaling."
   ],
   "implementation_notes": {
-    "unity": "Emit checkpoint notifications from the save transaction completion callback, not only trigger entry. UI Toolkit or Canvas widgets should read notification_id, localized text, queue priority, and failure state from a single notification service.",
-    "godot": "Route save commits through an autoloaded save service that enqueues checkpoint notifications after write success or failure. Control nodes should handle duplicate suppression and safe-area placement.",
+    "unity": "Emit checkpoint notifications from the save transaction completion callback, not only trigger entry. UI Toolkit or Canvas widgets should read checkpoint_id, save_slot_id, notification_id, localized text, queue priority, and failure state from a single notification service.",
+    "godot": "Route save commits through an autoloaded save service that enqueues checkpoint notifications after write success or failure. Control nodes should handle duplicate suppression, safe-area placement, and scene-transition cancellation.",
     "unreal": "Use a save subsystem or async save callback to publish notification events. UMG widgets should show success only after commit and escalate save_failure_state_id to a higher priority queue.",
     "web": "Wrap local storage, IndexedDB, or backend save calls in a transaction result before showing success. DOM or Canvas HUD layers should merge duplicate notifications and expose accessible labels."
   },
@@ -171,5 +183,5 @@
     "accessibility"
   ],
   "source_confidence": "medium",
-  "last_updated": "2026-06-30"
+  "last_updated": "2026-07-01"
 }
