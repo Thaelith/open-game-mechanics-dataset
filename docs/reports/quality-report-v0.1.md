@@ -6,7 +6,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Metric | Value |
 | --- | --- |
-| Generated at | 2026-06-30T16:14:43+00:00 |
+| Generated at | 2026-07-02T22:48:38+00:00 |
 | Schema version | 0.2.0 |
 | Total mechanics | 223 |
 | Total categories | 26 |
@@ -91,7 +91,7 @@ _None._
 
 | Check | Count |
 | --- | --- |
-| Mechanics with empty example_games | 5 |
+| Mechanics with empty example_games | 0 |
 | Mechanics with empty related_mechanics | 0 |
 | Mechanics with empty combines_well_with | 0 |
 | Mechanics with fewer than 3 parameters | 0 |
@@ -116,16 +116,16 @@ _None._
 | accessibility | 5 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | ai | 11 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | camera | 10 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
-| combat | 19 | 0 | 0.00 | 1 | 0 | 0 | 0 | 0 |
+| combat | 19 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | crafting | 4 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | economy | 10 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | horror | 8 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | meta | 4 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
-| movement | 12 | 0 | 0.00 | 3 | 0 | 0 | 0 | 0 |
+| movement | 12 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | multiplayer | 10 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | narrative | 5 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | physics | 11 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
-| platforming | 9 | 0 | 0.00 | 1 | 0 | 0 | 0 | 0 |
+| platforming | 9 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | procedural_generation | 9 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | progression | 11 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
 | puzzle | 10 | 0 | 0.00 | 0 | 0 | 0 | 0 | 0 |
@@ -483,9 +483,9 @@ _None._
 | ui_ux.cooldown_indicator | 27 |
 | economy.loot_table | 26 |
 | ui_ux.hit_marker | 24 |
+| ui_ux.interaction_prompt | 24 |
 | camera.screen_shake | 23 |
 | progression.achievement_system | 23 |
-| ui_ux.interaction_prompt | 23 |
 | camera.dynamic_fov | 22 |
 | economy.shop | 22 |
 | ui_ux.minimap | 22 |
@@ -550,60 +550,50 @@ _None._
 
 | Metric | Value |
 | --- | --- |
-| Mechanics with no example games | 5 |
+| Mechanics with no example games | 0 |
 
 ### Mechanics with No Example Games
 
-| Mechanic |
-| --- |
-| combat.stealth_kill |
-| movement.crouch |
-| movement.sprint |
-| movement.swimming |
-| platforming.wall_slide |
+_None._
 
 ### Most Frequently Referenced Example Game Titles
 
 | Title | Count |
 | --- | --- |
 | Hades | 18 |
-| The Legend of Zelda: Breath of the Wild | 15 |
-| Celeste | 13 |
-| Minecraft | 13 |
+| The Legend of Zelda: Breath of the Wild | 16 |
+| Celeste | 14 |
+| Minecraft | 14 |
 | Dark Souls | 9 |
+| Half-Life 2 | 7 |
 | Slay the Spire | 7 |
 | The Legend of Zelda: Ocarina of Time | 7 |
 | World of Warcraft | 7 |
 | Apex Legends | 6 |
-| Half-Life 2 | 6 |
 | Hollow Knight | 6 |
 | Spelunky | 6 |
+| Subnautica | 6 |
+| The Elder Scrolls V: Skyrim | 6 |
 | Alien: Isolation | 5 |
 | Portal | 5 |
 | Portal 2 | 5 |
 | Resident Evil 4 | 5 |
-| Subnautica | 5 |
-| The Elder Scrolls V: Skyrim | 5 |
+| The Last of Us | 5 |
 | Dead Cells | 4 |
 | Diablo III | 4 |
+| Dishonored | 4 |
 | Left 4 Dead | 4 |
 | Mario Kart 8 | 4 |
 | Overwatch | 4 |
 | Prince of Persia: The Sands of Time | 4 |
 | Super Mario Bros. | 4 |
 | The Binding of Isaac | 4 |
-| The Last of Us | 4 |
 | The Last of Us Part II | 4 |
 | Titanfall 2 | 4 |
-| Uncharted 4 | 4 |
 
 ### Categories with Many Missing Examples
 
-| Category | Missing Examples |
-| --- | --- |
-| movement | 3 |
-| combat | 1 |
-| platforming | 1 |
+_None._
 
 ## Recommended Next Passes
 
