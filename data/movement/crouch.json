@@ -147,7 +147,16 @@
     "save_load_risk": 1,
     "ui_risk": 1
   },
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Last of Us",
+      "note": "Uses crouched movement for stealth, low cover, and slower profile control."
+    },
+    {
+      "title": "Half-Life 2",
+      "note": "Uses crouch to pass through low spaces and lower the player profile."
+    }
+  ],
   "tags": [
     "stance",
     "collision",

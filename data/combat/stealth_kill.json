@@ -117,7 +117,16 @@
     "horror.hiding",
     "narrative.reputation_gating"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Metal Gear Solid V: The Phantom Pain",
+      "note": "Allows close-range silent takedowns against unaware or vulnerable guards."
+    },
+    {
+      "title": "Dishonored",
+      "note": "Supports stealth takedowns when the player reaches enemies without direct detection."
+    }
+  ],
   "tags": [
     "combat",
     "stealth",

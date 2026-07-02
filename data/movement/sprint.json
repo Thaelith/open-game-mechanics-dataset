@@ -174,7 +174,16 @@
     "save_load_risk": 1,
     "ui_risk": 1
   },
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "The Elder Scrolls V: Skyrim",
+      "note": "Sprint increases traversal speed while consuming stamina."
+    },
+    {
+      "title": "Minecraft",
+      "note": "Sprint increases movement speed and adds extra resource pressure during travel."
+    }
+  ],
   "tags": [
     "locomotion",
     "stamina",

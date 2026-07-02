@@ -108,7 +108,16 @@
     "traversal.mantling",
     "camera.smooth_follow_camera"
   ],
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Celeste",
+      "note": "Uses wall contact and controlled descent as part of climbing and wall-jump traversal."
+    },
+    {
+      "title": "Super Meat Boy",
+      "note": "Shows wall sliding as a readable setup state for wall jumps."
+    }
+  ],
   "tags": [
     "platforming",
     "wall_interaction",

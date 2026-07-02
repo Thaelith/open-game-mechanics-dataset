@@ -141,7 +141,16 @@
     "save_load_risk": 2,
     "ui_risk": 2
   },
-  "example_games": [],
+  "example_games": [
+    {
+      "title": "Subnautica",
+      "note": "Uses swimming as primary underwater traversal with visible oxygen pressure."
+    },
+    {
+      "title": "The Legend of Zelda: Breath of the Wild",
+      "note": "Lets Link swim across water while stamina limits longer crossings."
+    }
+  ],
   "tags": [
     "water",
     "buoyancy",
