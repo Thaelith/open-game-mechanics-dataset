@@ -25,6 +25,14 @@ Over time, a reliable game-to-mechanics layer could also help users find games w
 
 Current coverage is tracked in [`reports/example-games-coverage-report-v0.3.md`](reports/example-games-coverage-report-v0.3.md).
 
+## Derived Game Index
+
+Mechanic entries contain `example_games` in the mechanic-to-game direction. The generated game examples index reverses that data into a game-to-mechanics view.
+
+This supports study and discovery questions such as "which mechanics can I study in this game?" or "which games share similar mechanic references?" It is still derived from lightweight examples, so it should not be treated as a full game database, citation system, or self-reported tag layer.
+
+The current generated index is [`reports/game-examples-index-report-v0.3.md`](reports/game-examples-index-report-v0.3.md).
+
 ## Curated Vs Self-Reported Tags
 
 Curated tags are cleaner, slower, and more consistent. They fit the current dataset better because mechanic boundaries and confidence signals are still being reviewed.

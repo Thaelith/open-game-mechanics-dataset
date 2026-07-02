@@ -20,6 +20,10 @@ Runs realistic concept mixes through the deterministic Mixer analysis module and
 
 Tracks how well mechanics are connected to lightweight game examples for study references, including category coverage, missing examples, and the most repeated game titles.
 
+[`game-examples-index-report-v0.3.md`](game-examples-index-report-v0.3.md)
+
+Reverses mechanic-level `example_games` into a derived game-to-mechanics view so readers can see which mechanics are currently associated with a recognizable game title.
+
 ## v0.3 Review Tracking
 
 [`v0.3-review-summary.md`](v0.3-review-summary.md)
@@ -59,4 +63,5 @@ python tools/quality_report.py --output docs/reports/quality-report-v0.1.md
 python tools/mechanic_graph_report.py --output docs/reports/mechanic-graph-report-v0.2.md
 node tools/test_mixer_scenarios.mjs --report docs/reports/mechanic-mixer-scenario-qa-v0.2.md
 python tools/example_games_report.py
+python tools/game_examples_index.py
 ```
