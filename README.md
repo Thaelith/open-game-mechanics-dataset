@@ -60,6 +60,14 @@ This project is not:
 
 See [`docs/trust-and-review-status.md`](docs/trust-and-review-status.md) for details on `status`, `source_confidence`, `example_games`, `relationships`, and `scope_profile`.
 
+## How This Can Be Used
+
+- Developers can browse mechanics to find prerequisites, edge cases, common bugs, and implementation risks before prototyping.
+- Designers can use mechanics as a shared vocabulary for discussing features and comparing similar systems.
+- AI coding or design agents can use entries as structured context for implementation planning.
+- Example games can help users find real games to study for a mechanic, but examples are not exhaustive or proof of exact implementation.
+- The Mixer helps explore combinations, dependencies, conflicts, and scope pressure. It is a planning aid, not proof that mechanics combine cleanly.
+
 ## Public Review Links
 
 - [v0.2.0 release notes](docs/releases/v0.2.0.md)
@@ -67,6 +75,7 @@ See [`docs/trust-and-review-status.md`](docs/trust-and-review-status.md) for det
 - [How to use the Mixer](docs/how-to-use-the-mixer.md)
 - [Demo mixes](docs/demo-mixes.md)
 - [AI-agent usage](docs/ai-agent-usage.md)
+- [Example games and tagging](docs/example-games-and-tagging.md)
 - [Trust and review status](docs/trust-and-review-status.md)
 - [Taxonomy and categorization criteria](docs/taxonomy-and-categorization-criteria.md)
 - [Relationship semantics and direction](docs/relationship-semantics-and-direction.md)

@@ -51,11 +51,13 @@ Each mechanic has a `source_confidence` field:
 
 ## Example Games
 
-`example_games` are short factual references for recognizable mechanic usage. They help readers understand where a mechanic can be observed.
+`example_games` are short factual references for recognizable mechanic usage. They are illustrative study references that help readers understand where a mechanic can be observed.
 
-They are not copied text. They are not citations for proprietary implementation details. They should remain brief and factual, usually naming a title and the visible mechanic behavior.
+They are not exhaustive. They are not copied text. They are not citations for proprietary implementation details. They should not be treated as legal evidence, source evidence, or claims about hidden implementation internals. They should remain brief and factual, usually naming a title and the visible mechanic behavior.
 
 Example games should help readers recognize the mechanic, not prove exact implementation.
+
+Future work may improve example coverage and explore a separate game-tagging workflow. That should be handled carefully because curated tags are slower but cleaner, while self-reported tags scale better but can add noise. See [`example-games-and-tagging.md`](example-games-and-tagging.md) for the current guidance.
 
 ## Relationships
 

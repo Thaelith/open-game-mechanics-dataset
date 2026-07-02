@@ -16,6 +16,10 @@ Summarizes typed relationship and `scope_profile` coverage, common relationship 
 
 Runs realistic concept mixes through the deterministic Mixer analysis module and records selected mechanics, scope pressure, required systems, conflict warnings, missing dependency/support suggestions, related additions, and MVP trim suggestions.
 
+[`example-games-coverage-report-v0.3.md`](example-games-coverage-report-v0.3.md)
+
+Tracks how well mechanics are connected to lightweight game examples for study references, including category coverage, missing examples, and the most repeated game titles.
+
 ## v0.3 Review Tracking
 
 [`v0.3-review-summary.md`](v0.3-review-summary.md)
@@ -54,4 +58,5 @@ Regenerate reports after data or tooling changes, not after unrelated documentat
 python tools/quality_report.py --output docs/reports/quality-report-v0.1.md
 python tools/mechanic_graph_report.py --output docs/reports/mechanic-graph-report-v0.2.md
 node tools/test_mixer_scenarios.mjs --report docs/reports/mechanic-mixer-scenario-qa-v0.2.md
+python tools/example_games_report.py
 ```
