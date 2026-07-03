@@ -29,8 +29,7 @@ Detailed criteria remain in [`taxonomy-and-categorization-criteria.md`](taxonomy
 - Add a visual relationship graph.
 - Add more public demo examples.
 - Improve example-game coverage and consistency. See [`example-games-and-tagging.md`](example-games-and-tagging.md) and [`reports/example-games-coverage-report-v0.3.md`](reports/example-games-coverage-report-v0.3.md).
-- Explore mechanic-to-game discovery with curated examples before adding any broader tagging layer.
-- Validate the derived [`game-examples-index-report-v0.3.md`](reports/game-examples-index-report-v0.3.md) before adding browser UI for game-based discovery.
+- Continue validating mechanic-to-game discovery through the derived [`game-examples-index-report-v0.3.md`](reports/game-examples-index-report-v0.3.md) and the static browser Games view before adding any broader tagging layer.
 - Expand AI-agent usage examples.
 - Improve contribution workflow for mechanic review.
 - Add relationship QA checks for suspicious cross-domain suggestions.
@@ -43,5 +42,5 @@ Detailed criteria remain in [`taxonomy-and-categorization-criteria.md`](taxonomy
 - Screenshot or short GIF for README.
 - Engine-specific export helpers.
 - More scenario fixtures after relationship quality improves.
-- Browser support for finding games by mechanic, viewing mechanics grouped by game, or adding selected game-associated mechanics to the Mixer.
+- Deeper browser support for comparing games with similar mechanic sets.
 - Separate `games/` or `game_tags/` layer after example coverage, taxonomy boundaries, and moderation expectations are clearer.

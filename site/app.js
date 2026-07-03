@@ -6,6 +6,11 @@ const state = {
   hydrationDone: false,
   mixer: {
     selectedIds: []
+  },
+  games: {
+    byKey: new Map(),
+    list: [],
+    filtered: []
   }
 };
 
@@ -29,12 +34,20 @@ const elements = {
   clearMixer: document.querySelector("#clearMixer"),
   mixerImportInput: document.querySelector("#mixerImportInput"),
   importConceptJson: document.querySelector("#importConceptJson"),
-  mixerImportStatus: document.querySelector("#mixerImportStatus")
+  mixerImportStatus: document.querySelector("#mixerImportStatus"),
+  gamesPanel: document.querySelector("#gamesPanel"),
+  gameSearchInput: document.querySelector("#gameSearchInput"),
+  gameCategoryFilter: document.querySelector("#gameCategoryFilter"),
+  gameSort: document.querySelector("#gameSort"),
+  gameStatus: document.querySelector("#gameStatus"),
+  gameSummary: document.querySelector("#gameSummary"),
+  gamesResults: document.querySelector("#gamesResults")
 };
 
 const DATASET_URL = new URL("../dataset.json", window.location.href);
 const CONCURRENT_DETAIL_REQUESTS = 16;
 const MIXER_STORAGE_KEY = "ogmd.mechanicMixer.selectedIds";
+const MAX_GAME_RESULTS = 60;
 const RELATIONSHIP_SUGGESTION_TYPES = new Set([
   "requires",
   "supports",
@@ -125,6 +138,14 @@ function titleCase(value) {
 
 function uniqueSorted(values) {
   return [...new Set(values.filter(Boolean))].sort((a, b) => String(a).localeCompare(String(b)));
+}
+
+function normalizedTitle(value) {
+  return String(value ?? "").replace(/\s+/g, " ").trim();
+}
+
+function gameTitleKey(value) {
+  return normalizedTitle(value).toLowerCase();
 }
 
 function mechanicById(id) {
@@ -754,6 +775,262 @@ function generateAiPlanningPrompt(records, analysis) {
 
 function analyzeMixerSelection(records) {
   return MixerAnalysis.analyzeMixerSelection(records, { allMechanics: state.mechanics });
+}
+
+function buildGameIndex(mechanics) {
+  const byKey = new Map();
+  const sortedMechanics = [...mechanics].sort((a, b) => a.id.localeCompare(b.id));
+
+  for (const mechanic of sortedMechanics) {
+    const seenGameKeys = new Set();
+    for (const example of asArray(mechanic.example_games)) {
+      const title = normalizedTitle(example?.title);
+      if (!title) {
+        continue;
+      }
+
+      const key = gameTitleKey(title);
+      if (seenGameKeys.has(key)) {
+        continue;
+      }
+      seenGameKeys.add(key);
+
+      const game = byKey.get(key) || {
+        key,
+        title,
+        mechanics: [],
+        categoryCounts: new Map(),
+        tags: new Set()
+      };
+      const note = normalizedTitle(example?.note);
+      game.mechanics.push({
+        id: mechanic.id,
+        name: mechanic.name || titleCase(mechanic.id.split(".").at(-1) || mechanic.id),
+        category: mechanic.category || "unknown",
+        subcategory: mechanic.subcategory || "",
+        path: mechanic.path || "",
+        note
+      });
+      game.categoryCounts.set(mechanic.category, (game.categoryCounts.get(mechanic.category) || 0) + 1);
+      for (const tag of asArray(mechanic.tags)) {
+        if (tag) {
+          game.tags.add(tag);
+        }
+      }
+      byKey.set(key, game);
+    }
+  }
+
+  const list = [...byKey.values()]
+    .map((game) => {
+      const mechanicsList = game.mechanics.sort((a, b) => a.id.localeCompare(b.id));
+      const categories = [...game.categoryCounts.entries()]
+        .filter(([category]) => category)
+        .map(([category, count]) => ({ category, count }))
+        .sort((a, b) => b.count - a.count || a.category.localeCompare(b.category));
+      return {
+        key: game.key,
+        title: game.title,
+        mechanic_count: mechanicsList.length,
+        category_count: categories.length,
+        categories,
+        mechanics: mechanicsList,
+        representative_mechanics: mechanicsList.slice(0, 10).map((mechanic) => mechanic.id),
+        tags: [...game.tags].sort((a, b) => a.localeCompare(b))
+      };
+    })
+    .sort((a, b) => a.title.localeCompare(b.title));
+
+  state.games.byKey = new Map(list.map((game) => [game.key, game]));
+  state.games.list = list;
+  state.games.filtered = [...list];
+}
+
+function populateGameFilters() {
+  fillSelect(
+    elements.gameCategoryFilter,
+    uniqueSorted(state.games.list.flatMap((game) => game.categories.map((item) => item.category))),
+    "All categories"
+  );
+}
+
+function currentGameFilters() {
+  return {
+    query: elements.gameSearchInput.value.trim().toLowerCase(),
+    category: elements.gameCategoryFilter.value,
+    sort: elements.gameSort.value || "count"
+  };
+}
+
+function matchesGameQuery(game, query) {
+  if (!query) {
+    return true;
+  }
+
+  const haystack = [
+    game.title,
+    ...game.categories.map((item) => item.category),
+    ...game.tags,
+    ...game.mechanics.flatMap((mechanic) => [
+      mechanic.id,
+      mechanic.name,
+      mechanic.category,
+      mechanic.subcategory,
+      mechanic.note
+    ])
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  return query.split(/\s+/).every((term) => haystack.includes(term));
+}
+
+function applyGameFilters() {
+  const filters = currentGameFilters();
+  state.games.filtered = state.games.list.filter(
+    (game) =>
+      matchesGameQuery(game, filters.query) &&
+      (!filters.category || game.categories.some((item) => item.category === filters.category))
+  );
+
+  state.games.filtered.sort((a, b) => {
+    if (filters.sort === "title") {
+      return a.title.localeCompare(b.title);
+    }
+    return b.mechanic_count - a.mechanic_count || a.title.localeCompare(b.title);
+  });
+
+  renderGames();
+}
+
+function gameSummaryStats() {
+  const totalReferences = state.games.list.reduce((sum, game) => sum + game.mechanic_count, 0);
+  return {
+    uniqueGames: state.games.list.length,
+    totalReferences,
+    gamesWithFivePlus: state.games.list.filter((game) => game.mechanic_count >= 5).length
+  };
+}
+
+function renderGameSummary() {
+  const stats = gameSummaryStats();
+  return `
+    <div class="game-summary-grid">
+      <div class="detail-metric"><span>Unique games</span><strong>${stats.uniqueGames}</strong></div>
+      <div class="detail-metric"><span>Example references</span><strong>${stats.totalReferences}</strong></div>
+      <div class="detail-metric"><span>Games with 5+ mechanics</span><strong>${stats.gamesWithFivePlus}</strong></div>
+    </div>
+  `;
+}
+
+function gameCategoryPills(game) {
+  const visible = game.categories.slice(0, 7);
+  const hidden = game.categories.length - visible.length;
+  const pills = visible
+    .map((item) => `<span class="pill category">${escapeHtml(item.category)} ${item.count}</span>`)
+    .join("");
+  return `${pills}${hidden > 0 ? `<span class="pill">+${hidden} more</span>` : ""}`;
+}
+
+function representativeMechanicsMarkup(game) {
+  return game.representative_mechanics
+    .slice(0, 8)
+    .map((id) => `<button class="pill related-button" type="button" data-game-mechanic-id="${escapeHtml(id)}">${escapeHtml(id)}</button>`)
+    .join("");
+}
+
+function gameMechanicsListMarkup(game) {
+  return `
+    <div class="game-mechanics-list">
+      ${game.mechanics
+        .map(
+          (mechanic) => `
+            <article class="game-mechanic-row">
+              <div>
+                <button class="inline-link" type="button" data-game-mechanic-id="${escapeHtml(mechanic.id)}">${escapeHtml(mechanic.name)}</button>
+                <code>${escapeHtml(mechanic.id)}</code>
+              </div>
+              <span class="pill category">${escapeHtml(mechanic.category)}</span>
+              <p>${escapeHtml(mechanic.note || "Example note not provided.")}</p>
+            </article>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function renderGames() {
+  if (!state.hydrationDone) {
+    elements.gameSummary.innerHTML = "";
+    elements.gamesResults.innerHTML = '<div class="empty-state">Loading full mechanic example_games from source JSON files...</div>';
+    return;
+  }
+
+  elements.gameSummary.innerHTML = renderGameSummary();
+
+  if (!state.games.list.length) {
+    elements.gameStatus.textContent = "No example games are available in the loaded mechanics.";
+    elements.gamesResults.innerHTML = "";
+    return;
+  }
+
+  const visibleGames = state.games.filtered.slice(0, MAX_GAME_RESULTS);
+  const hiddenCount = state.games.filtered.length - visibleGames.length;
+  elements.gameStatus.textContent = `Showing ${visibleGames.length} of ${state.games.filtered.length} matched games.${hiddenCount > 0 ? " Refine the search to see more." : ""}`;
+
+  if (!visibleGames.length) {
+    elements.gamesResults.innerHTML = '<div class="empty-state">No games match the current game search and filters.</div>';
+    return;
+  }
+
+  elements.gamesResults.innerHTML = visibleGames
+    .map(
+      (game) => `
+        <article class="game-card">
+          <div class="game-card-heading">
+            <div>
+              <h3>${escapeHtml(game.title)}</h3>
+              <p>${game.mechanic_count} mechanic reference(s) across ${game.category_count} categor${game.category_count === 1 ? "y" : "ies"}.</p>
+            </div>
+            <button type="button" data-game-add-key="${escapeHtml(game.key)}">Add game mechanics to Mixer</button>
+          </div>
+          <div class="pill-list" aria-label="Categories">${gameCategoryPills(game)}</div>
+          <div class="pill-list" aria-label="Representative mechanics">${representativeMechanicsMarkup(game)}</div>
+          <details class="game-details">
+            <summary>View mechanics and example notes</summary>
+            ${gameMechanicsListMarkup(game)}
+          </details>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function addGameMechanicsToMixer(gameKey) {
+  const game = state.games.byKey.get(gameKey);
+  if (!game) {
+    return;
+  }
+
+  const existingIds = new Set(state.mixer.selectedIds);
+  const gameIds = game.mechanics.map((mechanic) => mechanic.id).filter((id) => mechanicExists(id));
+  const mergedIds = uniqueIds([...state.mixer.selectedIds, ...gameIds]).sort((a, b) => a.localeCompare(b));
+  const addedCount = mergedIds.filter((id) => !existingIds.has(id)).length;
+  const duplicateCount = gameIds.length - addedCount;
+
+  state.mixer.selectedIds = mergedIds;
+  saveMixerSelection();
+  updateMixerUrl();
+  renderResults();
+  if (state.selectedId) {
+    renderDetail(mechanicById(state.selectedId));
+  }
+  renderMixer();
+
+  elements.gameStatus.textContent = addedCount
+    ? `Added ${addedCount} mechanic(s) from ${game.title} to Mixer.${duplicateCount ? ` ${duplicateCount} already selected.` : ""}`
+    : `All ${gameIds.length} mechanic(s) from ${game.title} were already selected in Mixer.`;
 }
 
 function renderPills(values, className = "") {
@@ -1466,6 +1743,10 @@ function attachEvents() {
     control.addEventListener("input", applyFilters);
   }
 
+  for (const control of [elements.gameSearchInput, elements.gameCategoryFilter, elements.gameSort]) {
+    control.addEventListener("input", applyGameFilters);
+  }
+
   elements.resetFilters.addEventListener("click", () => {
     elements.searchInput.value = "";
     elements.categoryFilter.value = "";
@@ -1547,6 +1828,19 @@ function attachEvents() {
     }
   });
 
+  elements.gamesPanel.addEventListener("click", (event) => {
+    const addGameButton = event.target.closest("[data-game-add-key]");
+    if (addGameButton) {
+      addGameMechanicsToMixer(addGameButton.dataset.gameAddKey);
+      return;
+    }
+
+    const mechanicButton = event.target.closest("[data-game-mechanic-id]");
+    if (mechanicButton) {
+      selectMechanic(mechanicButton.dataset.gameMechanicId, { focusDetail: true, scrollDetail: true });
+    }
+  });
+
   elements.copyConceptJson.addEventListener("click", copyMixerConceptJson);
   elements.clearMixer.addEventListener("click", clearMixerSelection);
   elements.importConceptJson.addEventListener("click", importMixerConcept);
@@ -1566,12 +1860,16 @@ async function init() {
     restoreMixerSelection(initialMixIds.length ? initialMixIds : storedMixerSelection(), {
       updateUrl: Boolean(initialMixIds.length)
     });
+    renderGames();
     if (initialId && mechanicExists(initialId)) {
       selectMechanic(initialId, { updateUrl: false });
     }
 
     state.mechanics = await hydrateMechanics(state.mechanics);
     state.hydrationDone = true;
+    buildGameIndex(state.mechanics);
+    populateGameFilters();
+    applyGameFilters();
     populateFilters();
     applyFilters();
 

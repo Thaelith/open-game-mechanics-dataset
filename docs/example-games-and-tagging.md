@@ -33,6 +33,8 @@ This supports study and discovery questions such as "which mechanics can I study
 
 The current generated index is [`reports/game-examples-index-report-v0.3.md`](reports/game-examples-index-report-v0.3.md).
 
+The static browser also includes a lightweight Games view derived from the same mechanic `example_games` fields. It lets readers search by game title, mechanic, or category and add a game's associated mechanics to the Mixer for planning analysis. This remains a study/discovery aid, not evidence of exact implementation details.
+
 ## Curated Vs Self-Reported Tags
 
 Curated tags are cleaner, slower, and more consistent. They fit the current dataset better because mechanic boundaries and confidence signals are still being reviewed.
@@ -43,8 +45,8 @@ Self-reported tags scale better, but they can introduce duplicates, marketing la
 
 1. Improve coverage and consistency of mechanic-level `example_games`.
 2. Generate a report showing example-game coverage.
-3. Add a simple game-example index derived from mechanic JSON.
+3. Maintain the derived game-example index and browser Games view.
 4. Later consider a separate `games/` or `game_tags/` layer if demand exists.
-5. Only then consider browser search or filtering for "show mechanics in this game" or "show games using this mechanic."
+5. Add deeper browser filtering only after the derived view proves useful and title consistency is reviewed.
 
 The immediate goal is better study references, not a complete game database.

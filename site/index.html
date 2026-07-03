@@ -14,6 +14,8 @@
         <p class="intro">Search, filter, and inspect the engine-agnostic game mechanics dataset.</p>
       </div>
       <nav class="header-links" aria-label="Repository links">
+        <a href="#gamesPanel">Games</a>
+        <a href="#mixerPanel">Mixer</a>
         <a href="../dataset.json">dataset.json</a>
         <a href="../README.md">README</a>
       </nav>
@@ -78,6 +80,42 @@
           <p>Choose a result to inspect difficulty, related mechanics, combinations, and the source JSON path.</p>
         </aside>
       </div>
+
+      <section id="gamesPanel" class="games-panel" aria-labelledby="gamesTitle">
+        <div class="games-heading">
+          <div>
+            <p class="eyebrow">Study references</p>
+            <h2 id="gamesTitle">Games</h2>
+            <p class="intro">Browse a derived game-to-mechanics view from mechanic example_games. Game examples are study references, not proof of exact implementation details.</p>
+          </div>
+        </div>
+
+        <div class="games-controls" aria-label="Game example filters">
+          <label class="search-field">
+            <span>Search games</span>
+            <input id="gameSearchInput" type="search" placeholder="Celeste, dash, platforming" autocomplete="off">
+          </label>
+
+          <label>
+            <span>Category</span>
+            <select id="gameCategoryFilter">
+              <option value="">All categories</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Sort</span>
+            <select id="gameSort">
+              <option value="count">Most mechanics first</option>
+              <option value="title">Title A-Z</option>
+            </select>
+          </label>
+        </div>
+
+        <p id="gameStatus" class="copy-feedback" aria-live="polite">Loading game examples...</p>
+        <div id="gameSummary" class="game-summary" aria-label="Game examples summary"></div>
+        <div id="gamesResults" class="games-results" aria-label="Games index"></div>
+      </section>
 
       <section id="mixerPanel" class="mixer-panel" aria-labelledby="mixerTitle">
         <div class="mixer-heading">

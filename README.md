@@ -132,7 +132,7 @@ The canonical schema is `schema/mechanic.schema.json`. The generated search inde
 
 ## Browse the Dataset
 
-A dependency-free static browser is available on GitHub Pages at [thaelith.github.io/open-game-mechanics-dataset/site/](https://thaelith.github.io/open-game-mechanics-dataset/site/) and in the repo at [site/index.html](site/index.html). It loads `dataset.json`, searches and filters mechanics, and fetches individual mechanic JSON files for expanded details including typed relationships and scope profiles.
+A dependency-free static browser is available on GitHub Pages at [thaelith.github.io/open-game-mechanics-dataset/site/](https://thaelith.github.io/open-game-mechanics-dataset/site/) and in the repo at [site/index.html](site/index.html). It loads `dataset.json`, searches and filters mechanics, and fetches individual mechanic JSON files for expanded details including typed relationships and scope profiles. It also includes a lightweight Games view derived from `example_games` so readers can see which mechanics are associated with a recognizable study reference.
 
 The browser also includes a client-side [Mechanic Mixer](docs/mechanic-mixer.md) for deterministic concept planning from selected mechanics, typed relationships, required systems, and scope metadata. See [How to use the Mixer](docs/how-to-use-the-mixer.md) for examples and limitations.
 
