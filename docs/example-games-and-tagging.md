@@ -41,12 +41,20 @@ Curated tags are cleaner, slower, and more consistent. They fit the current data
 
 Self-reported tags scale better, but they can introduce duplicates, marketing labels, inconsistent mechanic names, and weak evidence. A future workflow may combine both approaches: curated core examples first, then self-reported additions with moderation and review.
 
-## Future Direction
+## Current Capabilities And Future Direction
 
-1. Improve coverage and consistency of mechanic-level `example_games`.
-2. Generate a report showing example-game coverage.
-3. Maintain the derived game-example index and browser Games view.
-4. Later consider a separate `games/` or `game_tags/` layer if demand exists.
-5. Add deeper browser filtering only after the derived view proves useful and title consistency is reviewed.
+Current capabilities:
+
+- Mechanic JSON entries include `example_games`.
+- The generated [`reports/example-games-coverage-report-v0.3.md`](reports/example-games-coverage-report-v0.3.md) tracks example-game coverage.
+- The generated [`reports/game-examples-index-report-v0.3.md`](reports/game-examples-index-report-v0.3.md) derives a game-to-mechanics index from mechanic examples.
+- The static browser includes a Games view for searching game references and adding associated mechanics to the Mixer.
+
+Future work should focus on:
+
+- Improving title consistency and deciding how to handle aliases, editions, remakes, and subtitles.
+- Considering a curated `games/` or `game_tags/` layer if demand exists.
+- Defining review expectations for any self-reported game tags before accepting them.
+- Adding deeper browser filtering only after the derived view proves useful and title consistency is reviewed.
 
 The immediate goal is better study references, not a complete game database.

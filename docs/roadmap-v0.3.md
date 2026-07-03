@@ -10,6 +10,8 @@ The current v0.3 preparation decisions are consolidated in [`reports/v0.3-review
 
 Detailed criteria remain in [`taxonomy-and-categorization-criteria.md`](taxonomy-and-categorization-criteria.md) and [`relationship-semantics-and-direction.md`](relationship-semantics-and-direction.md). Explicit prerequisites, state/input assumptions, and prototype-breaking failure modes are now first-class v0.3 review priorities.
 
+Example-game discovery preparation now includes full mechanic-level example coverage, a generated [`game-examples-index-report-v0.3.md`](reports/game-examples-index-report-v0.3.md), and a static browser Games view derived from existing `example_games`. This is still a study/discovery aid, not a full game database.
+
 ## Must Do
 
 - Create a reviewed core subset of 20-30 high-value mechanics. See [`reviewed-core-subset-v0.3.md`](reviewed-core-subset-v0.3.md).
@@ -28,8 +30,8 @@ Detailed criteria remain in [`taxonomy-and-categorization-criteria.md`](taxonomy
 
 - Add a visual relationship graph.
 - Add more public demo examples.
-- Improve example-game coverage and consistency. See [`example-games-and-tagging.md`](example-games-and-tagging.md) and [`reports/example-games-coverage-report-v0.3.md`](reports/example-games-coverage-report-v0.3.md).
-- Continue validating mechanic-to-game discovery through the derived [`game-examples-index-report-v0.3.md`](reports/game-examples-index-report-v0.3.md) and the static browser Games view before adding any broader tagging layer.
+- Maintain example-game coverage and improve title consistency. See [`example-games-and-tagging.md`](example-games-and-tagging.md), [`reports/example-games-coverage-report-v0.3.md`](reports/example-games-coverage-report-v0.3.md), and [`reports/game-examples-index-report-v0.3.md`](reports/game-examples-index-report-v0.3.md).
+- Validate the existing static browser Games view with real users before adding any broader tagging layer.
 - Expand AI-agent usage examples.
 - Improve contribution workflow for mechanic review.
 - Add relationship QA checks for suspicious cross-domain suggestions.
@@ -42,5 +44,5 @@ Detailed criteria remain in [`taxonomy-and-categorization-criteria.md`](taxonomy
 - Screenshot or short GIF for README.
 - Engine-specific export helpers.
 - More scenario fixtures after relationship quality improves.
-- Deeper browser support for comparing games with similar mechanic sets.
+- Deeper browser filtering for comparing games with similar mechanic sets.
 - Separate `games/` or `game_tags/` layer after example coverage, taxonomy boundaries, and moderation expectations are clearer.
