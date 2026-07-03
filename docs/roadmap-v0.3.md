@@ -12,6 +12,8 @@ Detailed criteria remain in [`taxonomy-and-categorization-criteria.md`](taxonomy
 
 Example-game discovery preparation now includes full mechanic-level example coverage, a generated [`game-examples-index-report-v0.3.md`](reports/game-examples-index-report-v0.3.md), and a static browser Games view derived from existing `example_games`. This is still a study/discovery aid, not a full game database.
 
+Playable example preparation now includes an MVP set of original browser demos for five lower-risk mechanics. These examples use simple shapes and are tracked in [`playable-mechanic-examples.md`](playable-mechanic-examples.md); they are not commercial game footage or production templates.
+
 ## Must Do
 
 - Create a reviewed core subset of 20-30 high-value mechanics. See [`reviewed-core-subset-v0.3.md`](reviewed-core-subset-v0.3.md).
@@ -32,6 +34,7 @@ Example-game discovery preparation now includes full mechanic-level example cove
 - Add more public demo examples.
 - Maintain example-game coverage and improve title consistency. See [`example-games-and-tagging.md`](example-games-and-tagging.md), [`reports/example-games-coverage-report-v0.3.md`](reports/example-games-coverage-report-v0.3.md), and [`reports/game-examples-index-report-v0.3.md`](reports/game-examples-index-report-v0.3.md).
 - Validate the existing static browser Games view with real users before adding any broader tagging layer.
+- Validate the playable examples MVP with users before expanding beyond the first five mechanics.
 - Expand AI-agent usage examples.
 - Improve contribution workflow for mechanic review.
 - Add relationship QA checks for suspicious cross-domain suggestions.
@@ -45,4 +48,5 @@ Example-game discovery preparation now includes full mechanic-level example cove
 - Engine-specific export helpers.
 - More scenario fixtures after relationship quality improves.
 - Deeper browser filtering for comparing games with similar mechanic sets.
+- More playable examples after criteria, scope, and maintenance expectations are clear.
 - Separate `games/` or `game_tags/` layer after example coverage, taxonomy boundaries, and moderation expectations are clearer.

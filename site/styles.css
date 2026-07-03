@@ -54,6 +54,9 @@ input:focus-visible,
 .games-panel button:focus-visible,
 .games-panel input:focus-visible,
 .games-panel select:focus-visible,
+.demo-list-button:focus-visible,
+.playable-toolbar button:focus-visible,
+.touch-controls button:focus-visible,
 .inline-link:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
@@ -862,6 +865,141 @@ main {
   justify-self: start;
 }
 
+.playable-page {
+  display: grid;
+  gap: 18px;
+}
+
+.playable-intro,
+.playable-sidebar,
+.playable-stage {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.playable-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.playable-sidebar {
+  position: sticky;
+  top: 16px;
+}
+
+.playable-sidebar h2,
+.playable-heading h2 {
+  margin: 0 0 12px;
+}
+
+.demo-list {
+  display: grid;
+  gap: 8px;
+}
+
+.demo-list-button {
+  display: grid;
+  gap: 4px;
+  min-height: 52px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-muted);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.demo-list-button:hover,
+.demo-list-button.is-active {
+  border-color: var(--accent);
+  background: #e7f2ee;
+}
+
+.demo-list-button code {
+  color: var(--accent-strong);
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 0.78rem;
+  overflow-wrap: anywhere;
+}
+
+.playable-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.playable-info section {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-muted);
+}
+
+.playable-info h3 {
+  margin: 0 0 8px;
+  font-size: 0.86rem;
+  text-transform: uppercase;
+}
+
+.canvas-shell {
+  margin-top: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-muted);
+}
+
+.canvas-shell canvas {
+  display: block;
+  width: 100%;
+  max-height: 70vh;
+  aspect-ratio: 16 / 9;
+  background: #f7f8f6;
+  touch-action: manipulation;
+}
+
+.playable-toolbar,
+.touch-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.playable-toolbar button,
+.touch-controls button {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-muted);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.playable-toolbar button:hover,
+.touch-controls button:hover {
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+
+.touch-controls button {
+  min-width: 92px;
+  justify-content: center;
+  user-select: none;
+  touch-action: none;
+}
+
 footer {
   padding: 22px min(5vw, 64px);
   border-top: 1px solid var(--border);
@@ -894,7 +1032,8 @@ footer p {
   }
 
   .controls,
-  .browser-layout {
+  .browser-layout,
+  .playable-layout {
     grid-template-columns: 1fr;
   }
 
@@ -916,6 +1055,10 @@ footer p {
   .detail-panel {
     position: static;
     max-height: none;
+  }
+
+  .playable-sidebar {
+    position: static;
   }
 }
 

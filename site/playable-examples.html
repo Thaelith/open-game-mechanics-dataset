@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Playable Mechanic Examples</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <div>
+        <p class="eyebrow">Open Game Mechanics Dataset</p>
+        <h1>Playable Mechanic Examples</h1>
+        <p class="intro">Small original canvas demos that show how selected mechanics feel and what state they depend on.</p>
+      </div>
+      <nav class="header-links" aria-label="Playable example links">
+        <a href="index.html">Mechanics Browser</a>
+        <a href="../docs/playable-mechanic-examples.md">Docs</a>
+      </nav>
+    </header>
+
+    <main class="playable-page">
+      <section class="playable-intro" aria-label="Playable examples overview">
+        <p class="muted-text">These examples use original simple shapes. They are not commercial game footage, complete implementations, or production-ready templates.</p>
+      </section>
+
+      <section class="playable-layout" aria-label="Playable examples">
+        <aside class="playable-sidebar" aria-label="Available demos">
+          <h2>Examples</h2>
+          <div id="demoList" class="demo-list"></div>
+        </aside>
+
+        <section class="playable-stage" aria-live="polite">
+          <div class="playable-heading">
+            <div>
+              <p class="eyebrow" id="demoMechanicId">mechanic</p>
+              <h2 id="demoTitle">Loading demo...</h2>
+              <p id="demoDescription" class="intro"></p>
+            </div>
+          </div>
+
+          <div class="playable-info">
+            <section>
+              <h3>Controls</h3>
+              <ul id="demoControls" class="detail-list"></ul>
+            </section>
+            <section>
+              <h3>What To Observe</h3>
+              <ul id="demoObserve" class="detail-list"></ul>
+            </section>
+            <section>
+              <h3>Common Bug Demonstrated Or Prevented</h3>
+              <p id="demoBug" class="muted-text"></p>
+            </section>
+            <section>
+              <h3>Related Mechanics</h3>
+              <div id="demoRelated" class="pill-list"></div>
+            </section>
+          </div>
+
+          <div class="canvas-shell">
+            <canvas id="demoCanvas" width="960" height="540" aria-label="Playable mechanic demo canvas"></canvas>
+          </div>
+
+          <div class="playable-toolbar">
+            <button id="resetDemo" type="button">Reset Demo</button>
+            <a id="openMechanicLink" class="detail-action" href="index.html">Open Mechanic</a>
+          </div>
+
+          <div id="touchControls" class="touch-controls" aria-label="Touch controls"></div>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      <p>Static playable examples. No external assets, no analytics, no build step.</p>
+    </footer>
+
+    <script src="playable-examples-data.js?v=playable-0.1" defer></script>
+    <script src="playable-examples.js?v=playable-0.1" defer></script>
+  </body>
+</html>

@@ -61,6 +61,7 @@ const RELATIONSHIP_SUGGESTION_TYPES = new Set([
 ]);
 const CONFLICT_TYPES = new Set(["conflicts_with", "soft_conflicts_with"]);
 const MixerAnalysis = window.MixerAnalysis;
+const PlayableExamples = window.PlayableExamplesData || { byId: {} };
 
 async function fetchJson(url) {
   const response = await fetch(url);
@@ -181,6 +182,10 @@ function uniqueIds(values) {
 function mechanicLabel(id) {
   const mechanic = mechanicById(id);
   return mechanic ? `${mechanic.name} (${mechanic.id})` : id;
+}
+
+function playableExampleFor(id) {
+  return PlayableExamples.byId?.[id] || null;
 }
 
 function roleLabel(role) {
@@ -1265,6 +1270,14 @@ function mixerToggleButton(id, className = "") {
   `;
 }
 
+function playableExampleAction(id) {
+  const demo = playableExampleFor(id);
+  if (!demo) {
+    return "";
+  }
+  return `<a class="detail-action" href="${escapeHtml(demo.demo_path)}">Playable Example</a>`;
+}
+
 function renderSelectedMixerCards(records) {
   if (!records.length) {
     return `
@@ -1593,6 +1606,7 @@ function renderDetail(mechanic) {
         <button type="button" data-copy-kind="id" data-copy-value="${escapeHtml(mechanic.id)}">Copy ID</button>
         <button type="button" data-copy-kind="JSON path" data-copy-value="${escapeHtml(mechanic.path)}">Copy JSON path</button>
         ${mixerToggleButton(mechanic.id, "detail-action")}
+        ${playableExampleAction(mechanic.id)}
         <a class="detail-action" href="${escapeHtml(pathHref)}" target="_blank" rel="noopener">Open JSON</a>
       </div>
     </div>

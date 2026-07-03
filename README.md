@@ -9,6 +9,7 @@ The v0.2 release adds typed mechanic relationships, rough scope metadata, graph 
 - Browse the dataset on GitHub Pages: [thaelith.github.io/open-game-mechanics-dataset/site/](https://thaelith.github.io/open-game-mechanics-dataset/site/)
 - Browse locally: [`site/index.html`](site/index.html)
 - Learn the Mixer: [`docs/how-to-use-the-mixer.md`](docs/how-to-use-the-mixer.md)
+- Try playable examples: [`site/playable-examples.html`](site/playable-examples.html)
 - Try demo mixes: [`docs/demo-mixes.md`](docs/demo-mixes.md)
 - Use with AI agents: [`docs/ai-agent-usage.md`](docs/ai-agent-usage.md)
 - Read v0.2 release notes: [`docs/releases/v0.2.0.md`](docs/releases/v0.2.0.md)
@@ -74,6 +75,7 @@ See [`docs/trust-and-review-status.md`](docs/trust-and-review-status.md) for det
 - [Mechanic Mixer documentation](docs/mechanic-mixer.md)
 - [How to use the Mixer](docs/how-to-use-the-mixer.md)
 - [Demo mixes](docs/demo-mixes.md)
+- [Playable mechanic examples](docs/playable-mechanic-examples.md)
 - [AI-agent usage](docs/ai-agent-usage.md)
 - [Example games and tagging](docs/example-games-and-tagging.md)
 - [Trust and review status](docs/trust-and-review-status.md)
@@ -135,6 +137,8 @@ The canonical schema is `schema/mechanic.schema.json`. The generated search inde
 A dependency-free static browser is available on GitHub Pages at [thaelith.github.io/open-game-mechanics-dataset/site/](https://thaelith.github.io/open-game-mechanics-dataset/site/) and in the repo at [site/index.html](site/index.html). It loads `dataset.json`, searches and filters mechanics, and fetches individual mechanic JSON files for expanded details including typed relationships and scope profiles. It also includes a lightweight Games view derived from `example_games` so readers can see which mechanics are associated with a recognizable study reference.
 
 The browser also includes a client-side [Mechanic Mixer](docs/mechanic-mixer.md) for deterministic concept planning from selected mechanics, typed relationships, required systems, and scope metadata. See [How to use the Mixer](docs/how-to-use-the-mixer.md) for examples and limitations.
+
+The site now includes a small set of original [playable mechanic examples](docs/playable-mechanic-examples.md) for five lower-risk mechanics. These demos use simple shapes and are meant to clarify timing, state, and UI feedback; they are not commercial game footage or production-ready templates.
 
 To test locally, serve the repository root over HTTP:
 

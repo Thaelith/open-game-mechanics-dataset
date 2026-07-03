@@ -35,6 +35,8 @@ The current generated index is [`reports/game-examples-index-report-v0.3.md`](re
 
 The static browser also includes a lightweight Games view derived from the same mechanic `example_games` fields. It lets readers search by game title, mechanic, or category and add a game's associated mechanics to the Mixer for planning analysis. This remains a study/discovery aid, not evidence of exact implementation details.
 
+Playable examples are separate from `example_games`: they are original repository-maintained canvas demos for selected mechanics. See [`playable-mechanic-examples.md`](playable-mechanic-examples.md).
+
 ## Curated Vs Self-Reported Tags
 
 Curated tags are cleaner, slower, and more consistent. They fit the current dataset better because mechanic boundaries and confidence signals are still being reviewed.
