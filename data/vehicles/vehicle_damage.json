@@ -169,6 +169,10 @@
       "note": "Includes visible vehicle damage and repair interactions."
     },
     {
+      "title": "Grand Theft Auto IV",
+      "note": "Shows visible vehicle damage from collisions and impacts."
+    },
+    {
       "title": "BeamNG.drive",
       "note": "Focuses heavily on vehicle deformation and crash behavior."
     }

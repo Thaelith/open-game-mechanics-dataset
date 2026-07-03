@@ -151,6 +151,14 @@
       "note": "Uses a minimap for nearby streets, routes, and activity markers."
     },
     {
+      "title": "Grand Theft Auto IV",
+      "note": "Uses a minimap/GPS-style route display for city navigation."
+    },
+    {
+      "title": "Red Dead Redemption 2",
+      "note": "Uses a minimap/radar for nearby routes, activities, and navigation cues."
+    },
+    {
       "title": "Diablo III",
       "note": "Uses map overlays and minimap information for dungeon navigation."
     }

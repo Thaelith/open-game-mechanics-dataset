@@ -172,6 +172,10 @@
       "note": "Uses responsive running as a baseline for jumps, captures, and traversal."
     },
     {
+      "title": "Mirror's Edge",
+      "note": "Uses sustained running as a baseline for first-person traversal and momentum."
+    },
+    {
       "title": "Hollow Knight",
       "note": "Uses a consistent run pace as the base for combat and platforming movement."
     }

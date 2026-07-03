@@ -6,7 +6,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Metric | Value |
 | --- | --- |
-| Generated at | 2026-07-02T22:48:38+00:00 |
+| Generated at | 2026-07-03T12:13:08+00:00 |
 | Schema version | 0.2.0 |
 | Total mechanics | 223 |
 | Total categories | 26 |
@@ -565,6 +565,7 @@ _None._
 | Celeste | 14 |
 | Minecraft | 14 |
 | Dark Souls | 9 |
+| Grand Theft Auto IV | 8 |
 | Half-Life 2 | 7 |
 | Slay the Spire | 7 |
 | The Legend of Zelda: Ocarina of Time | 7 |
@@ -578,18 +579,17 @@ _None._
 | Portal | 5 |
 | Portal 2 | 5 |
 | Resident Evil 4 | 5 |
+| Rocket League | 5 |
 | The Last of Us | 5 |
 | Dead Cells | 4 |
 | Diablo III | 4 |
 | Dishonored | 4 |
+| Gears of War | 4 |
 | Left 4 Dead | 4 |
 | Mario Kart 8 | 4 |
 | Overwatch | 4 |
 | Prince of Persia: The Sands of Time | 4 |
-| Super Mario Bros. | 4 |
-| The Binding of Isaac | 4 |
-| The Last of Us Part II | 4 |
-| Titanfall 2 | 4 |
+| Red Dead Redemption 2 | 4 |
 
 ### Categories with Many Missing Examples
 

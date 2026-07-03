@@ -7,11 +7,11 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | Metric | Value |
 | --- | --- |
 | Total mechanics | 223 |
-| Total example-game references | 440 |
+| Total example-game references | 459 |
 | Unique game titles | 194 |
-| Games with 1 mechanic | 109 |
-| Games with 2-4 mechanics | 66 |
-| Games with 5+ mechanics | 19 |
+| Games with 1 mechanic | 104 |
+| Games with 2-4 mechanics | 69 |
+| Games with 5+ mechanics | 21 |
 | Max mechanics on one game | 18 |
 
 ## Top Games By Referenced Mechanics
@@ -23,6 +23,7 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | Celeste | 14 | platforming, accessibility, camera, movement, physics, progression, +1 more | accessibility.adjustable_difficulty, accessibility.assist_mode, camera.screen_shake, camera.smooth_follow_camera, movement.air_dash, movement.dash, +4 more |
 | Minecraft | 14 | survival, procedural_generation, camera, crafting, economy, movement, +2 more | camera.dynamic_fov, camera.first_person_camera, crafting.recipe_crafting, economy.crafting_materials, movement.sprint, procedural_generation.biome_generation, +4 more |
 | Dark Souls | 9 | combat, movement, ai, camera, meta, survival | ai.boss_phase_transition, camera.camera_lock_on, combat.block, combat.invincibility_frames, combat.lock_on_targeting, meta.new_game_plus, +3 more |
+| Grand Theft Auto IV | 8 | vehicles, ui_ux, camera, physics, traversal | camera.third_person_camera, physics.ragdoll, traversal.vehicle_mount, ui_ux.minimap, ui_ux.quest_marker, vehicles.vehicle_acceleration, +2 more |
 | Half-Life 2 | 7 | physics, camera, movement, puzzle, traversal | camera.first_person_camera, movement.crouch, physics.buoyancy, physics.physics_push_pull, physics.ragdoll, puzzle.physics_weight_puzzle, +1 more |
 | Slay the Spire | 7 | roguelike, combat, meta | combat.damage_over_time, meta.daily_challenge, roguelike.curse_modifier, roguelike.pick_one_upgrade_choice, roguelike.relic_synergy, roguelike.risk_reward_room, +1 more |
 | The Legend of Zelda: Ocarina of Time | 7 | combat, physics, puzzle, camera | camera.camera_lock_on, combat.lock_on_targeting, combat.projectile_reflection, physics.breakable_object, physics.physics_push_pull, puzzle.key_and_lock, +1 more |
@@ -32,7 +33,6 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | Spelunky | 6 | procedural_generation, traversal, roguelike, time | procedural_generation.procedural_level_rooms, procedural_generation.seeded_generation, roguelike.permadeath, time.timed_challenge, traversal.ladder_climb, traversal.rope_swing |
 | Subnautica | 6 | survival, crafting, movement, physics, progression | crafting.recipe_crafting, movement.swimming, physics.buoyancy, progression.crafting_unlocks, survival.oxygen, survival.thirst |
 | The Elder Scrolls V: Skyrim | 6 | crafting, movement, procedural_generation, progression, survival, ui_ux | crafting.ingredient_quality, movement.sprint, procedural_generation.procedural_quests, progression.experience_points, survival.inventory_limit, ui_ux.quest_marker |
-| Alien: Isolation | 5 | horror, ai, stealth | ai.patrol, horror.hiding, horror.monster_patrol, horror.sound_lure, stealth.last_known_position_search |
 
 ## Category-To-Game Coverage
 
@@ -40,13 +40,13 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | --- | --- | --- | --- |
 | accessibility | 7 | 10 | The Last of Us Part II (3), Celeste (2), Destiny 2 (1), Fortnite (1), Forza Motorsport (1) |
 | ai | 18 | 22 | Left 4 Dead (2), The Last of Us (2), The Sims (2), XCOM (2), Alien: Isolation (1) |
-| camera | 18 | 20 | Celeste (2), Minecraft (2), Dark Souls (1), Factorio (1), Fortnite (1) |
-| combat | 25 | 36 | Hades (4), Dark Souls (3), Devil May Cry 5 (2), Monster Hunter: World (2), Overwatch (2) |
+| camera | 22 | 24 | Celeste (2), Minecraft (2), Dark Souls (1), Factorio (1), Fortnite (1) |
+| combat | 26 | 39 | Hades (4), Dark Souls (3), Counter-Strike 2 (2), Devil May Cry 5 (2), Gears of War (2) |
 | crafting | 8 | 8 | Don't Starve (1), Factorio (1), Minecraft (1), Monster Hunter: World (1), Subnautica (1) |
 | economy | 18 | 20 | Animal Crossing (2), Stardew Valley (2), AdVenture Capitalist (1), Borderlands (1), Cookie Clicker (1) |
 | horror | 10 | 16 | Alien: Isolation (3), Amnesia: The Dark Descent (3), Amnesia: The Bunker (2), Outlast (2), Alan Wake (1) |
 | meta | 8 | 8 | Apex Legends (1), Chrono Trigger (1), Dark Souls (1), Hades (1), Slay the Spire (1) |
-| movement | 19 | 24 | The Legend of Zelda: Breath of the Wild (3), Celeste (2), Dark Souls (2), The Last of Us (2), Apex Legends (1) |
+| movement | 20 | 25 | The Legend of Zelda: Breath of the Wild (3), Celeste (2), Dark Souls (2), The Last of Us (2), Apex Legends (1) |
 | multiplayer | 13 | 20 | Deep Rock Galactic (3), Apex Legends (2), Helldivers 2 (2), Left 4 Dead (2), Lovers in a Dangerous Spacetime (2) |
 | narrative | 8 | 10 | Fallout: New Vegas (2), Mass Effect (2), Baldur's Gate 3 (1), BioShock (1), Disco Elysium (1) |
 | physics | 17 | 22 | Half-Life 2 (3), Celeste (2), Super Mario World (2), The Legend of Zelda: Ocarina of Time (2), Battlefield: Bad Company (1) |
@@ -61,9 +61,9 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | strategy | 4 | 8 | Civilization VI (3), Age of Empires II (2), StarCraft II (2), Company of Heroes (1) |
 | survival | 10 | 20 | Minecraft (4), The Legend of Zelda: Breath of the Wild (3), The Long Dark (3), Don't Starve (2), Resident Evil 4 (2) |
 | time | 12 | 14 | The Legend of Zelda: Breath of the Wild (3), Braid (1), Crypt of the NecroDancer (1), Hades (1), Hi-Fi Rush (1) |
-| traversal | 20 | 22 | Spelunky (2), Titanfall 2 (2), Apex Legends (1), Assassin's Creed II (1), Assassin's Creed Unity (1) |
-| ui_ux | 19 | 23 | Diablo III (2), Hades (2), Resident Evil 4 (2), The Legend of Zelda: Breath of the Wild (2), Apex Legends (1) |
-| vehicles | 11 | 16 | Mario Kart 8 (4), Forza Horizon 5 (3), BeamNG.drive (1), Days Gone (1), Gran Turismo 7 (1) |
+| traversal | 21 | 23 | Spelunky (2), Titanfall 2 (2), Apex Legends (1), Assassin's Creed II (1), Assassin's Creed Unity (1) |
+| ui_ux | 20 | 27 | Red Dead Redemption 2 (3), Diablo III (2), Grand Theft Auto IV (2), Hades (2), Resident Evil 4 (2) |
+| vehicles | 12 | 22 | Mario Kart 8 (4), Rocket League (4), Forza Horizon 5 (3), Grand Theft Auto IV (3), BeamNG.drive (1) |
 
 ## Games Index
 
@@ -179,6 +179,22 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | movement.dodge_roll | movement | Uses dodge rolling as a core defensive timing and positioning action. |
 | movement.stamina_movement | movement | Uses stamina to constrain movement, blocking, and attacks. |
 | survival.stamina | survival | Uses stamina to pace attacks, blocking, dodging, and recovery. |
+
+### Grand Theft Auto IV
+
+- Mechanic count: 8
+- Categories: vehicles, ui_ux, camera, physics, traversal
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| camera.third_person_camera | camera | Uses a third-person camera for on-foot movement, driving, and combat framing. |
+| physics.ragdoll | physics | Uses ragdoll-like body reactions prominently during impacts. |
+| traversal.vehicle_mount | traversal | Uses vehicle entry and exit as a core traversal interaction. |
+| ui_ux.minimap | ui_ux | Uses a minimap/GPS-style route display for city navigation. |
+| ui_ux.quest_marker | ui_ux | Uses mission markers and map destinations to guide city objectives. |
+| vehicles.vehicle_acceleration | vehicles | Uses vehicle acceleration and throttle response across city driving. |
+| vehicles.vehicle_braking | vehicles | Uses braking and handbrake behavior during street driving and vehicle control. |
+| vehicles.vehicle_damage | vehicles | Shows visible vehicle damage from collisions and impacts. |
 
 ### Half-Life 2
 
@@ -362,6 +378,19 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | ui_ux.checkpoint_notification | ui_ux | Uses visible save/checkpoint feedback to reassure players after progress commits. |
 | ui_ux.inventory_grid | ui_ux | Uses a grid inventory where item placement and size matter. |
 
+### Rocket League
+
+- Mechanic count: 5
+- Categories: vehicles, multiplayer
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| multiplayer.matchmaking_lobby | multiplayer | Uses lobbies and matchmaking queues before assigning players to online matches. |
+| vehicles.drifting | vehicles | Uses powerslide-style drifting to recover, turn sharply, and reposition around the ball. |
+| vehicles.vehicle_acceleration | vehicles | Uses vehicle acceleration as a core part of car movement and positioning. |
+| vehicles.vehicle_boost | vehicles | Uses a boost meter as a core vehicle movement resource. |
+| vehicles.vehicle_braking | vehicles | Uses braking and reverse input for positioning, recovery, and ball control. |
+
 ### The Last of Us
 
 - Mechanic count: 5
@@ -411,6 +440,18 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | stealth.alert_state | stealth | Uses guard alertness states to move from suspicion to combat. |
 | traversal.teleport_blink | traversal | Uses Blink as a short-range teleport for stealth and traversal. |
 
+### Gears of War
+
+- Mechanic count: 4
+- Categories: combat, ai, camera
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| ai.cover_seeking | ai | Uses cover positioning as a central combat affordance. |
+| camera.third_person_camera | camera | Uses an over-the-shoulder third-person camera for cover-based firefights. |
+| combat.ranged_attack | combat | Uses ranged weapon fire as the main combat interaction in cover-based encounters. |
+| combat.reload | combat | Uses reload timing, including active reload feedback, as a visible combat pacing element. |
+
 ### Left 4 Dead
 
 - Mechanic count: 4
@@ -458,6 +499,18 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | puzzle.timed_door | puzzle | Uses timed gates as part of traversal challenge rooms. |
 | time.time_rewind | time | Uses rewind to recover from recent platforming and combat mistakes. |
 | traversal.wall_run | traversal | Uses wall running as part of acrobatic traversal routes. |
+
+### Red Dead Redemption 2
+
+- Mechanic count: 4
+- Categories: ui_ux, camera
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| camera.third_person_camera | camera | Uses third-person camera framing for on-foot exploration, riding, and combat. |
+| ui_ux.minimap | ui_ux | Uses a minimap/radar for nearby routes, activities, and navigation cues. |
+| ui_ux.quest_marker | ui_ux | Uses mission and objective markers on the map and HUD to guide activities. |
+| ui_ux.radial_menu | ui_ux | Uses radial wheels for weapons, items, and horse interactions. |
 
 ### Super Mario Bros.
 
@@ -662,6 +715,17 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | stealth.alert_state | stealth | Uses escalating enemy awareness and search behavior in stealth encounters. |
 | stealth.last_known_position_search | stealth | Uses enemy search behavior after guards lose direct sight of the player. |
 
+### Mirror's Edge
+
+- Mechanic count: 3
+- Categories: camera, movement, traversal
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| camera.first_person_camera | camera | Uses a first-person viewpoint for traversal, jumping, and close environmental navigation. |
+| movement.run | movement | Uses sustained running as a baseline for first-person traversal and momentum. |
+| traversal.parkour_vault | traversal | Uses vaulting as part of continuous parkour traversal. |
+
 ### Monster Hunter: World
 
 - Mechanic count: 3
@@ -672,61 +736,6 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | combat.charged_attack | combat | Uses charged weapon attacks with commitment and payoff. |
 | combat.critical_hit | combat | Rewards attacking weak zones with stronger damage outcomes. |
 | crafting.ingredient_quality | crafting | Uses gathered monster parts as valued ingredients for equipment crafting. |
-
-### No Man's Sky
-
-- Mechanic count: 3
-- Categories: procedural_generation, traversal
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| procedural_generation.procedural_quests | procedural_generation | Uses generated missions and objectives in a procedural universe. |
-| procedural_generation.procedural_terrain | procedural_generation | Uses procedural planets and terrain as a major exploration feature. |
-| traversal.jetpack | traversal | Uses jetpack bursts for traversal and fall correction. |
-
-### Resident Evil 2
-
-- Mechanic count: 3
-- Categories: horror, movement, puzzle
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| horror.safe_room | horror | Uses safe rooms for saving, storage, and relief from pursuit. |
-| movement.walk | movement | Uses deliberate walking pace to support aiming, tension, and room navigation. |
-| puzzle.key_and_lock | puzzle | Uses themed keys to gate routes and encourage backtracking. |
-
-### Terraria
-
-- Mechanic count: 3
-- Categories: crafting, procedural_generation, progression
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| crafting.workbench | crafting | Uses crafting stations to unlock different recipe sets. |
-| procedural_generation.biome_generation | procedural_generation | Uses biome regions with specific enemies and materials. |
-| progression.crafting_unlocks | progression | Progressively exposes crafting options through materials and stations. |
-
-### The Long Dark
-
-- Mechanic count: 3
-- Categories: survival
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| survival.health | survival | Connects health loss to exposure, starvation, dehydration, and injuries. |
-| survival.temperature | survival | Uses cold, clothing, shelter, and weather as major survival pressures. |
-| survival.thirst | survival | Uses hydration alongside hunger, temperature, and fatigue survival pressures. |
-
-### The Sims
-
-- Mechanic count: 3
-- Categories: ai, simulation
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| ai.flee | ai | Uses panic-like routing away from hazards in simulation scenarios. |
-| ai.utility_scoring | ai | Uses needs and context to drive agent choices. |
-| simulation.needs_simulation | simulation | Uses character needs to drive behavior and player decisions. |
 
 ## Interpretation Notes
 

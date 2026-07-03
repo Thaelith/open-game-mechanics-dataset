@@ -160,6 +160,14 @@
       "note": "Uses braking points and assist settings as major driving skill factors."
     },
     {
+      "title": "Grand Theft Auto IV",
+      "note": "Uses braking and handbrake behavior during street driving and vehicle control."
+    },
+    {
+      "title": "Rocket League",
+      "note": "Uses braking and reverse input for positioning, recovery, and ball control."
+    },
+    {
       "title": "Mario Kart 8",
       "note": "Uses braking and reverse controls in accessible racing scenarios."
     }

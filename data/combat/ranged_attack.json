@@ -154,6 +154,14 @@
       "note": "Uses varied ranged weapons with distinct projectile and hitscan behavior."
     },
     {
+      "title": "Gears of War",
+      "note": "Uses ranged weapon fire as the main combat interaction in cover-based encounters."
+    },
+    {
+      "title": "Counter-Strike 2",
+      "note": "Uses precise ranged attacks as the core of round-based firefights."
+    },
+    {
       "title": "Overwatch",
       "note": "Uses many ranged attack models including projectiles, beams, and scoped shots."
     }

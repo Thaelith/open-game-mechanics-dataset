@@ -139,6 +139,10 @@
       "note": "Uses reload commitment as a tactical timing cost in firefights."
     },
     {
+      "title": "Gears of War",
+      "note": "Uses reload timing, including active reload feedback, as a visible combat pacing element."
+    },
+    {
       "title": "Resident Evil 4",
       "note": "Uses reload timing and ammunition pressure as part of combat pacing."
     }

@@ -122,6 +122,10 @@
       "note": "Uses a first-person camera for traversal, combat, and environmental interaction."
     },
     {
+      "title": "Mirror's Edge",
+      "note": "Uses a first-person viewpoint for traversal, jumping, and close environmental navigation."
+    },
+    {
       "title": "Minecraft",
       "note": "Uses first-person view as a primary play perspective."
     }

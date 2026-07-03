@@ -161,6 +161,10 @@
     {
       "title": "Grand Theft Auto V",
       "note": "Uses vehicle entry and exit interactions across many vehicle types."
+    },
+    {
+      "title": "Grand Theft Auto IV",
+      "note": "Uses vehicle entry and exit as a core traversal interaction."
     }
   ],
   "tags": [

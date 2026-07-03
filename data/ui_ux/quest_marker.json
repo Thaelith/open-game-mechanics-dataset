@@ -169,6 +169,14 @@
       "note": "Uses compass and map quest markers to guide objectives."
     },
     {
+      "title": "Grand Theft Auto IV",
+      "note": "Uses mission markers and map destinations to guide city objectives."
+    },
+    {
+      "title": "Red Dead Redemption 2",
+      "note": "Uses mission and objective markers on the map and HUD to guide activities."
+    },
+    {
       "title": "The Witcher 3: Wild Hunt",
       "note": "Uses tracked quest markers and minimap routing for objectives."
     }
