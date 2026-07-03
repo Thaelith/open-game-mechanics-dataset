@@ -181,6 +181,10 @@
     {
       "title": "Fortnite",
       "note": "Uses damage numbers to show hit results, shield damage, and eliminations."
+    },
+    {
+      "title": "Apex Legends",
+      "note": "Uses damage numbers to show shield and health damage during firefights."
     }
   ],
   "tags": [

@@ -184,6 +184,14 @@
     {
       "title": "Overwatch",
       "note": "Uses ability cooldown indicators to show hero action availability."
+    },
+    {
+      "title": "Apex Legends",
+      "note": "Uses ability cooldown indicators to show tactical and ultimate availability."
+    },
+    {
+      "title": "Diablo III",
+      "note": "Uses action bar cooldown indicators for combat skills."
     }
   ],
   "tags": [

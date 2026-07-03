@@ -157,6 +157,14 @@
     {
       "title": "Overwatch",
       "note": "Uses reload timing for many ranged heroes and weapons."
+    },
+    {
+      "title": "Apex Legends",
+      "note": "Uses reload timing and magazine limits during squad firefights."
+    },
+    {
+      "title": "Left 4 Dead",
+      "note": "Uses reload timing and ammunition pressure during horde encounters."
     }
   ],
   "tags": [

@@ -159,6 +159,10 @@
     {
       "title": "The Elder Scrolls V: Skyrim",
       "note": "Uses skill and character progression tied to repeated play."
+    },
+    {
+      "title": "Dark Souls",
+      "note": "Uses earned souls as a visible progression resource for leveling decisions."
     }
   ],
   "tags": [

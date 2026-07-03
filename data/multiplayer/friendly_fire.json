@@ -132,6 +132,10 @@
     {
       "title": "Helldivers 2",
       "note": "Uses friendly fire as part of cooperative positioning and risk."
+    },
+    {
+      "title": "Left 4 Dead",
+      "note": "Uses friendly fire rules to make co-op positioning and firing lanes matter."
     }
   ],
   "tags": [

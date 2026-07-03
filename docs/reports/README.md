@@ -36,6 +36,10 @@ Documents the second curated pass focused on high-value recognizable anchor game
 
 Documents the third curated pass focused on genre-balanced recognizable anchor games in the derived game-to-mechanics index.
 
+[`game-anchor-enrichment-pass-4-v0.3.md`](game-anchor-enrichment-pass-4-v0.3.md)
+
+Documents the fourth curated pass focused on mature anchor deepening and quality-preserving expansion in the derived game-to-mechanics index.
+
 ## v0.3 Review Tracking
 
 [`v0.3-review-summary.md`](v0.3-review-summary.md)

@@ -176,6 +176,14 @@
     {
       "title": "Portal 2",
       "note": "Uses interaction prompts and contextual cues for puzzle objects and co-op actions."
+    },
+    {
+      "title": "Subnautica",
+      "note": "Uses contextual prompts for scanning, collecting, entering vehicles, and using objects."
+    },
+    {
+      "title": "Left 4 Dead",
+      "note": "Uses contextual prompts for revives, pickups, doors, and objective interactions."
     }
   ],
   "tags": [

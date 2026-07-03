@@ -184,6 +184,22 @@
     {
       "title": "Fortnite",
       "note": "Uses firearms and projectile weapons as core combat interactions."
+    },
+    {
+      "title": "Apex Legends",
+      "note": "Uses firearms and abilities as core ranged combat interactions."
+    },
+    {
+      "title": "Hades",
+      "note": "Uses ranged weapons and cast-like attacks as visible combat options."
+    },
+    {
+      "title": "Left 4 Dead",
+      "note": "Uses firearms as the primary ranged combat interaction against infected hordes."
+    },
+    {
+      "title": "Diablo III",
+      "note": "Uses ranged class skills and projectiles as visible combat options."
     }
   ],
   "tags": [

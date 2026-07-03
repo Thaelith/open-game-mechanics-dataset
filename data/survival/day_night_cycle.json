@@ -168,6 +168,10 @@
     {
       "title": "Don't Starve",
       "note": "Uses day phases to structure survival planning and night danger."
+    },
+    {
+      "title": "Subnautica",
+      "note": "Uses day and night lighting changes during underwater exploration."
     }
   ],
   "tags": [

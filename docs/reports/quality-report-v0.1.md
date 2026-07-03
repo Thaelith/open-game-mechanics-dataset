@@ -6,7 +6,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Metric | Value |
 | --- | --- |
-| Generated at | 2026-07-03T12:49:10+00:00 |
+| Generated at | 2026-07-03T13:00:41+00:00 |
 | Schema version | 0.2.0 |
 | Total mechanics | 223 |
 | Total categories | 26 |
@@ -560,36 +560,36 @@ _None._
 
 | Title | Count |
 | --- | --- |
-| Hades | 18 |
+| Hades | 19 |
 | The Legend of Zelda: Breath of the Wild | 18 |
+| Minecraft | 17 |
 | Celeste | 15 |
+| Dark Souls | 15 |
 | The Elder Scrolls V: Skyrim | 15 |
-| Minecraft | 14 |
+| Apex Legends | 14 |
 | Resident Evil 4 | 14 |
 | The Witcher 3: Wild Hunt | 13 |
+| Diablo III | 12 |
 | Fortnite | 12 |
 | Hollow Knight | 12 |
+| Subnautica | 12 |
 | Grand Theft Auto V | 11 |
+| Left 4 Dead | 11 |
 | Overwatch | 11 |
 | Portal 2 | 11 |
-| Dark Souls | 9 |
 | Gran Turismo 7 | 8 |
 | Grand Theft Auto IV | 8 |
 | Half-Life 2 | 7 |
 | Slay the Spire | 7 |
 | The Legend of Zelda: Ocarina of Time | 7 |
 | World of Warcraft | 7 |
-| Apex Legends | 6 |
 | Need for Speed: Hot Pursuit | 6 |
 | Spelunky | 6 |
-| Subnautica | 6 |
 | Super Mario Odyssey | 6 |
 | Alien: Isolation | 5 |
 | Portal | 5 |
 | Rocket League | 5 |
 | The Last of Us | 5 |
-| Dead Cells | 4 |
-| Diablo III | 4 |
 
 ### Categories with Many Missing Examples
 

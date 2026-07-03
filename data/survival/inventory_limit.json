@@ -132,6 +132,14 @@
     {
       "title": "The Elder Scrolls V: Skyrim",
       "note": "Uses carry weight to limit looting and travel decisions."
+    },
+    {
+      "title": "Minecraft",
+      "note": "Uses limited inventory slots to constrain gathering, crafting, and travel."
+    },
+    {
+      "title": "Subnautica",
+      "note": "Uses limited inventory space to constrain long exploration and resource trips."
     }
   ],
   "tags": [

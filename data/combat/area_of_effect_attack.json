@@ -161,6 +161,18 @@
     {
       "title": "Overwatch",
       "note": "Uses area abilities and explosives for team-fight pressure."
+    },
+    {
+      "title": "Apex Legends",
+      "note": "Uses grenades and area abilities to pressure cover and squads."
+    },
+    {
+      "title": "Left 4 Dead",
+      "note": "Uses explosives and fire to control hordes and revive routes."
+    },
+    {
+      "title": "Diablo III",
+      "note": "Uses area attacks and ground effects during dense combat encounters."
     }
   ],
   "tags": [

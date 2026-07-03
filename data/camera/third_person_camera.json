@@ -164,6 +164,10 @@
     {
       "title": "Super Mario Odyssey",
       "note": "Uses a third-person camera for 3D platforming, exploration, and combat framing."
+    },
+    {
+      "title": "Dark Souls",
+      "note": "Uses third-person camera framing for traversal, lock-on combat, and boss encounters."
     }
   ],
   "tags": [

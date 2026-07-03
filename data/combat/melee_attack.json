@@ -178,6 +178,14 @@
     {
       "title": "Hollow Knight",
       "note": "Uses close-range nail attacks as the main combat interaction."
+    },
+    {
+      "title": "Dark Souls",
+      "note": "Uses melee weapon attacks with timing, stamina pressure, and recovery windows."
+    },
+    {
+      "title": "Diablo III",
+      "note": "Uses close-range class attacks as visible combat options."
     }
   ],
   "tags": [

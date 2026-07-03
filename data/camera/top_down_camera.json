@@ -161,6 +161,10 @@
     {
       "title": "Hotline Miami",
       "note": "Uses top-down framing for fast combat and room awareness."
+    },
+    {
+      "title": "Diablo III",
+      "note": "Uses top-down camera framing for combat readability and enemy positioning."
     }
   ],
   "tags": [

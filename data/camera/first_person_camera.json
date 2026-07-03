@@ -144,6 +144,18 @@
     {
       "title": "Portal 2",
       "note": "Uses a first-person camera for spatial puzzle navigation and portal aiming."
+    },
+    {
+      "title": "Apex Legends",
+      "note": "Uses first-person camera framing for movement, aiming, and combat readability."
+    },
+    {
+      "title": "Subnautica",
+      "note": "Uses a first-person camera for underwater exploration and close object interaction."
+    },
+    {
+      "title": "Left 4 Dead",
+      "note": "Uses first-person camera framing for co-op survival combat and navigation."
     }
   ],
   "tags": [

@@ -177,6 +177,10 @@
     {
       "title": "Hollow Knight",
       "note": "Uses shops for maps, charms, keys, and traversal-related items."
+    },
+    {
+      "title": "Diablo III",
+      "note": "Uses vendors for buying, selling, repairing, and service transactions."
     }
   ],
   "tags": [

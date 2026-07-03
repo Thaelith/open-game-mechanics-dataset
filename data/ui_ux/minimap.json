@@ -169,6 +169,10 @@
     {
       "title": "Fortnite",
       "note": "Uses a minimap for safe-zone, teammate, and nearby activity awareness."
+    },
+    {
+      "title": "Apex Legends",
+      "note": "Uses a minimap for ring, squad, and nearby navigation awareness."
     }
   ],
   "tags": [

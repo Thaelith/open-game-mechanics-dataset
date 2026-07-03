@@ -149,6 +149,10 @@
     {
       "title": "The Legend of Zelda: Breath of the Wild",
       "note": "Lets Link swim across water while stamina limits longer crossings."
+    },
+    {
+      "title": "Minecraft",
+      "note": "Uses swimming and underwater movement with visible breath pressure."
     }
   ],
   "tags": [

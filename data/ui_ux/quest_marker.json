@@ -195,6 +195,14 @@
     {
       "title": "Super Mario Odyssey",
       "note": "Uses map markers and destination hints to guide kingdom objectives."
+    },
+    {
+      "title": "Subnautica",
+      "note": "Uses beacon and signal markers to guide exploration targets."
+    },
+    {
+      "title": "Diablo III",
+      "note": "Uses objective markers and map guidance for quests and dungeon goals."
     }
   ],
   "tags": [

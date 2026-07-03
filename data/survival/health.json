@@ -166,6 +166,22 @@
     {
       "title": "Hollow Knight",
       "note": "Uses health masks and recovery windows as a visible survival resource."
+    },
+    {
+      "title": "Minecraft",
+      "note": "Uses health hearts, damage, and recovery as visible survival state."
+    },
+    {
+      "title": "Dark Souls",
+      "note": "Uses health state, healing windows, and death recovery pressure in combat."
+    },
+    {
+      "title": "Subnautica",
+      "note": "Uses health loss and recovery alongside oxygen, food, water, and hazards."
+    },
+    {
+      "title": "Left 4 Dead",
+      "note": "Uses health, incapacitation, and recovery pressure during co-op survival encounters."
     }
   ],
   "tags": [
