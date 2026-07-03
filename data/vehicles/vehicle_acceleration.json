@@ -164,12 +164,24 @@
       "note": "Uses vehicle acceleration and throttle response across city driving."
     },
     {
+      "title": "Grand Theft Auto V",
+      "note": "Uses vehicle acceleration and traction feel across city driving and races."
+    },
+    {
       "title": "Rocket League",
       "note": "Uses vehicle acceleration as a core part of car movement and positioning."
     },
     {
       "title": "Forza Horizon 5",
       "note": "Uses vehicle acceleration curves as part of car handling and tuning."
+    },
+    {
+      "title": "Gran Turismo 7",
+      "note": "Uses vehicle acceleration and throttle control as major racing skill factors."
+    },
+    {
+      "title": "Need for Speed: Hot Pursuit",
+      "note": "Uses strong arcade acceleration for racing, pursuit, and escape pacing."
     }
   ],
   "tags": [

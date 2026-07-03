@@ -141,6 +141,10 @@
     {
       "title": "Rocket League",
       "note": "Uses a boost meter as a core vehicle movement resource."
+    },
+    {
+      "title": "Need for Speed: Hot Pursuit",
+      "note": "Uses nitrous-style boosts for short bursts during races and pursuits."
     }
   ],
   "tags": [

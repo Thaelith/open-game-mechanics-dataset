@@ -160,6 +160,10 @@
       "note": "Uses recipe-based material conversion for tools, blocks, and survival items."
     },
     {
+      "title": "The Witcher 3: Wild Hunt",
+      "note": "Uses recipes to craft alchemy items, gear, and consumables from gathered materials."
+    },
+    {
       "title": "Subnautica",
       "note": "Uses recipes to turn gathered materials into equipment and base components."
     }

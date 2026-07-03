@@ -165,6 +165,10 @@
       "note": "Uses branching conversations that record choices and affect later story state."
     },
     {
+      "title": "The Witcher 3: Wild Hunt",
+      "note": "Uses dialogue choices that can change quest and story outcomes."
+    },
+    {
       "title": "Disco Elysium",
       "note": "Uses dialogue branches tied to character state, checks, and consequences."
     }

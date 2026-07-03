@@ -173,6 +173,10 @@
       "note": "Shows visible vehicle damage from collisions and impacts."
     },
     {
+      "title": "Need for Speed: Hot Pursuit",
+      "note": "Shows visible vehicle damage and takedown pressure during pursuits."
+    },
+    {
       "title": "BeamNG.drive",
       "note": "Focuses heavily on vehicle deformation and crash behavior."
     }

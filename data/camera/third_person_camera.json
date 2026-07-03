@@ -126,8 +126,24 @@
       "note": "Uses a third-person camera for on-foot movement, driving, and combat framing."
     },
     {
+      "title": "Grand Theft Auto V",
+      "note": "Uses a third-person camera for on-foot movement, driving, and combat framing."
+    },
+    {
       "title": "Red Dead Redemption 2",
       "note": "Uses third-person camera framing for on-foot exploration, riding, and combat."
+    },
+    {
+      "title": "The Witcher 3: Wild Hunt",
+      "note": "Uses a third-person camera for exploration, horseback travel, and combat framing."
+    },
+    {
+      "title": "Gran Turismo 7",
+      "note": "Uses chase-camera views for vehicle framing during races."
+    },
+    {
+      "title": "Need for Speed: Hot Pursuit",
+      "note": "Uses chase-camera framing for high-speed pursuit driving."
     },
     {
       "title": "Gears of War",

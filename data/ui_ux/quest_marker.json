@@ -173,8 +173,16 @@
       "note": "Uses mission markers and map destinations to guide city objectives."
     },
     {
+      "title": "Grand Theft Auto V",
+      "note": "Uses mission markers and map destinations for open-world activities."
+    },
+    {
       "title": "Red Dead Redemption 2",
       "note": "Uses mission and objective markers on the map and HUD to guide activities."
+    },
+    {
+      "title": "The Legend of Zelda: Breath of the Wild",
+      "note": "Uses quest markers and map pins to guide selected objectives and destinations."
     },
     {
       "title": "The Witcher 3: Wild Hunt",

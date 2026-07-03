@@ -159,6 +159,10 @@
       "note": "Uses a minimap/radar for nearby routes, activities, and navigation cues."
     },
     {
+      "title": "The Witcher 3: Wild Hunt",
+      "note": "Uses minimap routing and nearby objective context during exploration."
+    },
+    {
       "title": "Diablo III",
       "note": "Uses map overlays and minimap information for dungeon navigation."
     }

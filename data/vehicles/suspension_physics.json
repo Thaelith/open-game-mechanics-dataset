@@ -137,6 +137,10 @@
       "note": "Uses suspension and surface response as part of vehicle handling."
     },
     {
+      "title": "Gran Turismo 7",
+      "note": "Uses suspension behavior and tuning as part of car handling."
+    },
+    {
       "title": "SnowRunner",
       "note": "Highlights suspension travel and terrain contact in off-road traversal."
     }

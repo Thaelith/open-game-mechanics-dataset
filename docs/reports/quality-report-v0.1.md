@@ -6,7 +6,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Metric | Value |
 | --- | --- |
-| Generated at | 2026-07-03T12:13:08+00:00 |
+| Generated at | 2026-07-03T12:32:45+00:00 |
 | Schema version | 0.2.0 |
 | Total mechanics | 223 |
 | Total categories | 26 |
@@ -561,10 +561,13 @@ _None._
 | Title | Count |
 | --- | --- |
 | Hades | 18 |
-| The Legend of Zelda: Breath of the Wild | 16 |
-| Celeste | 14 |
+| The Legend of Zelda: Breath of the Wild | 18 |
+| Celeste | 15 |
 | Minecraft | 14 |
+| The Witcher 3: Wild Hunt | 13 |
+| Grand Theft Auto V | 11 |
 | Dark Souls | 9 |
+| Gran Turismo 7 | 8 |
 | Grand Theft Auto IV | 8 |
 | Half-Life 2 | 7 |
 | Slay the Spire | 7 |
@@ -572,6 +575,7 @@ _None._
 | World of Warcraft | 7 |
 | Apex Legends | 6 |
 | Hollow Knight | 6 |
+| Need for Speed: Hot Pursuit | 6 |
 | Spelunky | 6 |
 | Subnautica | 6 |
 | The Elder Scrolls V: Skyrim | 6 |
@@ -586,10 +590,6 @@ _None._
 | Dishonored | 4 |
 | Gears of War | 4 |
 | Left 4 Dead | 4 |
-| Mario Kart 8 | 4 |
-| Overwatch | 4 |
-| Prince of Persia: The Sands of Time | 4 |
-| Red Dead Redemption 2 | 4 |
 
 ### Categories with Many Missing Examples
 

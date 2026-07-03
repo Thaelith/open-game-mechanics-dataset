@@ -160,6 +160,10 @@
       "note": "Uses fuel and vehicle resource pressure in open-world traversal."
     },
     {
+      "title": "Gran Turismo 7",
+      "note": "Uses fuel consumption in race settings and pit strategy contexts."
+    },
+    {
       "title": "Days Gone",
       "note": "Uses motorcycle fuel as part of route planning and survival pressure."
     }

@@ -146,6 +146,10 @@
       "note": "Uses wall jumping for fast precision traversal."
     },
     {
+      "title": "Celeste",
+      "note": "Uses wall jumps and wall contact as part of precision climbing routes."
+    },
+    {
       "title": "Hollow Knight",
       "note": "Uses wall interaction to expand traversal after an upgrade."
     }

@@ -126,6 +126,10 @@
       "note": "Uses a first-person viewpoint for traversal, jumping, and close environmental navigation."
     },
     {
+      "title": "Gran Turismo 7",
+      "note": "Uses cockpit and driver-view camera options for racing."
+    },
+    {
       "title": "Minecraft",
       "note": "Uses first-person view as a primary play perspective."
     }

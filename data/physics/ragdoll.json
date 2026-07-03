@@ -153,6 +153,10 @@
       "note": "Uses ragdoll-like body reactions prominently during impacts."
     },
     {
+      "title": "Grand Theft Auto V",
+      "note": "Shows ragdoll-like body reactions during impacts and collisions."
+    },
+    {
       "title": "Half-Life 2",
       "note": "Uses physics-driven bodies as part of combat aftermath and world interaction."
     }

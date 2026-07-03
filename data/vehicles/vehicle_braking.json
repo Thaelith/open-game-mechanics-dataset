@@ -164,8 +164,16 @@
       "note": "Uses braking and handbrake behavior during street driving and vehicle control."
     },
     {
+      "title": "Grand Theft Auto V",
+      "note": "Uses braking and handbrake behavior during street driving, races, and pursuits."
+    },
+    {
       "title": "Rocket League",
       "note": "Uses braking and reverse input for positioning, recovery, and ball control."
+    },
+    {
+      "title": "Need for Speed: Hot Pursuit",
+      "note": "Uses braking and handbrake turns for cornering during races and pursuits."
     },
     {
       "title": "Mario Kart 8",

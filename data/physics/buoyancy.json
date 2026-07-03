@@ -154,6 +154,10 @@
       "note": "Uses underwater movement and vehicle behavior as core exploration systems."
     },
     {
+      "title": "The Legend of Zelda: Breath of the Wild",
+      "note": "Uses floating objects and water interactions in environmental traversal and puzzles."
+    },
+    {
       "title": "Half-Life 2",
       "note": "Uses floating objects in water as part of physics interaction."
     }

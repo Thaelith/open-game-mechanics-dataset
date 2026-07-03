@@ -28,6 +28,10 @@ Reverses mechanic-level `example_games` into a derived game-to-mechanics view so
 
 Documents the first curated pass that strengthened sparse game anchors in the derived game-to-mechanics index without creating a separate game database.
 
+[`game-anchor-enrichment-pass-2-v0.3.md`](game-anchor-enrichment-pass-2-v0.3.md)
+
+Documents the second curated pass focused on high-value recognizable anchor games in the derived game-to-mechanics index.
+
 ## v0.3 Review Tracking
 
 [`v0.3-review-summary.md`](v0.3-review-summary.md)
