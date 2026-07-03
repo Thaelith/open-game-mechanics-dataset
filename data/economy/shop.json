@@ -165,6 +165,18 @@
     {
       "title": "The Legend of Zelda",
       "note": "Uses shops as readable sources for consumables and equipment."
+    },
+    {
+      "title": "The Elder Scrolls V: Skyrim",
+      "note": "Uses vendors for buying, selling, and restocking equipment and supplies."
+    },
+    {
+      "title": "Resident Evil 4",
+      "note": "Uses the merchant for buying, selling, and preparing equipment."
+    },
+    {
+      "title": "Hollow Knight",
+      "note": "Uses shops for maps, charms, keys, and traversal-related items."
     }
   ],
   "tags": [

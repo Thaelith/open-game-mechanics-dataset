@@ -135,6 +135,10 @@
     {
       "title": "Outlast",
       "note": "Uses limited visual tools and darkness during exploration and pursuit."
+    },
+    {
+      "title": "Resident Evil 4",
+      "note": "Uses dark interiors and constrained visibility to increase encounter tension."
     }
   ],
   "tags": [

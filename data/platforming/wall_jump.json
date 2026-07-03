@@ -152,6 +152,10 @@
     {
       "title": "Hollow Knight",
       "note": "Uses wall interaction to expand traversal after an upgrade."
+    },
+    {
+      "title": "Super Mario Odyssey",
+      "note": "Uses wall jumps as a visible 3D platforming traversal move."
     }
   ],
   "tags": [

@@ -163,6 +163,10 @@
     {
       "title": "Diablo II",
       "note": "Uses class skill investment to define play style."
+    },
+    {
+      "title": "The Elder Scrolls V: Skyrim",
+      "note": "Uses perk trees tied to skill progression and build choices."
     }
   ],
   "tags": [

@@ -157,6 +157,14 @@
     {
       "title": "Rogue Legacy",
       "note": "Uses estate upgrades as long-term progression purchases."
+    },
+    {
+      "title": "Resident Evil 4",
+      "note": "Uses merchant upgrades to improve weapons and equipment over time."
+    },
+    {
+      "title": "Hollow Knight",
+      "note": "Uses shop and upgrade services for persistent combat and traversal options."
     }
   ],
   "tags": [

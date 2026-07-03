@@ -156,6 +156,10 @@
     {
       "title": "The Legend of Zelda: Breath of the Wild",
       "note": "Uses floor switches and object placement in shrine puzzles."
+    },
+    {
+      "title": "Portal 2",
+      "note": "Uses floor buttons and cubes as core puzzle-state triggers."
     }
   ],
   "tags": [

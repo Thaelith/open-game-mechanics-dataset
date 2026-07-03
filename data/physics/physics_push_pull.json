@@ -156,6 +156,10 @@
     {
       "title": "The Legend of Zelda: Ocarina of Time",
       "note": "Uses pushable blocks as spatial puzzle elements."
+    },
+    {
+      "title": "Portal 2",
+      "note": "Uses carried and moved physical objects as part of puzzle setup."
     }
   ],
   "tags": [

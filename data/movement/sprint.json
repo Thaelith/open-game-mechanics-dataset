@@ -182,6 +182,10 @@
     {
       "title": "Minecraft",
       "note": "Sprint increases movement speed and adds extra resource pressure during travel."
+    },
+    {
+      "title": "Fortnite",
+      "note": "Uses sprinting as a high-output traversal option during combat and rotation."
     }
   ],
   "tags": [

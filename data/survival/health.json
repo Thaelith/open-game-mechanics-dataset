@@ -162,6 +162,10 @@
     {
       "title": "The Long Dark",
       "note": "Connects health loss to exposure, starvation, dehydration, and injuries."
+    },
+    {
+      "title": "Hollow Knight",
+      "note": "Uses health masks and recovery windows as a visible survival resource."
     }
   ],
   "tags": [

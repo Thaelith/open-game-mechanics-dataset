@@ -180,6 +180,10 @@
     {
       "title": "Hades",
       "note": "Shows ability readiness for combat actions."
+    },
+    {
+      "title": "Overwatch",
+      "note": "Uses ability cooldown indicators to show hero action availability."
     }
   ],
   "tags": [

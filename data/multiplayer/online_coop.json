@@ -162,6 +162,10 @@
     {
       "title": "Deep Rock Galactic",
       "note": "Uses networked co-op for class teamwork, objectives, and shared extraction."
+    },
+    {
+      "title": "Portal 2",
+      "note": "Uses an online co-op campaign with shared puzzle state and partner coordination."
     }
   ],
   "tags": [

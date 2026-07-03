@@ -161,6 +161,10 @@
     {
       "title": "Just Cause 3",
       "note": "Uses wingsuit-style gliding for aerial traversal."
+    },
+    {
+      "title": "Fortnite",
+      "note": "Uses glider deployment for descent and match-entry traversal."
     }
   ],
   "tags": [

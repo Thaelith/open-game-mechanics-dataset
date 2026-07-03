@@ -187,6 +187,14 @@
     {
       "title": "The Witcher 3: Wild Hunt",
       "note": "Uses tracked quest markers and minimap routing for objectives."
+    },
+    {
+      "title": "Fortnite",
+      "note": "Uses quest and map markers to guide objectives and points of interest."
+    },
+    {
+      "title": "Super Mario Odyssey",
+      "note": "Uses map markers and destination hints to guide kingdom objectives."
     }
   ],
   "tags": [

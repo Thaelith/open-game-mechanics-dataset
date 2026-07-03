@@ -166,6 +166,18 @@
     {
       "title": "Hades",
       "note": "Uses close-range attacks with strong hit feedback and enemy reactions."
+    },
+    {
+      "title": "The Elder Scrolls V: Skyrim",
+      "note": "Uses melee weapon attacks across first-person and third-person combat."
+    },
+    {
+      "title": "Resident Evil 4",
+      "note": "Uses contextual melee attacks after enemy stagger opportunities."
+    },
+    {
+      "title": "Hollow Knight",
+      "note": "Uses close-range nail attacks as the main combat interaction."
     }
   ],
   "tags": [

@@ -152,6 +152,18 @@
     {
       "title": "Fortnite",
       "note": "Uses third-person camera framing for movement, aiming, and building awareness."
+    },
+    {
+      "title": "The Elder Scrolls V: Skyrim",
+      "note": "Offers third-person camera framing for exploration, traversal, and combat."
+    },
+    {
+      "title": "Resident Evil 4",
+      "note": "Uses an over-the-shoulder third-person camera for movement and ranged combat."
+    },
+    {
+      "title": "Super Mario Odyssey",
+      "note": "Uses a third-person camera for 3D platforming, exploration, and combat framing."
     }
   ],
   "tags": [

@@ -161,6 +161,10 @@
     {
       "title": "Hollow Knight",
       "note": "Uses ledge-style recovery and climb-adjacent movement in platforming spaces."
+    },
+    {
+      "title": "Super Mario Odyssey",
+      "note": "Uses ledge grabs and climb-up recovery in 3D traversal spaces."
     }
   ],
   "tags": [

@@ -6,7 +6,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Metric | Value |
 | --- | --- |
-| Generated at | 2026-07-03T12:32:45+00:00 |
+| Generated at | 2026-07-03T12:49:10+00:00 |
 | Schema version | 0.2.0 |
 | Total mechanics | 223 |
 | Total categories | 26 |
@@ -563,9 +563,15 @@ _None._
 | Hades | 18 |
 | The Legend of Zelda: Breath of the Wild | 18 |
 | Celeste | 15 |
+| The Elder Scrolls V: Skyrim | 15 |
 | Minecraft | 14 |
+| Resident Evil 4 | 14 |
 | The Witcher 3: Wild Hunt | 13 |
+| Fortnite | 12 |
+| Hollow Knight | 12 |
 | Grand Theft Auto V | 11 |
+| Overwatch | 11 |
+| Portal 2 | 11 |
 | Dark Souls | 9 |
 | Gran Turismo 7 | 8 |
 | Grand Theft Auto IV | 8 |
@@ -574,22 +580,16 @@ _None._
 | The Legend of Zelda: Ocarina of Time | 7 |
 | World of Warcraft | 7 |
 | Apex Legends | 6 |
-| Hollow Knight | 6 |
 | Need for Speed: Hot Pursuit | 6 |
 | Spelunky | 6 |
 | Subnautica | 6 |
-| The Elder Scrolls V: Skyrim | 6 |
+| Super Mario Odyssey | 6 |
 | Alien: Isolation | 5 |
 | Portal | 5 |
-| Portal 2 | 5 |
-| Resident Evil 4 | 5 |
 | Rocket League | 5 |
 | The Last of Us | 5 |
 | Dead Cells | 4 |
 | Diablo III | 4 |
-| Dishonored | 4 |
-| Gears of War | 4 |
-| Left 4 Dead | 4 |
 
 ### Categories with Many Missing Examples
 

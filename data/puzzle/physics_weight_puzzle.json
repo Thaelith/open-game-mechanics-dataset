@@ -132,6 +132,10 @@
     {
       "title": "Half-Life 2",
       "note": "Uses physical object weight and placement in environmental puzzles."
+    },
+    {
+      "title": "Portal 2",
+      "note": "Uses weighted cubes and object placement as repeated puzzle elements."
     }
   ],
   "tags": [

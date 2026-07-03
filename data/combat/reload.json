@@ -149,6 +149,14 @@
     {
       "title": "Resident Evil 4",
       "note": "Uses reload timing and ammunition pressure as part of combat pacing."
+    },
+    {
+      "title": "Fortnite",
+      "note": "Uses reload timing and magazine limits during ranged combat."
+    },
+    {
+      "title": "Overwatch",
+      "note": "Uses reload timing for many ranged heroes and weapons."
     }
   ],
   "tags": [

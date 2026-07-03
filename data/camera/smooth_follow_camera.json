@@ -154,6 +154,10 @@
     {
       "title": "Hollow Knight",
       "note": "Uses smooth camera movement and room framing to support exploration and combat."
+    },
+    {
+      "title": "Super Mario Odyssey",
+      "note": "Uses smooth camera following and framing to support 3D platforming readability."
     }
   ],
   "tags": [

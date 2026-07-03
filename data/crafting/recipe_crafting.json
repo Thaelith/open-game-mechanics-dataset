@@ -166,6 +166,10 @@
     {
       "title": "Subnautica",
       "note": "Uses recipes to turn gathered materials into equipment and base components."
+    },
+    {
+      "title": "The Elder Scrolls V: Skyrim",
+      "note": "Uses ingredient and material recipes for alchemy, smithing, and cooking."
     }
   ],
   "tags": [

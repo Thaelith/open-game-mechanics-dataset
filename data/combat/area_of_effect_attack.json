@@ -153,6 +153,14 @@
     {
       "title": "Hades",
       "note": "Uses area attacks for weapons, boons, and enemy pressure."
+    },
+    {
+      "title": "Fortnite",
+      "note": "Uses explosive and area attacks to pressure cover and grouped players."
+    },
+    {
+      "title": "Overwatch",
+      "note": "Uses area abilities and explosives for team-fight pressure."
     }
   ],
   "tags": [

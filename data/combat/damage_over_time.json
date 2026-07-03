@@ -147,6 +147,14 @@
     {
       "title": "World of Warcraft",
       "note": "Uses periodic damage effects across combat abilities and statuses."
+    },
+    {
+      "title": "The Elder Scrolls V: Skyrim",
+      "note": "Uses poison, burning, and lingering magic effects as visible delayed damage."
+    },
+    {
+      "title": "Overwatch",
+      "note": "Uses lingering ability damage as visible team-fight pressure."
     }
   ],
   "tags": [

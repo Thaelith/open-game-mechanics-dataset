@@ -172,6 +172,18 @@
     {
       "title": "Overwatch",
       "note": "Uses many ranged attack models including projectiles, beams, and scoped shots."
+    },
+    {
+      "title": "The Elder Scrolls V: Skyrim",
+      "note": "Uses bows, spells, and projectiles as visible ranged combat options."
+    },
+    {
+      "title": "Resident Evil 4",
+      "note": "Uses firearms as the primary ranged combat interaction."
+    },
+    {
+      "title": "Fortnite",
+      "note": "Uses firearms and projectile weapons as core combat interactions."
     }
   ],
   "tags": [

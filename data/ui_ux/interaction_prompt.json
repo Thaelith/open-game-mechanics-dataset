@@ -168,6 +168,14 @@
     {
       "title": "The Legend of Zelda: Breath of the Wild",
       "note": "Uses contextual prompts for picking up, talking, climbing, and other world interactions."
+    },
+    {
+      "title": "Resident Evil 4",
+      "note": "Uses contextual prompts for doors, pickups, ladders, and action commands."
+    },
+    {
+      "title": "Portal 2",
+      "note": "Uses interaction prompts and contextual cues for puzzle objects and co-op actions."
     }
   ],
   "tags": [

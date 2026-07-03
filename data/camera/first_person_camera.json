@@ -132,6 +132,18 @@
     {
       "title": "Minecraft",
       "note": "Uses first-person view as a primary play perspective."
+    },
+    {
+      "title": "The Elder Scrolls V: Skyrim",
+      "note": "Offers first-person camera framing for exploration and combat."
+    },
+    {
+      "title": "Overwatch",
+      "note": "Uses first-person camera framing for hero movement, aiming, and ability use."
+    },
+    {
+      "title": "Portal 2",
+      "note": "Uses a first-person camera for spatial puzzle navigation and portal aiming."
     }
   ],
   "tags": [

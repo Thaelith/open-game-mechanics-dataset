@@ -132,6 +132,14 @@
     {
       "title": "Portal 2",
       "note": "Uses co-op pings and markers to support puzzle communication."
+    },
+    {
+      "title": "Fortnite",
+      "note": "Uses map and world pings for squad communication."
+    },
+    {
+      "title": "Overwatch",
+      "note": "Uses contextual pings to communicate threats, locations, and team intent."
     }
   ],
   "tags": [

@@ -171,6 +171,14 @@
     {
       "title": "Apex Legends",
       "note": "Uses hit feedback to distinguish shields, flesh damage, and knocks."
+    },
+    {
+      "title": "Fortnite",
+      "note": "Uses hit confirmation feedback during ranged combat."
+    },
+    {
+      "title": "Overwatch",
+      "note": "Uses hit confirmation feedback for successful weapon and ability impacts."
     }
   ],
   "tags": [

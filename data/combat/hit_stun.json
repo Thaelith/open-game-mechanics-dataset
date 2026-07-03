@@ -154,6 +154,10 @@
     {
       "title": "Devil May Cry 5",
       "note": "Uses hit reactions to support juggling and combo flow."
+    },
+    {
+      "title": "Resident Evil 4",
+      "note": "Uses hit reactions and stagger states that open follow-up actions."
     }
   ],
   "tags": [

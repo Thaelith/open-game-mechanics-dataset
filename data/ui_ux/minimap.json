@@ -165,6 +165,10 @@
     {
       "title": "Diablo III",
       "note": "Uses map overlays and minimap information for dungeon navigation."
+    },
+    {
+      "title": "Fortnite",
+      "note": "Uses a minimap for safe-zone, teammate, and nearby activity awareness."
     }
   ],
   "tags": [

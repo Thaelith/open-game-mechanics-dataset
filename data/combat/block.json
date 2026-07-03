@@ -159,6 +159,10 @@
     {
       "title": "For Honor",
       "note": "Uses guard direction and blocking as central combat concepts."
+    },
+    {
+      "title": "The Elder Scrolls V: Skyrim",
+      "note": "Uses shield and weapon blocking to reduce incoming combat pressure."
     }
   ],
   "tags": [

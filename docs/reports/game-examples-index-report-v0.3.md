@@ -7,11 +7,11 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | Metric | Value |
 | --- | --- |
 | Total mechanics | 223 |
-| Total example-game references | 493 |
+| Total example-game references | 545 |
 | Unique game titles | 194 |
-| Games with 1 mechanic | 102 |
-| Games with 2-4 mechanics | 67 |
-| Games with 5+ mechanics | 25 |
+| Games with 1 mechanic | 101 |
+| Games with 2-4 mechanics | 65 |
+| Games with 5+ mechanics | 28 |
 | Max mechanics on one game | 18 |
 
 ## Top Games By Referenced Mechanics
@@ -21,18 +21,18 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | Hades | 18 | combat, roguelike, progression, ui_ux, camera, economy, +3 more | camera.top_down_camera, combat.area_of_effect_attack, combat.invincibility_frames, combat.knockback, combat.melee_attack, economy.shop, +4 more |
 | The Legend of Zelda: Breath of the Wild | 18 | movement, survival, time, ui_ux, physics, combat, +3 more | combat.shield, movement.climbing, movement.stamina_movement, movement.swimming, physics.buoyancy, physics.wind_force, +4 more |
 | Celeste | 15 | platforming, accessibility, camera, movement, physics, progression, +1 more | accessibility.adjustable_difficulty, accessibility.assist_mode, camera.screen_shake, camera.smooth_follow_camera, movement.air_dash, movement.dash, +4 more |
+| The Elder Scrolls V: Skyrim | 15 | combat, camera, crafting, progression, economy, movement, +3 more | camera.first_person_camera, camera.third_person_camera, combat.block, combat.damage_over_time, combat.melee_attack, combat.ranged_attack, +4 more |
 | Minecraft | 14 | survival, procedural_generation, camera, crafting, economy, movement, +2 more | camera.dynamic_fov, camera.first_person_camera, crafting.recipe_crafting, economy.crafting_materials, movement.sprint, procedural_generation.biome_generation, +4 more |
+| Resident Evil 4 | 14 | combat, ui_ux, horror, survival, camera, economy, +1 more | camera.third_person_camera, combat.hit_stun, combat.melee_attack, combat.ranged_attack, combat.reload, economy.shop, +4 more |
 | The Witcher 3: Wild Hunt | 13 | combat, narrative, progression, ui_ux, camera, crafting, +1 more | camera.third_person_camera, combat.block, combat.damage_over_time, combat.melee_attack, combat.ranged_attack, crafting.recipe_crafting, +4 more |
+| Fortnite | 12 | ui_ux, combat, accessibility, camera, movement, multiplayer, +1 more | accessibility.colorblind_modes, camera.third_person_camera, combat.area_of_effect_attack, combat.ranged_attack, combat.reload, movement.sprint, +4 more |
+| Hollow Knight | 12 | platforming, movement, camera, combat, economy, progression, +2 more | camera.smooth_follow_camera, combat.melee_attack, economy.shop, movement.dash, movement.run, platforming.double_jump, +4 more |
 | Grand Theft Auto V | 11 | vehicles, combat, ui_ux, camera, physics, traversal | camera.third_person_camera, combat.ranged_attack, combat.reload, physics.ragdoll, traversal.vehicle_mount, ui_ux.minimap, +4 more |
+| Overwatch | 11 | combat, multiplayer, ui_ux, camera, traversal | camera.first_person_camera, combat.area_of_effect_attack, combat.damage_over_time, combat.projectile_reflection, combat.ranged_attack, combat.reload, +4 more |
+| Portal 2 | 11 | puzzle, multiplayer, physics, camera, ui_ux | camera.first_person_camera, multiplayer.online_coop, multiplayer.ping_system, physics.low_gravity_zone, physics.physics_push_pull, puzzle.color_matching, +4 more |
 | Dark Souls | 9 | combat, movement, ai, camera, meta, survival | ai.boss_phase_transition, camera.camera_lock_on, combat.block, combat.invincibility_frames, combat.lock_on_targeting, meta.new_game_plus, +3 more |
 | Gran Turismo 7 | 8 | vehicles, camera, economy | camera.first_person_camera, camera.third_person_camera, economy.shop, vehicles.drifting, vehicles.fuel, vehicles.suspension_physics, +2 more |
 | Grand Theft Auto IV | 8 | vehicles, ui_ux, camera, physics, traversal | camera.third_person_camera, physics.ragdoll, traversal.vehicle_mount, ui_ux.minimap, ui_ux.quest_marker, vehicles.vehicle_acceleration, +2 more |
-| Half-Life 2 | 7 | physics, camera, movement, puzzle, traversal | camera.first_person_camera, movement.crouch, physics.buoyancy, physics.physics_push_pull, physics.ragdoll, puzzle.physics_weight_puzzle, +1 more |
-| Slay the Spire | 7 | roguelike, combat, meta | combat.damage_over_time, meta.daily_challenge, roguelike.curse_modifier, roguelike.pick_one_upgrade_choice, roguelike.relic_synergy, roguelike.risk_reward_room, +1 more |
-| The Legend of Zelda: Ocarina of Time | 7 | combat, physics, puzzle, camera | camera.camera_lock_on, combat.lock_on_targeting, combat.projectile_reflection, physics.breakable_object, physics.physics_push_pull, puzzle.key_and_lock, +1 more |
-| World of Warcraft | 7 | combat, economy, meta, progression, time, ui_ux | combat.area_of_effect_attack, combat.damage_over_time, economy.repair_cost, meta.player_profile_stats, progression.level_up, time.cooldown_time, +1 more |
-| Apex Legends | 6 | multiplayer, meta, movement, traversal, ui_ux | meta.player_profile_stats, movement.slide, multiplayer.ping_system, multiplayer.revive_teammate, traversal.zipline, ui_ux.hit_marker |
-| Hollow Knight | 6 | platforming, camera, movement, ui_ux | camera.smooth_follow_camera, movement.run, platforming.double_jump, platforming.ledge_climb, platforming.wall_jump, ui_ux.checkpoint_notification |
 
 ## Category-To-Game Coverage
 
@@ -40,29 +40,29 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | --- | --- | --- | --- |
 | accessibility | 7 | 10 | The Last of Us Part II (3), Celeste (2), Destiny 2 (1), Fortnite (1), Forza Motorsport (1) |
 | ai | 18 | 22 | Left 4 Dead (2), The Last of Us (2), The Sims (2), XCOM (2), Alien: Isolation (1) |
-| camera | 26 | 29 | Celeste (2), Gran Turismo 7 (2), Minecraft (2), Dark Souls (1), Factorio (1) |
-| combat | 28 | 45 | Hades (4), The Witcher 3: Wild Hunt (4), Dark Souls (3), Counter-Strike 2 (2), Devil May Cry 5 (2) |
-| crafting | 9 | 9 | Don't Starve (1), Factorio (1), Minecraft (1), Monster Hunter: World (1), Subnautica (1) |
-| economy | 20 | 22 | Animal Crossing (2), Stardew Valley (2), AdVenture Capitalist (1), Borderlands (1), Cookie Clicker (1) |
-| horror | 10 | 16 | Alien: Isolation (3), Amnesia: The Dark Descent (3), Amnesia: The Bunker (2), Outlast (2), Alan Wake (1) |
+| camera | 31 | 36 | Celeste (2), Gran Turismo 7 (2), Minecraft (2), Super Mario Odyssey (2), The Elder Scrolls V: Skyrim (2) |
+| combat | 31 | 59 | Overwatch (5), Hades (4), Resident Evil 4 (4), The Elder Scrolls V: Skyrim (4), The Witcher 3: Wild Hunt (4) |
+| crafting | 9 | 10 | The Elder Scrolls V: Skyrim (2), Don't Starve (1), Factorio (1), Minecraft (1), Monster Hunter: World (1) |
+| economy | 23 | 25 | Animal Crossing (2), Stardew Valley (2), AdVenture Capitalist (1), Borderlands (1), Cookie Clicker (1) |
+| horror | 11 | 18 | Alien: Isolation (3), Amnesia: The Dark Descent (3), Amnesia: The Bunker (2), Outlast (2), Resident Evil 4 (2) |
 | meta | 8 | 8 | Apex Legends (1), Chrono Trigger (1), Dark Souls (1), Hades (1), Slay the Spire (1) |
-| movement | 20 | 25 | The Legend of Zelda: Breath of the Wild (3), Celeste (2), Dark Souls (2), The Last of Us (2), Apex Legends (1) |
-| multiplayer | 13 | 20 | Deep Rock Galactic (3), Apex Legends (2), Helldivers 2 (2), Left 4 Dead (2), Lovers in a Dangerous Spacetime (2) |
+| movement | 21 | 27 | The Legend of Zelda: Breath of the Wild (3), Celeste (2), Dark Souls (2), Hollow Knight (2), The Last of Us (2) |
+| multiplayer | 14 | 23 | Deep Rock Galactic (3), Apex Legends (2), Helldivers 2 (2), Left 4 Dead (2), Lovers in a Dangerous Spacetime (2) |
 | narrative | 8 | 11 | Fallout: New Vegas (2), Mass Effect (2), The Witcher 3: Wild Hunt (2), Baldur's Gate 3 (1), BioShock (1) |
-| physics | 18 | 24 | Half-Life 2 (3), Celeste (2), Super Mario World (2), The Legend of Zelda: Breath of the Wild (2), The Legend of Zelda: Ocarina of Time (2) |
-| platforming | 9 | 16 | Celeste (5), Hollow Knight (3), Super Meat Boy (2), Prince of Persia: The Sands of Time (1), Super Mario Bros. (1) |
+| physics | 18 | 25 | Half-Life 2 (3), Celeste (2), Portal 2 (2), Super Mario World (2), The Legend of Zelda: Breath of the Wild (2) |
+| platforming | 10 | 19 | Celeste (5), Hollow Knight (4), Super Mario Odyssey (2), Super Meat Boy (2), Prince of Persia: The Sands of Time (1) |
 | procedural_generation | 14 | 18 | Minecraft (3), No Man's Sky (2), Spelunky (2), Borderlands (1), Darkest Dungeon (1) |
-| progression | 21 | 24 | Hades (3), The Witcher 3: Wild Hunt (2), Borderlands (1), Celeste (1), Cookie Clicker (1) |
-| puzzle | 12 | 20 | Portal (3), Portal 2 (3), The Talos Principle (3), The Legend of Zelda: Ocarina of Time (2), The Witness (2) |
+| progression | 23 | 27 | Hades (3), The Elder Scrolls V: Skyrim (2), The Witcher 3: Wild Hunt (2), Borderlands (1), Celeste (1) |
+| puzzle | 12 | 22 | Portal 2 (5), Portal (3), The Talos Principle (3), The Legend of Zelda: Ocarina of Time (2), The Witness (2) |
 | rhythm | 6 | 8 | Guitar Hero (3), Beat Saber (1), Crypt of the NecroDancer (1), Dance Dance Revolution (1), osu! (1) |
 | roguelike | 8 | 18 | Slay the Spire (5), Hades (4), The Binding of Isaac (3), Dead Cells (2), Darkest Dungeon (1) |
 | simulation | 7 | 8 | Cities: Skylines (2), Dwarf Fortress (1), Frostpunk (1), OpenTTD (1), RimWorld (1) |
 | stealth | 8 | 12 | Thief: The Dark Project (3), Mark of the Ninja (2), Metal Gear Solid V (2), Alien: Isolation (1), Dishonored (1) |
 | strategy | 4 | 8 | Civilization VI (3), Age of Empires II (2), StarCraft II (2), Company of Heroes (1) |
-| survival | 10 | 20 | Minecraft (4), The Legend of Zelda: Breath of the Wild (3), The Long Dark (3), Don't Starve (2), Resident Evil 4 (2) |
+| survival | 11 | 21 | Minecraft (4), The Legend of Zelda: Breath of the Wild (3), The Long Dark (3), Don't Starve (2), Resident Evil 4 (2) |
 | time | 12 | 14 | The Legend of Zelda: Breath of the Wild (3), Braid (1), Crypt of the NecroDancer (1), Hades (1), Hi-Fi Rush (1) |
-| traversal | 21 | 23 | Spelunky (2), Titanfall 2 (2), Apex Legends (1), Assassin's Creed II (1), Assassin's Creed Unity (1) |
-| ui_ux | 20 | 30 | Red Dead Redemption 2 (3), The Legend of Zelda: Breath of the Wild (3), Diablo III (2), Grand Theft Auto IV (2), Grand Theft Auto V (2) |
+| traversal | 22 | 24 | Spelunky (2), Titanfall 2 (2), Apex Legends (1), Assassin's Creed II (1), Assassin's Creed Unity (1) |
+| ui_ux | 24 | 39 | Fortnite (4), Red Dead Redemption 2 (3), Resident Evil 4 (3), The Legend of Zelda: Breath of the Wild (3), Diablo III (2) |
 | vehicles | 12 | 33 | Gran Turismo 7 (5), Need for Speed: Hot Pursuit (5), Grand Theft Auto V (4), Mario Kart 8 (4), Rocket League (4) |
 
 ## Games Index
@@ -144,6 +144,29 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | progression.unlockable_abilities | progression | Introduces and teaches new movement capabilities through progression and level design. |
 | ui_ux.tutorial_prompt | ui_ux | Uses concise prompts to introduce movement abilities. |
 
+### The Elder Scrolls V: Skyrim
+
+- Mechanic count: 15
+- Categories: combat, camera, crafting, progression, economy, movement, procedural_generation, survival, ui_ux
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| camera.first_person_camera | camera | Offers first-person camera framing for exploration and combat. |
+| camera.third_person_camera | camera | Offers third-person camera framing for exploration, traversal, and combat. |
+| combat.block | combat | Uses shield and weapon blocking to reduce incoming combat pressure. |
+| combat.damage_over_time | combat | Uses poison, burning, and lingering magic effects as visible delayed damage. |
+| combat.melee_attack | combat | Uses melee weapon attacks across first-person and third-person combat. |
+| combat.ranged_attack | combat | Uses bows, spells, and projectiles as visible ranged combat options. |
+| crafting.ingredient_quality | crafting | Uses ingredient properties and crafting inputs as part of alchemy and equipment loops. |
+| crafting.recipe_crafting | crafting | Uses ingredient and material recipes for alchemy, smithing, and cooking. |
+| economy.shop | economy | Uses vendors for buying, selling, and restocking equipment and supplies. |
+| movement.sprint | movement | Sprint increases traversal speed while consuming stamina. |
+| procedural_generation.procedural_quests | procedural_generation | Uses radiant-style quests to create repeatable objectives. |
+| progression.experience_points | progression | Uses skill and character progression tied to repeated play. |
+| progression.skill_tree | progression | Uses perk trees tied to skill progression and build choices. |
+| survival.inventory_limit | survival | Uses carry weight to limit looting and travel decisions. |
+| ui_ux.quest_marker | ui_ux | Uses compass and map quest markers to guide objectives. |
+
 ### Minecraft
 
 - Mechanic count: 14
@@ -166,6 +189,28 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | time.day_night_schedule | time | Uses a day and night cycle that changes visibility and enemy pressure. |
 | ui_ux.inventory_grid | ui_ux | Uses slot-based inventory management for items and crafting. |
 
+### Resident Evil 4
+
+- Mechanic count: 14
+- Categories: combat, ui_ux, horror, survival, camera, economy, progression
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| camera.third_person_camera | camera | Uses an over-the-shoulder third-person camera for movement and ranged combat. |
+| combat.hit_stun | combat | Uses hit reactions and stagger states that open follow-up actions. |
+| combat.melee_attack | combat | Uses contextual melee attacks after enemy stagger opportunities. |
+| combat.ranged_attack | combat | Uses firearms as the primary ranged combat interaction. |
+| combat.reload | combat | Uses reload timing and ammunition pressure as part of combat pacing. |
+| economy.shop | economy | Uses the merchant for buying, selling, and preparing equipment. |
+| horror.limited_visibility | horror | Uses dark interiors and constrained visibility to increase encounter tension. |
+| horror.safe_room | horror | Uses calmer save and merchant spaces as recovery and planning breaks. |
+| progression.upgrade_shop | progression | Uses merchant upgrades to improve weapons and equipment over time. |
+| survival.health | survival | Uses health recovery items and danger states as part of survival pressure. |
+| survival.inventory_limit | survival | Uses limited inventory space as a major planning and item-management constraint. |
+| ui_ux.checkpoint_notification | ui_ux | Uses visible save/checkpoint feedback to reassure players after progress commits. |
+| ui_ux.interaction_prompt | ui_ux | Uses contextual prompts for doors, pickups, ladders, and action commands. |
+| ui_ux.inventory_grid | ui_ux | Uses a grid inventory where item placement and size matter. |
+
 ### The Witcher 3: Wild Hunt
 
 - Mechanic count: 13
@@ -187,6 +232,46 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | ui_ux.minimap | ui_ux | Uses minimap routing and nearby objective context during exploration. |
 | ui_ux.quest_marker | ui_ux | Uses tracked quest markers and minimap routing for objectives. |
 
+### Fortnite
+
+- Mechanic count: 12
+- Categories: ui_ux, combat, accessibility, camera, movement, multiplayer, traversal
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| accessibility.colorblind_modes | accessibility | Includes colorblind mode settings affecting gameplay readability. |
+| camera.third_person_camera | camera | Uses third-person camera framing for movement, aiming, and building awareness. |
+| combat.area_of_effect_attack | combat | Uses explosive and area attacks to pressure cover and grouped players. |
+| combat.ranged_attack | combat | Uses firearms and projectile weapons as core combat interactions. |
+| combat.reload | combat | Uses reload timing and magazine limits during ranged combat. |
+| movement.sprint | movement | Uses sprinting as a high-output traversal option during combat and rotation. |
+| multiplayer.ping_system | multiplayer | Uses map and world pings for squad communication. |
+| traversal.gliding | traversal | Uses glider deployment for descent and match-entry traversal. |
+| ui_ux.damage_numbers | ui_ux | Uses damage numbers to show hit results, shield damage, and eliminations. |
+| ui_ux.hit_marker | ui_ux | Uses hit confirmation feedback during ranged combat. |
+| ui_ux.minimap | ui_ux | Uses a minimap for safe-zone, teammate, and nearby activity awareness. |
+| ui_ux.quest_marker | ui_ux | Uses quest and map markers to guide objectives and points of interest. |
+
+### Hollow Knight
+
+- Mechanic count: 12
+- Categories: platforming, movement, camera, combat, economy, progression, survival, ui_ux
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| camera.smooth_follow_camera | camera | Uses smooth camera movement and room framing to support exploration and combat. |
+| combat.melee_attack | combat | Uses close-range nail attacks as the main combat interaction. |
+| economy.shop | economy | Uses shops for maps, charms, keys, and traversal-related items. |
+| movement.dash | movement | Uses dash as a movement upgrade for combat spacing and traversal. |
+| movement.run | movement | Uses a consistent run pace as the base for combat and platforming movement. |
+| platforming.double_jump | platforming | Uses an air-mobility upgrade to change traversal options. |
+| platforming.ledge_climb | platforming | Uses ledge-style recovery and climb-adjacent movement in platforming spaces. |
+| platforming.wall_jump | platforming | Uses wall interaction to expand traversal after an upgrade. |
+| platforming.wall_slide | platforming | Uses wall sliding after a traversal upgrade to support wall-jump routes. |
+| progression.upgrade_shop | progression | Uses shop and upgrade services for persistent combat and traversal options. |
+| survival.health | survival | Uses health masks and recovery windows as a visible survival resource. |
+| ui_ux.checkpoint_notification | ui_ux | Uses bench and save feedback tied to progression restore points. |
+
 ### Grand Theft Auto V
 
 - Mechanic count: 11
@@ -205,6 +290,44 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | vehicles.vehicle_acceleration | vehicles | Uses vehicle acceleration and traction feel across city driving and races. |
 | vehicles.vehicle_braking | vehicles | Uses braking and handbrake behavior during street driving, races, and pursuits. |
 | vehicles.vehicle_damage | vehicles | Includes visible vehicle damage and repair interactions. |
+
+### Overwatch
+
+- Mechanic count: 11
+- Categories: combat, multiplayer, ui_ux, camera, traversal
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| camera.first_person_camera | camera | Uses first-person camera framing for hero movement, aiming, and ability use. |
+| combat.area_of_effect_attack | combat | Uses area abilities and explosives for team-fight pressure. |
+| combat.damage_over_time | combat | Uses lingering ability damage as visible team-fight pressure. |
+| combat.projectile_reflection | combat | Uses Genji's Deflect to redirect incoming projectiles. |
+| combat.ranged_attack | combat | Uses many ranged attack models including projectiles, beams, and scoped shots. |
+| combat.reload | combat | Uses reload timing for many ranged heroes and weapons. |
+| multiplayer.ping_system | multiplayer | Uses contextual pings to communicate threats, locations, and team intent. |
+| multiplayer.team_objective | multiplayer | Uses team objectives such as payloads and control points to structure matches. |
+| traversal.teleport_blink | traversal | Uses Tracer's Blink for rapid combat repositioning. |
+| ui_ux.cooldown_indicator | ui_ux | Uses ability cooldown indicators to show hero action availability. |
+| ui_ux.hit_marker | ui_ux | Uses hit confirmation feedback for successful weapon and ability impacts. |
+
+### Portal 2
+
+- Mechanic count: 11
+- Categories: puzzle, multiplayer, physics, camera, ui_ux
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| camera.first_person_camera | camera | Uses a first-person camera for spatial puzzle navigation and portal aiming. |
+| multiplayer.online_coop | multiplayer | Uses an online co-op campaign with shared puzzle state and partner coordination. |
+| multiplayer.ping_system | multiplayer | Uses co-op pings and markers to support puzzle communication. |
+| physics.low_gravity_zone | physics | Uses altered movement fields in puzzle spaces. |
+| physics.physics_push_pull | physics | Uses carried and moved physical objects as part of puzzle setup. |
+| puzzle.color_matching | puzzle | Uses colored gels and clear channel affordances in spatial puzzles. |
+| puzzle.lever_switch | puzzle | Uses switches and linked targets in readable puzzle rooms. |
+| puzzle.physics_weight_puzzle | puzzle | Uses weighted cubes and object placement as repeated puzzle elements. |
+| puzzle.pressure_plate | puzzle | Uses floor buttons and cubes as core puzzle-state triggers. |
+| puzzle.timed_door | puzzle | Uses timed doors and switches to combine puzzle logic with traversal timing. |
+| ui_ux.interaction_prompt | ui_ux | Uses interaction prompts and contextual cues for puzzle objects and co-op actions. |
 
 ### Dark Souls
 
@@ -329,20 +452,6 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | traversal.zipline | traversal | Uses ziplines as fast traversal routes between positions. |
 | ui_ux.hit_marker | ui_ux | Uses hit feedback to distinguish shields, flesh damage, and knocks. |
 
-### Hollow Knight
-
-- Mechanic count: 6
-- Categories: platforming, camera, movement, ui_ux
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| camera.smooth_follow_camera | camera | Uses smooth camera movement and room framing to support exploration and combat. |
-| movement.run | movement | Uses a consistent run pace as the base for combat and platforming movement. |
-| platforming.double_jump | platforming | Uses an air-mobility upgrade to change traversal options. |
-| platforming.ledge_climb | platforming | Uses ledge-style recovery and climb-adjacent movement in platforming spaces. |
-| platforming.wall_jump | platforming | Uses wall interaction to expand traversal after an upgrade. |
-| ui_ux.checkpoint_notification | ui_ux | Uses bench and save feedback tied to progression restore points. |
-
 ### Need for Speed: Hot Pursuit
 
 - Mechanic count: 6
@@ -385,19 +494,19 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | survival.oxygen | survival | Uses oxygen supply to define underwater exploration range and risk. |
 | survival.thirst | survival | Uses water supply as part of long exploration planning. |
 
-### The Elder Scrolls V: Skyrim
+### Super Mario Odyssey
 
 - Mechanic count: 6
-- Categories: crafting, movement, procedural_generation, progression, survival, ui_ux
+- Categories: camera, platforming, movement, ui_ux
 
 | Mechanic | Category | Example note |
 | --- | --- | --- |
-| crafting.ingredient_quality | crafting | Uses ingredient properties and crafting inputs as part of alchemy and equipment loops. |
-| movement.sprint | movement | Sprint increases traversal speed while consuming stamina. |
-| procedural_generation.procedural_quests | procedural_generation | Uses radiant-style quests to create repeatable objectives. |
-| progression.experience_points | progression | Uses skill and character progression tied to repeated play. |
-| survival.inventory_limit | survival | Uses carry weight to limit looting and travel decisions. |
-| ui_ux.quest_marker | ui_ux | Uses compass and map quest markers to guide objectives. |
+| camera.smooth_follow_camera | camera | Uses smooth camera following and framing to support 3D platforming readability. |
+| camera.third_person_camera | camera | Uses a third-person camera for 3D platforming, exploration, and combat framing. |
+| movement.run | movement | Uses responsive running as a baseline for jumps, captures, and traversal. |
+| platforming.ledge_climb | platforming | Uses ledge grabs and climb-up recovery in 3D traversal spaces. |
+| platforming.wall_jump | platforming | Uses wall jumps as a visible 3D platforming traversal move. |
+| ui_ux.quest_marker | ui_ux | Uses map markers and destination hints to guide kingdom objectives. |
 
 ### Alien: Isolation
 
@@ -424,32 +533,6 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | puzzle.portal_pair | puzzle | Uses paired portals for spatial reasoning and momentum puzzles. |
 | puzzle.pressure_plate | puzzle | Uses weighted buttons and cubes as central puzzle interactions. |
 | ui_ux.tutorial_prompt | ui_ux | Uses contextual teaching and signage to introduce mechanics. |
-
-### Portal 2
-
-- Mechanic count: 5
-- Categories: puzzle, multiplayer, physics
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| multiplayer.ping_system | multiplayer | Uses co-op pings and markers to support puzzle communication. |
-| physics.low_gravity_zone | physics | Uses altered movement fields in puzzle spaces. |
-| puzzle.color_matching | puzzle | Uses colored gels and clear channel affordances in spatial puzzles. |
-| puzzle.lever_switch | puzzle | Uses switches and linked targets in readable puzzle rooms. |
-| puzzle.timed_door | puzzle | Uses timed doors and switches to combine puzzle logic with traversal timing. |
-
-### Resident Evil 4
-
-- Mechanic count: 5
-- Categories: survival, ui_ux, combat
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| combat.reload | combat | Uses reload timing and ammunition pressure as part of combat pacing. |
-| survival.health | survival | Uses health recovery items and danger states as part of survival pressure. |
-| survival.inventory_limit | survival | Uses limited inventory space as a major planning and item-management constraint. |
-| ui_ux.checkpoint_notification | ui_ux | Uses visible save/checkpoint feedback to reassure players after progress commits. |
-| ui_ux.inventory_grid | ui_ux | Uses a grid inventory where item placement and size matter. |
 
 ### Rocket League
 
@@ -548,18 +631,6 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | vehicles.vehicle_acceleration | vehicles | Uses readable acceleration and traction differences across kart setups. |
 | vehicles.vehicle_boost | vehicles | Uses temporary speed boosts from drifts, items, and track features. |
 | vehicles.vehicle_braking | vehicles | Uses braking and reverse controls in accessible racing scenarios. |
-
-### Overwatch
-
-- Mechanic count: 4
-- Categories: combat, multiplayer, traversal
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| combat.projectile_reflection | combat | Uses Genji's Deflect to redirect incoming projectiles. |
-| combat.ranged_attack | combat | Uses many ranged attack models including projectiles, beams, and scoped shots. |
-| multiplayer.team_objective | multiplayer | Uses team objectives such as payloads and control points to structure matches. |
-| traversal.teleport_blink | traversal | Uses Tracer's Blink for rapid combat repositioning. |
 
 ### Prince of Persia: The Sands of Time
 
@@ -743,28 +814,6 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | rhythm.combo_multiplier | rhythm | Uses note streaks and multipliers as a central scoring layer. |
 | rhythm.note_lane | rhythm | Uses a note highway with lane-specific inputs. |
 | rhythm.sync_window | rhythm | Uses timing windows to judge note hits against charted music. |
-
-### Halo: Combat Evolved
-
-- Mechanic count: 3
-- Categories: camera, combat, traversal
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| camera.split_screen | camera | Uses split-screen cameras for local co-op and versus play. |
-| combat.shield | combat | Uses regenerating shields as a major combat pacing layer. |
-| traversal.vehicle_mount | traversal | Uses driver and passenger vehicle seats as a combat traversal layer. |
-
-### Mass Effect
-
-- Mechanic count: 3
-- Categories: narrative, ui_ux
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| narrative.branching_dialogue | narrative | Uses branching conversations that record choices and affect later story state. |
-| narrative.codex_journal | narrative | Uses a codex to organize world lore, species, technology, and history. |
-| ui_ux.dialogue_choice | ui_ux | Uses dialogue choices to steer tone and narrative outcomes. |
 
 ## Interpretation Notes
 

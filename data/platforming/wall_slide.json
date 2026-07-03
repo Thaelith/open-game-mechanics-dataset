@@ -116,6 +116,10 @@
     {
       "title": "Super Meat Boy",
       "note": "Shows wall sliding as a readable setup state for wall jumps."
+    },
+    {
+      "title": "Hollow Knight",
+      "note": "Uses wall sliding after a traversal upgrade to support wall-jump routes."
     }
   ],
   "tags": [

@@ -177,6 +177,10 @@
     {
       "title": "Borderlands 2",
       "note": "Uses damage numbers to communicate weapon and elemental effects."
+    },
+    {
+      "title": "Fortnite",
+      "note": "Uses damage numbers to show hit results, shield damage, and eliminations."
     }
   ],
   "tags": [
