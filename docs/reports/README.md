@@ -44,6 +44,10 @@ Documents the fourth curated pass focused on mature anchor deepening and quality
 
 Documents the fifth curated pass focused on classic high-value anchor games in the derived game-to-mechanics index.
 
+[`game-anchor-quality-audit-v0.3.md`](game-anchor-quality-audit-v0.3.md)
+
+Reviews the accumulated game-anchor enrichment work for title consistency risks, saturated anchors, broad mappings, and recommended fixes before further enrichment.
+
 ## v0.3 Review Tracking
 
 [`v0.3-review-summary.md`](v0.3-review-summary.md)
@@ -84,4 +88,5 @@ python tools/mechanic_graph_report.py --output docs/reports/mechanic-graph-repor
 node tools/test_mixer_scenarios.mjs --report docs/reports/mechanic-mixer-scenario-qa-v0.2.md
 python tools/example_games_report.py
 python tools/game_examples_index.py
+python tools/game_anchor_audit.py
 ```
