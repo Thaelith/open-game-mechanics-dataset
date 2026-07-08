@@ -24,6 +24,10 @@ Tracks how well mechanics are connected to lightweight game examples for study r
 
 Reverses mechanic-level `example_games` into a derived game-to-mechanics view so readers can see which mechanics are currently associated with a recognizable game title.
 
+## Game Anchor Review And Enrichment Reports
+
+These reports document the policy-guided game-anchor work behind the derived Games browser. They are review artifacts, not a separate game database.
+
 [`game-anchor-enrichment-pass-1-v0.3.md`](game-anchor-enrichment-pass-1-v0.3.md)
 
 Documents the first curated pass that strengthened sparse game anchors in the derived game-to-mechanics index without creating a separate game database.

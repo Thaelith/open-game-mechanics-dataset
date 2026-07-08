@@ -14,10 +14,18 @@ Example-game discovery preparation now includes full mechanic-level example cove
 
 Playable example preparation now includes an MVP set of original browser demos for five lower-risk mechanics. These examples use simple shapes and are tracked in [`playable-mechanic-examples.md`](playable-mechanic-examples.md); they are not commercial game footage or production templates.
 
+## Completed Preparation Checkpoints
+
+- Games view and game-to-mechanics discovery are implemented in the static browser.
+- Playable examples MVP exists for five selected mechanics.
+- Game-anchor enrichment passes improved selected underdeveloped study anchors.
+- Game-anchor quality audit, title policy, and targeted cleanup reports exist.
+- Public usage guidance and v0.3 release-notes drafting have started.
+
 ## Must Do
 
 - Create a reviewed core subset of 20-30 high-value mechanics. See [`reviewed-core-subset-v0.3.md`](reviewed-core-subset-v0.3.md).
-- Define a trust, provenance, and review workflow.
+- Apply the existing trust, provenance, and review workflow to first reviewed-status candidates.
 - Use the taxonomy and categorization criteria to review mechanic vs variant vs parameter boundaries.
 - Apply the reviewed-core confidence workflow before changing `status` or `source_confidence`.
 - Treat `edge_cases` and `common_bugs` as first-class review signals, not secondary cleanup fields.
@@ -27,11 +35,12 @@ Playable example preparation now includes an MVP set of original browser demos f
 - Review relationship quality in lower-coverage or high-risk categories.
 - Apply relationship direction criteria before rewriting typed relationship data.
 - Continue targeted hardening where future audits show weak prerequisites, state assumptions, or failure modes.
+- Collect public feedback before broad new data enrichment.
 
 ## Should Do
 
 - Add a visual relationship graph.
-- Add more public demo examples.
+- Review feedback on the current playable examples before adding more public demos.
 - Maintain example-game coverage and improve title consistency. See [`example-games-and-tagging.md`](example-games-and-tagging.md), [`reports/example-games-coverage-report-v0.3.md`](reports/example-games-coverage-report-v0.3.md), and [`reports/game-examples-index-report-v0.3.md`](reports/game-examples-index-report-v0.3.md).
 - Validate the existing static browser Games view with real users before adding any broader tagging layer.
 - Validate the playable examples MVP with users before expanding beyond the first five mechanics.
@@ -39,6 +48,7 @@ Playable example preparation now includes an MVP set of original browser demos f
 - Improve contribution workflow for mechanic review.
 - Add relationship QA checks for suspicious cross-domain suggestions.
 - Track reviewed-core gaps in [`reports/reviewed-core-gap-report-v0.3.md`](reports/reviewed-core-gap-report-v0.3.md).
+- Continue only small, audit-guided game-anchor enrichment; avoid broad enrichment without a fresh quality review.
 
 ## Nice To Have
 
@@ -48,5 +58,5 @@ Playable example preparation now includes an MVP set of original browser demos f
 - Engine-specific export helpers.
 - More scenario fixtures after relationship quality improves.
 - Deeper browser filtering for comparing games with similar mechanic sets.
-- More playable examples after criteria, scope, and maintenance expectations are clear.
+- More playable examples after feedback confirms which mechanics benefit most from interaction.
 - Separate `games/` or `game_tags/` layer after example coverage, taxonomy boundaries, and moderation expectations are clearer.

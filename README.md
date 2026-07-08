@@ -2,17 +2,21 @@
 
 An engine-agnostic, machine-readable dataset of game mechanics for developers, students, researchers, technical designers, and AI coding or design agents.
 
-The v0.2 release adds typed mechanic relationships, rough scope metadata, graph validation, a static browser, and the first client-side Mechanic Mixer MVP.
+It is meant to help people browse mechanics, study recognizable game references, try small playable examples, and analyze mechanic combinations before prototyping.
 
-## Start Here
+The v0.2 release is the current dataset foundation. v0.3 preparation adds stronger public guidance, a Games view, playable examples, game-anchor policy/audits, and review workflow docs without changing the schema yet.
+
+## Try It
 
 - Browse the dataset on GitHub Pages: [thaelith.github.io/open-game-mechanics-dataset/site/](https://thaelith.github.io/open-game-mechanics-dataset/site/)
+- Try original playable examples: [thaelith.github.io/open-game-mechanics-dataset/site/playable-examples.html](https://thaelith.github.io/open-game-mechanics-dataset/site/playable-examples.html)
 - Browse locally: [`site/index.html`](site/index.html)
+- Read the public usage guide: [`docs/public-usage-guide-v0.3.md`](docs/public-usage-guide-v0.3.md)
 - Learn the Mixer: [`docs/how-to-use-the-mixer.md`](docs/how-to-use-the-mixer.md)
-- Try playable examples: [`site/playable-examples.html`](site/playable-examples.html)
 - Try demo mixes: [`docs/demo-mixes.md`](docs/demo-mixes.md)
 - Use with AI agents: [`docs/ai-agent-usage.md`](docs/ai-agent-usage.md)
 - Read v0.2 release notes: [`docs/releases/v0.2.0.md`](docs/releases/v0.2.0.md)
+- Read the v0.3 release notes draft: [`docs/release-notes-v0.3-draft.md`](docs/release-notes-v0.3-draft.md)
 - Inspect reports: [`docs/reports/README.md`](docs/reports/README.md)
 - Validate locally: see [Validate Locally](#validate-locally)
 
@@ -31,11 +35,16 @@ This is not a claim to contain every mechanic ever made. The current state is a 
 | Schema | `schema_version: "0.2.0"` |
 | License | CC0 dataset, MIT tooling |
 | Browser | Static, dependency-free GitHub Pages browser |
+| Games view | Derived from mechanic-level `example_games` |
+| Example-game references | 658 lightweight study references |
+| Example-game coverage | 223/223 mechanics |
+| Playable examples | 5 original canvas demos |
 | Mixer | Deterministic client-side MVP |
 | Quality report | 0 advisory warnings |
 | Graph coverage | 178 mechanics with typed relationships and scope profiles |
 | Typed relationships | 534 |
 | Scenario QA | 10/10 Mixer scenarios passing |
+| Game-anchor policy | Title/note policy, quality audit, and targeted cleanup reports |
 
 The repository also includes a strict JSON Schema, generated `dataset.json` index, graph validation/reporting tools, advisory quality lint, and engine-agnostic implementation notes for Unity, Godot, Unreal, Web/JavaScript, and other engines where practical.
 
@@ -57,21 +66,26 @@ This project is not:
 
 - A drop-in code library.
 - A complete or authoritative encyclopedia.
+- A complete game database.
+- Proof of proprietary game implementations.
+- A finished taxonomy of all mechanics.
 - A substitute for playtesting, accessibility review, technical review, or human design judgment.
 
 See [`docs/trust-and-review-status.md`](docs/trust-and-review-status.md) for details on `status`, `source_confidence`, `example_games`, `relationships`, and `scope_profile`.
 
 ## How This Can Be Used
 
-- Developers can browse mechanics to find prerequisites, edge cases, common bugs, and implementation risks before prototyping.
-- Designers can use mechanics as a shared vocabulary for discussing features and comparing similar systems.
-- AI coding or design agents can use entries as structured context for implementation planning.
-- Example games can help users find real games to study for a mechanic, but examples are not exhaustive or proof of exact implementation.
-- The Mixer helps explore combinations, dependencies, conflicts, and scope pressure. It is a planning aid, not proof that mechanics combine cleanly.
+- Developers can inspect prerequisites, parameters, edge cases, common bugs, relationships, scope signals, and implementation notes before prototyping.
+- Designers, students, and researchers can use mechanic IDs as a shared vocabulary for comparing systems.
+- AI coding or design agents can use mechanic entries as structured context for implementation planning.
+- The Games view provides study anchors, but example games are not exhaustive or proof of exact implementation.
+- Playable examples and the Mixer help explore timing, state, dependencies, conflicts, and scope pressure. They are planning aids, not proof that mechanics combine cleanly.
 
 ## Public Review Links
 
 - [v0.2.0 release notes](docs/releases/v0.2.0.md)
+- [v0.3 public usage guide](docs/public-usage-guide-v0.3.md)
+- [v0.3 release notes draft](docs/release-notes-v0.3-draft.md)
 - [Mechanic Mixer documentation](docs/mechanic-mixer.md)
 - [How to use the Mixer](docs/how-to-use-the-mixer.md)
 - [Demo mixes](docs/demo-mixes.md)
