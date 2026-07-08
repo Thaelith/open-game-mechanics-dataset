@@ -155,6 +155,10 @@
     {
       "title": "Spelunky",
       "note": "Uses seeded daily-style runs and deterministic level generation concepts."
+    },
+    {
+      "title": "Terraria",
+      "note": "Uses world seeds to reproduce generated sandbox worlds."
     }
   ],
   "tags": [

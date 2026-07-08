@@ -126,6 +126,10 @@
     {
       "title": "No Man's Sky",
       "note": "Uses procedural planets and terrain as a major exploration feature."
+    },
+    {
+      "title": "Terraria",
+      "note": "Uses generated terrain, caves, and surfaces for sandbox exploration."
     }
   ],
   "tags": [

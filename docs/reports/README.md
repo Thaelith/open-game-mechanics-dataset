@@ -44,6 +44,10 @@ Documents the fourth curated pass focused on mature anchor deepening and quality
 
 Documents the fifth curated pass focused on classic high-value anchor games in the derived game-to-mechanics index.
 
+[`game-anchor-enrichment-pass-6-v0.3.md`](game-anchor-enrichment-pass-6-v0.3.md)
+
+Documents the sixth, tiny policy-guided pass focused only on underdeveloped `Super Metroid` and `Terraria` anchors.
+
 [`game-anchor-quality-audit-v0.3.md`](game-anchor-quality-audit-v0.3.md)
 
 Reviews the accumulated game-anchor enrichment work for title consistency risks, saturated anchors, broad mappings, and recommended fixes before further enrichment.

@@ -156,6 +156,10 @@
     {
       "title": "Super Mario Odyssey",
       "note": "Uses wall jumps as a visible 3D platforming traversal move."
+    },
+    {
+      "title": "Super Metroid",
+      "note": "Uses wall jumps as a visible traversal technique for vertical routes."
     }
   ],
   "tags": [

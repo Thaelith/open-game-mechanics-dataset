@@ -7,11 +7,11 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | Metric | Value |
 | --- | --- |
 | Total mechanics | 223 |
-| Total example-game references | 631 |
+| Total example-game references | 645 |
 | Unique game titles | 192 |
-| Games with 1 mechanic | 99 |
-| Games with 2-4 mechanics | 62 |
-| Games with 5+ mechanics | 31 |
+| Games with 1 mechanic | 98 |
+| Games with 2-4 mechanics | 61 |
+| Games with 5+ mechanics | 33 |
 | Max mechanics on one game | 19 |
 
 ## Top Games By Referenced Mechanics
@@ -41,17 +41,17 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | accessibility | 7 | 10 | The Last of Us Part II (3), Celeste (2), Destiny 2 (1), Fortnite (1), Forza Motorsport (1) |
 | ai | 18 | 23 | Alien: Isolation (2), Left 4 Dead (2), The Last of Us (2), The Sims (2), XCOM (2) |
 | camera | 37 | 43 | Celeste (2), Dark Souls (2), Gran Turismo 7 (2), Minecraft (2), Super Mario Odyssey (2) |
-| combat | 37 | 86 | Dark Souls (5), Hades (5), Overwatch (5), Dead Cells (4), Diablo III (4) |
-| crafting | 10 | 11 | The Elder Scrolls V: Skyrim (2), Alien: Isolation (1), Don't Starve (1), Factorio (1), Minecraft (1) |
-| economy | 25 | 29 | Animal Crossing (2), Stardew Valley (2), The Witcher 3: Wild Hunt (2), World of Warcraft (2), AdVenture Capitalist (1) |
+| combat | 39 | 89 | Dark Souls (5), Hades (5), Overwatch (5), Dead Cells (4), Diablo III (4) |
+| crafting | 10 | 12 | Terraria (2), The Elder Scrolls V: Skyrim (2), Alien: Isolation (1), Don't Starve (1), Factorio (1) |
+| economy | 26 | 30 | Animal Crossing (2), Stardew Valley (2), The Witcher 3: Wild Hunt (2), World of Warcraft (2), AdVenture Capitalist (1) |
 | horror | 11 | 20 | Alien: Isolation (5), Amnesia: The Dark Descent (3), Amnesia: The Bunker (2), Outlast (2), Resident Evil 4 (2) |
 | meta | 8 | 8 | Apex Legends (1), Chrono Trigger (1), Dark Souls (1), Hades (1), Slay the Spire (1) |
-| movement | 22 | 30 | The Legend of Zelda: Breath of the Wild (3), Apex Legends (2), Celeste (2), Dark Souls (2), Hollow Knight (2) |
+| movement | 23 | 32 | The Legend of Zelda: Breath of the Wild (3), Apex Legends (2), Celeste (2), Dark Souls (2), Hollow Knight (2) |
 | multiplayer | 15 | 25 | Deep Rock Galactic (3), Left 4 Dead (3), Apex Legends (2), Helldivers 2 (2), Lovers in a Dangerous Spacetime (2) |
 | narrative | 8 | 11 | Fallout: New Vegas (2), Mass Effect (2), The Witcher 3: Wild Hunt (2), Baldur's Gate 3 (1), BioShock (1) |
 | physics | 19 | 27 | Half-Life 2 (4), Celeste (2), Portal 2 (2), Super Mario World (2), The Legend of Zelda: Breath of the Wild (2) |
-| platforming | 11 | 20 | Celeste (5), Hollow Knight (4), Super Mario Odyssey (2), Super Meat Boy (2), Dead Cells (1) |
-| procedural_generation | 14 | 18 | Minecraft (3), No Man's Sky (2), Spelunky (2), Borderlands (1), Darkest Dungeon (1) |
+| platforming | 11 | 21 | Celeste (5), Hollow Knight (4), Super Mario Odyssey (2), Super Meat Boy (2), Super Metroid (2) |
+| procedural_generation | 14 | 20 | Minecraft (3), Terraria (3), No Man's Sky (2), Spelunky (2), Borderlands (1) |
 | progression | 25 | 31 | Hades (3), Dark Souls (2), The Elder Scrolls V: Skyrim (2), The Witcher 3: Wild Hunt (2), World of Warcraft (2) |
 | puzzle | 12 | 23 | Portal 2 (5), Portal (3), The Legend of Zelda: Ocarina of Time (3), The Talos Principle (3), The Witness (2) |
 | rhythm | 6 | 8 | Guitar Hero (3), Beat Saber (1), Crypt of the NecroDancer (1), Dance Dance Revolution (1), osu! (1) |
@@ -59,7 +59,7 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | simulation | 7 | 8 | Cities: Skylines (2), Dwarf Fortress (1), Frostpunk (1), OpenTTD (1), RimWorld (1) |
 | stealth | 8 | 12 | Thief: The Dark Project (3), Mark of the Ninja (2), Metal Gear Solid V: The Phantom Pain (2), Alien: Isolation (1), Dishonored (1) |
 | strategy | 4 | 8 | Civilization VI (3), Age of Empires II (2), StarCraft II (2), Company of Heroes (1) |
-| survival | 16 | 32 | Minecraft (6), Subnautica (5), The Legend of Zelda: Breath of the Wild (3), The Long Dark (3), Dark Souls (2) |
+| survival | 18 | 36 | Minecraft (6), Subnautica (5), Terraria (3), The Legend of Zelda: Breath of the Wild (3), The Long Dark (3) |
 | time | 12 | 14 | The Legend of Zelda: Breath of the Wild (3), Braid (1), Crypt of the NecroDancer (1), Hades (1), Hi-Fi Rush (1) |
 | traversal | 23 | 25 | Spelunky (2), Titanfall 2 (2), Apex Legends (1), Assassin's Creed II (1), Assassin's Creed Unity (1) |
 | ui_ux | 30 | 54 | Apex Legends (4), Diablo III (4), Fortnite (4), Red Dead Redemption 2 (3), Resident Evil 4 (3) |
@@ -489,6 +489,26 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 192 g
 | ui_ux.interaction_prompt | ui_ux | Uses contextual prompts for scanning, collecting, entering vehicles, and using objects. |
 | ui_ux.quest_marker | ui_ux | Uses beacon and signal markers tied to exploration targets. |
 
+### Terraria
+
+- Mechanic count: 12
+- Categories: procedural_generation, survival, combat, crafting, economy, progression
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| combat.melee_attack | combat | Uses swords and other close-range weapons as visible combat options. |
+| combat.ranged_attack | combat | Uses bows, guns, magic, and thrown weapons as visible ranged combat options. |
+| crafting.recipe_crafting | crafting | Uses recipe crafting to convert gathered materials into equipment, tools, and blocks. |
+| crafting.workbench | crafting | Uses crafting stations to unlock different recipe sets. |
+| economy.crafting_materials | economy | Uses mined, gathered, and enemy-dropped materials as crafting inputs. |
+| procedural_generation.biome_generation | procedural_generation | Uses biome regions with specific enemies and materials. |
+| procedural_generation.procedural_terrain | procedural_generation | Uses generated terrain, caves, and surfaces for sandbox exploration. |
+| procedural_generation.seeded_generation | procedural_generation | Uses world seeds to reproduce generated sandbox worlds. |
+| progression.crafting_unlocks | progression | Progressively exposes crafting options through materials and stations. |
+| survival.day_night_cycle | survival | Uses day and night phases to change enemy activity and exploration pressure. |
+| survival.health | survival | Uses health hearts and healing items during exploration and combat. |
+| survival.inventory_limit | survival | Uses limited inventory slots to constrain mining, crafting, and exploration trips. |
+
 ### Grand Theft Auto V
 
 - Mechanic count: 11
@@ -643,6 +663,20 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 192 g
 | platforming.ledge_climb | platforming | Uses ledge grabs and climb-up recovery in 3D traversal spaces. |
 | platforming.wall_jump | platforming | Uses wall jumps as a visible 3D platforming traversal move. |
 | ui_ux.quest_marker | ui_ux | Uses map markers and destination hints to guide kingdom objectives. |
+
+### Super Metroid
+
+- Mechanic count: 6
+- Categories: movement, platforming, combat, survival
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| combat.ranged_attack | combat | Uses beam and missile attacks as visible ranged combat tools. |
+| movement.run | movement | Uses sustained running as a baseline for exploration and platforming routes. |
+| movement.swimming | movement | Uses underwater movement as a distinct traversal condition in exploration spaces. |
+| platforming.double_jump | platforming | Uses movement upgrades to expand reachable spaces. |
+| platforming.wall_jump | platforming | Uses wall jumps as a visible traversal technique for vertical routes. |
+| survival.health | survival | Uses energy tanks and health pickups as visible survival state. |
 
 ### Portal
 
@@ -880,28 +914,6 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 192 g
 | crafting.crafting_queue | crafting | Uses timed crafting and station-driven survival production. |
 | survival.day_night_cycle | survival | Uses day phases to structure survival planning and night danger. |
 | survival.hunger | survival | Uses food pressure as a central survival planning loop. |
-
-### Enter the Gungeon
-
-- Mechanic count: 3
-- Categories: movement, procedural_generation, roguelike
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| movement.dodge_roll | movement | Uses dodge roll for projectile evasion with committed recovery. |
-| procedural_generation.procedural_level_rooms | procedural_generation | Uses room-based dungeon layouts with combat and reward rooms. |
-| roguelike.procedural_floor | roguelike | Uses generated floor layouts with rooms, shops, bosses, and rewards. |
-
-### Forza Horizon 5
-
-- Mechanic count: 3
-- Categories: vehicles
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| vehicles.suspension_physics | vehicles | Uses suspension and surface response as part of vehicle handling. |
-| vehicles.upgradeable_vehicle | vehicles | Includes vehicle tuning and part-based performance changes. |
-| vehicles.vehicle_acceleration | vehicles | Uses vehicle acceleration curves as part of car handling and tuning. |
 
 ## Interpretation Notes
 

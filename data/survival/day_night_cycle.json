@@ -172,6 +172,10 @@
     {
       "title": "Subnautica",
       "note": "Uses day and night lighting changes during underwater exploration."
+    },
+    {
+      "title": "Terraria",
+      "note": "Uses day and night phases to change enemy activity and exploration pressure."
     }
   ],
   "tags": [

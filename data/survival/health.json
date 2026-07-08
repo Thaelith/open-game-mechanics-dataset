@@ -198,6 +198,14 @@
     {
       "title": "Alien: Isolation",
       "note": "Uses health loss and recovery items as visible survival pressure."
+    },
+    {
+      "title": "Super Metroid",
+      "note": "Uses energy tanks and health pickups as visible survival state."
+    },
+    {
+      "title": "Terraria",
+      "note": "Uses health hearts and healing items during exploration and combat."
     }
   ],
   "tags": [

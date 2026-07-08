@@ -153,6 +153,10 @@
     {
       "title": "Minecraft",
       "note": "Uses swimming and underwater movement with visible breath pressure."
+    },
+    {
+      "title": "Super Metroid",
+      "note": "Uses underwater movement as a distinct traversal condition in exploration spaces."
     }
   ],
   "tags": [

@@ -140,6 +140,10 @@
     {
       "title": "Subnautica",
       "note": "Uses limited inventory space to constrain long exploration and resource trips."
+    },
+    {
+      "title": "Terraria",
+      "note": "Uses limited inventory slots to constrain mining, crafting, and exploration trips."
     }
   ],
   "tags": [

@@ -126,6 +126,10 @@
     {
       "title": "Minecraft",
       "note": "Uses mined and gathered materials as recipe inputs."
+    },
+    {
+      "title": "Terraria",
+      "note": "Uses mined, gathered, and enemy-dropped materials as crafting inputs."
     }
   ],
   "tags": [
