@@ -37,7 +37,7 @@ The static browser also includes a lightweight Games view derived from the same 
 
 Playable examples are separate from `example_games`: they are original repository-maintained canvas demos for selected mechanics. See [`playable-mechanic-examples.md`](playable-mechanic-examples.md).
 
-Game-anchor quality is tracked through periodic review reports, including [`reports/game-anchor-quality-audit-v0.3.md`](reports/game-anchor-quality-audit-v0.3.md). These audits help catch title consistency risks, overused anchors, broad mappings, and examples that may need a future curated game-tagging layer.
+Game-anchor quality is tracked through periodic review reports, including [`reports/game-anchor-quality-audit-v0.3.md`](reports/game-anchor-quality-audit-v0.3.md) and [`reports/game-anchor-policy-and-cleanup-v0.3.md`](reports/game-anchor-policy-and-cleanup-v0.3.md). Title and note rules are documented in [`game-anchor-policy-v0.3.md`](game-anchor-policy-v0.3.md). These audits help catch title consistency risks, overused anchors, broad mappings, and examples that may need a future curated game-tagging layer.
 
 ## Curated Vs Self-Reported Tags
 
@@ -56,7 +56,7 @@ Current capabilities:
 
 Future work should focus on:
 
-- Improving title consistency and deciding how to handle aliases, editions, remakes, and subtitles.
+- Applying the title consistency policy before adding more examples.
 - Reviewing broad or saturated game anchors before adding more examples.
 - Considering a curated `games/` or `game_tags/` layer if demand exists.
 - Defining review expectations for any self-reported game tags before accepting them.

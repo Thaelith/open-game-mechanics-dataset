@@ -163,7 +163,7 @@
     },
     {
       "title": "Spelunky",
-      "note": "Uses breakable pots and destructible level objects as part of run exploration."
+      "note": "Uses breakable pots and other fragile props as part of run exploration."
     }
   ],
   "tags": [

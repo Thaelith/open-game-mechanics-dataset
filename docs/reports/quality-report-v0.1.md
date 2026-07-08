@@ -6,7 +6,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Metric | Value |
 | --- | --- |
-| Generated at | 2026-07-08T19:24:17+00:00 |
+| Generated at | 2026-07-08T19:58:06+00:00 |
 | Schema version | 0.2.0 |
 | Total mechanics | 223 |
 | Total categories | 26 |
@@ -569,11 +569,11 @@ _None._
 | Apex Legends | 14 |
 | Half-Life 2 | 14 |
 | Resident Evil 4 | 14 |
+| The Witcher 3: Wild Hunt | 14 |
 | World of Warcraft | 14 |
 | Alien: Isolation | 13 |
 | Spelunky | 13 |
 | The Legend of Zelda: Ocarina of Time | 13 |
-| The Witcher 3: Wild Hunt | 13 |
 | Dead Cells | 12 |
 | Diablo III | 12 |
 | Fortnite | 12 |

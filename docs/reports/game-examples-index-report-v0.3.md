@@ -8,8 +8,8 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | --- | --- |
 | Total mechanics | 223 |
 | Total example-game references | 631 |
-| Unique game titles | 194 |
-| Games with 1 mechanic | 101 |
+| Unique game titles | 192 |
+| Games with 1 mechanic | 99 |
 | Games with 2-4 mechanics | 62 |
 | Games with 5+ mechanics | 31 |
 | Max mechanics on one game | 19 |
@@ -27,11 +27,11 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | Apex Legends | 14 | ui_ux, combat, movement, multiplayer, camera, meta, +1 more | camera.first_person_camera, combat.area_of_effect_attack, combat.ranged_attack, combat.reload, meta.player_profile_stats, movement.slide, +4 more |
 | Half-Life 2 | 14 | combat, physics, camera, movement, puzzle, survival, +2 more | camera.first_person_camera, combat.area_of_effect_attack, combat.melee_attack, combat.ranged_attack, combat.reload, movement.crouch, +4 more |
 | Resident Evil 4 | 14 | combat, ui_ux, horror, survival, camera, economy, +1 more | camera.third_person_camera, combat.hit_stun, combat.melee_attack, combat.ranged_attack, combat.reload, economy.shop, +4 more |
+| The Witcher 3: Wild Hunt | 14 | combat, economy, narrative, progression, ui_ux, camera, +1 more | camera.third_person_camera, combat.block, combat.damage_over_time, combat.melee_attack, combat.ranged_attack, crafting.recipe_crafting, +4 more |
 | World of Warcraft | 14 | combat, ui_ux, economy, progression, meta, multiplayer, +1 more | combat.area_of_effect_attack, combat.damage_over_time, combat.melee_attack, combat.ranged_attack, economy.repair_cost, economy.shop, +4 more |
 | Alien: Isolation | 13 | horror, ai, ui_ux, camera, crafting, stealth, +1 more | ai.line_of_sight_detection, ai.patrol, camera.first_person_camera, crafting.recipe_crafting, horror.hiding, horror.jump_scare_trigger, +4 more |
 | Spelunky | 13 | combat, procedural_generation, roguelike, traversal, economy, physics, +3 more | combat.melee_attack, combat.ranged_attack, economy.shop, physics.breakable_object, procedural_generation.procedural_level_rooms, procedural_generation.seeded_generation, +4 more |
 | The Legend of Zelda: Ocarina of Time | 13 | combat, puzzle, physics, camera, survival, traversal, +1 more | camera.camera_lock_on, combat.block, combat.lock_on_targeting, combat.melee_attack, combat.projectile_reflection, physics.breakable_object, +4 more |
-| The Witcher 3: Wild Hunt | 13 | combat, narrative, progression, ui_ux, camera, crafting, +1 more | camera.third_person_camera, combat.block, combat.damage_over_time, combat.melee_attack, combat.ranged_attack, crafting.recipe_crafting, +4 more |
 | Dead Cells | 12 | combat, roguelike, camera, movement, platforming, procedural_generation, +1 more | camera.smooth_follow_camera, combat.damage_over_time, combat.invincibility_frames, combat.melee_attack, combat.ranged_attack, movement.dash, +4 more |
 
 ## Category-To-Game Coverage
@@ -43,7 +43,7 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | camera | 37 | 43 | Celeste (2), Dark Souls (2), Gran Turismo 7 (2), Minecraft (2), Super Mario Odyssey (2) |
 | combat | 37 | 86 | Dark Souls (5), Hades (5), Overwatch (5), Dead Cells (4), Diablo III (4) |
 | crafting | 10 | 11 | The Elder Scrolls V: Skyrim (2), Alien: Isolation (1), Don't Starve (1), Factorio (1), Minecraft (1) |
-| economy | 26 | 29 | Animal Crossing (2), Stardew Valley (2), World of Warcraft (2), AdVenture Capitalist (1), Borderlands (1) |
+| economy | 25 | 29 | Animal Crossing (2), Stardew Valley (2), The Witcher 3: Wild Hunt (2), World of Warcraft (2), AdVenture Capitalist (1) |
 | horror | 11 | 20 | Alien: Isolation (5), Amnesia: The Dark Descent (3), Amnesia: The Bunker (2), Outlast (2), Resident Evil 4 (2) |
 | meta | 8 | 8 | Apex Legends (1), Chrono Trigger (1), Dark Souls (1), Hades (1), Slay the Spire (1) |
 | movement | 22 | 30 | The Legend of Zelda: Breath of the Wild (3), Apex Legends (2), Celeste (2), Dark Souls (2), Hollow Knight (2) |
@@ -57,7 +57,7 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | rhythm | 6 | 8 | Guitar Hero (3), Beat Saber (1), Crypt of the NecroDancer (1), Dance Dance Revolution (1), osu! (1) |
 | roguelike | 8 | 22 | Slay the Spire (7), Hades (4), Dead Cells (3), The Binding of Isaac (3), Spelunky (2) |
 | simulation | 7 | 8 | Cities: Skylines (2), Dwarf Fortress (1), Frostpunk (1), OpenTTD (1), RimWorld (1) |
-| stealth | 8 | 12 | Thief: The Dark Project (3), Mark of the Ninja (2), Metal Gear Solid V (2), Alien: Isolation (1), Dishonored (1) |
+| stealth | 8 | 12 | Thief: The Dark Project (3), Mark of the Ninja (2), Metal Gear Solid V: The Phantom Pain (2), Alien: Isolation (1), Dishonored (1) |
 | strategy | 4 | 8 | Civilization VI (3), Age of Empires II (2), StarCraft II (2), Company of Heroes (1) |
 | survival | 16 | 32 | Minecraft (6), Subnautica (5), The Legend of Zelda: Breath of the Wild (3), The Long Dark (3), Dark Souls (2) |
 | time | 12 | 14 | The Legend of Zelda: Breath of the Wild (3), Braid (1), Crypt of the NecroDancer (1), Hades (1), Hi-Fi Rush (1) |
@@ -67,7 +67,7 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 
 ## Games Index
 
-Showing the top 50 games by referenced mechanics. JSON output contains all 194 games.
+Showing the top 50 games by referenced mechanics. JSON output contains all 192 games.
 
 ### Hades
 
@@ -188,7 +188,7 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | meta.new_game_plus | meta | Uses New Game Plus cycles after completion with increased challenge. |
 | movement.dodge_roll | movement | Uses dodge rolling as a core defensive timing and positioning action. |
 | movement.stamina_movement | movement | Uses stamina to constrain movement, blocking, and attacks. |
-| progression.experience_points | progression | Uses earned souls as a visible progression resource for leveling decisions. |
+| progression.experience_points | progression | Uses earned souls as a visible resource spent on leveling decisions. |
 | progression.upgrade_shop | progression | Uses weapon upgrade services to convert resources into stronger equipment. |
 | survival.health | survival | Uses health state, healing windows, and death recovery pressure in combat. |
 | survival.stamina | survival | Uses stamina to pace attacks, blocking, dodging, and recovery. |
@@ -282,6 +282,28 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | ui_ux.interaction_prompt | ui_ux | Uses contextual prompts for doors, pickups, ladders, and action commands. |
 | ui_ux.inventory_grid | ui_ux | Uses a grid inventory where item placement and size matter. |
 
+### The Witcher 3: Wild Hunt
+
+- Mechanic count: 14
+- Categories: combat, economy, narrative, progression, ui_ux, camera, crafting
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| camera.third_person_camera | camera | Uses a third-person camera for exploration, horseback travel, and combat framing. |
+| combat.block | combat | Uses guarding and blocking during sword combat. |
+| combat.damage_over_time | combat | Uses burning and poison-like damage over time effects in combat. |
+| combat.melee_attack | combat | Uses sword melee attacks as a primary combat interaction. |
+| combat.ranged_attack | combat | Uses crossbow shots as a visible ranged combat option. |
+| crafting.recipe_crafting | crafting | Uses recipes to craft alchemy items, gear, and consumables from gathered materials. |
+| economy.repair_cost | economy | Uses equipment durability and repair through vendors or kits. |
+| economy.shop | economy | Uses vendors for buying, selling, and repairing equipment and supplies. |
+| narrative.branching_dialogue | narrative | Uses dialogue choices that can change quest and story outcomes. |
+| narrative.codex_journal | narrative | Uses journal and bestiary entries to preserve narrative and gameplay context. |
+| progression.experience_points | progression | Uses XP rewards from quests and encounters toward level progression. |
+| progression.skill_tree | progression | Uses skill investment menus to shape Geralt's combat and utility abilities. |
+| ui_ux.minimap | ui_ux | Uses minimap routing and nearby objective context during exploration. |
+| ui_ux.quest_marker | ui_ux | Uses tracked quest markers and minimap routing for objectives. |
+
 ### World of Warcraft
 
 - Mechanic count: 14
@@ -296,7 +318,7 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | economy.repair_cost | economy | Uses vendor repair costs for damaged equipment. |
 | economy.shop | economy | Uses vendors for buying, selling, repairs, and utility services. |
 | meta.player_profile_stats | meta | Tracks long-term character and account achievements and statistics. |
-| multiplayer.online_coop | multiplayer | Uses online group play for dungeons, raids, quests, and shared objectives. |
+| multiplayer.online_coop | multiplayer | Uses online party and raid group play for dungeons, quests, and shared objectives. |
 | progression.experience_points | progression | Uses experience rewards from quests and combat to advance character levels. |
 | progression.level_up | progression | Uses character levels to gate content and abilities. |
 | time.cooldown_time | time | Uses ability recharge and shared lockouts across many combat actions. |
@@ -323,7 +345,7 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | stealth.last_known_position_search | stealth | Uses last-known and investigation behavior to sustain stealth pressure. |
 | survival.health | survival | Uses health loss and recovery items as visible survival pressure. |
 | ui_ux.interaction_prompt | ui_ux | Uses contextual prompts for doors, terminals, crafting, hiding, and tools. |
-| ui_ux.quest_marker | ui_ux | Uses objective guidance and tracker cues to direct survival routes. |
+| ui_ux.quest_marker | ui_ux | Uses objective tracker cues to direct current survival routes. |
 
 ### Spelunky
 
@@ -335,7 +357,7 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | combat.melee_attack | combat | Uses the whip as a close-range combat and interaction tool. |
 | combat.ranged_attack | combat | Uses thrown objects and ranged weapons as visible combat options. |
 | economy.shop | economy | Uses shops as high-risk purchase and theft spaces during runs. |
-| physics.breakable_object | physics | Uses breakable pots and destructible level objects as part of run exploration. |
+| physics.breakable_object | physics | Uses breakable pots and other fragile props as part of run exploration. |
 | procedural_generation.procedural_level_rooms | procedural_generation | Uses authored chunks assembled into generated levels. |
 | procedural_generation.seeded_generation | procedural_generation | Uses seeded daily-style runs and deterministic level generation concepts. |
 | roguelike.permadeath | roguelike | Ends a run on death and restarts from a fresh run state. |
@@ -367,27 +389,6 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | traversal.ladder_climb | traversal | Uses ladders as constrained vertical routes in dungeon and village spaces. |
 | ui_ux.interaction_prompt | ui_ux | Uses contextual action prompts for talking, opening, climbing, and interacting. |
 
-### The Witcher 3: Wild Hunt
-
-- Mechanic count: 13
-- Categories: combat, narrative, progression, ui_ux, camera, crafting, economy
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| camera.third_person_camera | camera | Uses a third-person camera for exploration, horseback travel, and combat framing. |
-| combat.block | combat | Uses guarding and blocking during sword combat. |
-| combat.damage_over_time | combat | Uses burning and poison-like damage over time effects in combat. |
-| combat.melee_attack | combat | Uses sword melee attacks as a primary combat interaction. |
-| combat.ranged_attack | combat | Uses crossbow shots as a visible ranged combat option. |
-| crafting.recipe_crafting | crafting | Uses recipes to craft alchemy items, gear, and consumables from gathered materials. |
-| economy.shop | economy | Uses vendors for buying, selling, and repairing equipment and supplies. |
-| narrative.branching_dialogue | narrative | Uses dialogue choices that can change quest and story outcomes. |
-| narrative.codex_journal | narrative | Uses journal and bestiary entries to preserve narrative and gameplay context. |
-| progression.experience_points | progression | Uses XP rewards from quests and encounters toward level progression. |
-| progression.skill_tree | progression | Uses skill investment menus to shape Geralt's combat and utility abilities. |
-| ui_ux.minimap | ui_ux | Uses minimap routing and nearby objective context during exploration. |
-| ui_ux.quest_marker | ui_ux | Uses tracked quest markers and minimap routing for objectives. |
-
 ### Dead Cells
 
 - Mechanic count: 12
@@ -395,7 +396,7 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 
 | Mechanic | Category | Example note |
 | --- | --- | --- |
-| camera.smooth_follow_camera | camera | Uses smooth side-view camera framing for fast combat and platforming routes. |
+| camera.smooth_follow_camera | camera | Uses tuned camera follow for fast side-view combat and platforming routes. |
 | combat.damage_over_time | combat | Uses poison, burning, and bleeding effects as visible delayed damage pressure. |
 | combat.invincibility_frames | combat | Uses dodge-roll invulnerability windows during fast combat encounters. |
 | combat.melee_attack | combat | Uses close-range weapons as visible combat options. |
@@ -486,7 +487,7 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | survival.oxygen | survival | Uses oxygen supply to define underwater exploration range and risk. |
 | survival.thirst | survival | Uses water supply as part of long exploration planning. |
 | ui_ux.interaction_prompt | ui_ux | Uses contextual prompts for scanning, collecting, entering vehicles, and using objects. |
-| ui_ux.quest_marker | ui_ux | Uses beacon and signal markers to guide exploration targets. |
+| ui_ux.quest_marker | ui_ux | Uses beacon and signal markers tied to exploration targets. |
 
 ### Grand Theft Auto V
 
@@ -592,7 +593,7 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | --- | --- | --- |
 | camera.first_person_camera | camera | Uses cockpit and driver-view camera options for racing. |
 | camera.third_person_camera | camera | Uses chase-camera views for vehicle framing during races. |
-| economy.shop | economy | Uses dealership and parts purchase screens as vehicle acquisition transactions. |
+| economy.shop | economy | Uses dealership and parts purchase screens for vehicle acquisition and upgrades. |
 | vehicles.drifting | vehicles | Includes drift-focused handling and challenges as a visible driving skill. |
 | vehicles.fuel | vehicles | Uses fuel consumption in race settings and pit strategy contexts. |
 | vehicles.suspension_physics | vehicles | Uses suspension behavior and tuning as part of car handling. |
@@ -717,6 +718,18 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | vehicles.vehicle_acceleration | vehicles | Uses readable acceleration and traction differences across kart setups. |
 | vehicles.vehicle_boost | vehicles | Uses temporary speed boosts from drifts, items, and track features. |
 | vehicles.vehicle_braking | vehicles | Uses braking and reverse controls in accessible racing scenarios. |
+
+### Metal Gear Solid V: The Phantom Pain
+
+- Mechanic count: 4
+- Categories: stealth, combat, movement
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| combat.stealth_kill | combat | Allows close-range silent takedowns against unaware or vulnerable guards. |
+| movement.prone | movement | Uses prone movement for stealth approach and concealment. |
+| stealth.alert_state | stealth | Uses escalating enemy awareness and search behavior in stealth encounters. |
+| stealth.last_known_position_search | stealth | Uses enemy search behavior after guards lose direct sight of the player. |
 
 ### Prince of Persia: The Sands of Time
 
@@ -889,17 +902,6 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 194 g
 | vehicles.suspension_physics | vehicles | Uses suspension and surface response as part of vehicle handling. |
 | vehicles.upgradeable_vehicle | vehicles | Includes vehicle tuning and part-based performance changes. |
 | vehicles.vehicle_acceleration | vehicles | Uses vehicle acceleration curves as part of car handling and tuning. |
-
-### Guitar Hero
-
-- Mechanic count: 3
-- Categories: rhythm
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| rhythm.combo_multiplier | rhythm | Uses note streaks and multipliers as a central scoring layer. |
-| rhythm.note_lane | rhythm | Uses a note highway with lane-specific inputs. |
-| rhythm.sync_window | rhythm | Uses timing windows to judge note hits against charted music. |
 
 ## Interpretation Notes
 

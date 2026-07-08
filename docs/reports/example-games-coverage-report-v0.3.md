@@ -13,7 +13,7 @@ Example games are not exhaustive and do not prove exact implementation details. 
 | Mechanics missing example_games | 0 |
 | Example-game coverage | 100.00% |
 | Total example-game references | 631 |
-| Unique game titles | 194 |
+| Unique game titles | 192 |
 
 ## Top Referenced Game Titles
 
@@ -28,11 +28,11 @@ Example games are not exhaustive and do not prove exact implementation details. 
 | Apex Legends | 14 |
 | Half-Life 2 | 14 |
 | Resident Evil 4 | 14 |
+| The Witcher 3: Wild Hunt | 14 |
 | World of Warcraft | 14 |
 | Alien: Isolation | 13 |
 | Spelunky | 13 |
 | The Legend of Zelda: Ocarina of Time | 13 |
-| The Witcher 3: Wild Hunt | 13 |
 | Dead Cells | 12 |
 | Diablo III | 12 |
 | Fortnite | 12 |

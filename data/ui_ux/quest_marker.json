@@ -198,7 +198,7 @@
     },
     {
       "title": "Subnautica",
-      "note": "Uses beacon and signal markers to guide exploration targets."
+      "note": "Uses beacon and signal markers tied to exploration targets."
     },
     {
       "title": "Diablo III",
@@ -210,7 +210,7 @@
     },
     {
       "title": "Alien: Isolation",
-      "note": "Uses objective guidance and tracker cues to direct survival routes."
+      "note": "Uses objective tracker cues to direct current survival routes."
     }
   ],
   "tags": [

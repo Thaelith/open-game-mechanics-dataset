@@ -161,7 +161,7 @@
     },
     {
       "title": "Dead Cells",
-      "note": "Uses smooth side-view camera framing for fast combat and platforming routes."
+      "note": "Uses tuned camera follow for fast side-view combat and platforming routes."
     }
   ],
   "tags": [

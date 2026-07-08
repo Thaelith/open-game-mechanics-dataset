@@ -48,6 +48,10 @@ Documents the fifth curated pass focused on classic high-value anchor games in t
 
 Reviews the accumulated game-anchor enrichment work for title consistency risks, saturated anchors, broad mappings, and recommended fixes before further enrichment.
 
+[`game-anchor-policy-and-cleanup-v0.3.md`](game-anchor-policy-and-cleanup-v0.3.md)
+
+Documents the v0.3 title policy follow-up and the small targeted cleanup of audit-identified game-anchor title and mapping candidates.
+
 ## v0.3 Review Tracking
 
 [`v0.3-review-summary.md`](v0.3-review-summary.md)
@@ -57,6 +61,10 @@ Consolidates the v0.3 reviewed-core, taxonomy, boundary hardening, relationship-
 [`../reviewed-core-confidence-workflow-v0.3.md`](../reviewed-core-confidence-workflow-v0.3.md)
 
 Defines the proposed workflow for future reviewed-status and source-confidence changes. It is a planning document, not a schema change or status change.
+
+[`../game-anchor-policy-v0.3.md`](../game-anchor-policy-v0.3.md)
+
+Defines title consistency and example-note rules for mechanic-level `example_games` and the derived Games browser view.
 
 [`reviewed-core-gap-report-v0.3.md`](reviewed-core-gap-report-v0.3.md)
 
