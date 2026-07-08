@@ -12,7 +12,7 @@ Example games are not exhaustive and do not prove exact implementation details. 
 | Mechanics with example_games | 223 |
 | Mechanics missing example_games | 0 |
 | Example-game coverage | 100.00% |
-| Total example-game references | 645 |
+| Total example-game references | 658 |
 | Unique game titles | 192 |
 
 ## Top Referenced Game Titles
@@ -39,41 +39,41 @@ Example games are not exhaustive and do not prove exact implementation details. 
 | Hollow Knight | 12 |
 | Subnautica | 12 |
 | Terraria | 12 |
+| Dishonored | 11 |
 | Grand Theft Auto V | 11 |
 | Left 4 Dead | 11 |
 | Overwatch | 11 |
 | Portal 2 | 11 |
-| Slay the Spire | 11 |
 
 ## Category Coverage
 
 | Category | Mechanics | With examples | Missing examples | Coverage | References |
 | --- | --- | --- | --- | --- | --- |
 | accessibility | 5 | 5 | 0 | 100.00% | 10 |
-| ai | 11 | 11 | 0 | 100.00% | 23 |
-| camera | 10 | 10 | 0 | 100.00% | 43 |
-| combat | 19 | 19 | 0 | 100.00% | 89 |
-| crafting | 4 | 4 | 0 | 100.00% | 12 |
-| economy | 10 | 10 | 0 | 100.00% | 30 |
+| ai | 11 | 11 | 0 | 100.00% | 24 |
+| camera | 10 | 10 | 0 | 100.00% | 44 |
+| combat | 19 | 19 | 0 | 100.00% | 91 |
+| crafting | 4 | 4 | 0 | 100.00% | 13 |
+| economy | 10 | 10 | 0 | 100.00% | 32 |
 | horror | 8 | 8 | 0 | 100.00% | 20 |
 | meta | 4 | 4 | 0 | 100.00% | 8 |
-| movement | 12 | 12 | 0 | 100.00% | 32 |
+| movement | 12 | 12 | 0 | 100.00% | 33 |
 | multiplayer | 10 | 10 | 0 | 100.00% | 25 |
 | narrative | 5 | 5 | 0 | 100.00% | 11 |
 | physics | 11 | 11 | 0 | 100.00% | 27 |
 | platforming | 9 | 9 | 0 | 100.00% | 21 |
 | procedural_generation | 9 | 9 | 0 | 100.00% | 20 |
-| progression | 11 | 11 | 0 | 100.00% | 31 |
+| progression | 11 | 11 | 0 | 100.00% | 32 |
 | puzzle | 10 | 10 | 0 | 100.00% | 23 |
 | rhythm | 4 | 4 | 0 | 100.00% | 8 |
 | roguelike | 9 | 9 | 0 | 100.00% | 22 |
 | simulation | 4 | 4 | 0 | 100.00% | 8 |
-| stealth | 6 | 6 | 0 | 100.00% | 12 |
+| stealth | 6 | 6 | 0 | 100.00% | 13 |
 | strategy | 4 | 4 | 0 | 100.00% | 8 |
-| survival | 10 | 10 | 0 | 100.00% | 36 |
-| time | 7 | 7 | 0 | 100.00% | 14 |
+| survival | 10 | 10 | 0 | 100.00% | 37 |
+| time | 7 | 7 | 0 | 100.00% | 15 |
 | traversal | 11 | 11 | 0 | 100.00% | 25 |
-| ui_ux | 12 | 12 | 0 | 100.00% | 54 |
+| ui_ux | 12 | 12 | 0 | 100.00% | 55 |
 | vehicles | 8 | 8 | 0 | 100.00% | 33 |
 
 ## Mechanics Missing Example Games

@@ -178,6 +178,10 @@
     {
       "title": "Terraria",
       "note": "Uses recipe crafting to convert gathered materials into equipment, tools, and blocks."
+    },
+    {
+      "title": "Stardew Valley",
+      "note": "Uses recipes to craft equipment, machines, consumables, and farm items from gathered materials."
     }
   ],
   "tags": [

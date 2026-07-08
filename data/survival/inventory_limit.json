@@ -144,6 +144,10 @@
     {
       "title": "Terraria",
       "note": "Uses limited inventory slots to constrain mining, crafting, and exploration trips."
+    },
+    {
+      "title": "Stardew Valley",
+      "note": "Uses limited backpack space to constrain gathering, mining, fishing, and farming trips."
     }
   ],
   "tags": [

@@ -7,11 +7,11 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | Metric | Value |
 | --- | --- |
 | Total mechanics | 223 |
-| Total example-game references | 645 |
+| Total example-game references | 658 |
 | Unique game titles | 192 |
 | Games with 1 mechanic | 98 |
-| Games with 2-4 mechanics | 61 |
-| Games with 5+ mechanics | 33 |
+| Games with 2-4 mechanics | 59 |
+| Games with 5+ mechanics | 35 |
 | Max mechanics on one game | 19 |
 
 ## Top Games By Referenced Mechanics
@@ -39,30 +39,30 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | Category | Unique games | Example references | Top games in category |
 | --- | --- | --- | --- |
 | accessibility | 7 | 10 | The Last of Us Part II (3), Celeste (2), Destiny 2 (1), Fortnite (1), Forza Motorsport (1) |
-| ai | 18 | 23 | Alien: Isolation (2), Left 4 Dead (2), The Last of Us (2), The Sims (2), XCOM (2) |
-| camera | 37 | 43 | Celeste (2), Dark Souls (2), Gran Turismo 7 (2), Minecraft (2), Super Mario Odyssey (2) |
-| combat | 39 | 89 | Dark Souls (5), Hades (5), Overwatch (5), Dead Cells (4), Diablo III (4) |
-| crafting | 10 | 12 | Terraria (2), The Elder Scrolls V: Skyrim (2), Alien: Isolation (1), Don't Starve (1), Factorio (1) |
-| economy | 26 | 30 | Animal Crossing (2), Stardew Valley (2), The Witcher 3: Wild Hunt (2), World of Warcraft (2), AdVenture Capitalist (1) |
+| ai | 18 | 24 | Alien: Isolation (2), Dishonored (2), Left 4 Dead (2), The Last of Us (2), The Sims (2) |
+| camera | 38 | 44 | Celeste (2), Dark Souls (2), Gran Turismo 7 (2), Minecraft (2), Super Mario Odyssey (2) |
+| combat | 39 | 91 | Dark Souls (5), Hades (5), Overwatch (5), Dead Cells (4), Diablo III (4) |
+| crafting | 11 | 13 | Terraria (2), The Elder Scrolls V: Skyrim (2), Alien: Isolation (1), Don't Starve (1), Factorio (1) |
+| economy | 26 | 32 | Stardew Valley (4), Animal Crossing (2), The Witcher 3: Wild Hunt (2), World of Warcraft (2), AdVenture Capitalist (1) |
 | horror | 11 | 20 | Alien: Isolation (5), Amnesia: The Dark Descent (3), Amnesia: The Bunker (2), Outlast (2), Resident Evil 4 (2) |
 | meta | 8 | 8 | Apex Legends (1), Chrono Trigger (1), Dark Souls (1), Hades (1), Slay the Spire (1) |
-| movement | 23 | 32 | The Legend of Zelda: Breath of the Wild (3), Apex Legends (2), Celeste (2), Dark Souls (2), Hollow Knight (2) |
+| movement | 24 | 33 | The Legend of Zelda: Breath of the Wild (3), Apex Legends (2), Celeste (2), Dark Souls (2), Hollow Knight (2) |
 | multiplayer | 15 | 25 | Deep Rock Galactic (3), Left 4 Dead (3), Apex Legends (2), Helldivers 2 (2), Lovers in a Dangerous Spacetime (2) |
 | narrative | 8 | 11 | Fallout: New Vegas (2), Mass Effect (2), The Witcher 3: Wild Hunt (2), Baldur's Gate 3 (1), BioShock (1) |
 | physics | 19 | 27 | Half-Life 2 (4), Celeste (2), Portal 2 (2), Super Mario World (2), The Legend of Zelda: Breath of the Wild (2) |
 | platforming | 11 | 21 | Celeste (5), Hollow Knight (4), Super Mario Odyssey (2), Super Meat Boy (2), Super Metroid (2) |
 | procedural_generation | 14 | 20 | Minecraft (3), Terraria (3), No Man's Sky (2), Spelunky (2), Borderlands (1) |
-| progression | 25 | 31 | Hades (3), Dark Souls (2), The Elder Scrolls V: Skyrim (2), The Witcher 3: Wild Hunt (2), World of Warcraft (2) |
+| progression | 26 | 32 | Hades (3), Dark Souls (2), The Elder Scrolls V: Skyrim (2), The Witcher 3: Wild Hunt (2), World of Warcraft (2) |
 | puzzle | 12 | 23 | Portal 2 (5), Portal (3), The Legend of Zelda: Ocarina of Time (3), The Talos Principle (3), The Witness (2) |
 | rhythm | 6 | 8 | Guitar Hero (3), Beat Saber (1), Crypt of the NecroDancer (1), Dance Dance Revolution (1), osu! (1) |
 | roguelike | 8 | 22 | Slay the Spire (7), Hades (4), Dead Cells (3), The Binding of Isaac (3), Spelunky (2) |
 | simulation | 7 | 8 | Cities: Skylines (2), Dwarf Fortress (1), Frostpunk (1), OpenTTD (1), RimWorld (1) |
-| stealth | 8 | 12 | Thief: The Dark Project (3), Mark of the Ninja (2), Metal Gear Solid V: The Phantom Pain (2), Alien: Isolation (1), Dishonored (1) |
+| stealth | 8 | 13 | Thief: The Dark Project (3), Dishonored (2), Mark of the Ninja (2), Metal Gear Solid V: The Phantom Pain (2), Alien: Isolation (1) |
 | strategy | 4 | 8 | Civilization VI (3), Age of Empires II (2), StarCraft II (2), Company of Heroes (1) |
-| survival | 18 | 36 | Minecraft (6), Subnautica (5), Terraria (3), The Legend of Zelda: Breath of the Wild (3), The Long Dark (3) |
-| time | 12 | 14 | The Legend of Zelda: Breath of the Wild (3), Braid (1), Crypt of the NecroDancer (1), Hades (1), Hi-Fi Rush (1) |
+| survival | 19 | 37 | Minecraft (6), Subnautica (5), Terraria (3), The Legend of Zelda: Breath of the Wild (3), The Long Dark (3) |
+| time | 13 | 15 | The Legend of Zelda: Breath of the Wild (3), Braid (1), Crypt of the NecroDancer (1), Hades (1), Hi-Fi Rush (1) |
 | traversal | 23 | 25 | Spelunky (2), Titanfall 2 (2), Apex Legends (1), Assassin's Creed II (1), Assassin's Creed Unity (1) |
-| ui_ux | 30 | 54 | Apex Legends (4), Diablo III (4), Fortnite (4), Red Dead Redemption 2 (3), Resident Evil 4 (3) |
+| ui_ux | 31 | 55 | Apex Legends (4), Diablo III (4), Fortnite (4), Red Dead Redemption 2 (3), Resident Evil 4 (3) |
 | vehicles | 12 | 33 | Gran Turismo 7 (5), Need for Speed: Hot Pursuit (5), Grand Theft Auto V (4), Mario Kart 8 (4), Rocket League (4) |
 
 ## Games Index
@@ -509,6 +509,25 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 192 g
 | survival.health | survival | Uses health hearts and healing items during exploration and combat. |
 | survival.inventory_limit | survival | Uses limited inventory slots to constrain mining, crafting, and exploration trips. |
 
+### Dishonored
+
+- Mechanic count: 11
+- Categories: combat, ai, stealth, camera, movement, traversal, ui_ux
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| ai.line_of_sight_detection | ai | Uses guard sightlines and alert states for stealth play. |
+| ai.patrol | ai | Uses guard patrol routes as stealth observation and timing pressure. |
+| camera.first_person_camera | camera | Uses first-person camera framing for stealth, traversal, and combat readability. |
+| combat.melee_attack | combat | Uses sword attacks as visible close-range combat options. |
+| combat.ranged_attack | combat | Uses crossbow and pistol tools as visible ranged combat options. |
+| combat.stealth_kill | combat | Supports stealth takedowns when the player reaches enemies without direct detection. |
+| movement.crouch | movement | Uses crouched movement for stealth approach, lower profile, and cover use. |
+| stealth.alert_state | stealth | Uses guard alertness states to move from suspicion to combat. |
+| stealth.last_known_position_search | stealth | Uses guard search behavior after the player breaks direct sight. |
+| traversal.teleport_blink | traversal | Uses Blink as a short-range teleport for stealth and traversal. |
+| ui_ux.interaction_prompt | ui_ux | Uses contextual prompts for doors, loot, bodies, and mission interactions. |
+
 ### Grand Theft Auto V
 
 - Mechanic count: 11
@@ -636,6 +655,22 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 192 g
 | vehicles.vehicle_braking | vehicles | Uses braking and handbrake behavior during street driving and vehicle control. |
 | vehicles.vehicle_damage | vehicles | Shows visible vehicle damage from collisions and impacts. |
 
+### Stardew Valley
+
+- Mechanic count: 8
+- Categories: economy, crafting, progression, survival, time
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| crafting.recipe_crafting | crafting | Uses recipes to craft equipment, machines, consumables, and farm items from gathered materials. |
+| economy.coins | economy | Uses money as the main farming and upgrade currency. |
+| economy.crafting_materials | economy | Uses crops, ore, wood, and gathered goods as crafting and upgrade inputs. |
+| economy.resource_conversion | economy | Uses machines that transform raw goods into higher-value outputs. |
+| economy.shop | economy | Uses vendors for buying seeds, supplies, tools, and services. |
+| progression.level_up | progression | Uses skill level-ups to unlock recipes, perks, and improved farming capabilities. |
+| survival.inventory_limit | survival | Uses limited backpack space to constrain gathering, mining, fishing, and farming trips. |
+| time.day_night_schedule | time | Uses a daily clock to structure farming, shop hours, NPC routines, and deadlines. |
+
 ### Need for Speed: Hot Pursuit
 
 - Mechanic count: 6
@@ -716,18 +751,6 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 192 g
 | movement.crouch | movement | Uses crouched movement for stealth, low cover, and slower profile control. |
 | movement.walk | movement | Uses controlled walking for exploration, stealth approach, and close interaction spaces. |
 | stealth.distraction_throw | stealth | Uses thrown objects to redirect infected and human enemies. |
-
-### Dishonored
-
-- Mechanic count: 4
-- Categories: ai, combat, stealth, traversal
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| ai.line_of_sight_detection | ai | Uses guard sightlines and alert states for stealth play. |
-| combat.stealth_kill | combat | Supports stealth takedowns when the player reaches enemies without direct detection. |
-| stealth.alert_state | stealth | Uses guard alertness states to move from suspicion to combat. |
-| traversal.teleport_blink | traversal | Uses Blink as a short-range teleport for stealth and traversal. |
 
 ### Gears of War
 
@@ -903,17 +926,6 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 192 g
 | economy.loot_table | economy | Uses randomized drops as a major item-hunting loop. |
 | procedural_generation.loot_generation | procedural_generation | Uses randomized loot drops as a major progression loop. |
 | progression.equipment_rarity | progression | Uses item rarity tiers as a central loot signal. |
-
-### Don't Starve
-
-- Mechanic count: 3
-- Categories: survival, crafting
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| crafting.crafting_queue | crafting | Uses timed crafting and station-driven survival production. |
-| survival.day_night_cycle | survival | Uses day phases to structure survival planning and night danger. |
-| survival.hunger | survival | Uses food pressure as a central survival planning loop. |
 
 ## Interpretation Notes
 

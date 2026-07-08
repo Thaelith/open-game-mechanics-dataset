@@ -48,6 +48,10 @@ Documents the fifth curated pass focused on classic high-value anchor games in t
 
 Documents the sixth, tiny policy-guided pass focused only on underdeveloped `Super Metroid` and `Terraria` anchors.
 
+[`game-anchor-enrichment-pass-7-v0.3.md`](game-anchor-enrichment-pass-7-v0.3.md)
+
+Documents the seventh, tiny policy-guided pass focused only on underdeveloped `Dishonored` and `Stardew Valley` anchors.
+
 [`game-anchor-quality-audit-v0.3.md`](game-anchor-quality-audit-v0.3.md)
 
 Reviews the accumulated game-anchor enrichment work for title consistency risks, saturated anchors, broad mappings, and recommended fixes before further enrichment.

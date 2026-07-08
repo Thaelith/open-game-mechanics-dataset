@@ -156,6 +156,10 @@
     {
       "title": "The Legend of Zelda: Breath of the Wild",
       "note": "Uses a world clock for lighting, NPC routines, and scheduled world events."
+    },
+    {
+      "title": "Stardew Valley",
+      "note": "Uses a daily clock to structure farming, shop hours, NPC routines, and deadlines."
     }
   ],
   "tags": [

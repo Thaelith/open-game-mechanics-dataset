@@ -130,6 +130,10 @@
     {
       "title": "Terraria",
       "note": "Uses mined, gathered, and enemy-dropped materials as crafting inputs."
+    },
+    {
+      "title": "Stardew Valley",
+      "note": "Uses crops, ore, wood, and gathered goods as crafting and upgrade inputs."
     }
   ],
   "tags": [

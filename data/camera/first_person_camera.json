@@ -160,6 +160,10 @@
     {
       "title": "Alien: Isolation",
       "note": "Uses first-person camera framing for stealth, exploration, and horror tension."
+    },
+    {
+      "title": "Dishonored",
+      "note": "Uses first-person camera framing for stealth, traversal, and combat readability."
     }
   ],
   "tags": [

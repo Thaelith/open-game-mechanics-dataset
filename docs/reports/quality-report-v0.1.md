@@ -6,7 +6,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Metric | Value |
 | --- | --- |
-| Generated at | 2026-07-08T20:10:03+00:00 |
+| Generated at | 2026-07-08T20:19:36+00:00 |
 | Schema version | 0.2.0 |
 | Total mechanics | 223 |
 | Total categories | 26 |
@@ -580,6 +580,7 @@ _None._
 | Hollow Knight | 12 |
 | Subnautica | 12 |
 | Terraria | 12 |
+| Dishonored | 11 |
 | Grand Theft Auto V | 11 |
 | Left 4 Dead | 11 |
 | Overwatch | 11 |
@@ -587,9 +588,8 @@ _None._
 | Slay the Spire | 11 |
 | Gran Turismo 7 | 8 |
 | Grand Theft Auto IV | 8 |
+| Stardew Valley | 8 |
 | Need for Speed: Hot Pursuit | 6 |
-| Super Mario Odyssey | 6 |
-| Super Metroid | 6 |
 
 ### Categories with Many Missing Examples
 

@@ -156,6 +156,10 @@
     {
       "title": "Alien: Isolation",
       "note": "Uses patrol and search behavior to create pressure in horror spaces."
+    },
+    {
+      "title": "Dishonored",
+      "note": "Uses guard patrol routes as stealth observation and timing pressure."
     }
   ],
   "tags": [

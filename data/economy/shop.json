@@ -193,6 +193,10 @@
     {
       "title": "Spelunky",
       "note": "Uses shops as high-risk purchase and theft spaces during runs."
+    },
+    {
+      "title": "Stardew Valley",
+      "note": "Uses vendors for buying seeds, supplies, tools, and services."
     }
   ],
   "tags": [

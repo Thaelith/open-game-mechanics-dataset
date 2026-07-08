@@ -224,6 +224,10 @@
     {
       "title": "Terraria",
       "note": "Uses bows, guns, magic, and thrown weapons as visible ranged combat options."
+    },
+    {
+      "title": "Dishonored",
+      "note": "Uses crossbow and pistol tools as visible ranged combat options."
     }
   ],
   "tags": [

@@ -155,6 +155,10 @@
     {
       "title": "Half-Life 2",
       "note": "Uses crouch to pass through low spaces and lower the player profile."
+    },
+    {
+      "title": "Dishonored",
+      "note": "Uses crouched movement for stealth approach, lower profile, and cover use."
     }
   ],
   "tags": [

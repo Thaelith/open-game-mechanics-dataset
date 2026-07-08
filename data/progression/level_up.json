@@ -156,6 +156,10 @@
     {
       "title": "World of Warcraft",
       "note": "Uses character levels to gate content and abilities."
+    },
+    {
+      "title": "Stardew Valley",
+      "note": "Uses skill level-ups to unlock recipes, perks, and improved farming capabilities."
     }
   ],
   "tags": [
