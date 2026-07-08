@@ -156,6 +156,14 @@
     {
       "title": "Diablo III",
       "note": "Uses breakable environmental props for combat feedback and occasional rewards."
+    },
+    {
+      "title": "Half-Life 2",
+      "note": "Uses breakable crates, boards, and props as visible world interactions."
+    },
+    {
+      "title": "Spelunky",
+      "note": "Uses breakable pots and destructible level objects as part of run exploration."
     }
   ],
   "tags": [

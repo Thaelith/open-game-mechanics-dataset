@@ -182,6 +182,22 @@
     {
       "title": "Left 4 Dead",
       "note": "Uses health, incapacitation, and recovery pressure during co-op survival encounters."
+    },
+    {
+      "title": "Half-Life 2",
+      "note": "Uses health pickups and damage state as visible first-person survival pressure."
+    },
+    {
+      "title": "The Legend of Zelda: Ocarina of Time",
+      "note": "Uses heart containers and health recovery as visible adventure survival state."
+    },
+    {
+      "title": "Spelunky",
+      "note": "Uses limited health to make traps, falls, and enemy hits persistent run pressure."
+    },
+    {
+      "title": "Alien: Isolation",
+      "note": "Uses health loss and recovery items as visible survival pressure."
     }
   ],
   "tags": [

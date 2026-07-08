@@ -160,6 +160,10 @@
     {
       "title": "Portal 2",
       "note": "Uses floor buttons and cubes as core puzzle-state triggers."
+    },
+    {
+      "title": "The Legend of Zelda: Ocarina of Time",
+      "note": "Uses switches and pressure plates as readable dungeon puzzle triggers."
     }
   ],
   "tags": [

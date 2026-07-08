@@ -156,6 +156,10 @@
     {
       "title": "Left 4 Dead",
       "note": "Uses first-person camera framing for co-op survival combat and navigation."
+    },
+    {
+      "title": "Alien: Isolation",
+      "note": "Uses first-person camera framing for stealth, exploration, and horror tension."
     }
   ],
   "tags": [

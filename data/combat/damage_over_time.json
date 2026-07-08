@@ -163,6 +163,10 @@
     {
       "title": "Diablo III",
       "note": "Uses poison, burning, and other lingering effects as visible combat pressure."
+    },
+    {
+      "title": "Dead Cells",
+      "note": "Uses poison, burning, and bleeding effects as visible delayed damage pressure."
     }
   ],
   "tags": [

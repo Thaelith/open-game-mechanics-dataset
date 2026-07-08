@@ -184,6 +184,22 @@
     {
       "title": "Left 4 Dead",
       "note": "Uses contextual prompts for revives, pickups, doors, and objective interactions."
+    },
+    {
+      "title": "Half-Life 2",
+      "note": "Uses contextual interaction cues for doors, vehicles, pickups, and physics objects."
+    },
+    {
+      "title": "The Legend of Zelda: Ocarina of Time",
+      "note": "Uses contextual action prompts for talking, opening, climbing, and interacting."
+    },
+    {
+      "title": "Spelunky",
+      "note": "Uses contextual prompts for pickups, doors, shops, and rescues."
+    },
+    {
+      "title": "Alien: Isolation",
+      "note": "Uses contextual prompts for doors, terminals, crafting, hiding, and tools."
     }
   ],
   "tags": [

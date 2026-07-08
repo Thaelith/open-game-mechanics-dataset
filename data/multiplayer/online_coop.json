@@ -166,6 +166,10 @@
     {
       "title": "Portal 2",
       "note": "Uses an online co-op campaign with shared puzzle state and partner coordination."
+    },
+    {
+      "title": "World of Warcraft",
+      "note": "Uses online group play for dungeons, raids, quests, and shared objectives."
     }
   ],
   "tags": [

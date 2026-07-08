@@ -181,6 +181,18 @@
     {
       "title": "Diablo III",
       "note": "Uses vendors for buying, selling, repairing, and service transactions."
+    },
+    {
+      "title": "World of Warcraft",
+      "note": "Uses vendors for buying, selling, repairs, and utility services."
+    },
+    {
+      "title": "Slay the Spire",
+      "note": "Uses shops for cards, relics, removals, and potions during a run."
+    },
+    {
+      "title": "Spelunky",
+      "note": "Uses shops as high-risk purchase and theft spaces during runs."
     }
   ],
   "tags": [

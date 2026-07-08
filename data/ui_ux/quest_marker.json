@@ -203,6 +203,14 @@
     {
       "title": "Diablo III",
       "note": "Uses objective markers and map guidance for quests and dungeon goals."
+    },
+    {
+      "title": "World of Warcraft",
+      "note": "Uses quest markers and tracked objectives to guide world and dungeon tasks."
+    },
+    {
+      "title": "Alien: Isolation",
+      "note": "Uses objective guidance and tracker cues to direct survival routes."
     }
   ],
   "tags": [

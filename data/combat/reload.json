@@ -165,6 +165,10 @@
     {
       "title": "Left 4 Dead",
       "note": "Uses reload timing and ammunition pressure during horde encounters."
+    },
+    {
+      "title": "Half-Life 2",
+      "note": "Uses reload timing and ammunition pressure during first-person firefights."
     }
   ],
   "tags": [

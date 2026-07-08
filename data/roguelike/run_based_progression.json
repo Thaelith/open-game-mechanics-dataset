@@ -171,6 +171,14 @@
     {
       "title": "Dead Cells",
       "note": "Builds power during a run while some unlock progress persists outside it."
+    },
+    {
+      "title": "Slay the Spire",
+      "note": "Builds deck strength and relic power over the course of a run."
+    },
+    {
+      "title": "Spelunky",
+      "note": "Builds run state through items, money, health, shortcuts, and route decisions."
     }
   ],
   "tags": [

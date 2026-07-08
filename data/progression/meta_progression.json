@@ -155,6 +155,10 @@
     {
       "title": "Dead Cells",
       "note": "Uses unlocks and upgrades that persist across runs."
+    },
+    {
+      "title": "Slay the Spire",
+      "note": "Unlocks additional cards and relics across repeated runs."
     }
   ],
   "tags": [

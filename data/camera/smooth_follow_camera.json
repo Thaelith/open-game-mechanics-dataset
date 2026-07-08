@@ -158,6 +158,10 @@
     {
       "title": "Super Mario Odyssey",
       "note": "Uses smooth camera following and framing to support 3D platforming readability."
+    },
+    {
+      "title": "Dead Cells",
+      "note": "Uses smooth side-view camera framing for fast combat and platforming routes."
     }
   ],
   "tags": [

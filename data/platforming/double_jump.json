@@ -148,6 +148,10 @@
     {
       "title": "Hollow Knight",
       "note": "Uses an air-mobility upgrade to change traversal options."
+    },
+    {
+      "title": "Dead Cells",
+      "note": "Uses double jump as a recurring traversal and combat-positioning action."
     }
   ],
   "tags": [

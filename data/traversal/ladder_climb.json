@@ -161,6 +161,10 @@
     {
       "title": "Half-Life 2",
       "note": "Uses ladders for constrained vertical traversal in first-person levels."
+    },
+    {
+      "title": "The Legend of Zelda: Ocarina of Time",
+      "note": "Uses ladders as constrained vertical routes in dungeon and village spaces."
     }
   ],
   "tags": [

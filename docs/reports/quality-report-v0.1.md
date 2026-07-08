@@ -6,7 +6,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Metric | Value |
 | --- | --- |
-| Generated at | 2026-07-03T13:00:41+00:00 |
+| Generated at | 2026-07-08T19:24:17+00:00 |
 | Schema version | 0.2.0 |
 | Total mechanics | 223 |
 | Total categories | 26 |
@@ -567,8 +567,14 @@ _None._
 | Dark Souls | 15 |
 | The Elder Scrolls V: Skyrim | 15 |
 | Apex Legends | 14 |
+| Half-Life 2 | 14 |
 | Resident Evil 4 | 14 |
+| World of Warcraft | 14 |
+| Alien: Isolation | 13 |
+| Spelunky | 13 |
+| The Legend of Zelda: Ocarina of Time | 13 |
 | The Witcher 3: Wild Hunt | 13 |
+| Dead Cells | 12 |
 | Diablo III | 12 |
 | Fortnite | 12 |
 | Hollow Knight | 12 |
@@ -577,19 +583,13 @@ _None._
 | Left 4 Dead | 11 |
 | Overwatch | 11 |
 | Portal 2 | 11 |
+| Slay the Spire | 11 |
 | Gran Turismo 7 | 8 |
 | Grand Theft Auto IV | 8 |
-| Half-Life 2 | 7 |
-| Slay the Spire | 7 |
-| The Legend of Zelda: Ocarina of Time | 7 |
-| World of Warcraft | 7 |
 | Need for Speed: Hot Pursuit | 6 |
-| Spelunky | 6 |
 | Super Mario Odyssey | 6 |
-| Alien: Isolation | 5 |
 | Portal | 5 |
 | Rocket League | 5 |
-| The Last of Us | 5 |
 
 ### Categories with Many Missing Examples
 

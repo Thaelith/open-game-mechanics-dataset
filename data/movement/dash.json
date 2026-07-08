@@ -173,6 +173,10 @@
     {
       "title": "Hollow Knight",
       "note": "Uses dash as a movement upgrade for combat spacing and traversal."
+    },
+    {
+      "title": "Dead Cells",
+      "note": "Uses dodge-style dash movement for combat evasion and repositioning."
     }
   ],
   "tags": [

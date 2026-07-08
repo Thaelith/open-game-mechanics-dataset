@@ -173,6 +173,10 @@
     {
       "title": "Apex Legends",
       "note": "Uses a minimap for ring, squad, and nearby navigation awareness."
+    },
+    {
+      "title": "World of Warcraft",
+      "note": "Uses minimap tracking for nearby locations, quest context, and navigation."
     }
   ],
   "tags": [

@@ -163,6 +163,10 @@
     {
       "title": "Dark Souls",
       "note": "Uses earned souls as a visible progression resource for leveling decisions."
+    },
+    {
+      "title": "World of Warcraft",
+      "note": "Uses experience rewards from quests and combat to advance character levels."
     }
   ],
   "tags": [

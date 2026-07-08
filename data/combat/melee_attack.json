@@ -186,6 +186,26 @@
     {
       "title": "Diablo III",
       "note": "Uses close-range class attacks as visible combat options."
+    },
+    {
+      "title": "Half-Life 2",
+      "note": "Uses the crowbar as a visible close-range combat and object-breaking tool."
+    },
+    {
+      "title": "World of Warcraft",
+      "note": "Uses melee weapon attacks and close-range abilities across combat roles."
+    },
+    {
+      "title": "The Legend of Zelda: Ocarina of Time",
+      "note": "Uses sword attacks as a primary close-range combat interaction."
+    },
+    {
+      "title": "Spelunky",
+      "note": "Uses the whip as a close-range combat and interaction tool."
+    },
+    {
+      "title": "Dead Cells",
+      "note": "Uses close-range weapons as visible combat options."
     }
   ],
   "tags": [

@@ -161,6 +161,10 @@
     {
       "title": "Hades",
       "note": "Uses dash immunity and recovery windows in fast combat encounters."
+    },
+    {
+      "title": "Dead Cells",
+      "note": "Uses dodge-roll invulnerability windows during fast combat encounters."
     }
   ],
   "tags": [

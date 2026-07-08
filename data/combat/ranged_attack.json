@@ -200,6 +200,22 @@
     {
       "title": "Diablo III",
       "note": "Uses ranged class skills and projectiles as visible combat options."
+    },
+    {
+      "title": "Half-Life 2",
+      "note": "Uses firearms and projectile weapons as visible first-person combat options."
+    },
+    {
+      "title": "World of Warcraft",
+      "note": "Uses ranged spells, weapons, and abilities across combat roles."
+    },
+    {
+      "title": "Spelunky",
+      "note": "Uses thrown objects and ranged weapons as visible combat options."
+    },
+    {
+      "title": "Dead Cells",
+      "note": "Uses bows, traps, and ranged weapons as visible combat options."
     }
   ],
   "tags": [

@@ -155,6 +155,10 @@
     {
       "title": "Dishonored",
       "note": "Uses guard sightlines and alert states for stealth play."
+    },
+    {
+      "title": "Alien: Isolation",
+      "note": "Uses line-of-sight detection as a major monster and android stealth risk."
     }
   ],
   "tags": [
