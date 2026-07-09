@@ -14,13 +14,15 @@ Example-game discovery preparation now includes full mechanic-level example cove
 
 Playable example preparation now includes an MVP set of original browser demos for five lower-risk mechanics. These examples use simple shapes and are tracked in [`playable-mechanic-examples.md`](playable-mechanic-examples.md); they are not commercial game footage or production templates.
 
+Release-candidate readiness is tracked in [`release-candidate-checklist-v0.3.md`](release-candidate-checklist-v0.3.md).
+
 ## Completed Preparation Checkpoints
 
 - Games view and game-to-mechanics discovery are implemented in the static browser.
 - Playable examples MVP exists for five selected mechanics.
 - Game-anchor enrichment passes improved selected underdeveloped study anchors.
 - Game-anchor quality audit, title policy, and targeted cleanup reports exist.
-- Public usage guidance and v0.3 release-notes drafting have started.
+- Public usage guidance, v0.3 release-notes drafting, and release-candidate checklist preparation exist.
 
 ## Must Do
 

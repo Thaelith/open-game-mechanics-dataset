@@ -98,7 +98,7 @@ See [`docs/trust-and-review-status.md`](docs/trust-and-review-status.md) for det
 - [v0.3 review summary](docs/reports/v0.3-review-summary.md)
 - [Quality report](docs/reports/quality-report-v0.1.md)
 - [Graph coverage report](docs/reports/mechanic-graph-report-v0.2.md)
-- [v0.3 trust roadmap](docs/roadmap-v0.3.md)
+- [v0.3 roadmap](docs/roadmap-v0.3.md)
 
 ## Dataset Format
 
