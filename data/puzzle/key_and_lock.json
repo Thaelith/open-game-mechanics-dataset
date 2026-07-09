@@ -154,6 +154,10 @@
       "note": "Uses keys and locked doors as dungeon progression gates."
     },
     {
+      "title": "Doom",
+      "note": "Uses colored keycards and locked doors as progression gates."
+    },
+    {
       "title": "Resident Evil 2",
       "note": "Uses themed keys to gate routes and encourage backtracking."
     }

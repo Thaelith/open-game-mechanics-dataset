@@ -129,6 +129,10 @@
       "note": "Uses enemy search behavior after guards lose direct sight of the player."
     },
     {
+      "title": "Metal Gear Solid",
+      "note": "Uses guard searches after losing direct contact with Snake."
+    },
+    {
       "title": "Alien: Isolation",
       "note": "Uses last-known and investigation behavior to sustain stealth pressure."
     },

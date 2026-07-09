@@ -122,6 +122,10 @@
       "note": "Uses a close third-person camera for combat and character presence."
     },
     {
+      "title": "Metal Gear Solid",
+      "note": "Uses character-visible camera framing for stealth navigation and guard observation."
+    },
+    {
       "title": "Grand Theft Auto IV",
       "note": "Uses a third-person camera for on-foot movement, driving, and combat framing."
     },

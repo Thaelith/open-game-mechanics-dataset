@@ -12,7 +12,7 @@ Example games are not exhaustive and do not prove exact implementation details. 
 | Mechanics with example_games | 223 |
 | Mechanics missing example_games | 0 |
 | Example-game coverage | 100.00% |
-| Total example-game references | 658 |
+| Total example-game references | 671 |
 | Unique game titles | 192 |
 
 ## Top Referenced Game Titles
@@ -50,30 +50,30 @@ Example games are not exhaustive and do not prove exact implementation details. 
 | Category | Mechanics | With examples | Missing examples | Coverage | References |
 | --- | --- | --- | --- | --- | --- |
 | accessibility | 5 | 5 | 0 | 100.00% | 10 |
-| ai | 11 | 11 | 0 | 100.00% | 24 |
-| camera | 10 | 10 | 0 | 100.00% | 44 |
-| combat | 19 | 19 | 0 | 100.00% | 91 |
+| ai | 11 | 11 | 0 | 100.00% | 25 |
+| camera | 10 | 10 | 0 | 100.00% | 47 |
+| combat | 19 | 19 | 0 | 100.00% | 92 |
 | crafting | 4 | 4 | 0 | 100.00% | 13 |
 | economy | 10 | 10 | 0 | 100.00% | 32 |
 | horror | 8 | 8 | 0 | 100.00% | 20 |
 | meta | 4 | 4 | 0 | 100.00% | 8 |
-| movement | 12 | 12 | 0 | 100.00% | 33 |
+| movement | 12 | 12 | 0 | 100.00% | 34 |
 | multiplayer | 10 | 10 | 0 | 100.00% | 25 |
 | narrative | 5 | 5 | 0 | 100.00% | 11 |
 | physics | 11 | 11 | 0 | 100.00% | 27 |
 | platforming | 9 | 9 | 0 | 100.00% | 21 |
 | procedural_generation | 9 | 9 | 0 | 100.00% | 20 |
 | progression | 11 | 11 | 0 | 100.00% | 32 |
-| puzzle | 10 | 10 | 0 | 100.00% | 23 |
+| puzzle | 10 | 10 | 0 | 100.00% | 24 |
 | rhythm | 4 | 4 | 0 | 100.00% | 8 |
 | roguelike | 9 | 9 | 0 | 100.00% | 22 |
 | simulation | 4 | 4 | 0 | 100.00% | 8 |
-| stealth | 6 | 6 | 0 | 100.00% | 13 |
-| strategy | 4 | 4 | 0 | 100.00% | 8 |
-| survival | 10 | 10 | 0 | 100.00% | 37 |
+| stealth | 6 | 6 | 0 | 100.00% | 15 |
+| strategy | 4 | 4 | 0 | 100.00% | 9 |
+| survival | 10 | 10 | 0 | 100.00% | 38 |
 | time | 7 | 7 | 0 | 100.00% | 15 |
 | traversal | 11 | 11 | 0 | 100.00% | 25 |
-| ui_ux | 12 | 12 | 0 | 100.00% | 55 |
+| ui_ux | 12 | 12 | 0 | 100.00% | 57 |
 | vehicles | 8 | 8 | 0 | 100.00% | 33 |
 
 ## Mechanics Missing Example Games

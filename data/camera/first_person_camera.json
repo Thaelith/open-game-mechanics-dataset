@@ -122,6 +122,10 @@
       "note": "Uses a first-person camera for traversal, combat, and environmental interaction."
     },
     {
+      "title": "Doom",
+      "note": "Uses a first-person viewpoint for movement, aiming, and combat spaces."
+    },
+    {
       "title": "Mirror's Edge",
       "note": "Uses a first-person viewpoint for traversal, jumping, and close environmental navigation."
     },

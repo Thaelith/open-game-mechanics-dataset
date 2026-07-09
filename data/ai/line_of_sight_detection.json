@@ -153,6 +153,10 @@
       "note": "Uses visibility and light as a key stealth concern."
     },
     {
+      "title": "Metal Gear Solid",
+      "note": "Uses guard sightlines as readable stealth detection pressure."
+    },
+    {
       "title": "Dishonored",
       "note": "Uses guard sightlines and alert states for stealth play."
     },

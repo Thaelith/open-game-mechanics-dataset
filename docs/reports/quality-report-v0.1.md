@@ -6,7 +6,7 @@ This advisory report summarizes dataset quality signals for maintainers. Warning
 
 | Metric | Value |
 | --- | --- |
-| Generated at | 2026-07-08T20:19:36+00:00 |
+| Generated at | 2026-07-09T09:44:45+00:00 |
 | Schema version | 0.2.0 |
 | Total mechanics | 223 |
 | Total categories | 26 |
@@ -589,7 +589,7 @@ _None._
 | Gran Turismo 7 | 8 |
 | Grand Theft Auto IV | 8 |
 | Stardew Valley | 8 |
-| Need for Speed: Hot Pursuit | 6 |
+| Doom | 6 |
 
 ### Categories with Many Missing Examples
 

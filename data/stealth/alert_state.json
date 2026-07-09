@@ -159,6 +159,10 @@
       "note": "Uses escalating enemy awareness and search behavior in stealth encounters."
     },
     {
+      "title": "Metal Gear Solid",
+      "note": "Uses enemy alert escalation from suspicion and search into combat."
+    },
+    {
       "title": "Dishonored",
       "note": "Uses guard alertness states to move from suspicion to combat."
     }

@@ -151,6 +151,14 @@
       "note": "Uses a minimap for nearby streets, routes, and activity markers."
     },
     {
+      "title": "Metal Gear Solid",
+      "note": "Uses radar-style map information for nearby guards and stealth awareness."
+    },
+    {
+      "title": "Age of Empires II",
+      "note": "Uses a minimap for scouting, terrain, and army positioning."
+    },
+    {
       "title": "Grand Theft Auto IV",
       "note": "Uses a minimap/GPS-style route display for city navigation."
     },

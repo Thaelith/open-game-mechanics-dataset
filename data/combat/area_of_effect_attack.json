@@ -151,6 +151,10 @@
       "note": "Uses ground telegraphs and area attacks in encounters."
     },
     {
+      "title": "Doom",
+      "note": "Uses rockets and explosive barrels as visible area-damage threats."
+    },
+    {
       "title": "Hades",
       "note": "Uses area attacks for weapons, boons, and enemy pressure."
     },

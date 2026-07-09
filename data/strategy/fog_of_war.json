@@ -169,6 +169,10 @@
       "note": "Uses fog of war and scouting as core strategic information systems."
     },
     {
+      "title": "Age of Empires II",
+      "note": "Uses fog of war and scouting to hide enemy activity and unexplored areas."
+    },
+    {
       "title": "Civilization VI",
       "note": "Uses exploration and map visibility to gate strategic knowledge."
     }

@@ -7,11 +7,14 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | Metric | Value |
 | --- | --- |
 | Total mechanics | 223 |
-| Total example-game references | 658 |
+| Total example-game references | 671 |
 | Unique game titles | 192 |
-| Games with 1 mechanic | 98 |
-| Games with 2-4 mechanics | 59 |
-| Games with 5+ mechanics | 35 |
+| Games with 1 mechanic | 96 |
+| Games with 2 mechanics | 29 |
+| Games with 3 mechanics | 19 |
+| Games with 4 mechanics | 10 |
+| Games with 2-4 mechanics | 58 |
+| Games with 5+ mechanics | 38 |
 | Max mechanics on one game | 19 |
 
 ## Top Games By Referenced Mechanics
@@ -39,30 +42,30 @@ This is a derived index from mechanic-level `example_games`. It is a study and d
 | Category | Unique games | Example references | Top games in category |
 | --- | --- | --- | --- |
 | accessibility | 7 | 10 | The Last of Us Part II (3), Celeste (2), Destiny 2 (1), Fortnite (1), Forza Motorsport (1) |
-| ai | 18 | 24 | Alien: Isolation (2), Dishonored (2), Left 4 Dead (2), The Last of Us (2), The Sims (2) |
-| camera | 38 | 44 | Celeste (2), Dark Souls (2), Gran Turismo 7 (2), Minecraft (2), Super Mario Odyssey (2) |
-| combat | 39 | 91 | Dark Souls (5), Hades (5), Overwatch (5), Dead Cells (4), Diablo III (4) |
+| ai | 18 | 25 | Alien: Isolation (2), Dishonored (2), Left 4 Dead (2), Metal Gear Solid (2), The Last of Us (2) |
+| camera | 41 | 47 | Celeste (2), Dark Souls (2), Gran Turismo 7 (2), Minecraft (2), Super Mario Odyssey (2) |
+| combat | 39 | 92 | Dark Souls (5), Hades (5), Overwatch (5), Dead Cells (4), Diablo III (4) |
 | crafting | 11 | 13 | Terraria (2), The Elder Scrolls V: Skyrim (2), Alien: Isolation (1), Don't Starve (1), Factorio (1) |
 | economy | 26 | 32 | Stardew Valley (4), Animal Crossing (2), The Witcher 3: Wild Hunt (2), World of Warcraft (2), AdVenture Capitalist (1) |
 | horror | 11 | 20 | Alien: Isolation (5), Amnesia: The Dark Descent (3), Amnesia: The Bunker (2), Outlast (2), Resident Evil 4 (2) |
 | meta | 8 | 8 | Apex Legends (1), Chrono Trigger (1), Dark Souls (1), Hades (1), Slay the Spire (1) |
-| movement | 24 | 33 | The Legend of Zelda: Breath of the Wild (3), Apex Legends (2), Celeste (2), Dark Souls (2), Hollow Knight (2) |
+| movement | 25 | 34 | The Legend of Zelda: Breath of the Wild (3), Apex Legends (2), Celeste (2), Dark Souls (2), Hollow Knight (2) |
 | multiplayer | 15 | 25 | Deep Rock Galactic (3), Left 4 Dead (3), Apex Legends (2), Helldivers 2 (2), Lovers in a Dangerous Spacetime (2) |
 | narrative | 8 | 11 | Fallout: New Vegas (2), Mass Effect (2), The Witcher 3: Wild Hunt (2), Baldur's Gate 3 (1), BioShock (1) |
 | physics | 19 | 27 | Half-Life 2 (4), Celeste (2), Portal 2 (2), Super Mario World (2), The Legend of Zelda: Breath of the Wild (2) |
 | platforming | 11 | 21 | Celeste (5), Hollow Knight (4), Super Mario Odyssey (2), Super Meat Boy (2), Super Metroid (2) |
 | procedural_generation | 14 | 20 | Minecraft (3), Terraria (3), No Man's Sky (2), Spelunky (2), Borderlands (1) |
 | progression | 26 | 32 | Hades (3), Dark Souls (2), The Elder Scrolls V: Skyrim (2), The Witcher 3: Wild Hunt (2), World of Warcraft (2) |
-| puzzle | 12 | 23 | Portal 2 (5), Portal (3), The Legend of Zelda: Ocarina of Time (3), The Talos Principle (3), The Witness (2) |
+| puzzle | 13 | 24 | Portal 2 (5), Portal (3), The Legend of Zelda: Ocarina of Time (3), The Talos Principle (3), The Witness (2) |
 | rhythm | 6 | 8 | Guitar Hero (3), Beat Saber (1), Crypt of the NecroDancer (1), Dance Dance Revolution (1), osu! (1) |
 | roguelike | 8 | 22 | Slay the Spire (7), Hades (4), Dead Cells (3), The Binding of Isaac (3), Spelunky (2) |
 | simulation | 7 | 8 | Cities: Skylines (2), Dwarf Fortress (1), Frostpunk (1), OpenTTD (1), RimWorld (1) |
-| stealth | 8 | 13 | Thief: The Dark Project (3), Dishonored (2), Mark of the Ninja (2), Metal Gear Solid V: The Phantom Pain (2), Alien: Isolation (1) |
-| strategy | 4 | 8 | Civilization VI (3), Age of Empires II (2), StarCraft II (2), Company of Heroes (1) |
-| survival | 19 | 37 | Minecraft (6), Subnautica (5), Terraria (3), The Legend of Zelda: Breath of the Wild (3), The Long Dark (3) |
+| stealth | 9 | 15 | Thief: The Dark Project (3), Dishonored (2), Mark of the Ninja (2), Metal Gear Solid (2), Metal Gear Solid V: The Phantom Pain (2) |
+| strategy | 4 | 9 | Age of Empires II (3), Civilization VI (3), StarCraft II (2), Company of Heroes (1) |
+| survival | 20 | 38 | Minecraft (6), Subnautica (5), Terraria (3), The Legend of Zelda: Breath of the Wild (3), The Long Dark (3) |
 | time | 13 | 15 | The Legend of Zelda: Breath of the Wild (3), Braid (1), Crypt of the NecroDancer (1), Hades (1), Hi-Fi Rush (1) |
 | traversal | 23 | 25 | Spelunky (2), Titanfall 2 (2), Apex Legends (1), Assassin's Creed II (1), Assassin's Creed Unity (1) |
-| ui_ux | 31 | 55 | Apex Legends (4), Diablo III (4), Fortnite (4), Red Dead Redemption 2 (3), Resident Evil 4 (3) |
+| ui_ux | 33 | 57 | Apex Legends (4), Diablo III (4), Fortnite (4), Red Dead Redemption 2 (3), Resident Evil 4 (3) |
 | vehicles | 12 | 33 | Gran Turismo 7 (5), Need for Speed: Hot Pursuit (5), Grand Theft Auto V (4), Mario Kart 8 (4), Rocket League (4) |
 
 ## Games Index
@@ -671,6 +674,34 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 192 g
 | survival.inventory_limit | survival | Uses limited backpack space to constrain gathering, mining, fishing, and farming trips. |
 | time.day_night_schedule | time | Uses a daily clock to structure farming, shop hours, NPC routines, and deadlines. |
 
+### Doom
+
+- Mechanic count: 6
+- Categories: combat, camera, movement, puzzle, survival
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| camera.first_person_camera | camera | Uses a first-person viewpoint for movement, aiming, and combat spaces. |
+| combat.area_of_effect_attack | combat | Uses rockets and explosive barrels as visible area-damage threats. |
+| combat.ranged_attack | combat | Uses varied ranged weapons with distinct projectile and hitscan behavior. |
+| movement.run | movement | Uses fast sustained running as baseline combat and navigation movement. |
+| puzzle.key_and_lock | puzzle | Uses colored keycards and locked doors as progression gates. |
+| survival.health | survival | Uses health pickups and damage state as visible combat survival pressure. |
+
+### Metal Gear Solid
+
+- Mechanic count: 6
+- Categories: ai, stealth, camera, ui_ux
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| ai.line_of_sight_detection | ai | Uses guard sightlines as readable stealth detection pressure. |
+| ai.patrol | ai | Uses readable guard patrols as a stealth planning element. |
+| camera.third_person_camera | camera | Uses character-visible camera framing for stealth navigation and guard observation. |
+| stealth.alert_state | stealth | Uses enemy alert escalation from suspicion and search into combat. |
+| stealth.last_known_position_search | stealth | Uses guard searches after losing direct contact with Snake. |
+| ui_ux.minimap | ui_ux | Uses radar-style map information for nearby guards and stealth awareness. |
+
 ### Need for Speed: Hot Pursuit
 
 - Mechanic count: 6
@@ -712,6 +743,19 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 192 g
 | platforming.double_jump | platforming | Uses movement upgrades to expand reachable spaces. |
 | platforming.wall_jump | platforming | Uses wall jumps as a visible traversal technique for vertical routes. |
 | survival.health | survival | Uses energy tanks and health pickups as visible survival state. |
+
+### Age of Empires II
+
+- Mechanic count: 5
+- Categories: strategy, camera, ui_ux
+
+| Mechanic | Category | Example note |
+| --- | --- | --- |
+| camera.top_down_camera | camera | Uses a top-down strategy view for unit control and battlefield readability. |
+| strategy.fog_of_war | strategy | Uses fog of war and scouting to hide enemy activity and unexplored areas. |
+| strategy.tech_tree | strategy | Uses research unlocks to advance units, buildings, and strategies. |
+| strategy.unit_counter_system | strategy | Uses unit classes and bonuses to create strategic counters. |
+| ui_ux.minimap | ui_ux | Uses a minimap for scouting, terrain, and army positioning. |
 
 ### Portal
 
@@ -893,39 +937,6 @@ Showing the top 50 games by referenced mechanics. JSON output contains all 192 g
 | economy.loot_table | economy | Uses loot rarity and random item properties as progression rewards. |
 | procedural_generation.loot_generation | procedural_generation | Uses generated weapon and loot rewards with rarity presentation. |
 | progression.equipment_rarity | progression | Uses rarity color and item generation as part of loot progression. |
-
-### Civilization VI
-
-- Mechanic count: 3
-- Categories: strategy
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| strategy.fog_of_war | strategy | Uses exploration and map visibility to gate strategic knowledge. |
-| strategy.tech_tree | strategy | Uses technology and civics trees for long-term strategic planning. |
-| strategy.territory_control | strategy | Uses owned tiles and borders as core strategic territory. |
-
-### Deep Rock Galactic
-
-- Mechanic count: 3
-- Categories: multiplayer
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| multiplayer.asymmetric_roles | multiplayer | Uses class roles that support different team functions during missions. |
-| multiplayer.online_coop | multiplayer | Uses networked co-op for class teamwork, objectives, and shared extraction. |
-| multiplayer.shared_resource_pool | multiplayer | Uses shared team resources during missions for support actions. |
-
-### Diablo
-
-- Mechanic count: 3
-- Categories: economy, procedural_generation, progression
-
-| Mechanic | Category | Example note |
-| --- | --- | --- |
-| economy.loot_table | economy | Uses randomized drops as a major item-hunting loop. |
-| procedural_generation.loot_generation | procedural_generation | Uses randomized loot drops as a major progression loop. |
-| progression.equipment_rarity | progression | Uses item rarity tiers as a central loot signal. |
 
 ## Interpretation Notes
 

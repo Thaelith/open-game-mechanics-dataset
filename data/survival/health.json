@@ -160,6 +160,10 @@
       "note": "Uses health recovery items and danger states as part of survival pressure."
     },
     {
+      "title": "Doom",
+      "note": "Uses health pickups and damage state as visible combat survival pressure."
+    },
+    {
       "title": "The Long Dark",
       "note": "Connects health loss to exposure, starvation, dehydration, and injuries."
     },

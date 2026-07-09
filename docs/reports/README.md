@@ -64,6 +64,14 @@ Reviews the accumulated game-anchor enrichment work for title consistency risks,
 
 Documents the v0.3 title policy follow-up and the small targeted cleanup of audit-identified game-anchor title and mapping candidates.
 
+[`low-count-game-anchor-triage-v0.3.md`](low-count-game-anchor-triage-v0.3.md)
+
+Reviews exact low-count game-anchor bands and recommends a tiny, policy-guided enrichment batch.
+
+[`low-count-game-anchor-enrichment-pass-v0.3.md`](low-count-game-anchor-enrichment-pass-v0.3.md)
+
+Documents the tiny post-release enrichment pass for selected underdeveloped game anchors.
+
 ## v0.3 Review Tracking
 
 [`v0.3-review-summary.md`](v0.3-review-summary.md)
